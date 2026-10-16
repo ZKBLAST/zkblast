@@ -1,0 +1,9 @@
+{
+  "name": "@zkblast/circuits",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/not-selected.mjs",
+    "test": "node scripts/not-selected.mjs"
+  }
+}

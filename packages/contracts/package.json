@@ -1,0 +1,10 @@
+{
+  "name": "@zkblast/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "lint": "solhint 'src/**/*.sol'"
+  }
+}

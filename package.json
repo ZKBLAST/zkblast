@@ -1,0 +1,38 @@
+{
+  "name": "zkblast",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zero-Knowledge Liquidity Infrastructure",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:testnet": "APP_ENV=testnet turbo run dev",
+    "dev:mainnet": "APP_ENV=mainnet turbo run dev",
+    "dev:web:testnet": "APP_ENV=testnet turbo run dev --filter=@zkblast/web",
+    "dev:web:mainnet": "APP_ENV=mainnet turbo run dev --filter=@zkblast/web",
+    "dev:api:testnet": "APP_ENV=testnet turbo run dev --filter=@zkblast/api",
+    "dev:indexer:testnet": "APP_ENV=testnet turbo run dev --filter=@zkblast/indexer",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "check:brand": "node scripts/check-brand.mjs",
+    "check:env:testnet": "APP_ENV=testnet node scripts/check-env.mjs",
+    "check:env:mainnet": "APP_ENV=mainnet node scripts/check-env.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

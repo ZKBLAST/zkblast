@@ -1,0 +1,12 @@
+node_modules
+.next
+.turbo
+dist
+out
+coverage
+packages/contracts/lib
+packages/contracts/cache
+packages/contracts/out
+packages/contracts/broadcast
+packages/circuits/target
+packages/circuits/proofs
