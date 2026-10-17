@@ -82,8 +82,7 @@ export function Landing({
                   {site.hero.secondary}
                 </AppLink>
                 <AppLink className="button button-primary" href="/trade">
-                  {site.hero.primary} →
-                </AppLink>
+                  {site.hero.primary} to                 </AppLink>
               </div>
               <div className="hero-subline">
                 <span>DLMM</span>
@@ -135,7 +134,7 @@ export function Landing({
                 ? shortAddress(profile.wallets[0]?.address ?? "")
                 : busy
                   ? "CONNECTING…"
-                  : "CONNECT WALLET →"}
+                  : "CONNECT WALLET to "}
             </button>
             <div className="hero-side-footer">
               <i className={`status-dot ${config ? "connected" : ""}`} />
@@ -180,8 +179,7 @@ export function Landing({
             </p>
           </div>
           <AppLink className="text-link" href="/pools">
-            VIEW ALL POOLS →
-          </AppLink>
+            VIEW ALL POOLS to           </AppLink>
         </div>
         <PoolTable compact />
       </section>
@@ -193,7 +191,7 @@ export function Landing({
               <div key={step}>
                 <small>0{index + 1}</small>
                 <strong>{step}</strong>
-                {index < 5 && <span>→</span>}
+                {index < 5 && <span> to </span>}
               </div>
             ),
           )}

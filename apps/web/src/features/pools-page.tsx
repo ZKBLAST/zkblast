@@ -25,7 +25,7 @@ export function PoolsPage({
     return (
       <main className="page-container">
         <AppLink href="/pools" className="back-link">
-          ← ALL POOLS
+ Back to ALL POOLS
         </AppLink>
         <div className="page-heading">
           <div>

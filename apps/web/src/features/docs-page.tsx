@@ -87,7 +87,7 @@ export function DocsPage({
             <div key={step}>
               <small>{String(index + 1).padStart(2, "0")}</small>
               <b>{step}</b>
-              {index < developers.architecture.length - 1 && <span>→</span>}
+              {index < developers.architecture.length - 1 && <span> to </span>}
             </div>
           ))}
         </div>

@@ -1,0 +1,189 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource-variable/geist-mono/wght.css";
+
+@theme {
+  /* Instrument-panel palette: blue-black steel, hairline frames, one signal colour. */
+  --color-bg: #06060c;
+  --color-surface: #0c0c15;
+  --color-raised: #13131f;
+  --color-line: #1d1e2e;
+  --color-line-strong: #2e3047;
+  --color-fg: #e9ebf5;
+  --color-muted: #a3a8c0;
+  --color-faint: #747a96;
+  --color-steel: #aebce5;
+  --color-lime: #dfe3ee;
+  --color-lime-dim: #aab1c6;
+  --color-up: #3EE58E;
+  --color-lime-ink: #06060c;
+  --color-danger: #ff6b5e;
+  --color-warn: #ff9f5a;
+
+  --font-sans: "Inter Variable", ui-sans-serif, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-blink: blink 1.1s steps(1) infinite;
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes scanline {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(900%); }
+}
+
+:root {
+  color-scheme: dark;
+  --header-h: 68px;
+  --rail: max(0px, calc((100vw - 1392px) / 2));
+  --panel-glow: rgba(158, 158, 219, 0.16);
+}
+
+html { background: var(--color-bg); }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Chassis: steel rails frame the page like the edges of a rack-mounted unit. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(to right,
+      #0b0b15 0, #0b0b15 var(--rail),
+      var(--color-line) var(--rail), var(--color-line) calc(var(--rail) + 1px),
+      rgba(45, 45, 82, 0.14) calc(var(--rail) + 1px), transparent calc(var(--rail) + 64px),
+      transparent calc(100% - var(--rail) - 64px), rgba(45, 45, 82, 0.14) calc(100% - var(--rail) - 1px),
+      var(--color-line) calc(100% - var(--rail) - 1px), var(--color-line) calc(100% - var(--rail)),
+      #0b0b15 calc(100% - var(--rail)), #0b0b15 100%);
+}
+
+::selection { background: var(--color-lime); color: var(--color-lime-ink); }
+
+/* Display: quiet, uppercase, optical-size grotesk. The frames carry the drama, not the weight. */
+.display {
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-weight: 430;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.wide { letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-mono); font-weight: 500; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-faint); }
+
+:focus-visible {
+  outline: 1px solid var(--color-lime);
+  outline-offset: 2px;
+}
+
+/* Panel: hairline frame, faint indigo fill, light caught on the inner edge. */
+.panel {
+  position: relative;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #11111d 0%, #0a0a12 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(174, 188, 229, 0.06),
+    inset 0 2px 8px -2px var(--panel-glow),
+    inset 0 10px 34px -4px rgba(158, 158, 219, 0.05),
+    0 2px 1px -1px rgba(6, 6, 12, 0.8),
+    0 10px 24px -12px rgba(0, 0, 0, 0.9);
+}
+.panel-inset {
+  position: relative;
+  border: 1px solid var(--color-line);
+  background: linear-gradient(180deg, #08080f, #0f0f19);
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(174, 188, 229, 0.05);
+}
+
+/* Corner brackets: four L-shaped ticks drawn with gradients, no extra markup. */
+.ticks { --tick: 7px; --tick-c: rgba(174, 188, 229, 0.38); }
+.ticks::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--tick-c), var(--tick-c)) top left / var(--tick) 1px,
+    linear-gradient(var(--tick-c), var(--tick-c)) top left / 1px var(--tick),
+    linear-gradient(var(--tick-c), var(--tick-c)) top right / var(--tick) 1px,
+    linear-gradient(var(--tick-c), var(--tick-c)) top right / 1px var(--tick),
+    linear-gradient(var(--tick-c), var(--tick-c)) bottom left / var(--tick) 1px,
+    linear-gradient(var(--tick-c), var(--tick-c)) bottom left / 1px var(--tick),
+    linear-gradient(var(--tick-c), var(--tick-c)) bottom right / var(--tick) 1px,
+    linear-gradient(var(--tick-c), var(--tick-c)) bottom right / 1px var(--tick);
+  background-repeat: no-repeat;
+}
+
+/* Barcode strip: the heat-sink fins between modules. */
+.barcode {
+  height: 10px;
+  background: repeating-linear-gradient(90deg, rgba(174, 188, 229, 0.26) 0 1px, transparent 1px 4px);
+}
+.barcode-v {
+  width: 10px;
+  background: repeating-linear-gradient(180deg, rgba(174, 188, 229, 0.26) 0 1px, transparent 1px 4px);
+}
+/* Grip: dot columns, the screw holes on a faceplate. */
+.grip {
+  width: 10px;
+  background: radial-gradient(circle, rgba(174, 188, 229, 0.3) 1px, transparent 1.4px) 0 0 / 5px 5px;
+}
+
+/* Dot matrix: faint sensor field, thinning toward the centre where the console sits. */
+.dotmatrix {
+  background-image: radial-gradient(circle, rgba(174, 188, 229, 0.16) 1px, transparent 1.5px);
+  background-size: 9px 9px;
+  mask-image: radial-gradient(ellipse 60% 55% at 50% 50%, transparent 30%, black 75%);
+}
+
+/* Hairline grid behind the hero tree: the coordinate space the tree lives in. */
+.grid-field {
+  background-image:
+    linear-gradient(to right, rgba(174, 188, 229, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(174, 188, 229, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

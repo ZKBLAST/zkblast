@@ -115,7 +115,7 @@ export function SwapPage({
             <span key={step}>
               <b>{String(index + 1).padStart(2, "0")}</b>
               {step}
-              {index < markets.route.length - 1 && <i>→</i>}
+              {index < markets.route.length - 1 && <i> to </i>}
             </span>
           ))}
         </div>

@@ -1,18 +1,28 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import "./styles.css";
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { AppProvider } from "@/components/shell/AppProvider";
+import { Header } from "@/components/shell/Header";
+import { Footer } from "@/components/shell/Footer";
+import { SmoothScroll } from "@/components/shell/SmoothScroll";
 
 export const metadata: Metadata = {
-  title: "ZKBLAST",
-  description: "Liquidity Without Exposure.",
+  title: { default: "ZKBLAST · Liquidity Without Exposure", template: "%s · ZKBLAST" },
+  description: "Zero-knowledge liquidity infrastructure on Robinhood Chain. Public DLMM and DAMM pools with a shielded vault on testnet.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: ReactNode }>) {
+export const viewport: Viewport = { themeColor: "#06060c", colorScheme: "dark" };
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppProvider>
+          <SmoothScroll />
+          <Header />
+          <main id="main" tabIndex={-1} className="outline-none">{children}</main>
+          <Footer />
+        </AppProvider>
+      </body>
     </html>
   );
 }

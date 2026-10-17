@@ -7,7 +7,7 @@ import { Badge, Panel } from "../components/ui/primitives";
 export function DevelopersPage({ apiUrl }: Readonly<{ apiUrl: string }>) {
   const [selected, setSelected] = useState<
     (typeof developers.endpoints)[number]
-  >(developers.endpoints[0]!);
+  >(developers.endpoints[0]);
   const response = JSON.stringify(
     {
       environment: "selected by API",
@@ -82,7 +82,7 @@ export function DevelopersPage({ apiUrl }: Readonly<{ apiUrl: string }>) {
             <div key={step}>
               <small>{String(index + 1).padStart(2, "0")}</small>
               <b>{step}</b>
-              {index < developers.architecture.length - 1 && <span>→</span>}
+              {index < developers.architecture.length - 1 && <span> to </span>}
             </div>
           ))}
         </div>
