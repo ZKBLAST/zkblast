@@ -1,47 +1,222 @@
 :root {
   color-scheme: dark;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #090b0b;
-  color: #f3f5ef;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: #080b0b;
+  color: #f4f7ef;
 }
-
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
+  background:
+    radial-gradient(circle at 72% 8%, #233018 0, transparent 28rem), #080b0b;
+}
+button,
+input {
+  font: inherit;
 }
 main {
   min-height: 100vh;
-  padding: 2rem clamp(1.25rem, 5vw, 5rem);
+  padding: 1.5rem clamp(1.25rem, 5vw, 5rem) 5rem;
 }
-header {
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 3.5rem;
+}
+.topbar > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 .wordmark,
-.eyebrow {
-  letter-spacing: 0.12em;
-  font-weight: 700;
+.eyebrow,
+.panel-label {
+  letter-spacing: 0.14em;
+  font-weight: 800;
 }
-section {
-  max-width: 58rem;
-  margin-top: clamp(8rem, 22vh, 16rem);
+.wordmark {
+  font-size: 1.05rem;
+}
+.network-pill {
+  border: 1px solid #303832;
+  border-radius: 999px;
+  padding: 0.42rem 0.7rem;
+  color: #aab4a8;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+.button {
+  border: 0;
+  border-radius: 0.7rem;
+  padding: 0.78rem 1.1rem;
+  background: #c9ef49;
+  color: #101408;
+  font-weight: 800;
+  cursor: pointer;
+}
+.button:hover {
+  background: #dcff63;
+}
+.button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.button-ghost {
+  border: 1px solid #3b443d;
+  background: #111614;
+  color: #e6eae3;
+}
+.hero {
+  max-width: 64rem;
+  padding: clamp(6rem, 17vh, 12rem) 0 clamp(4rem, 10vh, 7rem);
 }
 h1 {
-  max-width: 12ch;
-  margin: 0.5rem 0 1.5rem;
-  font-size: clamp(3rem, 9vw, 8rem);
-  line-height: 0.92;
+  max-width: 11ch;
+  margin: 0.55rem 0 1.5rem;
+  font-size: clamp(3.3rem, 8vw, 7.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.065em;
 }
-.eyebrow {
-  color: #c7ea46;
-  font-size: 0.75rem;
+.eyebrow,
+.panel-label {
+  margin: 0;
+  color: #c9ef49;
+  font-size: 0.7rem;
 }
 .lede {
-  max-width: 38rem;
-  color: #adb3aa;
-  font-size: 1.1rem;
+  max-width: 44rem;
+  color: #aab4a8;
+  font-size: clamp(1rem, 2vw, 1.25rem);
   line-height: 1.6;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.7fr) minmax(28rem, 1.5fr);
+  gap: 1rem;
+}
+.panel {
+  border: 1px solid #252c28;
+  border-radius: 1rem;
+  background: rgba(15, 20, 18, 0.82);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  box-shadow: 0 1.4rem 5rem rgba(0, 0, 0, 0.22);
+}
+.panel h2 {
+  margin: 0.55rem 0;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+.wallet-address,
+.panel-heading span,
+.trade-row span {
+  color: #8f9990;
+}
+form {
+  margin-top: 2rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b7c0b8;
+  font-size: 0.8rem;
+}
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #354039;
+  border-radius: 0.7rem;
+  background: #090d0b;
+  color: #f4f7ef;
+  padding: 0.78rem 0.9rem;
+  outline: none;
+}
+input:focus {
+  border-color: #c9ef49;
+  box-shadow: 0 0 0 3px rgba(201, 239, 73, 0.1);
+}
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.4rem 0 0;
+}
+.metrics div {
+  border-top: 1px solid #29312c;
+  padding-top: 1rem;
+}
+.metrics dt {
+  color: #808a82;
+  font-size: 0.75rem;
+}
+.metrics dd {
+  margin: 0.2rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+}
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.empty-state {
+  display: grid;
+  min-height: 12rem;
+  place-items: center;
+  border: 1px dashed #313a34;
+  border-radius: 0.75rem;
+  color: #7f8981;
+  text-align: center;
+  padding: 2rem;
+}
+.trade-table {
+  margin-top: 1.2rem;
+}
+.trade-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  border-top: 1px solid #29312c;
+  padding: 1rem 0;
+}
+.trade-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  min-width: 0;
+}
+.trade-row strong {
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+.trade-row span,
+.tx-cell {
+  font-size: 0.74rem;
+}
+.tx-cell {
+  color: #c9ef49;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+@media (max-width: 760px) {
+  .network-pill {
+    display: none;
+  }
+  .hero {
+    padding-top: 5rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .trade-row {
+    grid-template-columns: 1fr auto;
+  }
+  .tx-cell {
+    display: none !important;
+  }
 }

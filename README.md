@@ -34,6 +34,8 @@ pnpm dev:testnet
 
 Contract addresses are read from `deployments/<environment>/manifest.json`. A manifest is accepted only when its environment and chain ID match the active runtime configuration.
 
+The browser environment exposes only `NEXT_PUBLIC_API_URL`. Supabase, RPC, chain, wallet-provider, signer, and deployment configuration remains server-side. Browser features obtain approved public data through the ZKBLAST API rather than connecting to Supabase directly.
+
 ## Development checks
 
 Run focused checks for the package being changed. The full workspace build and critical E2E suites are reserved for PR and release gates.
