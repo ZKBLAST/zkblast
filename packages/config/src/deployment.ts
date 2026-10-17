@@ -1,72 +1,142 @@
 import { z } from "zod";
 
-const addressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/u);
-const hashSchema = z.string().regex(/^0x[a-fA-F0-9]{64}$/u);
-const integerStringSchema = z.string().regex(/^\d+$/u);
+const addressSchema = z
+  .string()
+  .regex(/^0x[\da-f]{40}$/iu, "Invalid EVM address");
+const hashSchema = z.string().regex(/^0x[\da-f]{64}$/iu, "Invalid EVM hash");
+const unsignedIntegerSchema = z
+  .string()
+  .regex(/^\d+$/u, "Expected an unsigned integer string");
 
-const deploymentRecordSchema = z.object({
-  contractName: z.string().min(1),
-  proxyKind: z.enum(["uups", "transparent", "beacon", "none"]),
-  proxyAddress: addressSchema.nullable(),
-  implementationAddress: addressSchema,
-  adminAddress: addressSchema.nullable(),
-  previousImplementationAddress: addressSchema.nullable(),
-  deployerAddress: addressSchema,
-  transactionHash: hashSchema,
+const transactionSchema = z.object({
+  hash: hashSchema,
+  contractAddress: addressSchema.nullable(),
   blockNumber: z.number().int().nonnegative(),
   blockHash: hashSchema,
-  timestamp: z.string().datetime(),
-  gasUsed: integerStringSchema,
-  effectiveGasPriceWei: integerStringSchema,
-  totalFeeWei: integerStringSchema,
-  implementationBytecodeHash: hashSchema,
-  initializerArguments: z.array(z.unknown()),
-  compiler: z.object({
-    version: z.string().min(1),
-    optimizer: z.boolean(),
-    optimizerRuns: z.number().int().nonnegative(),
-  }),
-  verification: z.object({
-    status: z.enum(["pending", "verified", "failed"]),
-    url: z.string().url().nullable(),
-  }),
+  gasUsed: unsignedIntegerSchema,
+  effectiveGasPriceWei: unsignedIntegerSchema,
+  totalFeeWei: unsignedIntegerSchema,
+  status: z.literal("success"),
 });
 
+const verificationStatusSchema = z.enum(["pending", "verified", "failed"]);
+
+const contractDeploymentSchema = z
+  .object({
+    contractName: z.string().min(1),
+    proxyKind: z.enum(["uups", "none"]),
+    proxyAddress: addressSchema.nullable(),
+    implementationAddress: addressSchema,
+    deployerAddress: addressSchema,
+    governanceAddress: addressSchema.nullable(),
+    upgraderAddress: addressSchema.nullable(),
+    artifactBytecodeHash: hashSchema,
+    deployedRuntimeBytecodeHash: hashSchema,
+    initializerCalldataHash: hashSchema.nullable(),
+    initializerArguments: z.array(z.unknown()),
+    transactions: z.object({
+      implementationDeployment: transactionSchema,
+      proxyDeploymentAndInitialization: transactionSchema.nullable(),
+      configuration: z.array(transactionSchema),
+    }),
+    upgrades: z.array(
+      z.object({
+        previousImplementationAddress: addressSchema,
+        newImplementationAddress: addressSchema,
+        implementationDeployment: transactionSchema,
+        proxyUpgrade: transactionSchema,
+      }),
+    ),
+    compiler: z.object({
+      version: z.string().min(1),
+      optimizer: z.boolean(),
+      optimizerRuns: z.number().int().nonnegative(),
+    }),
+    verification: z.object({
+      implementation: verificationStatusSchema,
+      proxy: z.union([verificationStatusSchema, z.literal("not_applicable")]),
+      urls: z.array(z.string().url()),
+    }),
+  })
+  .superRefine((contract, context) => {
+    const isProxy = contract.proxyKind === "uups";
+    if (isProxy !== Boolean(contract.proxyAddress)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Proxy address does not match proxy kind",
+      });
+    }
+    if (
+      isProxy !==
+      Boolean(contract.transactions.proxyDeploymentAndInitialization)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Proxy transaction does not match proxy kind",
+      });
+    }
+    if (isProxy !== Boolean(contract.initializerCalldataHash)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Initializer hash does not match proxy kind",
+      });
+    }
+  });
+
 export const deploymentManifestSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   protocol: z.literal("ZKBLAST"),
   environment: z.enum(["testnet", "mainnet"]),
   chainId: z.number().int().positive(),
   chainName: z.string().min(1),
   generatedAt: z.string().datetime(),
-  contracts: z.record(z.string(), deploymentRecordSchema),
+  deploymentBlock: z.number().int().nonnegative(),
+  deploymentBlockHash: hashSchema,
+  deployerAddress: addressSchema,
+  governanceAddress: addressSchema,
+  upgraderAddress: addressSchema,
+  contracts: z.record(z.string().min(1), contractDeploymentSchema),
+  roles: z.object({
+    defaultAdmin: addressSchema,
+    upgrader: addressSchema,
+    factory: addressSchema,
+  }),
+  totals: z.object({
+    transactionCount: z.number().int().positive(),
+    gasUsed: unsignedIntegerSchema,
+    totalFeeWei: unsignedIntegerSchema,
+  }),
+  integration: z.object({
+    poolRegistry: addressSchema,
+    poolFactory: addressSchema,
+    swapRouter: addressSchema,
+    positionManager: addressSchema,
+    poolQuoter: addressSchema,
+  }),
 });
 
 export type DeploymentManifest = z.infer<typeof deploymentManifestSchema>;
 
-type RuntimeNetwork = {
+type RuntimeNetwork = Readonly<{
   environment: DeploymentManifest["environment"];
   chainId: number;
-};
+}>;
 
 export function parseDeploymentManifest(
   input: unknown,
-  runtime: RuntimeNetwork,
+  runtime?: RuntimeNetwork,
 ): DeploymentManifest {
   const manifest = deploymentManifestSchema.parse(input);
-
-  if (manifest.environment !== runtime.environment) {
+  if (runtime && manifest.environment !== runtime.environment) {
     throw new Error(
       `Deployment environment mismatch: expected ${runtime.environment}, received ${manifest.environment}`,
     );
   }
-
-  if (manifest.chainId !== runtime.chainId) {
+  if (runtime && manifest.chainId !== runtime.chainId) {
     throw new Error(
       `Deployment chain mismatch: expected ${runtime.chainId}, received ${manifest.chainId}`,
     );
   }
-
   return manifest;
 }
 
@@ -74,12 +144,10 @@ export function getContractAddress(
   manifest: DeploymentManifest,
   contractName: string,
 ): string {
-  const deployment = manifest.contracts[contractName];
-  if (!deployment) {
+  const contract = manifest.contracts[contractName];
+  if (!contract)
     throw new Error(
-      `Contract ${contractName} is missing from the deployment manifest`,
+      `Contract is missing from deployment manifest: ${contractName}`,
     );
-  }
-
-  return deployment.proxyAddress ?? deployment.implementationAddress;
+  return contract.proxyAddress ?? contract.implementationAddress;
 }

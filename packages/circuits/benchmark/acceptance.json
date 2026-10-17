@@ -1,0 +1,10 @@
+{
+  "warmupRuns": 1,
+  "measuredRuns": 10,
+  "desktopMedianProofMsMaximum": 15000,
+  "desktopP95ProofMsMaximum": 30000,
+  "browserPeakMemoryBytesMaximum": 1073741824,
+  "verifierGasMaximum": 1500000,
+  "requiredCandidates": ["noir-ultrahonk", "circom-groth16"],
+  "selectedCandidate": "circom-groth16"
+}

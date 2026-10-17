@@ -7,6 +7,11 @@ import { createAuthRouter } from "./auth-router.js";
 import type { AuthService } from "./auth-service.js";
 import { createIdentityRouter } from "./identity-router.js";
 import type { IdentityService } from "./identity-service.js";
+import { createProtocolRouter } from "./protocol-router.js";
+import type { ProtocolService } from "./protocol-service.js";
+import type { SwapService } from "./swap-service.js";
+import type { LiquidityService } from "./liquidity-service.js";
+import type { OperationsService } from "./operations-service.js";
 
 export type ApiPublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
@@ -28,6 +33,10 @@ export function createApp(
   dependencies: Readonly<{
     authService?: AuthService;
     identityService?: IdentityService;
+    protocolService?: ProtocolService;
+    swapService?: SwapService;
+    liquidityService?: LiquidityService;
+    operationsService?: OperationsService;
   }> = {},
 ) {
   const app = express();
@@ -56,6 +65,17 @@ export function createApp(
     response.json({ status: "ok" });
   });
 
+  app.get("/ready", async (_request, response, next) => {
+    try {
+      if (!dependencies.protocolService)
+        return response.status(503).json({ ready: false });
+      const readiness = await dependencies.protocolService.readiness();
+      return response.status(readiness.ready ? 200 : 503).json(readiness);
+    } catch (error) {
+      return next(error);
+    }
+  });
+
   app.get("/v1/config", (_request, response) => {
     const body = publicConfigResponseSchema.parse({
       environment: config.environment,
@@ -71,6 +91,17 @@ export function createApp(
   }
   if (dependencies.identityService) {
     app.use("/v1", createIdentityRouter(dependencies.identityService));
+  }
+  if (dependencies.protocolService) {
+    app.use(
+      "/v1/protocol",
+      createProtocolRouter(
+        dependencies.protocolService,
+        dependencies.swapService,
+        dependencies.liquidityService,
+        dependencies.operationsService,
+      ),
+    );
   }
 
   app.use((_request, response) => {

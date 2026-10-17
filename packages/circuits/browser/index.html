@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ZKBLAST browser proving benchmark</title>
+  </head>
+  <body>
+    <pre id="result">running</pre>
+    <script>
+      const worker = new Worker("/worker.bundle.js", { type: "module" });
+      let observedHeapPeakBytes = performance.memory?.usedJSHeapSize ?? null;
+      const heapSampler = setInterval(() => {
+        if (performance.memory)
+          observedHeapPeakBytes = Math.max(
+            observedHeapPeakBytes ?? 0,
+            performance.memory.usedJSHeapSize,
+          );
+      }, 25);
+      worker.onmessage = async ({ data }) => {
+        if (data.valid || data.error) {
+          clearInterval(heapSampler);
+          const measured =
+            typeof performance.measureUserAgentSpecificMemory === "function"
+              ? await performance.measureUserAgentSpecificMemory()
+              : null;
+          data.browserMemoryBytes = measured?.bytes ?? observedHeapPeakBytes;
+          data.memoryMetric = measured
+            ? "user-agent-specific-after-proof"
+            : "renderer-js-heap-observed";
+        }
+        document.querySelector("#result").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+        document.title = data.error
+          ? "failed"
+          : data.valid
+            ? "complete"
+            : (data.stage ?? "running");
+      };
+      worker.onerror = ({ message, filename, lineno }) => {
+        document.querySelector("#result").textContent = JSON.stringify(
+          { error: message, filename, lineno },
+          null,
+          2,
+        );
+        document.title = "failed";
+      };
+      worker.postMessage("run");
+    </script>
+  </body>
+</html>

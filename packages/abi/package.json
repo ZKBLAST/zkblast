@@ -7,9 +7,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "generate": "node scripts/generate-abis.mjs",
+    "check:generated": "node scripts/generate-abis.mjs --check",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "prettier": "^3.3.0",
     "typescript": "^5.6.0"
   }
 }

@@ -1,0 +1,115 @@
+import { protocolAbis } from "@zkblast/abi";
+import {
+  decodeEventLog,
+  zeroAddress,
+  type Address,
+  type PublicClient,
+} from "viem";
+import { classifyProtocolEvent } from "./classifier.js";
+import type { BlockEnvelope, IndexedEvent } from "./domain.js";
+import type { ChainReader } from "./indexer-service.js";
+
+const combinedAbi = Object.values(protocolAbis).flat();
+
+function serializeArgs(
+  args: unknown,
+): Readonly<Record<string, string | number | boolean | null>> {
+  if (!args || typeof args !== "object") return {};
+  return Object.fromEntries(
+    Object.entries(args).map(([key, value]) => {
+      if (typeof value === "bigint") return [key, value.toString()];
+      if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean" ||
+        value === null
+      )
+        return [key, value];
+      return [key, String(value)];
+    }),
+  );
+}
+
+export class ViemChainReader implements ChainReader {
+  constructor(
+    private readonly client: PublicClient,
+    private readonly chainId: number,
+    private readonly addresses: readonly Address[],
+  ) {}
+  head(): Promise<bigint> {
+    return this.client.getBlockNumber();
+  }
+
+  async block(blockNumber: bigint): Promise<BlockEnvelope> {
+    const [block, logs] = await Promise.all([
+      this.client.getBlock({ blockNumber }),
+      this.client.getLogs({
+        address: [...this.addresses],
+        fromBlock: blockNumber,
+        toBlock: blockNumber,
+      }),
+    ]);
+    const events: IndexedEvent[] = [];
+    for (const log of logs) {
+      try {
+        const decoded = decodeEventLog({
+          abi: combinedAbi,
+          data: log.data,
+          topics: log.topics,
+        });
+        const kind = classifyProtocolEvent(decoded.eventName);
+        if (
+          !kind ||
+          log.logIndex === null ||
+          log.transactionHash === null ||
+          log.blockHash === null
+        )
+          continue;
+        events.push({
+          chainId: this.chainId,
+          blockNumber,
+          blockHash: log.blockHash,
+          transactionHash: log.transactionHash,
+          logIndex: log.logIndex,
+          contractAddress: log.address,
+          kind,
+          eventName: decoded.eventName,
+          payload: serializeArgs(decoded.args),
+        });
+      } catch {
+        /* Unknown logs are outside the protocol surface. */
+      }
+    }
+    const transactionHashes = [
+      ...new Set(events.map((event) => event.transactionHash)),
+    ];
+    const receipts = await Promise.all(
+      transactionHashes.map((hash) =>
+        this.client.getTransactionReceipt({ hash }),
+      ),
+    );
+    receipts.forEach((receipt, index) => {
+      events.push({
+        chainId: this.chainId,
+        blockNumber,
+        blockHash: receipt.blockHash,
+        transactionHash: receipt.transactionHash,
+        logIndex: 1_000_000 + index,
+        contractAddress: receipt.to ?? receipt.contractAddress ?? zeroAddress,
+        kind: "receipt",
+        eventName: "TransactionReceipt",
+        payload: {
+          status: receipt.status,
+          gasUsed: receipt.gasUsed.toString(),
+          effectiveGasPrice: receipt.effectiveGasPrice.toString(),
+        },
+      });
+    });
+    return {
+      number: blockNumber,
+      hash: block.hash,
+      parentHash: block.parentHash,
+      events,
+    };
+  }
+}

@@ -1,85 +1,46 @@
 "use client";
 
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import site from "../data/site.json";
+import { AppLink } from "../components/ui/primitives";
+import { DevelopersPage } from "../features/developers-page";
+import { DocsPage } from "../features/docs-page";
+import { ExplorerPage } from "../features/explorer-page";
+import { Landing } from "../features/landing-page";
+import { PoolsPage } from "../features/pools-page";
+import { PortfolioPage } from "../features/portfolio-page";
+import { SwapPage } from "../features/swap-page";
+import { apiRequest } from "../lib/api-client";
+import { shortAddress } from "../lib/format";
+import type { PublicConfig, Trade, UserProfile } from "../types/application";
 
-type EthereumProvider = Readonly<{
-  request(
-    input: Readonly<{ method: string; params?: unknown[] }>,
-  ): Promise<unknown>;
+type AccountState = Readonly<{
+  profile: UserProfile | null;
+  trades: readonly Trade[];
 }>;
 
-declare global {
-  interface Window {
-    ethereum?: EthereumProvider;
-  }
-}
-
-type PublicConfig = Readonly<{
-  environment: "testnet" | "mainnet";
-  chainId: number;
-  chainName: string;
-  explorerUrl: string;
-}>;
-type UserProfile = Readonly<{
-  id: string;
-  username: string | null;
-  loginCount: number;
-  lastLoginAt: string | null;
-  wallets: readonly Readonly<{ address: string; isPrimary: boolean }>[];
-}>;
-type Trade = Readonly<{
-  id: string;
-  action: string;
-  status: string;
-  transactionHash: string | null;
-  venue: string;
-  submittedAt: string;
-}>;
-
-async function apiRequest<T>(
-  apiUrl: string,
-  path: string,
-  init?: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${apiUrl}${path}`, {
-    ...init,
-    credentials: "include",
-    headers: { "content-type": "application/json", ...init?.headers },
-  });
-  if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as {
-      error?: { code?: string };
-    } | null;
-    throw new Error(payload?.error?.code ?? `HTTP_${response.status}`);
-  }
-  return (response.status === 204 ? null : response.json()) as Promise<T>;
-}
-
-function shortAddress(address: string): string {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
+const emptyAccount: AccountState = { profile: null, trades: [] };
 
 export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
+  const pathname = usePathname();
   const [config, setConfig] = useState<PublicConfig | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [trades, setTrades] = useState<readonly Trade[]>([]);
+  const [account, setAccount] = useState<AccountState>(emptyAccount);
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("Checking secure session…");
 
   const loadAccount = useCallback(async () => {
     try {
-      const [nextProfile, history] = await Promise.all([
+      const [profile, history] = await Promise.all([
         apiRequest<UserProfile>(apiUrl, "/v1/me"),
         apiRequest<{ items: Trade[] }>(apiUrl, "/v1/me/trades?limit=25"),
       ]);
-      setProfile(nextProfile);
-      setUsername(nextProfile.username ?? "");
-      setTrades(history.items);
+      setAccount({ profile, trades: history.items });
+      setUsername(profile.username ?? "");
       setNotice("Session secured by the ZKBLAST API");
     } catch {
-      setProfile(null);
-      setTrades([]);
+      setAccount(emptyAccount);
       setNotice("Connect a wallet to create or resume your account");
     }
   }, [apiUrl]);
@@ -96,6 +57,7 @@ export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
       setNotice("Install an EVM wallet extension to continue");
       return;
     }
+
     setBusy(true);
     try {
       const accounts = (await window.ethereum.request({
@@ -103,6 +65,7 @@ export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
       })) as string[];
       const walletAddress = accounts[0];
       if (!walletAddress) throw new Error("WALLET_ACCOUNT_MISSING");
+
       const network =
         config ?? (await apiRequest<PublicConfig>(apiUrl, "/v1/config"));
       const walletChain = (await window.ethereum.request({
@@ -114,6 +77,7 @@ export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
           params: [{ chainId: `0x${network.chainId.toString(16)}` }],
         });
       }
+
       const challenge = await apiRequest<{
         challengeId: string;
         message: string;
@@ -127,12 +91,7 @@ export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
       })) as string;
       await apiRequest(apiUrl, "/v1/auth/verify", {
         method: "POST",
-        body: JSON.stringify({
-          challengeId: challenge.challengeId,
-          walletAddress,
-          message: challenge.message,
-          signature,
-        }),
+        body: JSON.stringify({ ...challenge, walletAddress, signature }),
       });
       await loadAccount();
     } catch (error) {
@@ -163,129 +122,162 @@ export function Dashboard({ apiUrl }: Readonly<{ apiUrl: string }>) {
     setBusy(true);
     try {
       await apiRequest(apiUrl, "/v1/auth/logout", { method: "POST" });
-      setProfile(null);
-      setTrades([]);
+      setAccount(emptyAccount);
       setNotice("Session closed");
     } finally {
       setBusy(false);
     }
   }
 
+  const connect = () => void connectWallet();
+  const disconnect = () => void logout();
+  const page = selectPage({
+    pathname,
+    apiUrl,
+    config,
+    account,
+    username,
+    setUsername,
+    busy,
+    notice,
+    connect,
+    disconnect,
+    saveUsername: (event) => void saveUsername(event),
+  });
+
   return (
-    <>
-      <header className="topbar">
-        <div>
-          <span className="wordmark">ZKBLAST</span>
-          <span className="network-pill">
-            {config
-              ? `${config.chainName} · ${config.environment}`
-              : "API SYNC"}
+    <div className="application">
+      <a className="skip-link" href="#content">
+        Skip to content
+      </a>
+      <header className="site-header">
+        <AppLink className="brand" href="/">
+          <span className="brand-mark">ZK</span>
+          <span>
+            {site.name}
+            <small>LIQUIDITY PROTOCOL</small>
           </span>
-        </div>
-        {profile ? (
-          <button
-            className="button button-ghost"
-            disabled={busy}
-            onClick={() => void logout()}
-          >
-            Disconnect
-          </button>
-        ) : (
-          <button
-            className="button"
-            disabled={busy}
-            onClick={() => void connectWallet()}
-          >
-            {busy ? "Waiting for wallet…" : "Connect wallet"}
-          </button>
-        )}
+        </AppLink>
+        <nav className="primary-navigation">
+          {site.navigation.map((item) => (
+            <AppLink
+              className={
+                pathname === item.href || pathname.startsWith(`${item.href}/`)
+                  ? "active"
+                  : ""
+              }
+              href={item.href}
+              key={item.href}
+            >
+              {item.label.toUpperCase()}
+            </AppLink>
+          ))}
+        </nav>
+        <button
+          className={`network-pill ${config ? "online" : ""}`}
+          type="button"
+        >
+          <i />
+          {config?.environment.toUpperCase() ?? "SYNC"} ·{" "}
+          {config?.chainId ?? "—"}
+        </button>
+        <button
+          className="button button-primary launch-button"
+          disabled={busy}
+          onClick={account.profile ? disconnect : connect}
+        >
+          {account.profile
+            ? shortAddress(account.profile.wallets[0]?.address ?? "")
+            : busy
+              ? "CONNECTING…"
+              : "CONNECT WALLET"}
+        </button>
       </header>
-      <section className="hero">
-        <p className="eyebrow">ZERO-KNOWLEDGE LIQUIDITY INFRASTRUCTURE</p>
-        <h1>Liquidity Without Exposure.</h1>
-        <p className="lede">{notice}</p>
-      </section>
-      {profile ? (
-        <section className="dashboard-grid">
-          <article className="panel profile-panel">
-            <p className="panel-label">IDENTITY</p>
-            <h2>{profile.username ?? "Choose your username"}</h2>
-            <p className="wallet-address">
-              {profile.wallets[0]
-                ? shortAddress(profile.wallets[0].address)
-                : "No verified wallet"}
-            </p>
-            <form onSubmit={(event) => void saveUsername(event)}>
-              <label htmlFor="username">Username</label>
-              <div className="input-row">
-                <input
-                  id="username"
-                  minLength={3}
-                  maxLength={24}
-                  pattern="[A-Za-z0-9_]+"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value)}
-                  placeholder="zkblast_user"
-                  required
-                />
-                <button className="button" disabled={busy} type="submit">
-                  Save
-                </button>
-              </div>
-            </form>
-            <dl className="metrics">
-              <div>
-                <dt>Logins</dt>
-                <dd>{profile.loginCount}</dd>
-              </div>
-              <div>
-                <dt>Wallets</dt>
-                <dd>{profile.wallets.length}</dd>
-              </div>
-            </dl>
-          </article>
-          <article className="panel trade-panel">
-            <div className="panel-heading">
-              <div>
-                <p className="panel-label">ACTIVITY</p>
-                <h2>Trade history</h2>
-              </div>
-              <span>{trades.length} records</span>
-            </div>
-            {trades.length === 0 ? (
-              <div className="empty-state">
-                Your verified onchain activity will appear here.
-              </div>
-            ) : (
-              <div
-                className="trade-table"
-                role="table"
-                aria-label="Trade history"
-              >
-                {trades.map((trade) => (
-                  <div className="trade-row" role="row" key={trade.id}>
-                    <div>
-                      <strong>{trade.action.replaceAll("_", " ")}</strong>
-                      <span>{trade.venue}</span>
-                    </div>
-                    <div>
-                      <strong>{trade.status}</strong>
-                      <span>
-                        {new Date(trade.submittedAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="tx-cell">
-                      {trade.transactionHash
-                        ? shortAddress(trade.transactionHash)
-                        : "Pending"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </article>
-        </section>
-      ) : null}
-    </>
+      <div id="content">{page}</div>
+      <footer>
+        <div>
+          <span className="brand-mark">ZK</span>
+          <strong>ZKBLAST</strong>
+          <p>{site.tagline}</p>
+        </div>
+        <nav>
+          {site.navigation.map((item) => (
+            <AppLink href={item.href} key={item.href}>
+              {item.label}
+            </AppLink>
+          ))}
+        </nav>
+        <small>DEMO UI · ENVIRONMENT ISOLATED · 2026</small>
+      </footer>
+    </div>
   );
+}
+
+type PageContext = Readonly<{
+  pathname: string;
+  apiUrl: string;
+  config: PublicConfig | null;
+  account: AccountState;
+  username: string;
+  setUsername: (value: string) => void;
+  busy: boolean;
+  notice: string;
+  connect: () => void;
+  disconnect: () => void;
+  saveUsername: (event: FormEvent<HTMLFormElement>) => void;
+}>;
+
+function selectPage(context: PageContext) {
+  const [section, detail] = context.pathname.split("/").filter(Boolean);
+  switch (section) {
+    case "trade":
+      return (
+        <SwapPage
+          connect={context.connect}
+          profile={context.account.profile}
+          apiUrl={context.apiUrl}
+          config={context.config}
+        />
+      );
+    case "pools":
+      return (
+        <PoolsPage
+          poolId={detail}
+          apiUrl={context.apiUrl}
+          config={context.config}
+          profile={context.account.profile}
+          connect={context.connect}
+        />
+      );
+    case "portfolio":
+      return (
+        <PortfolioPage
+          profile={context.account.profile}
+          trades={context.account.trades}
+          username={context.username}
+          setUsername={context.setUsername}
+          saveUsername={context.saveUsername}
+          connect={context.connect}
+          logout={context.disconnect}
+          busy={context.busy}
+          apiUrl={context.apiUrl}
+        />
+      );
+    case "explorer":
+      return <ExplorerPage />;
+    case "developers":
+      return <DevelopersPage apiUrl={context.apiUrl} />;
+    case "docs":
+      return <DocsPage config={context.config} />;
+    default:
+      return (
+        <Landing
+          config={context.config}
+          notice={context.notice}
+          connect={context.connect}
+          profile={context.account.profile}
+          busy={context.busy}
+        />
+      );
+  }
 }

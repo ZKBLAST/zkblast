@@ -44,6 +44,15 @@ const expectedTables = [
   "users",
   "wallet_login_challenges",
 ];
+const expectedProtocolTables = [
+  "assets",
+  "fee_events",
+  "ingestion_checkpoints",
+  "pools",
+  "positions",
+  "swaps",
+  "transactions",
+];
 
 async function ensureMigrationLedger() {
   await sql.unsafe(`create schema if not exists ${expectedSchema}`);
@@ -101,16 +110,20 @@ async function applyMigrations() {
 }
 
 async function verifyDatabase() {
+  const allExpectedTables = [
+    ...expectedTables,
+    ...expectedProtocolTables,
+  ].sort();
   const tables = await sql`
     select table_name
     from information_schema.tables
     where table_schema = ${expectedSchema}
-      and table_name = any(${expectedTables})
+      and table_name = any(${allExpectedTables})
     order by table_name
   `;
   const actualTables = tables.map((row) => row.table_name);
-  if (actualTables.join(",") !== expectedTables.join(",")) {
-    throw new Error("Required identity tables are missing");
+  if (actualTables.join(",") !== allExpectedTables.join(",")) {
+    throw new Error("Required application tables are missing");
   }
 
   const rlsTables = await sql`
@@ -118,12 +131,12 @@ async function verifyDatabase() {
     from pg_class c
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = ${expectedSchema}
-      and c.relname = any(${expectedTables})
+      and c.relname = any(${allExpectedTables})
       and c.relrowsecurity = true
     order by c.relname
   `;
-  if (rlsTables.length !== expectedTables.length) {
-    throw new Error("RLS is not enabled on every identity table");
+  if (rlsTables.length !== allExpectedTables.length) {
+    throw new Error("RLS is not enabled on every application table");
   }
 
   const browserRolePrivileges = await sql`
@@ -133,7 +146,7 @@ async function verifyDatabase() {
     join pg_namespace n on n.oid = c.relnamespace
     where r.rolname in ('anon', 'authenticated')
       and n.nspname = ${expectedSchema}
-      and c.relname = any(${expectedTables})
+      and c.relname = any(${allExpectedTables})
       and has_table_privilege(
         r.rolname,
         format('%I.%I', n.nspname, c.relname),
@@ -141,7 +154,9 @@ async function verifyDatabase() {
       )
   `;
   if (browserRolePrivileges.length > 0) {
-    throw new Error("A browser database role has direct identity-table access");
+    throw new Error(
+      "A browser database role has direct application-table access",
+    );
   }
 
   const serviceRolePrivileges = await sql`
@@ -149,16 +164,16 @@ async function verifyDatabase() {
     from pg_class c
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = ${expectedSchema}
-      and c.relname = any(${expectedTables})
+      and c.relname = any(${allExpectedTables})
       and has_table_privilege(
         'service_role',
         format('%I.%I', n.nspname, c.relname),
         'SELECT,INSERT,UPDATE,DELETE'
       )
   `;
-  if (serviceRolePrivileges.length !== expectedTables.length) {
+  if (serviceRolePrivileges.length !== allExpectedTables.length) {
     throw new Error(
-      "Backend service role is missing identity-table privileges",
+      "Backend service role is missing application-table privileges",
     );
   }
 
@@ -173,7 +188,7 @@ async function verifyDatabase() {
   }
 
   console.log(
-    `Verified ${expectedTables.length} backend-only identity tables with RLS in ${expectedSchema}`,
+    `Verified ${allExpectedTables.length} backend-only application tables with RLS in ${expectedSchema}`,
   );
 }
 

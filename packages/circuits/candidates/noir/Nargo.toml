@@ -1,0 +1,5 @@
+[package]
+name = "zkblast_benchmark"
+type = "bin"
+authors = ["ZKBLAST"]
+compiler_version = ">=1.0.0-rc.5"

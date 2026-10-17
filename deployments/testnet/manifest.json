@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 2,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "chainName": "Robinhood Chain Testnet",
+  "generatedAt": "2026-10-17T09:30:23.688Z",
+  "deploymentBlock": 137232329,
+  "deploymentBlockHash": "0xac6c78177ef5b87bb8a3b9cd8efcd56f24a435c38a398a75ee6e24cdf6900552",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governanceAddress": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+  "upgraderAddress": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+  "contracts": {
+    "PoolRegistry": {
+      "contractName": "PoolRegistry",
+      "proxyKind": "uups",
+      "proxyAddress": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+      "implementationAddress": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "upgraderAddress": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "artifactBytecodeHash": "0xea3dc3da6f799dd5e4985e1e28d90313548a606839bdbe68731f61a98d7210d6",
+      "deployedRuntimeBytecodeHash": "0x98fbd7bdf287ef59a2a4e36c18d73302f1a58d87b8b920be7ebc8582bb312740",
+      "initializerCalldataHash": "0x5b5632bbb9f1ca2d8d6d6291673e6cf97d1873dba6a16199bc66daa340d4da39",
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+        "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E"
+      ],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x3f3b5249df1206766c722780104f5c8eb7b289c751f87d3474bfb953c70bf692",
+          "contractAddress": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+          "blockNumber": 137223983,
+          "blockHash": "0x8a855dbf5eb6343498d0f0eb91fd36879ea9f5b14d195656eaa02486fe67860c",
+          "gasUsed": "808686",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "8086860000000",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0xe26c27effce39238aa683577ac796eb1802c2e03fc25ccf0b73a5bf4c936c685",
+          "contractAddress": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+          "blockNumber": 137223989,
+          "blockHash": "0x1c228994a631b86b5687575ebc25990361e723224c0a01480e16272a9e3a266a",
+          "gasUsed": "206692",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "2066920000000",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26+commit.8a97fa7a",
+        "optimizer": true,
+        "optimizerRuns": 200
+      },
+      "verification": {
+        "implementation": "verified",
+        "proxy": "verified",
+        "urls": [
+          "https://explorer.testnet.chain.robinhood.com/address/0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+          "https://explorer.testnet.chain.robinhood.com/address/0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50"
+        ]
+      }
+    },
+    "PoolFactory": {
+      "contractName": "PoolFactory",
+      "proxyKind": "uups",
+      "proxyAddress": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+      "implementationAddress": "0xB3C158cd339B9589A307ba8A75C77A177F540737",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "upgraderAddress": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "artifactBytecodeHash": "0x06a35b5e82b6570eab87dd34a3e937f80109a32f63db78f3e266df1eab22d612",
+      "deployedRuntimeBytecodeHash": "0x07558eae7cbb3bc55f1b068a235806a70f13a27c7defa3706b1c5365929f56e5",
+      "initializerCalldataHash": "0xce808653733cf5eb2b5d1ed1ffef94fb9b217ab509e8bf939c3a8c119f4c44d8",
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+        "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50"
+      ],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x3e3f195484701fb60415d52fb458792d59ebcd491f1617975d766bc304e6db4f",
+          "contractAddress": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+          "blockNumber": 137224001,
+          "blockHash": "0x94528525a57dc90d7bb4ca42a2f972a7c875c74112d38370451e0e4b255d9b6e",
+          "gasUsed": "4529646",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "45296460000000",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x5c581747ef8bf6da8573ae198c5530af95fa1b70e404e4d7ce17a7fc8fa58af0",
+          "contractAddress": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+          "blockNumber": 137224012,
+          "blockHash": "0x78c043995d26309d94f720e6b0e25f3fe666ac447a4592bd655902f75ef91acf",
+          "gasUsed": "204711",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "2047110000000",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [
+        {
+          "previousImplementationAddress": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+          "newImplementationAddress": "0xB3C158cd339B9589A307ba8A75C77A177F540737",
+          "implementationDeployment": {
+            "hash": "0xe5c73053262f5c1872f1accaa1f6b69e253f5940f186937fca2be27628f016c1",
+            "contractAddress": "0xB3C158cd339B9589A307ba8A75C77A177F540737",
+            "blockNumber": 137232322,
+            "blockHash": "0xe50def3ad3acc7236a60a2094fd25586e4958da40898e207795dfcb3bdc0b30f",
+            "gasUsed": "4677589",
+            "effectiveGasPriceWei": "10000000",
+            "totalFeeWei": "46775890000000",
+            "status": "success"
+          },
+          "proxyUpgrade": {
+            "hash": "0x178d7fd29754454650baf7d831734ce5fa133dd7954e028f6716df90076fcb8c",
+            "contractAddress": null,
+            "blockNumber": 137232329,
+            "blockHash": "0xac6c78177ef5b87bb8a3b9cd8efcd56f24a435c38a398a75ee6e24cdf6900552",
+            "gasUsed": "37303",
+            "effectiveGasPriceWei": "10000000",
+            "totalFeeWei": "373030000000",
+            "status": "success"
+          }
+        }
+      ],
+      "compiler": {
+        "version": "0.8.26+commit.8a97fa7a",
+        "optimizer": true,
+        "optimizerRuns": 200
+      },
+      "verification": {
+        "implementation": "verified",
+        "proxy": "verified",
+        "urls": [
+          "https://explorer.testnet.chain.robinhood.com/address/0xB3C158cd339B9589A307ba8A75C77A177F540737",
+          "https://explorer.testnet.chain.robinhood.com/address/0x4FC2dA2feb00a905DFAF39a7e402943250e0221E"
+        ]
+      }
+    },
+    "SwapRouter": {
+      "contractName": "SwapRouter",
+      "proxyKind": "uups",
+      "proxyAddress": "0xF06276C3C6900268B3d6940b05ee75c9320B46c2",
+      "implementationAddress": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "upgraderAddress": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "artifactBytecodeHash": "0x47a71ab136fc6ed7b654ad60c6108d31d98e227893b351859abfca6b04d63827",
+      "deployedRuntimeBytecodeHash": "0x061eae77292871d2d7748a0538577480df3ae1cc145b3a6a06f88bfd9b1bfe65",
+      "initializerCalldataHash": "0xce808653733cf5eb2b5d1ed1ffef94fb9b217ab509e8bf939c3a8c119f4c44d8",
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+        "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50"
+      ],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0xcaa37becadedb3442c9f0feb46272a2fe1ffefbd5652c672febd15647c00cb08",
+          "contractAddress": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+          "blockNumber": 137224019,
+          "blockHash": "0x74652181fa3ffd9264d402de4e4bb206205a7d98da762e71e10fc489217e4f54",
+          "gasUsed": "1092187",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "10921870000000",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x31d4ae375626d631daf4d0f8483a6ab5ae21183f50d1a6ceef155dc783c39010",
+          "contractAddress": "0xF06276C3C6900268B3d6940b05ee75c9320B46c2",
+          "blockNumber": 137224025,
+          "blockHash": "0x264db3f2ac8022db6aa653fc6f39dce30f2073400e1e47b8254c78a64d6a26d0",
+          "gasUsed": "204733",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "2047330000000",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26+commit.8a97fa7a",
+        "optimizer": true,
+        "optimizerRuns": 200
+      },
+      "verification": {
+        "implementation": "verified",
+        "proxy": "verified",
+        "urls": [
+          "https://explorer.testnet.chain.robinhood.com/address/0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+          "https://explorer.testnet.chain.robinhood.com/address/0xF06276C3C6900268B3d6940b05ee75c9320B46c2"
+        ]
+      }
+    },
+    "PositionManager": {
+      "contractName": "PositionManager",
+      "proxyKind": "uups",
+      "proxyAddress": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+      "implementationAddress": "0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "upgraderAddress": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "artifactBytecodeHash": "0x9c1e72fc6f2d9ad17857fe1954ec021e870b328a7f01120318cb7d5b59040bcc",
+      "deployedRuntimeBytecodeHash": "0x91dfc429a923d68e3dda922bba76fddb6181cd1bb3793c51287fedcc54b07b5f",
+      "initializerCalldataHash": "0xce808653733cf5eb2b5d1ed1ffef94fb9b217ab509e8bf939c3a8c119f4c44d8",
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+        "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50"
+      ],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x66bd265808534a419f4756c0b53474c0c2914a96fe842979a9ae98e9a15560d3",
+          "contractAddress": "0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
+          "blockNumber": 137224043,
+          "blockHash": "0x0f0fa708b18fcd82cd970c09b95ee83c10619e9ca1a3eeb71780c879b9eb1742",
+          "gasUsed": "1825658",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "18256580000000",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x0b12cd15e8f60e04494ae16769dd13d396d72fe6dd4da28917c77f03d3018f0c",
+          "contractAddress": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+          "blockNumber": 137224049,
+          "blockHash": "0x13b18f67b033be0524e67436077766190ca1df47e20d7ec1d58b60df477b272d",
+          "gasUsed": "226805",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "2268050000000",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26+commit.8a97fa7a",
+        "optimizer": true,
+        "optimizerRuns": 200
+      },
+      "verification": {
+        "implementation": "verified",
+        "proxy": "verified",
+        "urls": [
+          "https://explorer.testnet.chain.robinhood.com/address/0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
+          "https://explorer.testnet.chain.robinhood.com/address/0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f"
+        ]
+      }
+    },
+    "PoolQuoter": {
+      "contractName": "PoolQuoter",
+      "proxyKind": "none",
+      "proxyAddress": null,
+      "implementationAddress": "0xb0C2EF188B57E720D44a318F495d87C6e95dcE69",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": null,
+      "upgraderAddress": null,
+      "artifactBytecodeHash": "0xa574db139399e4232e4ce0b9963fba0165853b6d3e42a2d77fe1ead7bca9e8d3",
+      "deployedRuntimeBytecodeHash": "0xa574db139399e4232e4ce0b9963fba0165853b6d3e42a2d77fe1ead7bca9e8d3",
+      "initializerCalldataHash": null,
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0xe42a153531cfea492f14b5ddd7b6713305539d06303d1f86663d210962fd6c66",
+          "contractAddress": "0xb0C2EF188B57E720D44a318F495d87C6e95dcE69",
+          "blockNumber": 137224058,
+          "blockHash": "0xd4e0587887e5040ae61f07159efdf3ebc37a5520b13e8a42efad0b911375ac85",
+          "gasUsed": "742014",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "7420140000000",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": null,
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26+commit.8a97fa7a",
+        "optimizer": true,
+        "optimizerRuns": 200
+      },
+      "verification": {
+        "implementation": "verified",
+        "proxy": "not_applicable",
+        "urls": [
+          "https://explorer.testnet.chain.robinhood.com/address/0xb0C2EF188B57E720D44a318F495d87C6e95dcE69"
+        ]
+      }
+    }
+  },
+  "roles": {
+    "defaultAdmin": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+    "upgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+    "factory": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E"
+  },
+  "totals": {
+    "transactionCount": 11,
+    "gasUsed": "14556024",
+    "totalFeeWei": "145560240000000"
+  },
+  "integration": {
+    "poolRegistry": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+    "poolFactory": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "swapRouter": "0xF06276C3C6900268B3d6940b05ee75c9320B46c2",
+    "positionManager": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+    "poolQuoter": "0xb0C2EF188B57E720D44a318F495d87C6e95dcE69"
+  }
+}

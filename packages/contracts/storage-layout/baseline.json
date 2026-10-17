@@ -1,0 +1,454 @@
+{
+  "PoolRegistry": {
+    "storage": [
+      {
+        "astId": 4613,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 4615,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 32,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 2564,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_pools",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_address)"
+      },
+      {
+        "astId": 2568,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_poolIds",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 2572,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "_registeredPools",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 2574,
+        "contract": "src/core/PoolRegistry.sol:PoolRegistry",
+        "label": "poolCount",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_address)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "PoolFactory": {
+    "storage": [
+      {
+        "astId": 4613,
+        "contract": "src/core/PoolFactory.sol:PoolFactory",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 4615,
+        "contract": "src/core/PoolFactory.sol:PoolFactory",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 32,
+        "contract": "src/core/PoolFactory.sol:PoolFactory",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 2256,
+        "contract": "src/core/PoolFactory.sol:PoolFactory",
+        "label": "registry",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(PoolRegistry)2750"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(PoolRegistry)2750": {
+        "encoding": "inplace",
+        "label": "contract PoolRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "SwapRouter": {
+    "storage": [
+      {
+        "astId": 4613,
+        "contract": "src/router/SwapRouter.sol:SwapRouter",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 4615,
+        "contract": "src/router/SwapRouter.sol:SwapRouter",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 32,
+        "contract": "src/router/SwapRouter.sol:SwapRouter",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 5419,
+        "contract": "src/router/SwapRouter.sol:SwapRouter",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 5160,
+        "contract": "src/router/SwapRouter.sol:SwapRouter",
+        "label": "registry",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(PoolRegistry)2750"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(PoolRegistry)2750": {
+        "encoding": "inplace",
+        "label": "contract PoolRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "PositionManager": {
+    "storage": [
+      {
+        "astId": 4613,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 4615,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 32,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 5419,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3161,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "registry",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(PoolRegistry)2750"
+      },
+      {
+        "astId": 3163,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "nextPositionId",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3168,
+        "contract": "src/liquidity/PositionManager.sol:PositionManager",
+        "label": "positions",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_uint256,t_struct(Position)3152_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(PoolRegistry)2750": {
+        "encoding": "inplace",
+        "label": "contract PoolRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_enum(PoolModel)2755": {
+        "encoding": "inplace",
+        "label": "enum PoolModel",
+        "numberOfBytes": "1"
+      },
+      "t_int24": {
+        "encoding": "inplace",
+        "label": "int24",
+        "numberOfBytes": "3"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_uint256,t_struct(Position)3152_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct PositionManager.Position)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Position)3152_storage"
+      },
+      "t_struct(Position)3152_storage": {
+        "encoding": "inplace",
+        "label": "struct PositionManager.Position",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "astId": 3142,
+            "contract": "src/liquidity/PositionManager.sol:PositionManager",
+            "label": "owner",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 3144,
+            "contract": "src/liquidity/PositionManager.sol:PositionManager",
+            "label": "pool",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 3147,
+            "contract": "src/liquidity/PositionManager.sol:PositionManager",
+            "label": "model",
+            "offset": 20,
+            "slot": "1",
+            "type": "t_enum(PoolModel)2755"
+          },
+          {
+            "astId": 3149,
+            "contract": "src/liquidity/PositionManager.sol:PositionManager",
+            "label": "binId",
+            "offset": 21,
+            "slot": "1",
+            "type": "t_int24"
+          },
+          {
+            "astId": 3151,
+            "contract": "src/liquidity/PositionManager.sol:PositionManager",
+            "label": "shares",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  }
+}

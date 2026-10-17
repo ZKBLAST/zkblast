@@ -21,6 +21,7 @@ test("public config excludes internal connection details", async () => {
     response.headers["access-control-allow-origin"],
     "http://127.0.0.1:3000",
   );
+  assert.equal(response.headers["access-control-allow-credentials"], "true");
   assert.equal(response.headers["x-powered-by"], undefined);
   assert.deepEqual(response.body, {
     environment: "testnet",

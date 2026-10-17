@@ -1,0 +1,140 @@
+.developer-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 18px;
+}
+.endpoint-nav {
+  border: 1px solid var(--border);
+  background: #090909;
+  height: max-content;
+}
+.endpoint-nav h3 {
+  padding: 18px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+  font: 8px var(--mono);
+}
+.endpoint-nav button {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-bottom: 1px solid #242427;
+  background: none;
+  color: #8a8a91;
+  text-align: left;
+  font: 8px var(--mono);
+}
+.endpoint-nav button.active {
+  background: #e8e8eb;
+  color: #111;
+}
+.endpoint-nav span {
+  font-size: 6px;
+}
+.endpoint-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.endpoint-title h2 {
+  font: 18px var(--mono);
+  margin: 0;
+}
+.panel pre {
+  overflow: auto;
+  background: #070707;
+  border: 1px solid #262629;
+  padding: 18px;
+  color: #b8b8bd;
+  font: 9px/1.7 var(--mono);
+}
+.two-column {
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+}
+.architecture {
+  margin-top: 80px;
+}
+.architecture-flow {
+  display: flex;
+  margin-top: 30px;
+  border: 1px solid var(--border);
+}
+.architecture-flow > div {
+  flex: 1;
+  height: 100px;
+}
+.architecture-flow > div:last-child {
+  border: 0;
+}
+.docs-index {
+  display: flex;
+  border: 1px solid var(--border);
+  margin-bottom: 75px;
+  overflow: auto;
+}
+.docs-index a {
+  padding: 14px 20px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  font: 7px var(--mono);
+}
+.docs-section {
+  padding: 60px 0;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 70px;
+}
+.docs-section-title {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  margin-bottom: 35px;
+}
+.docs-section-title > span {
+  color: #555;
+  font: 9px var(--mono);
+}
+.docs-section-title h2 {
+  font-size: 34px;
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+.docs-section-title p {
+  color: #808087;
+  max-width: 720px;
+}
+.three-column,
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.three-column h3,
+.roadmap-grid h3 {
+  font-weight: 400;
+  margin-top: 22px;
+}
+.docs-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.docs-flow > div {
+  min-height: 100px;
+  border: 1px solid var(--border);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.docs-flow small {
+  color: #555;
+  font: 7px var(--mono);
+}
+.docs-flow strong {
+  font: 9px var(--mono);
+}
+.roadmap-grid {
+  grid-template-columns: repeat(4, 1fr);
+}

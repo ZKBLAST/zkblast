@@ -1,0 +1,52 @@
+{
+  "status": "complete",
+  "selectedCandidate": "circom-groth16",
+  "host": { "architecture": "arm64", "node": "v24.13.0", "threads": 8 },
+  "relation": {
+    "depth": 32,
+    "nonLinearOperations": 195,
+    "publicInputs": 2,
+    "privateInputs": 65
+  },
+  "candidates": {
+    "noir-ultrahonk": {
+      "versions": { "noir": "1.0.0-rc.5", "barretenberg": "5.2.1" },
+      "circuitSize": 308,
+      "proofSamplesMs": [852, 322, 306, 307, 369, 380, 343, 378, 323, 334],
+      "medianProofMs": 338.5,
+      "p95ProofMs": 852,
+      "proofBytes": 6080,
+      "solidityVerifierSourceBytes": 103915,
+      "nativePeakMemoryBytes": 31037850,
+      "verifierGas": 2937726,
+      "deploymentGas": 3862501,
+      "evmVerificationPassed": true,
+      "acceptance": "rejected-verifier-gas",
+      "circuitHashSha256": "05dad28406941ffbc21fba9f03a12512858bad819aaba4c66d3cff3120d51b04",
+      "verificationKeyHashSha256": "7979212472f0e3fa7e7a67d78a5ce1e46ae728f3d6fb208509c29f908a109823"
+    },
+    "circom-groth16": {
+      "versions": {
+        "circom": "2.2.3",
+        "circomNpm": "0.2.23",
+        "snarkjs": "0.7.6"
+      },
+      "constraints": 228,
+      "proofSamplesMs": [1146, 1012, 775, 699, 511, 792, 673, 822, 704, 744],
+      "medianProofMs": 759.5,
+      "p95ProofMs": 1146,
+      "proofBytes": 804,
+      "solidityVerifierSourceBytes": 7456,
+      "browserProofMs": 589.21,
+      "browserPeakMemoryBytes": 45111530,
+      "browserMemoryMetric": "user-agent-specific-after-proof",
+      "browserVerificationPassed": true,
+      "verifierGas": 41077,
+      "deploymentGas": 322830,
+      "evmVerificationPassed": true,
+      "acceptance": "passed",
+      "circuitHashSha256": "132b9193b86a77c6ef03e4dea3a86c9b144bcee55f25f75ac03b256d0ba7b089",
+      "verificationKeyHashSha256": "1e32d05a004f731b63b3dbc874d2b5c0a5e82a882c3f60621e8bec4b4b4e8fab"
+    }
+  }
+}

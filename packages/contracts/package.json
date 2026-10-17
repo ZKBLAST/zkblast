@@ -2,9 +2,31 @@
   "name": "@zkblast/contracts",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "forge build",
     "test": "forge test",
-    "lint": "solhint 'src/**/*.sol'"
+    "lint": "solhint 'src/**/*.sol'",
+    "typecheck": "tsc --noEmit",
+    "check:artifacts": "node --experimental-strip-types scripts/check-deployment-artifacts.ts",
+    "preflight:deploy": "node --experimental-strip-types scripts/preflight-deployment.ts",
+    "recover:aborted": "node --experimental-strip-types scripts/recover-aborted-deployment.ts",
+    "upgrade": "node --experimental-strip-types scripts/upgrade-protocol.ts",
+    "storage:snapshot": "node --experimental-strip-types scripts/storage-layout.ts --write",
+    "storage:check": "node --experimental-strip-types scripts/storage-layout.ts",
+    "deploy": "node --experimental-strip-types scripts/deploy-protocol.ts",
+    "deploy:testnet-market": "node --experimental-strip-types scripts/deploy-testnet-market.ts",
+    "deploy:testnet-withdraw-verifier": "node --experimental-strip-types scripts/deploy-testnet-withdraw-verifier.ts",
+    "accept:testnet-liquidity": "node --experimental-strip-types scripts/accept-testnet-liquidity.ts",
+    "verify:testnet-market": "node --experimental-strip-types scripts/verify-testnet-market.ts",
+    "verify:manifest": "node --experimental-strip-types scripts/verify-manifest.ts",
+    "audit:deployment": "node --experimental-strip-types scripts/audit-deployment.ts"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
   }
 }

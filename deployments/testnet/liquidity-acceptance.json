@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "generatedAt": "2026-10-17T11:45:59.929Z",
+  "pool": "0xdBF680e69b0672D7659328Bf03014fF9E4218CE6",
+  "positionManager": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+  "positionId": "1",
+  "owner": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "createdShares": "9990009990009990009",
+  "removedShares": "4995004995004995004",
+  "remainingShares": "4995004995004995005",
+  "feeClaim": {
+    "recipient": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+    "eligibleWallet": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+    "unauthorizedWalletRejectedByApi": true,
+    "execution": "not-submitted-no-accrued-protocol-fees"
+  },
+  "accounting": {
+    "reserve0": "100105000000000000000001",
+    "reserve1": "99905409270964939055554",
+    "protocolFees0": "0",
+    "protocolFees1": "0",
+    "tokenBalance0": "100105000000000000000001",
+    "tokenBalance1": "99905409270964939055554",
+    "reconciled": true
+  },
+  "transactions": {
+    "approveToken0": {
+      "hash": "0x434c6c506ea7cb4689315a4dd63e21b08a316a6314395ab33896f10c517ed52b",
+      "blockNumber": 137307485,
+      "blockHash": "0x433afe735cf98d8142e8fae0ce8bc695273346479452ac46e09687589ec24e84",
+      "gasUsed": "46152",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461520000000",
+      "status": "success"
+    },
+    "approveToken1": {
+      "hash": "0x3eb78243de5108f8c7b684729598f64d907bbcb9e4ee1767a5290bf0ad6d079e",
+      "blockNumber": 137307506,
+      "blockHash": "0x5d845dc4c0df447f8c8f6157181cec066497bbf5d5e3ff75782bd5a270564241",
+      "gasUsed": "46152",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461520000000",
+      "status": "success"
+    },
+    "createPosition": {
+      "hash": "0x77dfa9d05795b9c439e3fa0fb0f172033945a031d8cf31e31ba4fe6bbdddb7be",
+      "blockNumber": 137307514,
+      "blockHash": "0xb66634091eedd1ab6a60b1be2874d895de501f29a2bd0b2b656fdd7fcb59a776",
+      "gasUsed": "285470",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "2854700000000",
+      "status": "success"
+    },
+    "decreasePosition": {
+      "hash": "0x8334101e29c9fce8167cdae688dbdd1ae10d0b376626f2323fd2c8c81d8c2a7b",
+      "blockNumber": 137307536,
+      "blockHash": "0x6e8bde6acab26232b83ff2a9e62184006802018a0d49981e8affd15e87d5c4dd",
+      "gasUsed": "100067",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "1000670000000",
+      "status": "success"
+    }
+  },
+  "totals": {
+    "transactionCount": 4,
+    "gasUsed": "477841",
+    "totalFeeWei": "4778410000000"
+  }
+}

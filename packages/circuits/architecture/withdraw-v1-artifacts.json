@@ -1,0 +1,54 @@
+{
+  "protocol": "ZKBLAST",
+  "circuitId": "withdraw",
+  "circuitVersion": 1,
+  "status": "testnet-ceremony-complete-and-verifier-verified",
+  "compiler": "circom 2.2.3",
+  "prover": "snarkjs 0.7.6 Groth16 BN254",
+  "poseidon2": {
+    "package": "@taceo/circom-lib",
+    "version": "0.9.0",
+    "license": "MIT",
+    "lineage": "TACEO OPRF audited circuit",
+    "vendoredPermutationSha256": "b990042cf89a38d534f613d97ccc5f93406dd824b75d89ef54402e76df9687fe",
+    "vendoredConstantsSha256": "a2d2cb63b4bf678cfaea617101920e59ed46828ec1168bd003c707fe4d6fdc07"
+  },
+  "sourceSha256": {
+    "withdraw": "7bc834a34f6caa531b861b773059b21fe6b2b24866a0bd268db14a2e302b67c7",
+    "poseidon2Adapter": "a10924079bc12a4b8a7750d7813768ef3ae98b7f5463bfbc9c7a140f162c361c",
+    "constraints": "9936b8ffe746e0207919a23f5f656b68c884eb63dba3291046c986cca1f79935"
+  },
+  "reproducibleBuild": {
+    "constraints": 32148,
+    "wires": 32148,
+    "publicInputs": 13,
+    "privateInputs": 67,
+    "r1csSha256": "a5baa6ebdcced2246bf04c0c2a1896df90ed334fe98b481eb8de5bca4d9fab7e",
+    "wasmSha256": "b463ecc6b058838bdf48e68d4b34e0297ffc5e1cdd3f1a35708806a1d467d4d2"
+  },
+  "vectors": {
+    "validSha256": "9f436cc4298084368355c0c1ac3ed09d8d7eaf3664109bebabd1c2831c4d44cd",
+    "positive": 1,
+    "negative": 6
+  },
+  "ceremony": {
+    "status": "testnet-only-single-device-two-process-contributions-and-final-beacon",
+    "trustModel": "Development/testnet only; not an independent-party mainnet ceremony",
+    "phase1Power": 15,
+    "provingKeySha256": "d043c702e676165a3490253ba66af1a9edb4b43cbf4461425d4f1024bd42dcba",
+    "verificationKeySha256": "e4286eed90d2ec2a5c8180e879747b601a219134b7d10ece6337ddb3df146d10",
+    "benchmarkOrLocalKeysDeployable": false,
+    "testnetKeyDeployable": true,
+    "mainnetKeyDeployable": false
+  },
+  "testnetVerification": {
+    "chainId": 46630,
+    "verifierAddress": "0x2a4D288A6c92E55A631CB987d7Af79099933b596",
+    "deploymentTransaction": "0x0cd8a0259c83d2b0b9944e94b9bfa71baca3bef3137672096a2a462fb96e2c35",
+    "proofVerificationTransaction": "0x3497bf21283678a7f08da70d5556c3bdcf261a6665d92212aca7da83046dca1a",
+    "verificationGasUsed": "298985",
+    "sourceVerified": true,
+    "generatedVerifierSha256": "799409727ce28ce6a86b852d0e285bec342c4da583a5a786946b31d147b501da",
+    "adapterVerifierSha256": "dca4a66aede2d3d8eb1ea359282888e17374b87050c05902a261be8ae5b58700"
+  }
+}

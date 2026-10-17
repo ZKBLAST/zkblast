@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "generatedAt": "2026-10-17T11:35:05.429Z",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "explorerUrl": "https://explorer.testnet.chain.robinhood.com",
+  "tokens": [
+    {
+      "address": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+      "name": "ZKBLAST Testnet Beta",
+      "symbol": "ZKTB",
+      "decimals": 18
+    },
+    {
+      "address": "0xc56d156D535d31d236A6a3553161f969a6416e0a",
+      "name": "ZKBLAST Testnet Alpha",
+      "symbol": "ZKTA",
+      "decimals": 18
+    }
+  ],
+  "pool": {
+    "address": "0xdBF680e69b0672D7659328Bf03014fF9E4218CE6",
+    "model": "damm",
+    "feePips": 3000,
+    "feeBps": 30,
+    "initialLiquidity0": "100000000000000000000000",
+    "initialLiquidity1": "100000000000000000000000",
+    "createdBlock": 137301428
+  },
+  "acceptanceSwap": {
+    "tokenIn": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+    "amountIn": "100000000000000000000",
+    "quotedAmountOut": "99600698103990321649",
+    "minimumAmountOut": "98604691122950418432",
+    "transactionHash": "0xf3153ac7be163ce929fb3c3225e1c168e12e688a4d95865ac838bf570427a449"
+  },
+  "transactions": {
+    "deployZKTA": {
+      "hash": "0xb82eb4cc570b1d9478a5beabc051d88d9757bd43e4f4040a9785681cf76f1e1b",
+      "contractAddress": "0xc56d156D535d31d236A6a3553161f969a6416e0a",
+      "blockNumber": 137301417,
+      "blockHash": "0xd226ff3345db06d57a59713abc7ba544bbc61bc618bc4f2ee5d226e13a6095f0",
+      "gasUsed": "451935",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "4519350000000",
+      "status": "success"
+    },
+    "deployZKTB": {
+      "hash": "0x551cc90a424396d3389e6fd67e63ed5477e192c13bf1ac8f3550743ffea61d1b",
+      "contractAddress": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+      "blockNumber": 137301420,
+      "blockHash": "0x4f9e340e3dc7203a58da3536ce346c4e1e1e583a276bc84cf0542bc5e53bc584",
+      "gasUsed": "451923",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "4519230000000",
+      "status": "success"
+    },
+    "createPool": {
+      "hash": "0x153db08ffe7d0e64109373e4ceb817d7ad49f25224e652af449786e866b41489",
+      "contractAddress": null,
+      "blockNumber": 137301428,
+      "blockHash": "0x0ebdf041bade02da873ba223bbab2256e5a467d001a29e8262142382418999b4",
+      "gasUsed": "1487513",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "14875130000000",
+      "status": "success"
+    },
+    "approveLiquidityToken0": {
+      "hash": "0x99ccd6c97bbc14bbf34ffbdf9de693310a2ad19ccecb978152d62c5a2e535809",
+      "contractAddress": null,
+      "blockNumber": 137301512,
+      "blockHash": "0xc92cdbbcd92cb3ba2f1635a9906f7d946d7dc3f6106460752940fb73bac4818a",
+      "gasUsed": "46176",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461760000000",
+      "status": "success"
+    },
+    "approveLiquidityToken1": {
+      "hash": "0x50e88334a722ca048593a99d280f8f6282e67dae1271ad77c2032ab472b7c592",
+      "contractAddress": null,
+      "blockNumber": 137301559,
+      "blockHash": "0x019386c873a89c9f425c5afc51f8f6f3b73747f20b646100a757959c8bf1cfa7",
+      "gasUsed": "46176",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461760000000",
+      "status": "success"
+    },
+    "addLiquidity": {
+      "hash": "0xe315d738132fce1e82e92b302abbe7b505b21f4a477e7bbc33929edec94756f3",
+      "contractAddress": null,
+      "blockNumber": 137301567,
+      "blockHash": "0xe2b7a8e16d1473cf311da273c07ff727e3ad83e38a5e3b21566f41dd4ce1dbfa",
+      "gasUsed": "224823",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "2248230000000",
+      "status": "success"
+    },
+    "approveSwap": {
+      "hash": "0xfb85c5dd268b1d8416aa8dd90f5dfd963ab34273a12a271111154861b1ae6f01",
+      "contractAddress": null,
+      "blockNumber": 137301581,
+      "blockHash": "0x93d7a9694eb3b59ad609eecda2e00da0068d5f784741ab34cac64a68ee09937f",
+      "gasUsed": "46164",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461640000000",
+      "status": "success"
+    },
+    "swapE2E": {
+      "hash": "0xf3153ac7be163ce929fb3c3225e1c168e12e688a4d95865ac838bf570427a449",
+      "contractAddress": null,
+      "blockNumber": 137301588,
+      "blockHash": "0x38c54884c8915b896adab63ea321804056c4b68f25714339c6e9871f7255674d",
+      "gasUsed": "151765",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "1517650000000",
+      "status": "success"
+    }
+  },
+  "totals": {
+    "transactionCount": 8,
+    "gasUsed": "2906475",
+    "totalFeeWei": "29064750000000"
+  },
+  "verification": {
+    "tokens": "verified",
+    "pool": "verified",
+    "urls": [
+      "https://explorer.testnet.chain.robinhood.com/address/0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+      "https://explorer.testnet.chain.robinhood.com/address/0xc56d156D535d31d236A6a3553161f969a6416e0a",
+      "https://explorer.testnet.chain.robinhood.com/address/0xdBF680e69b0672D7659328Bf03014fF9E4218CE6"
+    ]
+  }
+}

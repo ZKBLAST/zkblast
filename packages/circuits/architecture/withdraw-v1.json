@@ -1,0 +1,50 @@
+{
+  "protocol": "ZKBLAST",
+  "schemaVersion": 1,
+  "circuitId": "withdraw",
+  "circuitVersion": 1,
+  "field": {
+    "curve": "bn254",
+    "modulus": "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+    "canonicalEncoding": "32-byte big-endian"
+  },
+  "hash": {
+    "function": "poseidon2",
+    "domains": ["NOTE_V1", "NULLIFIER_V1", "MERKLE_NODE_V1"]
+  },
+  "tree": {
+    "depth": 32,
+    "rootHistorySize": 256,
+    "leafIndexVisibility": "private"
+  },
+  "publicInputs": [
+    "schema_version",
+    "action",
+    "chain_id",
+    "vault_address",
+    "tree_version",
+    "merkle_root",
+    "nullifier",
+    "asset_address",
+    "amount",
+    "recipient_address",
+    "relayer_address",
+    "relayer_fee",
+    "deadline"
+  ],
+  "privateInputs": [
+    "secret",
+    "nonce",
+    "leaf_index",
+    "path_siblings",
+    "path_directions"
+  ],
+  "bounds": {
+    "chain_id_bits": 64,
+    "address_bits": 160,
+    "amount_bits": 128,
+    "nonce_bits": 128,
+    "deadline_bits": 64,
+    "action": 1
+  }
+}

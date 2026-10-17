@@ -12,9 +12,11 @@
     "test": "node --import tsx --test test/*.test.ts"
   },
   "dependencies": {
+    "@zkblast/abi": "workspace:*",
     "@zkblast/config": "workspace:*",
     "@zkblast/database": "workspace:*",
     "@zkblast/observability": "workspace:*",
+    "@zkblast/sdk": "workspace:*",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-rate-limit": "^7.5.0",

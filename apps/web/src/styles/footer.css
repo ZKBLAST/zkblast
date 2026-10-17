@@ -1,0 +1,33 @@
+footer {
+  min-height: 180px;
+  border-top: 1px solid var(--border);
+  padding: 45px max(5vw, 40px);
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: flex-start;
+  background: #080808;
+}
+footer > div {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+}
+footer p {
+  grid-column: 2;
+  color: #666;
+  font: 8px var(--mono);
+  margin: 4px 0;
+}
+footer nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+footer nav a {
+  color: #8a8a91;
+  font: 8px var(--mono);
+}
+footer > small {
+  color: #555;
+  font: 7px var(--mono);
+}

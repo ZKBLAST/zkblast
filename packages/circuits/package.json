@@ -3,7 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/not-selected.mjs",
-    "test": "node scripts/not-selected.mjs"
+    "build": "node scripts/validate-architecture.mjs",
+    "test": "node scripts/validate-architecture.mjs",
+    "benchmark:check": "node scripts/validate-benchmark.mjs",
+    "benchmark:evm:prepare": "node scripts/prepare-evm-benchmark.mjs",
+    "benchmark:evm:measure": "node scripts/measure-evm-gas.mjs",
+    "benchmark:browser:prepare": "node scripts/prepare-browser-benchmark.mjs",
+    "benchmark:browser:serve": "node scripts/serve-browser-benchmark.mjs",
+    "v1:build": "node scripts/build-v1.mjs",
+    "v1:test": "node scripts/validate-v1-vectors.mjs",
+    "v1:ceremony": "node scripts/ceremony-v1.mjs"
+  },
+  "devDependencies": {
+    "@aztec/bb.js": "^5.2.1",
+    "@noir-lang/noir_js": "1.0.0-rc.5",
+    "@noir-lang/noir_wasm": "1.0.0-rc.5",
+    "@taceo/circom-lib": "0.9.0",
+    "circom2": "^0.2.23",
+    "circomlib": "2.0.5",
+    "esbuild": "^0.27.7",
+    "snarkjs": "^0.7.6"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
   }
 }
