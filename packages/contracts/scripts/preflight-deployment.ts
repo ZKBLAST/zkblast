@@ -39,6 +39,10 @@ if (governance === upgrader) {
 
 const account = privateKeyToAccount(privateKey as Hex);
 const rpcUrl = required("RPC_URL");
+const explorerUrl = new URL(required("BLOCK_EXPLORER_URL"));
+if (explorerUrl.protocol !== "https:") {
+  throw new Error("BLOCK_EXPLORER_URL must use HTTPS");
+}
 const chain = defineChain({
   id: chainId,
   name: required("CHAIN_NAME"),
@@ -66,6 +70,32 @@ if (actualChainId !== chainId) {
 }
 if (balance === 0n)
   throw new Error(`Deployer ${account.address} has zero native balance`);
+
+const explorerApi = new URL("/api", explorerUrl);
+explorerApi.search = new URLSearchParams({
+  module: "contract",
+  action: "getsourcecode",
+  address: zeroAddress,
+}).toString();
+try {
+  const response = await fetch(explorerApi, {
+    headers: { accept: "application/json" },
+  });
+  if (!response.ok) throw new Error("response not successful");
+  const payload = (await response.json()) as {
+    status?: string;
+    result?: unknown[];
+  };
+  if (
+    payload.status !== "1" ||
+    !Array.isArray(payload.result) ||
+    payload.result.length === 0
+  ) {
+    throw new Error("invalid explorer response");
+  }
+} catch {
+  throw new Error("Explorer API preflight failed; endpoint details redacted");
+}
 
 if (environment === "mainnet") {
   if (!governanceCode || governanceCode === "0x") {

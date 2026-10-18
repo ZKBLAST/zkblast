@@ -107,6 +107,11 @@ test("confirmed trade is derived from router calldata and pool receipt", async (
   assert.equal(saved()?.amountOutRaw, "199");
   assert.equal(saved()?.feeRaw, "3");
   assert.equal(saved()?.logIndex, 7);
+  assert.deepEqual(service.metrics(), {
+    confirmations: 1,
+    failures: 0,
+    windowSeconds: 900,
+  });
 });
 
 test("a different wallet cannot claim a confirmed transaction", async () => {
@@ -123,4 +128,9 @@ test("a different wallet cannot claim a confirmed transaction", async () => {
     ),
     /TRADE_WALLET_MISMATCH/u,
   );
+  assert.deepEqual(service.metrics(), {
+    confirmations: 0,
+    failures: 1,
+    windowSeconds: 900,
+  });
 });

@@ -3,11 +3,26 @@ import type { ContractReader } from "@zkblast/sdk";
 import type { Address } from "viem";
 import type { LiquidityService } from "./liquidity-service.js";
 import type { ProtocolService } from "./protocol-service.js";
+import type { TradeReceiptMetrics } from "./trade-receipt-service.js";
 
 export type OperationsThresholds = Readonly<{
   rpcLagBlocks: bigint;
   checkpointAgeSeconds: number;
   recentTransactionFailures: number;
+  externalRouteAgeSeconds: number;
+  receiptFailures: number;
+}>;
+
+type ExternalMarketMonitor = Readonly<{
+  operationsSnapshot(maxRouteAgeSeconds: number): Promise<{
+    validatedRoutes: number;
+    staleValidatedRoutes: number;
+    latestRouteObservedAt: string | null;
+  }>;
+}>;
+
+type ReceiptMonitor = Readonly<{
+  metrics(windowSeconds?: number): TradeReceiptMetrics;
 }>;
 
 type Alert = Readonly<{
@@ -26,19 +41,26 @@ export class OperationsService {
     private readonly pool: Address,
     private readonly thresholds: OperationsThresholds,
     private readonly now: () => Date = () => new Date(),
+    private readonly externalMarkets?: ExternalMarketMonitor,
+    private readonly receipts?: ReceiptMonitor,
   ) {}
 
   async health() {
-    const [readiness, accounting, paused, failures] = await Promise.all([
-      this.protocol.readiness(),
-      this.liquidity.accounting(this.pool),
-      this.chain.readContract({
-        address: this.pool,
-        abi: dammPoolAbi,
-        functionName: "paused",
-      }),
-      this.protocol.recentFailedTransactions(),
-    ]);
+    const [readiness, accounting, paused, failures, externalMarkets] =
+      await Promise.all([
+        this.protocol.readiness(),
+        this.liquidity.accounting(this.pool),
+        this.chain.readContract({
+          address: this.pool,
+          abi: dammPoolAbi,
+          functionName: "paused",
+        }),
+        this.protocol.recentFailedTransactions(),
+        this.externalMarkets?.operationsSnapshot(
+          this.thresholds.externalRouteAgeSeconds,
+        ),
+      ]);
+    const receipts = this.receipts?.metrics();
     const rpcLag = BigInt(readiness.lag ?? "0");
     const checkpointAge = readiness.checkpointUpdatedAt
       ? Math.max(
@@ -77,6 +99,18 @@ export class OperationsService {
         failures,
         this.thresholds.recentTransactionFailures,
       ),
+      this.alert(
+        "EXTERNAL_ROUTE_STALE",
+        (externalMarkets?.staleValidatedRoutes ?? 0) > 0,
+        externalMarkets?.staleValidatedRoutes ?? 0,
+        0,
+      ),
+      this.alert(
+        "TRADE_RECEIPT_FAILURES",
+        (receipts?.failures ?? 0) >= this.thresholds.receiptFailures,
+        receipts?.failures ?? 0,
+        this.thresholds.receiptFailures,
+      ),
     ];
     return {
       status: alerts.some((item) => item.active) ? "alert" : "healthy",
@@ -84,6 +118,8 @@ export class OperationsService {
       pool: this.pool,
       alerts,
       accounting,
+      externalMarkets: externalMarkets ?? null,
+      tradeReceipts: receipts ?? null,
     };
   }
 

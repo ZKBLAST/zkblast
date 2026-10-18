@@ -25,8 +25,18 @@ test("operations health activates every configured protocol alert", async () => 
       rpcLagBlocks: 25n,
       checkpointAgeSeconds: 120,
       recentTransactionFailures: 3,
+      externalRouteAgeSeconds: 86_400,
+      receiptFailures: 3,
     },
     () => new Date("2026-10-17T00:10:00.000Z"),
+    {
+      operationsSnapshot: async () => ({
+        validatedRoutes: 4,
+        staleValidatedRoutes: 2,
+        latestRouteObservedAt: "2026-10-16T00:00:00.000Z",
+      }),
+    },
+    { metrics: () => ({ confirmations: 1, failures: 3, windowSeconds: 900 }) },
   );
   const result = await service.health();
   assert.equal(result.status, "alert");
@@ -38,6 +48,8 @@ test("operations health activates every configured protocol alert", async () => 
       "POOL_BALANCE_DEVIATION",
       "POOL_PAUSED",
       "TRANSACTION_FAILURE_RATE",
+      "EXTERNAL_ROUTE_STALE",
+      "TRADE_RECEIPT_FAILURES",
     ],
   );
 });
@@ -62,8 +74,18 @@ test("operations health remains healthy inside thresholds", async () => {
       rpcLagBlocks: 25n,
       checkpointAgeSeconds: 120,
       recentTransactionFailures: 3,
+      externalRouteAgeSeconds: 86_400,
+      receiptFailures: 3,
     },
     () => new Date("2026-10-17T00:10:00.000Z"),
+    {
+      operationsSnapshot: async () => ({
+        validatedRoutes: 4,
+        staleValidatedRoutes: 0,
+        latestRouteObservedAt: "2026-10-17T00:09:30.000Z",
+      }),
+    },
+    { metrics: () => ({ confirmations: 2, failures: 0, windowSeconds: 900 }) },
   );
   const result = await service.health();
   assert.equal(result.status, "healthy");

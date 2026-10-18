@@ -44,6 +44,12 @@ export interface TradeHistoryWriter {
   ): Promise<unknown>;
 }
 
+export type TradeReceiptMetrics = Readonly<{
+  confirmations: number;
+  failures: number;
+  windowSeconds: number;
+}>;
+
 type ChainReader = Readonly<{
   getTransaction(input: { hash: Hash }): Promise<{
     from: Address;
@@ -66,6 +72,9 @@ type ChainReader = Readonly<{
 }>;
 
 export class TradeReceiptService {
+  readonly #confirmationTimes: number[] = [];
+  readonly #failureTimes: number[] = [];
+
   constructor(
     private readonly client: ChainReader,
     private readonly marketService: ExternalMarketService,
@@ -75,6 +84,36 @@ export class TradeReceiptService {
   ) {}
 
   async confirm(
+    identity: Readonly<{ userId: string; walletId: string }>,
+    input: Readonly<{
+      clientRequestId: string;
+      marketId: string;
+      quoteSymbol: "USDG" | "WETH";
+      transactionHash: string;
+    }>,
+  ) {
+    try {
+      const result = await this.#confirm(identity, input);
+      this.#confirmationTimes.push(Date.now());
+      return result;
+    } catch (error) {
+      this.#failureTimes.push(Date.now());
+      throw error;
+    }
+  }
+
+  metrics(windowSeconds = 900): TradeReceiptMetrics {
+    const cutoff = Date.now() - windowSeconds * 1_000;
+    this.#discardBefore(this.#confirmationTimes, cutoff);
+    this.#discardBefore(this.#failureTimes, cutoff);
+    return {
+      confirmations: this.#confirmationTimes.length,
+      failures: this.#failureTimes.length,
+      windowSeconds,
+    };
+  }
+
+  async #confirm(
     identity: Readonly<{ userId: string; walletId: string }>,
     input: Readonly<{
       clientRequestId: string;
@@ -150,5 +189,11 @@ export class TradeReceiptService {
       gasUsed: receipt.gasUsed.toString(),
       effectiveGasPriceWei: receipt.effectiveGasPrice.toString(),
     });
+  }
+
+  #discardBefore(values: number[], cutoff: number) {
+    const firstCurrent = values.findIndex((value) => value >= cutoff);
+    if (firstCurrent === -1) values.length = 0;
+    else if (firstCurrent > 0) values.splice(0, firstCurrent);
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRightLeft, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
@@ -40,10 +40,19 @@ export function ExternalMarketTrade({
   >("idle");
   const [notice, setNotice] = useState("");
   const [transactionHash, setTransactionHash] = useState("");
-  const route = market?.pairCandidates.find(
-    (candidate) =>
-      candidate.quoteSymbol === "USDG" && candidate.routeStatus === "validated",
+  const validatedRoutes = market?.pairCandidates.filter(
+    (candidate) => candidate.routeStatus === "validated",
   );
+  const route =
+    validatedRoutes?.find((candidate) => candidate.quoteSymbol === "USDG") ??
+    validatedRoutes?.find((candidate) => candidate.quoteSymbol === "WETH");
+
+  useEffect(() => {
+    setQuote(null);
+    setNotice("");
+    setTransactionHash("");
+    setState("idle");
+  }, [market?.id, route?.quoteSymbol]);
 
   async function requestQuote() {
     if (!address) return connect();
@@ -58,7 +67,7 @@ export function ExternalMarketTrade({
         {
           method: "POST",
           body: JSON.stringify({
-            quoteSymbol: "USDG",
+            quoteSymbol: route.quoteSymbol,
             amount,
             slippageBps: 50,
             recipient: address,
@@ -102,7 +111,7 @@ export function ExternalMarketTrade({
       await refreshAccount();
       toast({
         kind: "success",
-        title: `${market?.symbol ?? "Market"}/USDG swap confirmed`,
+        title: `${market?.symbol ?? "Market"}/${quote.quoteSymbol} swap confirmed`,
         body: "The verified receipt is stored in your trade history.",
       });
     } catch (error) {
@@ -119,7 +128,8 @@ export function ExternalMarketTrade({
         <div>
           <p className="label">Validated testnet execution</p>
           <h3 className="mt-2 flex items-center gap-2 text-lg text-fg">
-            {market.symbol} <ArrowRightLeft className="size-4 text-lime" /> USDG
+            {market.symbol} <ArrowRightLeft className="size-4 text-lime" />{" "}
+            {route.quoteSymbol}
           </h3>
           <p className="mt-1 font-mono text-[10px] uppercase text-faint">
             ZKBLAST DAMM · chain 46630 · 0.5% slippage
@@ -152,7 +162,8 @@ export function ExternalMarketTrade({
       </div>
       {quote && (
         <p className="mt-3 font-mono text-xs text-muted">
-          Raw output {quote.amountOut} · minimum {quote.minimumAmountOut} USDG
+          Raw output {quote.amountOut} · minimum {quote.minimumAmountOut}{" "}
+          {quote.quoteSymbol}
         </p>
       )}
       {notice && <p className="mt-3 text-xs text-danger">{notice}</p>}

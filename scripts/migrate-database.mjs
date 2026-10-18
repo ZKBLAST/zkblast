@@ -53,6 +53,48 @@ const expectedProtocolTables = [
   "swaps",
   "transactions",
 ];
+const expectedEventTables = ["indexed_blocks", "protocol_events"];
+const expectedExternalMarketTables = [
+  "external_market_curation_audit",
+  "external_market_pairs",
+  "external_market_price_points",
+  "external_market_quotes",
+  "external_markets",
+];
+const requiredColumns = {
+  trade_history: [
+    "client_request_id",
+    "effective_gas_price_wei",
+    "gas_used",
+    "transaction_hash",
+    "user_id",
+    "wallet_id",
+  ],
+  ingestion_checkpoints: [
+    "chain_id",
+    "consumer",
+    "finalized_block",
+    "last_processed_block",
+    "last_processed_hash",
+  ],
+  protocol_events: [
+    "block_hash",
+    "block_number",
+    "chain_id",
+    "event_kind",
+    "log_index",
+    "transaction_hash",
+  ],
+  external_market_pairs: [
+    "base_address",
+    "execution_chain_id",
+    "market_id",
+    "observed_at",
+    "pool_identifier",
+    "quote_address",
+    "route_status",
+  ],
+};
 
 async function ensureMigrationLedger() {
   await sql.unsafe(`create schema if not exists ${expectedSchema}`);
@@ -113,6 +155,8 @@ async function verifyDatabase() {
   const allExpectedTables = [
     ...expectedTables,
     ...expectedProtocolTables,
+    ...expectedEventTables,
+    ...expectedExternalMarketTables,
   ].sort();
   const tables = await sql`
     select table_name
@@ -124,6 +168,20 @@ async function verifyDatabase() {
   const actualTables = tables.map((row) => row.table_name);
   if (actualTables.join(",") !== allExpectedTables.join(",")) {
     throw new Error("Required application tables are missing");
+  }
+
+  for (const [table, expectedColumns] of Object.entries(requiredColumns)) {
+    const columns = await sql`
+      select column_name
+      from information_schema.columns
+      where table_schema = ${expectedSchema} and table_name = ${table}
+        and column_name = any(${expectedColumns})
+      order by column_name
+    `;
+    const actualColumns = columns.map((row) => row.column_name);
+    if (actualColumns.join(",") !== [...expectedColumns].sort().join(",")) {
+      throw new Error(`Schema drift detected in ${table}`);
+    }
   }
 
   const rlsTables = await sql`

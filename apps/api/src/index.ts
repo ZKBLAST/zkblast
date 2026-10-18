@@ -26,6 +26,12 @@ const serviceSchema = z.object({
   ALERT_RPC_LAG_BLOCKS: z.coerce.number().int().positive().default(25),
   ALERT_CHECKPOINT_AGE_SECONDS: z.coerce.number().int().positive().default(120),
   ALERT_TRANSACTION_FAILURES: z.coerce.number().int().positive().default(3),
+  ALERT_EXTERNAL_ROUTE_AGE_SECONDS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(86_400),
+  ALERT_RECEIPT_FAILURES: z.coerce.number().int().positive().default(5),
 });
 
 const serverConfig = loadServerConfig(process.env);
@@ -116,7 +122,12 @@ const operationsService = new OperationsService(
     rpcLagBlocks: BigInt(serviceConfig.ALERT_RPC_LAG_BLOCKS),
     checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
     recentTransactionFailures: serviceConfig.ALERT_TRANSACTION_FAILURES,
+    externalRouteAgeSeconds: serviceConfig.ALERT_EXTERNAL_ROUTE_AGE_SECONDS,
+    receiptFailures: serviceConfig.ALERT_RECEIPT_FAILURES,
   },
+  undefined,
+  externalMarketService,
+  tradeReceiptService,
 );
 const shieldedService = manifest.shielded
   ? new ShieldedService(chainClient, {

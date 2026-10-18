@@ -40,7 +40,8 @@ const config = z
       .string()
       .url()
       .default("https://api.robinhood.com/rhj"),
-    STOCK_SYNC_LIMIT: z.coerce.number().int().min(1).max(500).default(100),
+    STOCK_SYNC_LIMIT: z.coerce.number().int().min(1).max(500).default(500),
+    MARKET_SYNC_SCOPE: z.enum(["all", "pons", "stocks"]).default("all"),
   })
   .parse(process.env);
 
@@ -86,6 +87,27 @@ const sql = postgres(config.SUPABASE_DIRECT_DATABASE_URL, {
   max: 1,
   prepare: true,
 });
+
+async function fetchWithRetry(url: string) {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(20_000),
+      });
+      if (response.ok || response.status < 500) return response;
+      lastError = new Error(`Upstream request failed: ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+    if (attempt < 3) {
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1_000));
+    }
+  }
+  throw new Error("Upstream request failed after bounded retries", {
+    cause: lastError,
+  });
+}
 
 async function tokenMetadata(token: Address, includeV1Pool: boolean) {
   const [name, symbol, decimals] = await Promise.all([
@@ -271,7 +293,7 @@ async function syncV2(latest: bigint) {
 
 async function syncStocks() {
   const base = config.STOCK_TOKEN_API_URL.replace(/\/$/u, "");
-  const assetsResponse = await fetch(`${base}/assets`);
+  const assetsResponse = await fetchWithRetry(`${base}/assets`);
   if (!assetsResponse.ok)
     throw new Error(`Stock assets request failed: ${assetsResponse.status}`);
   const assets = stockAssetResponseSchema
@@ -280,7 +302,7 @@ async function syncStocks() {
     .slice(0, config.STOCK_SYNC_LIMIT);
   let accepted = 0;
   for (const asset of assets) {
-    const quoteResponse = await fetch(
+    const quoteResponse = await fetchWithRetry(
       `${base}/prices/${encodeURIComponent(asset.tokenSymbol)}`,
     );
     if (!quoteResponse.ok) continue;
@@ -294,6 +316,17 @@ async function syncStocks() {
       pendingMultiplier: asset.pendingMultiplier,
       logoUrl: asset.logoUrl,
     };
+    await sql.unsafe(
+      `update ${config.SUPABASE_SCHEMA}.external_markets candidate
+       set external_id=$2,metadata=(metadata - 'catalogBootstrap' - 'catalogBootstrapReason'),updated_at=now()
+       where source='robinhood_stock_token' and symbol=$1
+         and metadata->>'catalogBootstrap'='true'
+         and not exists (
+           select 1 from ${config.SUPABASE_SCHEMA}.external_markets canonical
+           where canonical.source='robinhood_stock_token' and canonical.external_id=$2
+         )`,
+      [asset.tokenSymbol, asset.id],
+    );
     const rows = await sql.unsafe<{ id: string }[]>(
       `insert into ${config.SUPABASE_SCHEMA}.external_markets
         (source,external_id,chain_id,contract_address,symbol,name,quote_symbol,status,read_only,market_region,candidate_logo_url,logo_status,metadata,validated_at)
@@ -348,19 +381,28 @@ async function syncStocks() {
 }
 
 try {
-  const latest = await client.getBlockNumber();
-  const ponsCounts = await Promise.all(
-    factories.map((factory) => syncV1Factory(factory, latest)),
-  );
-  const [v2Count, stockCount] = await Promise.all([
-    syncV2(latest),
-    syncStocks(),
-  ]);
+  let latest: bigint | null = null;
+  let ponsAccepted = 0;
+  let stockAccepted = 0;
+  if (config.MARKET_SYNC_SCOPE !== "stocks") {
+    const latestBlock = await client.getBlockNumber();
+    latest = latestBlock;
+    const ponsCounts = await Promise.all(
+      factories.map((factory) => syncV1Factory(factory, latestBlock)),
+    );
+    ponsAccepted =
+      ponsCounts.reduce((sum, count) => sum + count, 0) +
+      (await syncV2(latestBlock));
+  }
+  if (config.MARKET_SYNC_SCOPE !== "pons") {
+    stockAccepted = await syncStocks();
+  }
   console.log(
     JSON.stringify({
-      ponsAccepted: ponsCounts.reduce((sum, count) => sum + count, v2Count),
-      stockAccepted: stockCount,
-      observedBlock: latest.toString(),
+      scope: config.MARKET_SYNC_SCOPE,
+      ponsAccepted,
+      stockAccepted,
+      observedBlock: latest?.toString() ?? null,
     }),
   );
 } finally {

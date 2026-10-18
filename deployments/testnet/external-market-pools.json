@@ -3,7 +3,7 @@
   "protocol": "ZKBLAST",
   "environment": "testnet",
   "chainId": 46630,
-  "updatedAt": "2026-10-18T14:10:30.614Z",
+  "updatedAt": "2026-10-18T15:24:04.265Z",
   "markets": {
     "AMD": {
       "baseAddress": "0x71178BAc73cBeb415514eB542a8995b82669778d",
@@ -262,6 +262,71 @@
         }
       },
       "poolAddress": "0x578bE906bD42bE9C0A99aE97048798e777419aE6",
+      "feePips": 3000,
+      "model": "DAMM"
+    },
+    "TSLA": {
+      "baseAddress": "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",
+      "quoteAddress": "0x7E955252E15c84f5768B83c41a71F9eba181802F",
+      "baseAmountRaw": "10000000000000000",
+      "quoteAmountRaw": "2000000",
+      "transactions": {
+        "createPool": {
+          "hash": "0x7c79e84238bd08bdadd012537a4a4e1fdd67a5bbcf596160b6a4fbb5d0f472cf",
+          "blockNumber": 138140865,
+          "blockHash": "0x5ac78362a99c8dcd02032ae0295c9ac3efd5b33c5767a00863ee2d277009bbc2",
+          "gasUsed": "1470413",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "14704130000000",
+          "status": "success"
+        },
+        "approveBase": {
+          "hash": "0x6afd423b844462412cdef79e69951c5cd0ed6035ca48ab48b76122a726106b02",
+          "blockNumber": 138140872,
+          "blockHash": "0xead63d1e961b3b658c4f36802ded7c044d0a85c88498090d1fd70b728ef5c5a5",
+          "gasUsed": "60576",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "605760000000",
+          "status": "success"
+        },
+        "approveQuote": {
+          "hash": "0x6c8b712e1a6a9ac07712fe1de514d9d788ad8ed3d0bf57e570b9ca05499c71d7",
+          "blockNumber": 138140877,
+          "blockHash": "0xb5f27c743b36b96ae7882e773ad30bb946695da3b85a90715e9b022a1a55321f",
+          "gasUsed": "57976",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "579760000000",
+          "status": "success"
+        },
+        "addLiquidity": {
+          "hash": "0x596ec564e5d331a73f6ed88fcfa835fc4a8f76716f2700a4cd4d31dc80481cbb",
+          "blockNumber": 138140884,
+          "blockHash": "0x4a5610248b9cf7f141e21d1deb31c37a3d67472a84255a35cec20df4487e808a",
+          "gasUsed": "262293",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "2622930000000",
+          "status": "success"
+        },
+        "approveSwapBase": {
+          "hash": "0xa2d7c4601a3c0e6c2b2fe1bf97e5388a7d271cb8f900ec06979b6344543391f9",
+          "blockNumber": 138140889,
+          "blockHash": "0xce411d99b15d6185129b077fe4a33a489d2312690bd1dea396f907c3e90bfccd",
+          "gasUsed": "60588",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "605880000000",
+          "status": "success"
+        },
+        "swapE2E": {
+          "hash": "0xa7c33afb6b935542a4ceeae2353b842d05de4315121ddda3af0f0b6a5e8087da",
+          "blockNumber": 138140894,
+          "blockHash": "0xec603e874edd98d5d110a9601e30c9026695f7d1a73bb7bccfbd260518592161",
+          "gasUsed": "186072",
+          "effectiveGasPriceWei": "10000000",
+          "totalFeeWei": "1860720000000",
+          "status": "success"
+        }
+      },
+      "poolAddress": "0xD3D7456c7D321d77DC90C48071906f7a2051A4E0",
       "feePips": 3000,
       "model": "DAMM"
     }

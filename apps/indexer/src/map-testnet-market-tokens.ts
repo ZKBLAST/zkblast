@@ -19,6 +19,10 @@ const config = z
   .object({
     CHAIN_ID: z.coerce.number().int(),
     RPC_URL: z.string().url(),
+    PONS_RPC_URL: z
+      .string()
+      .url()
+      .default("https://rpc.mainnet.chain.robinhood.com"),
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
     SUPABASE_SCHEMA: z.literal("zkblast_testnet"),
     EXECUTION_WETH_ADDRESS: address,
@@ -38,6 +42,7 @@ const fileSchema = z.object({
         symbol: z.string().trim().min(1).max(32),
         address,
         decimals: z.number().int().min(0).max(36),
+        referenceAddress: address.optional(),
       }),
     )
     .min(1)
@@ -49,6 +54,9 @@ const tokenAbi = parseAbi([
   "function totalSupply() view returns (uint256)",
 ]);
 const client = createPublicClient({ transport: http(config.RPC_URL) });
+const referenceClient = createPublicClient({
+  transport: http(config.PONS_RPC_URL),
+});
 const sql = postgres(config.SUPABASE_DIRECT_DATABASE_URL, {
   max: 1,
   prepare: true,
@@ -85,6 +93,59 @@ async function validateToken(
     throw new Error(`Execution token decimals mismatch: ${mapping.symbol}`);
   if (totalSupply === 0n)
     throw new Error(`Execution token has zero supply: ${mapping.symbol}`);
+}
+
+async function bootstrapReferenceMarket(
+  transaction: postgres.TransactionSql,
+  mapping: Readonly<{
+    symbol: string;
+    referenceAddress?: Address | undefined;
+  }>,
+) {
+  if (!mapping.referenceAddress) return;
+  const [chainId, bytecode, symbol, decimals, totalSupply] = await Promise.all([
+    referenceClient.getChainId(),
+    referenceClient.getBytecode({ address: mapping.referenceAddress }),
+    referenceClient.readContract({
+      address: mapping.referenceAddress,
+      abi: tokenAbi,
+      functionName: "symbol",
+    }),
+    referenceClient.readContract({
+      address: mapping.referenceAddress,
+      abi: tokenAbi,
+      functionName: "decimals",
+    }),
+    referenceClient.readContract({
+      address: mapping.referenceAddress,
+      abi: tokenAbi,
+      functionName: "totalSupply",
+    }),
+  ]);
+  if (chainId !== 4663) throw new Error("Reference RPC chain mismatch");
+  if (!bytecode || bytecode === "0x" || totalSupply === 0n)
+    throw new Error(`Invalid reference token: ${mapping.symbol}`);
+  if (symbol !== mapping.symbol || decimals !== 18)
+    throw new Error(`Reference token metadata mismatch: ${mapping.symbol}`);
+  const normalizedReference = mapping.referenceAddress.toLowerCase();
+  await transaction.unsafe(
+    `insert into ${config.SUPABASE_SCHEMA}.external_markets
+      (source,external_id,chain_id,contract_address,symbol,name,quote_symbol,status,read_only,market_region,candidate_logo_url,logo_status,metadata,validated_at)
+     values ('robinhood_stock_token',$1,4663,$2,$3,$4,'USD','active',true,'unclassified',$5,'pending',$6::jsonb,now())
+     on conflict (source,external_id) do update set status='active',validated_at=excluded.validated_at,updated_at=now()`,
+    [
+      `bootstrap:${normalizedReference}`,
+      normalizedReference,
+      mapping.symbol,
+      `${mapping.symbol} • Robinhood Token`,
+      `https://cdn.robinhood.com/ncw_assets/logos/${normalizedReference}.png`,
+      sql.json({
+        catalogBootstrap: true,
+        catalogBootstrapReason: "official_catalog_temporarily_unavailable",
+        referenceValidatedChainId: 4663,
+      }),
+    ],
+  );
 }
 
 try {
@@ -124,11 +185,19 @@ try {
       seenSymbols.add(mapping.symbol);
       seenAddresses.add(normalizedAddress);
       await validateToken(mapping);
-      const rows = await transaction.unsafe<{ id: string }[]>(
+      let rows = await transaction.unsafe<{ id: string }[]>(
         `select id from ${config.SUPABASE_SCHEMA}.external_markets
          where source='robinhood_stock_token' and symbol=$1 and status='active'`,
         [mapping.symbol],
       );
+      if (rows.length === 0 && mapping.referenceAddress) {
+        await bootstrapReferenceMarket(transaction, mapping);
+        rows = await transaction.unsafe<{ id: string }[]>(
+          `select id from ${config.SUPABASE_SCHEMA}.external_markets
+           where source='robinhood_stock_token' and symbol=$1 and status='active'`,
+          [mapping.symbol],
+        );
+      }
       if (rows.length !== 1)
         throw new Error(
           `Expected one active reference market: ${mapping.symbol}`,

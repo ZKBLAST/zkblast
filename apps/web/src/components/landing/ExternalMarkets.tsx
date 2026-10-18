@@ -1,6 +1,12 @@
 "use client";
 
-import { Database, Image as ImageIcon, ShieldCheck } from "lucide-react";
+import {
+  CircleCheck,
+  Clock3,
+  Database,
+  Image as ImageIcon,
+  ShieldCheck,
+} from "lucide-react";
 import { useState } from "react";
 
 import { RealDataState } from "@/components/protocol/real-data-state";
@@ -10,14 +16,23 @@ import { Bay } from "@/components/ui/Frame";
 import { cx } from "@/lib/format";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 
-type MarketTab = "pons" | "us" | "china";
+type MarketTab = "all" | "pons" | "us" | "china";
+type Availability = "all" | "active" | "planned";
 
 export function ExternalMarkets() {
   const { items, loading, error, refresh } = useExternalMarkets();
-  const [tab, setTab] = useState<MarketTab>("pons");
+  const [tab, setTab] = useState<MarketTab>("all");
+  const [availability, setAvailability] = useState<Availability>("all");
   const rows = items.filter((item) => {
-    if (tab === "pons") return item.source === "pons_graduated";
-    return item.source === "robinhood_stock_token" && item.marketRegion === tab;
+    const sourceMatches =
+      tab === "all" ||
+      (tab === "pons"
+        ? item.source === "pons_graduated"
+        : item.source === "robinhood_stock_token" && item.marketRegion === tab);
+    const availabilityMatches =
+      availability === "all" ||
+      (availability === "active" ? item.canTrade : !item.canTrade);
+    return sourceMatches && availabilityMatches;
   });
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
   const activeMarketId = rows.some((market) => market.id === selectedMarketId)
@@ -38,9 +53,9 @@ export function ExternalMarkets() {
             Beyond protocol pools.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-            Graduated pons tokens are verified on-chain. US Stock Token prices
-            are reference data from Robinhood. Neither source is routed through
-            ZKBLAST unless an executable route is separately validated.
+            All verified reference markets remain discoverable. A market is
+            active on testnet only when its chain-46630 token, pool, liquidity,
+            and route have passed independent validation.
           </p>
         </div>
         <div
@@ -50,6 +65,7 @@ export function ExternalMarkets() {
         >
           {(
             [
+              ["all", "All markets"],
               ["pons", "pons > $1m"],
               ["us", "US stocks"],
               ["china", "China stocks"],
@@ -71,6 +87,40 @@ export function ExternalMarkets() {
             </button>
           ))}
         </div>
+      </div>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <div
+          className="panel-inset flex p-1"
+          role="tablist"
+          aria-label="Testnet availability"
+        >
+          {(
+            [
+              ["all", "All"],
+              ["active", "Active on testnet"],
+              ["planned", "Reference only"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              role="tab"
+              aria-selected={availability === value}
+              onClick={() => setAvailability(value)}
+              className={cx(
+                "h-9 cursor-pointer px-4 font-mono text-[10px] uppercase tracking-[0.1em]",
+                availability === value
+                  ? "bg-lime text-lime-ink"
+                  : "text-muted hover:text-fg",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
+          {items.filter((market) => market.canTrade).length} active ·{" "}
+          {items.length} listed
+        </p>
       </div>
       <div className="panel-inset mt-8">
         <RealDataState
@@ -111,7 +161,7 @@ export function ExternalMarkets() {
                   }
                 />
                 <MarketDatum
-                  label="Pairs"
+                  label="Testnet pairs"
                   value={
                     market.pairCandidates.length
                       ? market.pairCandidates
@@ -125,8 +175,11 @@ export function ExternalMarkets() {
                 />
                 <MarketDatum
                   label="Execution"
-                  value={market.canTrade ? "Route verified" : "Read-only"}
+                  value={
+                    market.canTrade ? "Active on testnet" : "Reference only"
+                  }
                 />
+                <MarketStatus active={market.canTrade} />
               </li>
             ))}
           </ul>
@@ -135,6 +188,21 @@ export function ExternalMarkets() {
         <ExternalMarketTrade market={activeMarket} />
       </div>
     </section>
+  );
+}
+
+function MarketStatus({ active }: { active: boolean }) {
+  const Icon = active ? CircleCheck : Clock3;
+  return (
+    <span
+      className={cx(
+        "col-span-full flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] md:col-span-1 md:col-start-4 md:justify-self-end",
+        active ? "text-lime" : "text-faint",
+      )}
+    >
+      <Icon className="size-3" aria-hidden="true" />
+      {active ? "Trading enabled" : "No validated route"}
+    </span>
   );
 }
 

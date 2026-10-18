@@ -160,4 +160,30 @@ export class ExternalMarketService {
       })
       .parse(rows[0]);
   }
+
+  async operationsSnapshot(maxRouteAgeSeconds: number) {
+    const rows = await this.#sql.unsafe(
+      `select
+         count(*) filter (where route_status='validated')::integer as "validatedRoutes",
+         count(*) filter (
+           where route_status='validated'
+             and (observed_at is null or observed_at <= now() - ($1 * interval '1 second'))
+         )::integer as "staleValidatedRoutes",
+         max(observed_at) filter (where route_status='validated') as "latestRouteObservedAt"
+       from ${this.schema}.external_market_pairs`,
+      [maxRouteAgeSeconds],
+    );
+    const snapshot = z
+      .object({
+        validatedRoutes: z.coerce.number().int().nonnegative(),
+        staleValidatedRoutes: z.coerce.number().int().nonnegative(),
+        latestRouteObservedAt: z.coerce.date().nullable(),
+      })
+      .parse(rows[0]);
+    return {
+      ...snapshot,
+      latestRouteObservedAt:
+        snapshot.latestRouteObservedAt?.toISOString() ?? null,
+    };
+  }
 }
