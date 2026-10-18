@@ -14,6 +14,9 @@ import type { LiquidityService } from "./liquidity-service.js";
 import type { OperationsService } from "./operations-service.js";
 import { createShieldedRouter } from "./shielded-router.js";
 import type { ShieldedService } from "./shielded-service.js";
+import { createExternalMarketRouter } from "./external-market-router.js";
+import type { ExternalMarketService } from "./external-market-service.js";
+import type { TradeReceiptService } from "./trade-receipt-service.js";
 
 export type ApiPublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
@@ -66,6 +69,8 @@ export function createApp(
     liquidityService?: LiquidityService;
     operationsService?: OperationsService;
     shieldedService?: ShieldedService;
+    externalMarketService?: ExternalMarketService;
+    tradeReceiptService?: TradeReceiptService;
   }> = {},
 ) {
   const app = express();
@@ -120,7 +125,13 @@ export function createApp(
     app.use("/v1/auth", createAuthRouter(dependencies.authService));
   }
   if (dependencies.identityService) {
-    app.use("/v1", createIdentityRouter(dependencies.identityService));
+    app.use(
+      "/v1",
+      createIdentityRouter(
+        dependencies.identityService,
+        dependencies.tradeReceiptService,
+      ),
+    );
   }
   if (dependencies.protocolService) {
     app.use(
@@ -135,6 +146,15 @@ export function createApp(
   }
   if (dependencies.shieldedService) {
     app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
+  }
+  if (dependencies.externalMarketService) {
+    app.use(
+      "/v1/markets",
+      createExternalMarketRouter(
+        dependencies.externalMarketService,
+        dependencies.swapService,
+      ),
+    );
   }
 
   app.use((_request, response) => {

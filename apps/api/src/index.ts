@@ -17,6 +17,8 @@ import { SwapService } from "./swap-service.js";
 import { LiquidityService } from "./liquidity-service.js";
 import { OperationsService } from "./operations-service.js";
 import { ShieldedService } from "./shielded-service.js";
+import { ExternalMarketService } from "./external-market-service.js";
+import { TradeReceiptService } from "./trade-receipt-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -45,6 +47,10 @@ const authService = new AuthService(identityStore, {
   origin: serviceConfig.WEB_ORIGIN,
 });
 const identityService = new IdentityService(identityStore);
+const externalMarketService = new ExternalMarketService(
+  directDatabaseUrl,
+  serverConfig.SUPABASE_SCHEMA,
+);
 const protocolStore = new PostgresProtocolReadStore(
   directDatabaseUrl,
   serverConfig.SUPABASE_SCHEMA,
@@ -75,6 +81,13 @@ const swapService = new SwapService(
       functionName: "isRegisteredPool",
       args: [pool],
     }),
+);
+const tradeReceiptService = new TradeReceiptService(
+  chainClient,
+  externalMarketService,
+  identityStore,
+  serverConfig.CHAIN_ID,
+  protocolAddresses.swapRouter,
 );
 const liquidityService = new LiquidityService(
   chainClient,
@@ -137,6 +150,8 @@ const app = createApp(
     swapService,
     liquidityService,
     operationsService,
+    externalMarketService,
+    tradeReceiptService,
     ...(shieldedService ? { shieldedService } : {}),
   },
 );

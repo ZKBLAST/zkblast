@@ -1,12 +1,21 @@
 import { Router, type Request } from "express";
 import { z } from "zod";
 import type { IdentityService } from "./identity-service.js";
+import type { TradeReceiptService } from "./trade-receipt-service.js";
 
 const usernameBodySchema = z.object({ username: z.string() }).strict();
 const tradeQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
   before: z.string().datetime().optional(),
 });
+const tradeConfirmationSchema = z
+  .object({
+    clientRequestId: z.string().uuid(),
+    marketId: z.string().uuid(),
+    quoteSymbol: z.enum(["USDG", "WETH"]),
+    transactionHash: z.string().regex(/^0x[0-9a-fA-F]{64}$/u),
+  })
+  .strict();
 
 function readSessionCookie(request: Request): string {
   const cookieHeader = request.headers.cookie ?? "";
@@ -18,7 +27,10 @@ function readSessionCookie(request: Request): string {
   return decodeURIComponent(sessionCookie.slice("zkblast_session=".length));
 }
 
-export function createIdentityRouter(identityService: IdentityService) {
+export function createIdentityRouter(
+  identityService: IdentityService,
+  tradeReceiptService?: TradeReceiptService,
+) {
   const router = Router();
 
   router.post("/auth/logout", async (request, response, next) => {
@@ -72,6 +84,23 @@ export function createIdentityRouter(identityService: IdentityService) {
       next(error);
     }
   });
+
+  if (tradeReceiptService)
+    router.post("/me/trades/confirm", async (request, response, next) => {
+      try {
+        const identity = await identityService.authenticate(
+          readSessionCookie(request),
+        );
+        response.json(
+          await tradeReceiptService.confirm(
+            identity,
+            tradeConfirmationSchema.parse(request.body),
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    });
 
   return router;
 }

@@ -1,0 +1,906 @@
+{
+  "version": 1,
+  "curator": "zkblast-owner-review",
+  "records": [
+    {
+      "symbol": "AEHR",
+      "contractAddress": "0x5f604fba1162193a4388a5dfa56f556f3e133cc2",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5f604fba1162193a4388a5dfa56f556f3e133cc2.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "ALAB",
+      "contractAddress": "0x748c32c3ca24edf31ea597db1f3d330a7a6da3dc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x748c32c3ca24edf31ea597db1f3d330a7a6da3dc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "AMD",
+      "contractAddress": "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x86923f96303d656e4aa86d9d42d1e57ad2023fdc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "AMZN",
+      "contractAddress": "0x12f190a9f9d7d37a250758b26824b97ce941bf54",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x12f190a9f9d7d37a250758b26824b97ce941bf54.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "APLD",
+      "contractAddress": "0xb8dbf92f9741c9ac1c32115e78581f23509916fd",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb8dbf92f9741c9ac1c32115e78581f23509916fd.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "ASTS",
+      "contractAddress": "0x1af6446f07eb1d97c546afc8c9544cbdf3ad5137",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x1af6446f07eb1d97c546afc8c9544cbdf3ad5137.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "AVGO",
+      "contractAddress": "0x156e175dd063a8ce274c50654ef40e0032b3fbcf",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x156e175dd063a8ce274c50654ef40e0032b3fbcf.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "AXTI",
+      "contractAddress": "0x141eea040c2250eec0314e336975e81f85f6585e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x141eea040c2250eec0314e336975e81f85f6585e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "BA",
+      "contractAddress": "0x4d21483a44bf67a86b77e3da301411880797d452",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4d21483a44bf67a86b77e3da301411880797d452.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "BABA",
+      "contractAddress": "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",
+      "region": "china",
+      "regionReason": "Initial explicit China-linked issuer curation; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xad25ac6c84d497db898fa1e8387bf6af3532a1c4.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "BB",
+      "contractAddress": "0x48e39e56acdba37b09020c0b734a613c9a2f100a",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48e39e56acdba37b09020c0b734a613c9a2f100a.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "BND",
+      "contractAddress": "0x2f62fc9fabb470c690f141c28340ed832bb27020",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2f62fc9fabb470c690f141c28340ed832bb27020.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "BULL",
+      "contractAddress": "0xcef9027c7d6985b85f0ba431125073529a947a68",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcef9027c7d6985b85f0ba431125073529a947a68.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CBRS",
+      "contractAddress": "0x5c90450bbb4273d7b2f17cf6917aeb237a569679",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5c90450bbb4273d7b2f17cf6917aeb237a569679.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CCL",
+      "contractAddress": "0x9651342cea770ae9a2969ba2a52611523146aef9",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9651342cea770ae9a2969ba2a52611523146aef9.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CEG",
+      "contractAddress": "0xae517a2903e68bd929dfd15be875f8369d53e94a",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xae517a2903e68bd929dfd15be875f8369d53e94a.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CIEN",
+      "contractAddress": "0x44f6d488021f8233b9416294d1fe9b1fee28382d",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x44f6d488021f8233b9416294d1fe9b1fee28382d.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CLOV",
+      "contractAddress": "0x62200915e7deab1ec7f79fb246dadbb80eacddd0",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x62200915e7deab1ec7f79fb246dadbb80eacddd0.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CLS",
+      "contractAddress": "0xbf449977089c718c004a66c554b26b94ef3ad4de",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbf449977089c718c004a66c554b26b94ef3ad4de.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CLSK",
+      "contractAddress": "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcbb95bbf36099d34da091dc6fa6f49efa257cee3.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CRCL",
+      "contractAddress": "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CRDO",
+      "contractAddress": "0x4d67253bc223e6b0e104f1084c1fb2b669ddc41b",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4d67253bc223e6b0e104f1084c1fb2b669ddc41b.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CRM",
+      "contractAddress": "0xd95b44124e475743a7589e68f3d74008a5536d44",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd95b44124e475743a7589e68f3d74008a5536d44.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CRWD",
+      "contractAddress": "0xea72ecca2d0f6bfa1394dbbcff85b52cd4233931",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xea72ecca2d0f6bfa1394dbbcff85b52cd4233931.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CRWV",
+      "contractAddress": "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CSCO",
+      "contractAddress": "0xf543967eebb6f1917992ef0e68de63ab07a5a0da",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf543967eebb6f1917992ef0e68de63ab07a5a0da.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "CVNA",
+      "contractAddress": "0xa4f319104089fe321dc8093c6e707d4fe190a988",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xa4f319104089fe321dc8093c6e707d4fe190a988.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "DELL",
+      "contractAddress": "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "ELF",
+      "contractAddress": "0x39ec44bee4f6a116c6f9b8de566848a985c53c60",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x39ec44bee4f6a116c6f9b8de566848a985c53c60.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "EWY",
+      "contractAddress": "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FICO",
+      "contractAddress": "0xa48f22a46c0f1c46ca7d111cb6c137c271987180",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xa48f22a46c0f1c46ca7d111cb6c137c271987180.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FIG",
+      "contractAddress": "0x41f4267525a8aff329540ef24fd83d9044758b33",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x41f4267525a8aff329540ef24fd83d9044758b33.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FISV",
+      "contractAddress": "0x9ece29a4a2397c0a35fb5fa8ee2b9509130a98cc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9ece29a4a2397c0a35fb5fa8ee2b9509130a98cc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FIX",
+      "contractAddress": "0x93dbb1d2dc5d63f4abacff30485273f538df68ac",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x93dbb1d2dc5d63f4abacff30485273f538df68ac.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FLY",
+      "contractAddress": "0x03bc731ffb162cdd7b98d3c6542bfc291126075d",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x03bc731ffb162cdd7b98d3c6542bfc291126075d.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "FUTU",
+      "contractAddress": "0xeb30663bdff0622ef4e4e5cbb4e975f19f33f51d",
+      "region": "china",
+      "regionReason": "Initial explicit China-linked issuer curation; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xeb30663bdff0622ef4e4e5cbb4e975f19f33f51d.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "GE",
+      "contractAddress": "0x63b814ddbd6bf339f25fed8c36158a008d5b373e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x63b814ddbd6bf339f25fed8c36158a008d5b373e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "GLD",
+      "contractAddress": "0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "GLW",
+      "contractAddress": "0x7c04e6a3368f2a1de3874f0e80d2e0a1a9915da6",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x7c04e6a3368f2a1de3874f0e80d2e0a1a9915da6.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "GLXY",
+      "contractAddress": "0x2d427692e928fa156ec22acfabafa0447c5805b7",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2d427692e928fa156ec22acfabafa0447c5805b7.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "GOOGL",
+      "contractAddress": "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "INFQ",
+      "contractAddress": "0xb853bc83a753342a4f8320ea680b4b1e84118d21",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb853bc83a753342a4f8320ea680b4b1e84118d21.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "INTC",
+      "contractAddress": "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc72b96e0e48ecd4dc75e1e45396e26300bc39681.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "INTU",
+      "contractAddress": "0x56d23bee5f41a7120170b0c603dae30128e460e9",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x56d23bee5f41a7120170b0c603dae30128e460e9.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "IREN",
+      "contractAddress": "0xf0ab0c93be6f41369d302e55db1a96b3c430212d",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf0ab0c93be6f41369d302e55db1a96b3c430212d.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "LHX",
+      "contractAddress": "0x48d60243c66437c6ac3c2495be94747aed5dfe25",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48d60243c66437c6ac3c2495be94747aed5dfe25.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "LMT",
+      "contractAddress": "0x329fcaceb9ad6f9580dd5f643fed0646900d043c",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x329fcaceb9ad6f9580dd5f643fed0646900d043c.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "LRCX",
+      "contractAddress": "0x57b0030166db0c31690d1a5aa167e2e26e2c29a4",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x57b0030166db0c31690d1a5aa167e2e26e2c29a4.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "LULU",
+      "contractAddress": "0x4e62068525ab11fe768e29dfd00ef909b9803016",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4e62068525ab11fe768e29dfd00ef909b9803016.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "META",
+      "contractAddress": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc0d6457c16cc70d6790dd43521c899c87ce02f35.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MOD",
+      "contractAddress": "0xc6cbad1016b38b797610c25e1dc7d95988b1f362",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc6cbad1016b38b797610c25e1dc7d95988b1f362.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MRNA",
+      "contractAddress": "0x43b07d15ce533bec5476d70c22a78a1b2b662155",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x43b07d15ce533bec5476d70c22a78a1b2b662155.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MSFT",
+      "contractAddress": "0xe93237c50d904957cf27e7b1133b510c669c2e74",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe93237c50d904957cf27e7b1133b510c669c2e74.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MTSI",
+      "contractAddress": "0xc93f4d80e268ab922e871bd169156c3cc41894e6",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc93f4d80e268ab922e871bd169156c3cc41894e6.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MU",
+      "contractAddress": "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xff080c8ce2e5feadaca0da81314ae59d232d4afd.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "MXL",
+      "contractAddress": "0x48961813349333209994750ffa89b3c5c22ec969",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48961813349333209994750ffa89b3c5c22ec969.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "NFLX",
+      "contractAddress": "0xe0444ef8bf4ed74f74fd73686e2ddf4c1c5591e8",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe0444ef8bf4ed74f74fd73686e2ddf4c1c5591e8.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "NNE",
+      "contractAddress": "0xbef75684c43c4ea7bd18dd532a2244674ee8b926",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbef75684c43c4ea7bd18dd532a2244674ee8b926.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "NU",
+      "contractAddress": "0x408c14038a04f7bd235329e26d2bf569ee20e250",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x408c14038a04f7bd235329e26d2bf569ee20e250.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "ON",
+      "contractAddress": "0xbbd09f72b025360fee5c928053dca6248d35be54",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbbd09f72b025360fee5c928053dca6248d35be54.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "OUST",
+      "contractAddress": "0x40e7a279850e443f582059ae5dc1c3b6563e6395",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x40e7a279850e443f582059ae5dc1c3b6563e6395.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "P",
+      "contractAddress": "0x1cdad396db64bda184d5182a97dd9b3c62100b7d",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x1cdad396db64bda184d5182a97dd9b3c62100b7d.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "PANW",
+      "contractAddress": "0xb039597ed45cba7b6e2fb9e8be51802969cee5be",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb039597ed45cba7b6e2fb9e8be51802969cee5be.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "PLTR",
+      "contractAddress": "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "POWL",
+      "contractAddress": "0x237c16d66590f67b886d978acd362eaead8b18c7",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x237c16d66590f67b886d978acd362eaead8b18c7.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "PR",
+      "contractAddress": "0x4189f0c66ebbb0bfef1c31f763131361ef32f77c",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4189f0c66ebbb0bfef1c31f763131361ef32f77c.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "QBTS",
+      "contractAddress": "0xc583c60aef9dc401da72cec1b404743a93cea1cc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc583c60aef9dc401da72cec1b404743a93cea1cc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "QQQ",
+      "contractAddress": "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd5f3879160bc7c32ebb4dc785f8a4f505888de68.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "RCAT",
+      "contractAddress": "0xfde6b5d9bb419b10c23268c74e369abff39c0460",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xfde6b5d9bb419b10c23268c74e369abff39c0460.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "RDDT",
+      "contractAddress": "0x05b37fb53a299a1b874a619e1c4c404d52c36f4c",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x05b37fb53a299a1b874a619e1c4c404d52c36f4c.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "RGTI",
+      "contractAddress": "0x284358abc07f9359f19f4b5b4ac91901be2597ba",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x284358abc07f9359f19f4b5b4ac91901be2597ba.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "RKLB",
+      "contractAddress": "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "RUN",
+      "contractAddress": "0x756bc80af765c82da966a788858d65adf14f3793",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x756bc80af765c82da966a788858d65adf14f3793.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SATS",
+      "contractAddress": "0x95052ddcd5dc25641657424a8cf04834997e1730",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x95052ddcd5dc25641657424a8cf04834997e1730.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SGOV",
+      "contractAddress": "0x92fd66527192e3e61d4ddd13322aa222de86f9b5",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x92fd66527192e3e61d4ddd13322aa222de86f9b5.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SIMO",
+      "contractAddress": "0x77e655e37f4d913fb9540e0d541d824171a60e81",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x77e655e37f4d913fb9540e0d541d824171a60e81.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SKHY",
+      "contractAddress": "0x84cab63bc87912e71ad199ff14a0ba45de68fef8",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x84cab63bc87912e71ad199ff14a0ba45de68fef8.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SLS",
+      "contractAddress": "0x285b231728c7e4333799183df1094d775246a535",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x285b231728c7e4333799183df1094d775246a535.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SMCI",
+      "contractAddress": "0xc01aa1fecec0605b13bc84874ff7256c0f5f562a",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc01aa1fecec0605b13bc84874ff7256c0f5f562a.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SMH",
+      "contractAddress": "0x072f979c2cac8e1391b0162a87fee094bf8744a0",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x072f979c2cac8e1391b0162a87fee094bf8744a0.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SNAP",
+      "contractAddress": "0xf6589f11bc40b669e584073f428b05562f568733",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf6589f11bc40b669e584073f428b05562f568733.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SNDK",
+      "contractAddress": "0xb90a19ff0af67f7779aff50a882a9cff42446400",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb90a19ff0af67f7779aff50a882a9cff42446400.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SNOW",
+      "contractAddress": "0xba0cab75495255d0cb58e22b648bfed4ecd1f47e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xba0cab75495255d0cb58e22b648bfed4ecd1f47e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SPCX",
+      "contractAddress": "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "SPY",
+      "contractAddress": "0x117cc2133c37b721f49de2a7a74833232b3b4c0c",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x117cc2133c37b721f49de2a7a74833232b3b4c0c.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TEAM",
+      "contractAddress": "0x5b97476b922f3305131b8f0b9d333172e87f4aae",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5b97476b922f3305131b8f0b9d333172e87f4aae.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TEM",
+      "contractAddress": "0xb1cc0ec7db69cf43539119814df40071b9d61793",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb1cc0ec7db69cf43539119814df40071b9d61793.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TER",
+      "contractAddress": "0x2778c5024d5ca2cdb0f8ead671ffc69963adcd9c",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2778c5024d5ca2cdb0f8ead671ffc69963adcd9c.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TSEM",
+      "contractAddress": "0x89776d4cd68193597a2fc132cfac1fde36ccea8a",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x89776d4cd68193597a2fc132cfac1fde36ccea8a.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TSM",
+      "contractAddress": "0x58ffe4a942d3885baa22d7520691f611ef09e7aa",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x58ffe4a942d3885baa22d7520691f611ef09e7aa.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "TTWO",
+      "contractAddress": "0x5e81213613b6b86eab4c6c50d718d34359459786",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5e81213613b6b86eab4c6c50d718d34359459786.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "UNH",
+      "contractAddress": "0xcf364ea52787e289de6f32077834056e3e70d6a8",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcf364ea52787e289de6f32077834056e3e70d6a8.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "UPS",
+      "contractAddress": "0xf23250dac154d05bb671cb0d0ebef3c635c79ce2",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf23250dac154d05bb671cb0d0ebef3c635c79ce2.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "USAR",
+      "contractAddress": "0xd917b029c761d264c6a312bbbcda868658ef86a6",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd917b029c761d264c6a312bbbcda868658ef86a6.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "VICR",
+      "contractAddress": "0x6006ed4b2f94110851ff7509d97d034f0eed9226",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x6006ed4b2f94110851ff7509d97d034f0eed9226.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "VST",
+      "contractAddress": "0x561e2a49212b7ccf47f2744ccb83e200722fadbc",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x561e2a49212b7ccf47f2744ccb83e200722fadbc.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "VTI",
+      "contractAddress": "0x0594134df3f171a354d9c85ebd65b7a6148f6d09",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x0594134df3f171a354d9c85ebd65b7a6148f6d09.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "WDAY",
+      "contractAddress": "0x82da4646242e1d962e96e932269dc644c94a9caa",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x82da4646242e1d962e96e932269dc644c94a9caa.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "WDC",
+      "contractAddress": "0xf52597345a8edf418bc4071b4a35112472277d3e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf52597345a8edf418bc4071b4a35112472277d3e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    },
+    {
+      "symbol": "WYFI",
+      "contractAddress": "0x9e7abd3c9139d14e4c86dce0e455aab7a0c2fb3e",
+      "region": "us",
+      "regionReason": "US-listed market catalog classification; owner review required.",
+      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9e7abd3c9139d14e4c86dce0e455aab7a0c2fb3e.png",
+      "logoDecision": "pending",
+      "logoReason": "Awaiting owner visual and URL review."
+    }
+  ]
+}

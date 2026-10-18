@@ -1,6 +1,7 @@
 import { Hero } from "@/components/landing/Hero";
 import { TerminalOverview } from "@/components/landing/TerminalOverview";
 import { MarketsTable } from "@/components/landing/MarketsTable";
+import { ExternalMarkets } from "@/components/landing/ExternalMarkets";
 import { Lanes } from "@/components/landing/Lanes";
 import { NoteJourney } from "@/components/landing/NoteJourney";
 import { BinsShowcase } from "@/components/landing/BinsShowcase";
@@ -15,6 +16,7 @@ export default function Home() {
       <Hero />
       <TerminalOverview />
       <MarketsTable />
+      <ExternalMarkets />
       <Lanes />
       <BinsShowcase />
       <NoteJourney />

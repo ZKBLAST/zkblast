@@ -10,6 +10,12 @@ export type {
   UserProfile,
   UserWallet,
 } from "./identity-repository.js";
+export {
+  ponsGraduatedMarketSchema,
+  stockAssetResponseSchema,
+  stockQuoteResponseSchema,
+} from "./external-market-validation.js";
+export type { PonsGraduatedMarket } from "./external-market-validation.js";
 
 export function createDatabaseClient(
   input: Readonly<{ url: string; key: string; schema: string }>,

@@ -7,6 +7,7 @@ export type EthereumProvider = Readonly<{
 export type PublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
   chainId: number;
+  executionChainId: number | null;
   chainName: string;
   explorerUrl: string;
   shielded?: Readonly<{
@@ -86,6 +87,53 @@ export type IndexerMetrics = Readonly<{
   finalizedBlock?: string;
   lag: string | null;
   checkpointUpdatedAt?: string;
+}>;
+
+export type ExternalMarket = Readonly<{
+  id: string;
+  source: "pons_graduated" | "robinhood_stock_token";
+  externalId: string;
+  chainId: number;
+  contractAddress: string;
+  symbol: string;
+  name: string;
+  quoteSymbol: string;
+  status: "active" | "halted" | "inactive";
+  readOnly: boolean;
+  marketRegion: "unclassified" | "crypto" | "us" | "china";
+  marketCapUsd: string | null;
+  marketCapObservedAt: string | null;
+  logoUrl: string | null;
+  logoStatus: "pending" | "approved" | "rejected" | "missing";
+  oracleProvider: string | null;
+  pairCandidates: readonly Readonly<{
+    quoteSymbol: "USDG" | "WETH";
+    quoteAddress: string;
+    executionChainId: number;
+    baseAddress: string | null;
+    priority: number;
+    routeStatus: "planned" | "observed" | "validated" | "disabled";
+    venue: string | null;
+    poolIdentifier: string | null;
+    liquidityRaw: string | null;
+  }>[];
+  validatedAt: string;
+  bid: string | null;
+  ask: string | null;
+  currency: string | null;
+  dailyVolume: string | null;
+  quoteObservedAt: string | null;
+  canTrade: boolean;
+  provenance: string;
+}>;
+
+export type MarketPricePoint = Readonly<{
+  source: "swap" | "oracle" | "reference";
+  observedAt: string;
+  price: string;
+  volume: string | null;
+  blockNumber: string | null;
+  transactionHash: string | null;
 }>;
 
 declare global {

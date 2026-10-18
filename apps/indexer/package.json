@@ -9,6 +9,13 @@
     "start": "node dist/runner.js",
     "backfill:testnet-market": "node --import tsx src/backfill-testnet-market.ts",
     "backfill:testnet-shielded": "node --import tsx src/backfill-testnet-shielded.ts",
+    "sync:external-markets": "node --import tsx src/sync-external-markets.ts",
+    "sync:external-market-swaps": "node --import tsx src/sync-external-market-swaps.ts",
+    "sync:external-market-oracles": "node --import tsx src/sync-external-market-oracles.ts",
+    "markets:curate": "node --import tsx src/curate-external-markets.ts",
+    "sync:external-market-pairs": "node --import tsx src/sync-external-market-pairs.ts",
+    "map:testnet-market-tokens": "node --import tsx src/map-testnet-market-tokens.ts",
+    "discover:testnet-market-routes": "node --import tsx src/discover-testnet-market-routes.ts",
     "lint": "eslint src --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test test/**/*.test.ts"

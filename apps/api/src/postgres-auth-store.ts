@@ -2,6 +2,10 @@ import postgres, { type Sql } from "postgres";
 import { z } from "zod";
 import type { AuthStore, LoginChallenge } from "./auth-service.js";
 import type { IdentityStore, SessionIdentity } from "./identity-service.js";
+import type {
+  ConfirmedTrade,
+  TradeHistoryWriter,
+} from "./trade-receipt-service.js";
 
 const loginResultSchema = z
   .array(
@@ -56,6 +60,8 @@ const tradeRowsSchema = z.array(
     amount_in_raw: z.string().nullable(),
     amount_out_raw: z.string().nullable(),
     fee_raw: z.string().nullable(),
+    gas_used: z.string().nullable(),
+    effective_gas_price_wei: z.string().nullable(),
     block_number: z.coerce.number().int().nonnegative().nullable(),
     block_timestamp: z.coerce.date().nullable(),
     submitted_at: z.coerce.date(),
@@ -63,7 +69,9 @@ const tradeRowsSchema = z.array(
   }),
 );
 
-export class PostgresAuthStore implements AuthStore, IdentityStore {
+export class PostgresAuthStore
+  implements AuthStore, IdentityStore, TradeHistoryWriter
+{
   private readonly sql: Sql;
 
   public constructor(
@@ -238,7 +246,8 @@ export class PostgresAuthStore implements AuthStore, IdentityStore {
       await this.sql.unsafe(
         `select id, client_request_id, chain_id, transaction_hash, action, status,
                 venue, token_in_address, token_out_address, amount_in_raw,
-                amount_out_raw, fee_raw, block_number, block_timestamp,
+                amount_out_raw, fee_raw, gas_used, effective_gas_price_wei,
+                block_number, block_timestamp,
                 submitted_at, confirmed_at
          from ${this.schema}.trade_history
          where user_id = $1 and submitted_at < $2
@@ -259,10 +268,67 @@ export class PostgresAuthStore implements AuthStore, IdentityStore {
       amountInRaw: trade.amount_in_raw,
       amountOutRaw: trade.amount_out_raw,
       feeRaw: trade.fee_raw,
+      gasUsed: trade.gas_used,
+      effectiveGasPriceWei: trade.effective_gas_price_wei,
       blockNumber: trade.block_number,
       blockTimestamp: trade.block_timestamp?.toISOString() ?? null,
       submittedAt: trade.submitted_at.toISOString(),
       confirmedAt: trade.confirmed_at?.toISOString() ?? null,
     }));
+  }
+
+  public async walletAddress(walletId: string): Promise<string> {
+    const rows = await this.sql.unsafe<{ wallet_address: string }[]>(
+      `select wallet_address from ${this.schema}.user_wallets where id=$1`,
+      [walletId],
+    );
+    if (rows.length !== 1) throw new Error("WALLET_NOT_FOUND");
+    return rows[0]!.wallet_address;
+  }
+
+  public async saveConfirmedTrade(
+    userId: string,
+    walletId: string,
+    trade: ConfirmedTrade,
+  ): Promise<unknown> {
+    const rows = await this.sql.unsafe<{ id: string }[]>(
+      `insert into ${this.schema}.trade_history
+        (user_id,wallet_id,client_request_id,chain_id,transaction_hash,log_index,
+         action,status,venue,pool_address,token_in_address,token_out_address,
+         amount_in_raw,amount_out_raw,fee_raw,gas_used,effective_gas_price_wei,
+         block_number,block_timestamp,submitted_at,confirmed_at)
+       values ($1,$2,$3,$4,$5,$6,'swap','confirmed',$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,now(),now())
+       on conflict (client_request_id) do update set
+         transaction_hash=excluded.transaction_hash,log_index=excluded.log_index,
+         status='confirmed',amount_out_raw=excluded.amount_out_raw,
+         fee_raw=excluded.fee_raw,gas_used=excluded.gas_used,
+         effective_gas_price_wei=excluded.effective_gas_price_wei,
+         block_number=excluded.block_number,
+         block_timestamp=excluded.block_timestamp,confirmed_at=excluded.confirmed_at
+       where ${this.schema}.trade_history.user_id=excluded.user_id
+         and ${this.schema}.trade_history.wallet_id=excluded.wallet_id
+       returning id`,
+      [
+        userId,
+        walletId,
+        trade.clientRequestId,
+        trade.chainId,
+        trade.transactionHash,
+        trade.logIndex,
+        trade.venue,
+        trade.poolAddress,
+        trade.tokenInAddress,
+        trade.tokenOutAddress,
+        trade.amountInRaw,
+        trade.amountOutRaw,
+        trade.feeRaw,
+        trade.gasUsed,
+        trade.effectiveGasPriceWei,
+        trade.blockNumber,
+        trade.blockTimestamp,
+      ],
+    );
+    if (rows.length !== 1) throw new Error("TRADE_OWNERSHIP_CONFLICT");
+    return { id: rows[0]!.id, status: "confirmed" };
   }
 }
