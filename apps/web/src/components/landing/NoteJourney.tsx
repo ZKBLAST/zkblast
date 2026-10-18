@@ -2,7 +2,6 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef, useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
-import { vault } from "@/data/shielded";
 import { Bay } from "@/components/ui/Frame";
 import { MaskHeading } from "@/components/ui/Reveal";
 import { easeOut } from "@/lib/motion";
@@ -75,15 +74,15 @@ function Panel({ children }: { children: React.ReactNode }) {
 function DepositVisual() {
   return (
     <Panel>
-      <div className="flex items-center justify-between text-faint"><span>from 0x8a3F…5E21</span><span>public</span></div>
+      <div className="flex items-center justify-between text-faint"><span>from connected wallet</span><span>public</span></div>
       <div className="my-8 flex items-center gap-4">
-        <span className="display text-5xl text-fg">1,000</span>
-        <span className="text-lg text-muted">USDC</span>
+        <span className="display text-5xl text-fg">Fixed</span>
+        <span className="text-lg text-muted">allowlisted asset</span>
       </div>
       <div className="relative h-px bg-line">
         <motion.span className="absolute -top-[3px] size-[7px] rounded-full bg-lime" initial={{ left: "0%" }} animate={{ left: "100%" }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }} />
       </div>
-      <div className="mt-6 flex justify-between text-muted"><span>allowance: exactly 1,000</span><span className="inline-flex items-center gap-1 text-fg"><ArrowRight className="size-3" aria-hidden /> ZKBlastVault</span></div>
+      <div className="mt-6 flex justify-between text-muted"><span>allowance: exact amount</span><span className="inline-flex items-center gap-1 text-fg"><ArrowRight className="size-3" aria-hidden /> configured vault</span></div>
     </Panel>
   );
 }
@@ -103,7 +102,7 @@ function NoteVisual() {
             </dd>
           </div>
         ))}
-        <div className="flex items-center gap-4 border-t border-line pt-3"><dt className="w-16 text-faint">commit</dt><dd className="inline-flex items-center gap-1 text-fg">0x2e10…7c4b <ArrowRight className="size-3 text-faint" aria-hidden /> <span className="text-faint">onchain</span></dd></div>
+        <div className="flex items-center gap-4 border-t border-line pt-3"><dt className="w-16 text-faint">commit</dt><dd className="inline-flex items-center gap-1 text-fg">derived locally <ArrowRight className="size-3 text-faint" aria-hidden /> <span className="text-faint">onchain</span></dd></div>
       </dl>
       <p className="mt-6 text-faint">encrypted backup: <span className="text-lime">saved</span></p>
     </Panel>
@@ -126,7 +125,7 @@ function ProofVisual({ ring }: { ring: MotionValue<number> }) {
           ))}
         </ul>
       </div>
-      <p className="mt-6 border-t border-line pt-4 text-faint">circuit {vault.circuit.id} · runs in your browser</p>
+      <p className="mt-6 border-t border-line pt-4 text-faint">vault proving flow is not active on this environment</p>
     </Panel>
   );
 }
@@ -139,9 +138,9 @@ function WithdrawVisual() {
           <motion.span key={i} className="aspect-square rounded-[2px] border border-line-strong bg-raised" initial={{ opacity: 0 }} animate={{ opacity: [0, 1], borderColor: ["#2e3047", "#dfe3ee", "#2e3047"] }} transition={{ delay: i * 0.025, duration: 0.9 }} />
         ))}
       </div>
-      <p className="mt-5 text-muted">nullifier 0x7b02…e41a <span className="text-lime">spent</span></p>
-      <p className="mt-1 inline-flex items-center gap-1 text-muted">1 WETH <ArrowRight className="size-3" aria-hidden /> 0x51cE…09aa <span className="text-faint">(fresh address)</span></p>
-      <p className="mt-4 border-t border-line pt-4 text-faint">which square funded it is not revealed. anonymity set: {vault.anonymitySet.WETH} deposits</p>
+      <p className="mt-5 text-muted">validated nullifier <span className="text-lime">spent once</span></p>
+      <p className="mt-1 inline-flex items-center gap-1 text-muted">allowlisted asset <ArrowRight className="size-3" aria-hidden /> chosen recipient</p>
+      <p className="mt-4 border-t border-line pt-4 text-faint">the funding leaf is not disclosed; no live anonymity-set count is available yet</p>
     </Panel>
   );
 }

@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bay } from "@/components/ui/Frame";
 import { MaskHeading } from "@/components/ui/Reveal";
 import { seeded } from "@/data/pools";
-import { intentAt, shortHash, terminalMeta, type Intent } from "@/data/terminal";
+import type { Intent } from "@/data/terminal";
 import { cx } from "@/lib/format";
+import { useProtocolData } from "@/lib/use-protocol-data";
 
 /* One clock drives every panel, and only while the section is on screen. */
 function useTick(active: boolean, ms = 850) {
@@ -227,7 +228,7 @@ function Verifier({ t, root, leaf, block }: { t: number; root: string; leaf: num
         <div className="flex justify-between"><dt className="text-faint">Accepted root</dt><dd className="text-lime normal-case">{root}</dd></div>
         <div className="flex justify-between"><dt className="text-faint">Leaves</dt><dd className="num text-fg/85">{leaf.toLocaleString("en-US")}</dd></div>
         <div className="flex justify-between"><dt className="text-faint">Block</dt><dd className="num text-fg/85">{block.toLocaleString("en-US")}</dd></div>
-        <div className="flex justify-between"><dt className="text-faint">Root history</dt><dd className="text-fg/85">{terminalMeta.rootHistory} · depth {terminalMeta.treeDepth}</dd></div>
+        <div className="flex justify-between"><dt className="text-faint">Root history</dt><dd className="text-fg/85">Not indexed</dd></div>
       </dl>
     </div>
   );
@@ -237,25 +238,10 @@ export function TerminalOverview() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { margin: "0px 0px -10% 0px" });
   const t = useTick(inView);
-
-  // Derived feed state: everything is a pure function of the tick, so it never drifts.
-  const items = useMemo(() => Array.from({ length: 16 }, (_, i) => intentAt(t + 16 - i)), [t]);
-  const withdrawals = useMemo(() => {
-    let n = 0;
-    for (let k = 0; k <= t + 16; k++) if (intentAt(k).kind === "WITHDRAW") n++;
-    return n;
-  }, [t]);
-  const deposits = useMemo(() => {
-    let n = 0;
-    for (let k = 0; k <= t + 16; k++) if (intentAt(k).kind === "DEPOSIT") n++;
-    return n;
-  }, [t]);
-  const nulls = useMemo(() => {
-    const out: string[] = [];
-    for (let k = t + 16; k >= 0 && out.length < 7; k--) if (intentAt(k).kind === "WITHDRAW") out.push(shortHash(seeded(k * 7 + 3)));
-    return out;
-  }, [t]);
-  const root = useMemo(() => shortHash(seeded(deposits * 101 + 5)), [deposits]);
+  const { metrics } = useProtocolData();
+  const items: Intent[] = [];
+  const nulls: string[] = [];
+  const indexedBlock = Number(metrics?.indexedBlock ?? 0);
 
   return (
     <section ref={ref} aria-label="System overview" className="mx-auto max-w-[1392px] px-3 pt-24 sm:px-4 md:pt-32">
@@ -296,13 +282,13 @@ export function TerminalOverview() {
 
           {/* Column 3: shielded machinery */}
           <div className="grid min-h-0 gap-3 lg:grid-rows-[1fr_1.1fr]">
-            <Panel title="Nullifier registry" className="h-80 lg:h-auto"><Nullifiers list={nulls} count={terminalMeta.startNullifiers + withdrawals} /></Panel>
-            <Panel title="Batch prover" caption={`Proof · ${terminalMeta.circuit}`} className="h-72 lg:h-auto"><Prover t={t} /></Panel>
+            <Panel title="Nullifier registry" className="h-80 lg:h-auto"><Nullifiers list={nulls} count={0} /></Panel>
+            <Panel title="Batch prover" caption="Vault proof stream unavailable" className="h-72 lg:h-auto"><Prover t={0} /></Panel>
           </div>
 
           {/* Column 4: chain */}
           <Panel title="Robinhood Chain · verifier" caption="Accepted root" className="h-[460px] lg:h-auto">
-            <Verifier t={t} root={root} leaf={terminalMeta.startLeaf + deposits} block={terminalMeta.startBlock + t} />
+            <Verifier t={t} root="Not indexed" leaf={0} block={indexedBlock} />
           </Panel>
         </div>
       </div>

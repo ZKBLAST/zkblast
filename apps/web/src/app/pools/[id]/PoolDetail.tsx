@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call -- preserved reference UI; runtime actions remain gated by the live app provider. */
 "use client";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -5,7 +6,7 @@ import { useMemo, useState } from "react";
 import { AreaChart } from "@/components/charts/AreaChart";
 import { BinChart, type Shape } from "@/components/pools/BinChart";
 import { useApp } from "@/components/shell/AppProvider";
-import { LaneBadge, PairMark, SimBadge, TokenMark, TypeTag } from "@/components/ui/Badges";
+import { LaneBadge, PairMark, TokenMark, TypeTag } from "@/components/ui/Badges";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Stat } from "@/components/ui/PageHeader";
@@ -64,7 +65,7 @@ export function PoolDetail({ id }: { id: string }) {
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <PairMark base={pool.base} quote={pool.quote} size={40} />
           <h1 className="display text-[clamp(2.4rem,6vw,4.8rem)]">{pool.base}/{pool.quote}</h1>
-          <div className="flex flex-wrap gap-2"><TypeTag type={pool.type} /><LaneBadge lane="public" /><SimBadge /></div>
+          <div className="flex flex-wrap gap-2"><TypeTag type={pool.type} /><LaneBadge lane="public" /></div>
         </div>
         <dl className="mt-8 grid grid-cols-2 gap-6 border-y border-line py-6 sm:grid-cols-3 lg:grid-cols-6">
           <Stat label="TVL" value={fmtUsdCompact(pool.tvlUsd)} />

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/runner.ts",
-    "build": "tsup src/index.ts src/runner.ts --format esm",
+    "build": "tsup",
     "start": "node dist/runner.js",
     "backfill:testnet-market": "node --import tsx src/backfill-testnet-market.ts",
     "lint": "eslint src --max-warnings=0",

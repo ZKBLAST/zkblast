@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { Check, CircleAlert, Info, X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { webPublicConfig } from "@/config/public-env";
-import { walletBalances } from "@/data/tokens";
 import { apiRequest } from "@/lib/api-client";
 import type { PublicConfig, Trade, UserProfile } from "@/types/application";
 import { WalletModal } from "./WalletModal";
@@ -12,17 +11,18 @@ import { WalletModal } from "./WalletModal";
 type Toast = Readonly<{ id: number; kind: "success" | "error" | "info"; title: string; body?: string }>;
 type AppContextValue = Readonly<{
   address: string | null;
-  balances: Record<string, number>;
   config: PublicConfig | null;
   profile: UserProfile | null;
   trades: readonly Trade[];
   busy: boolean;
   status: string;
+  /** Compatibility state for preserved, disabled reference controls. Never represents on-chain balances. */
+  balances: Readonly<Record<string, number>>;
+  adjust: (_symbol: string, _delta: number) => void;
   connect: () => void;
   loginInjected: () => Promise<void>;
   openWallet: () => void;
   disconnect: () => Promise<void>;
-  adjust: (symbol: string, delta: number) => void;
   updateUsername: (username: string) => Promise<void>;
   refreshAccount: () => Promise<void>;
   toast: (toast: Omit<Toast, "id">) => void;
@@ -40,7 +40,6 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [trades, setTrades] = useState<readonly Trade[]>([]);
   const [config, setConfig] = useState<PublicConfig | null>(null);
-  const [balances, setBalances] = useState(walletBalances);
   const [walletOpen, setWalletOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("Connecting to the ZKBLAST API");
@@ -138,21 +137,21 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   const value = useMemo<AppContextValue>(() => ({
     address,
-    balances,
     config,
     profile,
     trades,
     busy,
     status,
+    balances: {},
+    adjust: () => undefined,
     connect: () => setWalletOpen(true),
     loginInjected,
     openWallet: () => setWalletOpen(true),
     disconnect,
-    adjust: (symbol, delta) => setBalances((current) => ({ ...current, [symbol]: Math.max(0, (current[symbol] ?? 0) + delta) })),
     updateUsername,
     refreshAccount,
     toast,
-  }), [address, balances, busy, config, disconnect, loginInjected, profile, refreshAccount, status, toast, trades, updateUsername]);
+  }), [address, busy, config, disconnect, loginInjected, profile, refreshAccount, status, toast, trades, updateUsername]);
 
   return (
     <AppContext.Provider value={value}>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { appMeta } from "@/data/network";
 import { nav } from "@/lib/nav";
 import { Logo } from "./Logo";
 
@@ -23,11 +22,11 @@ export function Footer() {
           <div className="grid gap-8 py-16 md:grid-cols-[1.2fr_1fr] md:py-24">
             <div>
               <Logo />
-              <p className="mt-4 max-w-sm font-mono text-[13px] leading-relaxed text-muted">{appMeta.positioning}. Public DLMM and DAMM liquidity, with a shielded vault for private notes.</p>
+              <p className="mt-4 max-w-sm font-mono text-[13px] leading-relaxed text-muted">Zero-knowledge liquidity infrastructure. Operational values are read from validated testnet records.</p>
             </div>
             <div className="font-mono text-[12px] leading-relaxed text-faint md:text-right">
               <p className="uppercase tracking-[0.06em]">Built on Robinhood Chain</p>
-              <p className="mt-2">Using smart contracts carries risk, including loss of funds. Keep your note backups safe: a lost note cannot be recovered. Nothing on this site is financial advice.</p>
+              <p className="mt-2">Using smart contracts carries risk, including loss of funds. Nothing on this site is financial advice.</p>
             </div>
           </div>
 

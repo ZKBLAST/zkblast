@@ -1,6 +1,5 @@
-import { webPublicConfig } from "../../config/public-env";
-import { Dashboard } from "../dashboard";
+import { notFound } from "next/navigation";
 
-export default function ApplicationPage() {
-  return <Dashboard apiUrl={webPublicConfig.apiUrl} />;
+export default function UnknownApplicationPage() {
+  notFound();
 }

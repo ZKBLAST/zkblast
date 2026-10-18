@@ -25,7 +25,10 @@ const serviceSchema = z.object({
 });
 
 const serverConfig = loadServerConfig(process.env);
-const serviceConfig = serviceSchema.parse(process.env);
+const serviceConfig = serviceSchema.parse({
+  ...process.env,
+  API_PORT: process.env.PORT ?? process.env.API_PORT,
+});
 const directDatabaseUrl = z
   .string()
   .url()
@@ -123,7 +126,9 @@ const app = createApp(
   },
 );
 
-app.listen(serviceConfig.API_PORT, "127.0.0.1", () => {
+const listenHost = process.env.RAILWAY_ENVIRONMENT ? "0.0.0.0" : "127.0.0.1";
+
+app.listen(serviceConfig.API_PORT, listenHost, () => {
   console.log(
     JSON.stringify({
       service: "api",

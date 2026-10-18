@@ -6,6 +6,7 @@ import { loadServerConfig, parseDeploymentManifest } from "@zkblast/config";
 import postgres from "postgres";
 import { createPublicClient, getAddress, http } from "viem";
 import { ViemChainReader } from "./viem-chain-reader.js";
+import { validateBlockForPersistence } from "./validation.js";
 
 if (process.env.APP_ENV !== "testnet")
   throw new Error("Testnet environment required");
@@ -49,7 +50,10 @@ const sql = postgres(databaseUrl, { max: 1, prepare: true });
 try {
   let eventCount = 0;
   for (const blockNumber of blocks) {
-    const block = await reader.block(BigInt(blockNumber));
+    const block = validateBlockForPersistence(
+      await reader.block(BigInt(blockNumber)),
+      config.CHAIN_ID,
+    );
     await sql.begin(async (transaction) => {
       await transaction.unsafe(
         `insert into zkblast_testnet.indexed_blocks (chain_id,block_number,block_hash,parent_hash) values ($1,$2,$3,$4) on conflict (chain_id,block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
@@ -79,7 +83,10 @@ try {
       }
     });
   }
-  const lastBlock = await reader.block(BigInt(blocks.at(-1) ?? 0));
+  const lastBlock = validateBlockForPersistence(
+    await reader.block(BigInt(blocks.at(-1) ?? 0)),
+    config.CHAIN_ID,
+  );
   await sql.unsafe(
     `insert into zkblast_testnet.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ('market-acceptance',$1,$2,$3,$2) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
     [

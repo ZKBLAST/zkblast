@@ -1,6 +1,7 @@
 import postgres from "postgres";
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
+import { validateBlockForPersistence } from "./validation.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -51,17 +52,22 @@ export class PostgresIndexerRepository implements IndexerRepository {
     block: BlockEnvelope,
     checkpoint: IndexerCheckpoint,
   ): Promise<void> {
+    const validatedBlock = validateBlockForPersistence(block, checkpoint.chainId);
+    if (validatedBlock.number !== checkpoint.blockNumber)
+      throw new Error("CHECKPOINT_BLOCK_MISMATCH");
+    if (validatedBlock.hash.toLowerCase() !== checkpoint.blockHash.toLowerCase())
+      throw new Error("CHECKPOINT_HASH_MISMATCH");
     await this.sql.begin(async (transaction) => {
       await transaction.unsafe(
         `insert into ${this.schema}.indexed_blocks (chain_id, block_number, block_hash, parent_hash) values ($1,$2,$3,$4) on conflict (chain_id, block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
         [
           checkpoint.chainId,
-          block.number.toString(),
-          block.hash.toLowerCase(),
-          block.parentHash.toLowerCase(),
+          validatedBlock.number.toString(),
+          validatedBlock.hash.toLowerCase(),
+          validatedBlock.parentHash.toLowerCase(),
         ],
       );
-      for (const event of block.events)
+      for (const event of validatedBlock.events)
         await transaction.unsafe(
           `insert into ${this.schema}.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,contract_address=excluded.contract_address,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
           [

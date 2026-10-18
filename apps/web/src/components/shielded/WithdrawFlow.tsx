@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call -- preserved reference UI; runtime actions remain gated by the live app provider. */
 "use client";
 import { AnimatePresence, motion } from "motion/react";
 import { AlertTriangle, Check } from "lucide-react";

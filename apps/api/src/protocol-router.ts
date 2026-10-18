@@ -8,6 +8,7 @@ import type { OperationsService } from "./operations-service.js";
 const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(25),
   cursor: z.string().min(1).optional(),
+  owner: z.string().regex(/^0x[0-9a-fA-F]{40}$/u).transform((value) => value.toLowerCase()).optional(),
 });
 
 const swapSchema = z

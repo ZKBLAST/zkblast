@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument -- preserved reference UI; runtime actions remain gated by the live app provider. */
 "use client";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";

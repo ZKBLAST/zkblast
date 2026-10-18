@@ -14,7 +14,7 @@ export const docs: { group: string; sections: DocSection[] }[] = [
         body: [
           "ZKBLAST is a liquidity protocol with two lanes. The public lane runs DLMM (discrete bins) and DAMM (dynamic-fee constant product) pools: swaps, liquidity and fees are fully visible onchain, like any AMM. The shielded lane is a vault where a deposit becomes a private note, and a later withdrawal proves ownership of an unspent note without revealing which deposit it was.",
           "The two lanes are kept apart on purpose. A zero-knowledge verifier on its own does not make a public token transfer, a swap amount or an LP bin private, so the app never shows a privacy badge on a public action.",
-          { note: "Shielded features run on testnet only. Contracts are unaudited and every number in this interface is simulated data." },
+          { note: "Shielded custody actions remain disabled until the vault contract is deployed and indexed. The interface does not display synthetic protocol values." },
         ],
       },
       {

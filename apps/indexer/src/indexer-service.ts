@@ -1,5 +1,6 @@
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
+import { validateBlockForPersistence } from "./validation.js";
 
 export interface ChainReader {
   head(): Promise<bigint>;
@@ -41,7 +42,10 @@ export class IndexerService {
         ? nextBlock + maximumBlocks - 1n
         : finalizedBlock;
     for (; nextBlock <= batchEnd; nextBlock += 1n) {
-      const block = await this.reader.block(nextBlock);
+      const block = validateBlockForPersistence(
+        await this.reader.block(nextBlock),
+        this.chainId,
+      );
       const nextCheckpoint = {
         chainId: this.chainId,
         blockNumber: block.number,

@@ -4,3 +4,4 @@ export * from "./indexer-service.js";
 export * from "./postgres-indexer-repository.js";
 export * from "./repository.js";
 export * from "./viem-chain-reader.js";
+export * from "./validation.js";

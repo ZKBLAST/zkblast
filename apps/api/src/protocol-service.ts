@@ -1,6 +1,7 @@
 export type PageQuery = Readonly<{
   limit: number;
   cursor?: string | undefined;
+  owner?: string | undefined;
 }>;
 
 export interface ProtocolReadStore {
