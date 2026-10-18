@@ -60,6 +60,16 @@ export function ShieldedView() {
         badges={<LaneBadge lane="shielded" />}
       />
       <div className="mx-auto grid max-w-[1360px] gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="panel ticks border-warn/40 p-5 lg:col-span-2">
+          <h2 className="wide text-sm text-warn">Aggregate LP privacy boundary</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Shielded notes hide note ownership data, not AMM activity. Any future
+            vault-managed LP position will expose its pool, assets, reserves,
+            manager shares, investment and redemption amounts, blocks, and timing.
+            The LP manager remains undeployed pending independent review and does
+            not currently hold user funds.
+          </p>
+        </section>
         <section className="panel ticks p-6">
           <DepositFlow
             environment={config.environment}

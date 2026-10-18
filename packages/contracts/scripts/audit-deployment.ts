@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import {
   createPublicClient,
   defineChain,
@@ -67,16 +68,14 @@ assert(
 );
 const chainId = Number(required("CHAIN_ID"));
 const manifestPath = path.resolve(root, required("DEPLOYMENT_MANIFEST_PATH"));
-const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
-  protocol: string;
-  environment: string;
-  chainId: number;
-  contracts: Record<string, ContractRecord>;
-  shielded?: unknown;
-};
-assert(manifest.protocol === "ZKBLAST", "Protocol identity mismatch");
-assert(manifest.environment === environment, "Environment mismatch");
-assert(manifest.chainId === chainId, "Chain mismatch");
+const manifest = await loadDeploymentManifestFile(manifestPath, {
+  environment,
+  chainId,
+});
+const contracts = manifest.contracts as unknown as Record<
+  string,
+  ContractRecord
+>;
 const chain = defineChain({
   id: chainId,
   name: required("CHAIN_NAME"),
@@ -90,7 +89,7 @@ const client = createPublicClient({
 const proxyArtifact = await loadArtifact("ERC1967Proxy");
 const results: Record<string, unknown> = {};
 
-for (const [name, deployment] of Object.entries(manifest.contracts)) {
+for (const [name, deployment] of Object.entries(contracts)) {
   const artifact = await loadArtifact(name);
   const latestUpgrade = deployment.upgrades?.at(-1);
   const currentImplementationDeployment =
@@ -102,7 +101,8 @@ for (const [name, deployment] of Object.entries(manifest.contracts)) {
   const expectedImplementationInput = encodeDeployData({
     abi: artifact.abi,
     bytecode: artifact.bytecode.object,
-    args: [],
+    args:
+      deployment.proxyKind === "none" ? deployment.initializerArguments : [],
   });
   assert(
     implementationTransaction.input === expectedImplementationInput,
@@ -179,10 +179,9 @@ const audit = {
     publicAmmOnly: true,
     zeroKnowledgeCircuitIncluded: Boolean(manifest.shielded),
     privacyClaimMadeForCurrentDeployment: Boolean(manifest.shielded),
-    statement:
-      manifest.shielded
-        ? "The deployment includes a shielded-deposit commitment tree; withdrawal privacy is not claimed until Slice 13 is complete."
-        : "Current deployment is the public AMM phase and makes no shielded-transaction claim.",
+    statement: manifest.shielded
+      ? "The deployment includes a shielded-deposit commitment tree; withdrawal privacy is not claimed until Slice 13 is complete."
+      : "Current deployment is the public AMM phase and makes no shielded-transaction claim.",
   },
 };
 const auditPath = path.resolve(

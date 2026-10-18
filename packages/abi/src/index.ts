@@ -9,6 +9,7 @@ export {
   swapRouterAbi,
   zkBlastVaultAbi,
   shieldedStateRegistryAbi,
+  shieldedLPManagerAbi,
 } from "./generated.js";
 
 import {
@@ -22,6 +23,7 @@ import {
   swapRouterAbi,
   zkBlastVaultAbi,
   shieldedStateRegistryAbi,
+  shieldedLPManagerAbi,
 } from "./generated.js";
 
 export const protocolAbis = {
@@ -34,5 +36,6 @@ export const protocolAbis = {
   PositionManager: positionManagerAbi,
   ZKBlastVault: zkBlastVaultAbi,
   ShieldedStateRegistry: shieldedStateRegistryAbi,
+  ShieldedLPManager: shieldedLPManagerAbi,
   ERC20: erc20Abi,
 } as const;

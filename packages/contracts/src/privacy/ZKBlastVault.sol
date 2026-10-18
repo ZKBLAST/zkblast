@@ -9,6 +9,7 @@ import { UUPSUpgradeable } from "../proxy/UUPSUpgradeable.sol";
 import { ReentrancyGuard } from "../security/ReentrancyGuard.sol";
 import { IncrementalCommitmentTree } from "./IncrementalCommitmentTree.sol";
 import { ShieldedStateRegistry } from "./ShieldedStateRegistry.sol";
+import { ShieldedLPManager } from "./ShieldedLPManager.sol";
 import { WithdrawalVerifierAdapter } from "./WithdrawalVerifierAdapter.sol";
 
 contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
@@ -23,6 +24,8 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
     error CommitmentAlreadyExists();
     error WithdrawalUnavailable();
     error InvalidWithdrawalContext();
+    error LPManagerUnavailable();
+    error InsolventAsset();
 
     struct AssetConfig {
         uint128 denomination;
@@ -46,6 +49,8 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
     mapping(bytes32 commitment => bool inserted) public commitmentInserted;
     // Append-only proxy storage: new fields must remain below the original vault layout.
     WithdrawalVerifierAdapter public withdrawalAdapter;
+    mapping(address asset => uint256 liability) public liabilityRaw;
+    mapping(address asset => ShieldedLPManager manager) public lpManagerForAsset;
 
     event AssetConfigUpdated(address indexed asset, uint128 denomination, bool enabled);
     event PauseUpdated(bool paused);
@@ -59,6 +64,13 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
         uint64 treeVersion
     );
     event WithdrawalAdapterUpdated(address indexed adapter);
+    event LPManagerUpdated(address indexed asset, address indexed manager);
+    event AggregateLiquidityInvested(
+        address indexed manager, uint256 amount0, uint256 amount1, uint256 shares
+    );
+    event AggregateLiquidityDivested(
+        address indexed manager, uint256 shares, uint256 amount0, uint256 amount1
+    );
     event NoteWithdrawn(
         address indexed asset,
         address indexed recipient,
@@ -116,6 +128,35 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
         emit WithdrawalAdapterUpdated(address(adapter));
     }
 
+    function setLPManager(ShieldedLPManager manager, bool enabled)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (address(manager) == address(0) || manager.vault() != address(this)) {
+            revert InvalidConfiguration();
+        }
+        address token0 = manager.token0();
+        address token1 = manager.token1();
+        if (enabled) {
+            if (
+                (address(lpManagerForAsset[token0]) != address(0)
+                        && lpManagerForAsset[token0] != manager)
+                    || (address(lpManagerForAsset[token1]) != address(0)
+                        && lpManagerForAsset[token1] != manager)
+            ) revert InvalidConfiguration();
+            lpManagerForAsset[token0] = manager;
+            lpManagerForAsset[token1] = manager;
+            emit LPManagerUpdated(token0, address(manager));
+            emit LPManagerUpdated(token1, address(manager));
+        } else {
+            if (manager.managedShares() != 0) revert InvalidConfiguration();
+            if (lpManagerForAsset[token0] == manager) delete lpManagerForAsset[token0];
+            if (lpManagerForAsset[token1] == manager) delete lpManagerForAsset[token1];
+            emit LPManagerUpdated(token0, address(0));
+            emit LPManagerUpdated(token1, address(0));
+        }
+    }
+
     function deposit(address asset, uint256 amount, bytes32 commitment)
         external
         nonReentrant
@@ -131,6 +172,7 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
         if (commitmentInserted[commitment]) revert CommitmentAlreadyExists();
 
         asset.pullExact(msg.sender, amount);
+        liabilityRaw[asset] += amount;
         commitmentInserted[commitment] = true;
         (leafIndex, newRoot) = _tree.insert(fieldHasher, commitment);
         stateRegistry.registerRoot(treeVersion, newRoot);
@@ -156,12 +198,67 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
         WithdrawalContext memory context = _validateWithdrawalContext(inputs);
 
         nullifier = adapter.verifyAndConsume(proof, inputs, msg.sender);
+        if (liabilityRaw[context.asset] < context.amount) revert InsolventAsset();
+        liabilityRaw[context.asset] -= context.amount;
         _payWithdrawal(context);
         _emitWithdrawal(context, nullifier, inputs);
     }
 
     function nextLeafIndex() external view returns (uint64) {
         return _tree.nextLeafIndex;
+    }
+
+    function investAggregateLiquidity(
+        ShieldedLPManager manager,
+        uint256 amount0,
+        uint256 amount1,
+        uint256 minimumShares,
+        uint256 deadline
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant returns (uint256 shares) {
+        if (paused) revert VaultPaused();
+        _requireAuthorizedManager(manager);
+        address token0 = manager.token0();
+        address token1 = manager.token1();
+        token0.forceApprove(address(manager), amount0);
+        token1.forceApprove(address(manager), amount1);
+        shares = manager.invest(amount0, amount1, minimumShares, deadline);
+        token0.forceApprove(address(manager), 0);
+        token1.forceApprove(address(manager), 0);
+        _requireSolvent(token0);
+        _requireSolvent(token1);
+        emit AggregateLiquidityInvested(address(manager), amount0, amount1, shares);
+    }
+
+    function divestAggregateLiquidity(
+        ShieldedLPManager manager,
+        uint256 shares,
+        uint256 minimumAmount0,
+        uint256 minimumAmount1,
+        uint256 deadline
+    )
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        nonReentrant
+        returns (uint256 amount0, uint256 amount1)
+    {
+        _requireAuthorizedManager(manager);
+        (amount0, amount1) = manager.divest(shares, minimumAmount0, minimumAmount1, deadline);
+        emit AggregateLiquidityDivested(address(manager), shares, amount0, amount1);
+    }
+
+    function accountedAssets(address asset)
+        public
+        view
+        returns (uint256 liquid, uint256 managed, uint256 liability, bool solvent)
+    {
+        liquid = IERC20Minimal(asset).balanceOf(address(this));
+        ShieldedLPManager manager = lpManagerForAsset[asset];
+        if (address(manager) != address(0)) {
+            (uint256 amount0, uint256 amount1) = manager.previewAssets();
+            managed = asset == manager.token0() ? amount0 : amount1;
+        }
+        liability = liabilityRaw[asset];
+        solvent = liquid + managed >= liability;
     }
 
     function _validateWithdrawalContext(uint256[13] calldata inputs)
@@ -211,6 +308,19 @@ contract ZKBlastVault is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard {
             bytes32(inputs[5]),
             uint64(inputs[4])
         );
+    }
+
+    function _requireAuthorizedManager(ShieldedLPManager manager) private view {
+        if (
+            address(manager) == address(0) || manager.vault() != address(this)
+                || lpManagerForAsset[manager.token0()] != manager
+                || lpManagerForAsset[manager.token1()] != manager
+        ) revert LPManagerUnavailable();
+    }
+
+    function _requireSolvent(address asset) private view {
+        (,,, bool solvent) = accountedAssets(asset);
+        if (!solvent) revert InsolventAsset();
     }
 
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) { }

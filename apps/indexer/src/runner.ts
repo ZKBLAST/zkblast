@@ -1,7 +1,7 @@
-import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadServerConfig, parseDeploymentManifest } from "@zkblast/config";
+import { loadServerConfig } from "@zkblast/config";
+import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { redact } from "@zkblast/observability";
 import { createPublicClient, getAddress, http } from "viem";
 import { z } from "zod";
@@ -18,13 +18,8 @@ const runnerSchema = z.object({
 const config = loadServerConfig(process.env);
 const runner = runnerSchema.parse(process.env);
 const projectRoot = fileURLToPath(new URL("../../../", import.meta.url));
-const manifest = parseDeploymentManifest(
-  JSON.parse(
-    await readFile(
-      resolve(projectRoot, config.DEPLOYMENT_MANIFEST_PATH),
-      "utf8",
-    ),
-  ),
+const manifest = await loadDeploymentManifestFile(
+  resolve(projectRoot, config.DEPLOYMENT_MANIFEST_PATH),
   { environment: config.APP_ENV, chainId: config.CHAIN_ID },
 );
 const addresses = [

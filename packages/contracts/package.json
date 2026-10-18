@@ -18,12 +18,14 @@
     "deploy:testnet-market": "node --experimental-strip-types scripts/deploy-testnet-market.ts",
     "deploy:testnet-withdraw-verifier": "node --experimental-strip-types scripts/deploy-testnet-withdraw-verifier.ts",
     "deploy:testnet-vault": "node --experimental-strip-types scripts/deploy-testnet-vault.ts",
+    "deploy:testnet-withdrawal": "node --experimental-strip-types scripts/deploy-testnet-withdrawal.ts",
     "accept:testnet-liquidity": "node --experimental-strip-types scripts/accept-testnet-liquidity.ts",
     "verify:testnet-market": "node --experimental-strip-types scripts/verify-testnet-market.ts",
     "verify:manifest": "node --experimental-strip-types scripts/verify-manifest.ts",
     "audit:deployment": "node --experimental-strip-types scripts/audit-deployment.ts"
   },
   "dependencies": {
+    "@zkblast/config": "workspace:*",
     "viem": "^2.21.0"
   },
   "devDependencies": {

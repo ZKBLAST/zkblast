@@ -3,7 +3,7 @@
   "protocol": "ZKBLAST",
   "environment": "testnet",
   "chainId": 46630,
-  "generatedAt": "2026-10-18T03:28:05.969Z",
+  "generatedAt": "2026-10-18T04:14:59.438Z",
   "contracts": {
     "PoolRegistry": {
       "abiHash": "0x53924c36e69fa6f4d14c20601310a05705e9fd55db269d0c0b2f43257fa05c30",
@@ -24,7 +24,7 @@
     },
     "PoolFactory": {
       "abiHash": "0x8c3d0d1bb02735dd8b93c3266642d91d1e2ff0699335345c32a237a6a1e438ac",
-      "metadataHash": "0x63916f4ab11efcd7639f4c684f5c1a1c503edb23968d03a73840b149a255cb14",
+      "metadataHash": "0xa65307dfb81d48c0b9bc5053788a40c14b256ce32a9a22e1a6e877fee5406393",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0xCB331f29163CEB7afECc5cB82083B988483992C7",
@@ -41,7 +41,7 @@
     },
     "SwapRouter": {
       "abiHash": "0x066e276b209bf77e4bf3ec37c1c86f475166a91fcc36356a6300ad170471873d",
-      "metadataHash": "0xa6eb5e6e2ca1811ea43a811b417bf8218e8d92a65c00fa4d52a8877314250a39",
+      "metadataHash": "0xa52c095cba928b417504c8d916365acba0342b51897172f403349d7e800bba66",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
@@ -58,7 +58,7 @@
     },
     "PositionManager": {
       "abiHash": "0x311794bfa271afe9f44d3627b993f3acaaa7d4bce547e590799958079da91da8",
-      "metadataHash": "0x0239592affbe0ac63edcc24819e2417817a05e442a63bfee96fcf8b93a59b71c",
+      "metadataHash": "0xa92e4f49704da8a31e4bf4dd3b7354172589adf4a0e0e5c8fcba70c05b6e5cca",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
@@ -75,7 +75,7 @@
     },
     "PoolQuoter": {
       "abiHash": "0xeb757f429e6664e5099b10d6e815e85c7ddf87a99beecdfe3471a1d3b9bd0b98",
-      "metadataHash": "0xf3a5d33ce1520707f9453a43310966cf66bcb08a40e97fec318536516a598762",
+      "metadataHash": "0x0a49e1fc81f81784c6b388b4142c11ff2e052eb462c8d700fe13679685555516",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [],
       "initializerArguments": [],
@@ -110,8 +110,8 @@
       "sourceVerificationDeclared": true
     },
     "ZKBlastVault": {
-      "abiHash": "0xf8a12d38381e4186db6a2bde0c028422ead038aa0cc307c8c92df62d0d5db1c9",
-      "metadataHash": "0x4a1bf8cab8aa61532bfc15f37410562800c8ad5b95b9873eeaf0d8954d7bdbc0",
+      "abiHash": "0x5667b34355af86783044de893606d60d263d39405495f671ca575ff48d2d1b84",
+      "metadataHash": "0xa1befe264a0907f93c80d55b1592c90117af7de9bb437e6ad73641442d1561ac",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
@@ -124,6 +124,35 @@
         "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
         "0x0000000000000000000000000000000000000000000000000000000000000001",
         1
+      ],
+      "creationInputVerified": true,
+      "runtimeBytecodeVerified": true,
+      "sourceVerificationDeclared": true
+    },
+    "VerifierRegistry": {
+      "abiHash": "0x33a8c2bbb37c1c2a7a9ba2703f6415d154284837238cf9a4f3320590d9f23a7b",
+      "metadataHash": "0x72d4ba6bd3971e5ce7fdb03641f62da24e911e6812beefe0580b6277a7cd8eb7",
+      "implementationConstructorArguments": [],
+      "proxyConstructorArguments": [
+        "0x766fcaE1BECEA363694F1955E79a5F9AfC1746eC",
+        "0x485cc9550000000000000000000000002e8ca95e429f34e6e876e078dcd8e51eb31645b900000000000000000000000048e7bcfe8f469fbc72e6bcef0d0ce70d51ffbbed"
+      ],
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed"
+      ],
+      "creationInputVerified": true,
+      "runtimeBytecodeVerified": true,
+      "sourceVerificationDeclared": true
+    },
+    "WithdrawalVerifierAdapter": {
+      "abiHash": "0x5a81a6b7ad6c0c14a16a00d959c94d9b207462deb568c616c8ceb27c1bedbed6",
+      "metadataHash": "0x82feda2eab2d9fe00c2b6cdb1168c411d76956038a07d1652bf0c22e567ef0b6",
+      "implementationConstructorArguments": [],
+      "proxyConstructorArguments": [],
+      "initializerArguments": [
+        "0x26cc247284966D24eF0D9DE03a59AE55Bae0c0f7",
+        "0xe1E89984A58cFfCb9584c47aD04be37026A8D389"
       ],
       "creationInputVerified": true,
       "runtimeBytecodeVerified": true,

@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -43,14 +43,14 @@ assert(
   "Manifest path does not match environment",
 );
 
-const manifest = JSON.parse(
-  await readFile(path.resolve(repositoryRoot, relativeManifestPath), "utf8"),
-) as Record<string, unknown>;
-assert(manifest.schemaVersion === 2, "Unsupported manifest schema");
-assert(manifest.protocol === "ZKBLAST", "Protocol identity mismatch");
-assert(manifest.environment === environment, "Environment mismatch");
-assert(manifest.chainId === chainId, "Chain ID mismatch");
-const contracts = manifest.contracts as Record<string, Record<string, unknown>>;
+const manifest = await loadDeploymentManifestFile(
+  path.resolve(repositoryRoot, relativeManifestPath),
+  { environment, chainId },
+);
+const contracts = manifest.contracts as unknown as Record<
+  string,
+  Record<string, unknown>
+>;
 assert(contracts && typeof contracts === "object", "Contracts are missing");
 for (const requiredContract of [
   "PoolRegistry",

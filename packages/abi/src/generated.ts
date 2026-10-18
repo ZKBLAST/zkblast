@@ -3551,6 +3551,40 @@ export const zkBlastVaultAbi = [
   },
   {
     type: "function",
+    name: "accountedAssets",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "liquid",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "managed",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "liability",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "solvent",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "assetConfig",
     inputs: [
       {
@@ -3622,6 +3656,50 @@ export const zkBlastVaultAbi = [
         name: "newRoot",
         type: "bytes32",
         internalType: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "divestAggregateLiquidity",
+    inputs: [
+      {
+        name: "manager",
+        type: "address",
+        internalType: "contract ShieldedLPManager",
+      },
+      {
+        name: "shares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumAmount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumAmount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "nonpayable",
@@ -3703,6 +3781,83 @@ export const zkBlastVaultAbi = [
   },
   {
     type: "function",
+    name: "investAggregateLiquidity",
+    inputs: [
+      {
+        name: "manager",
+        type: "address",
+        internalType: "contract ShieldedLPManager",
+      },
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "shares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "liabilityRaw",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "liability",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "lpManagerForAsset",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "manager",
+        type: "address",
+        internalType: "contract ShieldedLPManager",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "nextLeafIndex",
     inputs: [],
     outputs: [
@@ -3766,6 +3921,24 @@ export const zkBlastVaultAbi = [
         name: "denomination",
         type: "uint128",
         internalType: "uint128",
+      },
+      {
+        name: "enabled",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setLPManager",
+    inputs: [
+      {
+        name: "manager",
+        type: "address",
+        internalType: "contract ShieldedLPManager",
       },
       {
         name: "enabled",
@@ -3908,6 +4081,68 @@ export const zkBlastVaultAbi = [
   },
   {
     type: "event",
+    name: "AggregateLiquidityDivested",
+    inputs: [
+      {
+        name: "manager",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "shares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount0",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "AggregateLiquidityInvested",
+    inputs: [
+      {
+        name: "manager",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount0",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "shares",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "AssetConfigUpdated",
     inputs: [
       {
@@ -3976,6 +4211,25 @@ export const zkBlastVaultAbi = [
         type: "uint64",
         indexed: false,
         internalType: "uint64",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LPManagerUpdated",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "manager",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
     ],
     anonymous: false,
@@ -4121,6 +4375,11 @@ export const zkBlastVaultAbi = [
   },
   {
     type: "error",
+    name: "InsolventAsset",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "InvalidAccount",
     inputs: [],
   },
@@ -4147,6 +4406,11 @@ export const zkBlastVaultAbi = [
   {
     type: "error",
     name: "InvalidWithdrawalContext",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "LPManagerUnavailable",
     inputs: [],
   },
   {
@@ -4801,6 +5065,402 @@ export const shieldedStateRegistryAbi = [
         internalType: "bytes",
       },
     ],
+  },
+] as const;
+
+export const shieldedLPManagerAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      {
+        name: "admin",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "vault_",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "registry",
+        type: "address",
+        internalType: "contract PoolRegistry",
+      },
+      {
+        name: "pool_",
+        type: "address",
+        internalType: "contract DammPool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "administrator",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "divest",
+    inputs: [
+      {
+        name: "shares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumAmount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumAmount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "emergencyExit",
+    inputs: [
+      {
+        name: "minimumAmount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumAmount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "invest",
+    inputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimumShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "sharesAdded",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "managedShares",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "paused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "pool",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract DammPool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "previewAssets",
+    inputs: [],
+    outputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "setPaused",
+    inputs: [
+      {
+        name: "paused_",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "token0",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "token1",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "vault",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "event",
+    name: "AggregatePositionDecreased",
+    inputs: [
+      {
+        name: "sharesRemoved",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount0",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "AggregatePositionIncreased",
+    inputs: [
+      {
+        name: "amount0",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "sharesAdded",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "EmergencyExit",
+    inputs: [
+      {
+        name: "sharesRemoved",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount0",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "amount1",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "PauseUpdated",
+    inputs: [
+      {
+        name: "paused",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "error",
+    name: "DivisionByZero",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidConfiguration",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidShareAmount",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ManagerPaused",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "MultiplicationOverflow",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ReentrantCall",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnauthorizedAdministrator",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnauthorizedVault",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnsupportedTokenBehavior",
+    inputs: [],
   },
 ] as const;
 

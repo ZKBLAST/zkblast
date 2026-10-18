@@ -1,5 +1,6 @@
 import { poolRegistryAbi } from "@zkblast/abi";
-import { loadServerConfig, parseDeploymentManifest } from "@zkblast/config";
+import { loadServerConfig } from "@zkblast/config";
+import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { resolveProtocolAddresses } from "@zkblast/sdk";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -55,13 +56,8 @@ const protocolService = new ProtocolService(protocolStore, () =>
   chainClient.getBlockNumber(),
 );
 const projectRoot = fileURLToPath(new URL("../../../", import.meta.url));
-const manifest = parseDeploymentManifest(
-  JSON.parse(
-    await readFile(
-      resolve(projectRoot, serverConfig.DEPLOYMENT_MANIFEST_PATH),
-      "utf8",
-    ),
-  ),
+const manifest = await loadDeploymentManifestFile(
+  resolve(projectRoot, serverConfig.DEPLOYMENT_MANIFEST_PATH),
   { environment: serverConfig.APP_ENV, chainId: serverConfig.CHAIN_ID },
 );
 const protocolAddresses = resolveProtocolAddresses(manifest, {

@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadServerConfig, parseDeploymentManifest } from "@zkblast/config";
+import { loadServerConfig } from "@zkblast/config";
+import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import postgres from "postgres";
 import { createPublicClient, getAddress, http } from "viem";
 import { ViemChainReader } from "./viem-chain-reader.js";
@@ -16,10 +17,8 @@ const root = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../..",
 );
-const manifest = parseDeploymentManifest(
-  JSON.parse(
-    await readFile(path.resolve(root, config.DEPLOYMENT_MANIFEST_PATH), "utf8"),
-  ),
+const manifest = await loadDeploymentManifestFile(
+  path.resolve(root, config.DEPLOYMENT_MANIFEST_PATH),
   { environment: "testnet", chainId: config.CHAIN_ID },
 );
 if (!manifest.shielded) throw new Error("Shielded deployment is missing");

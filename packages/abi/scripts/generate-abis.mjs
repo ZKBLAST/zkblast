@@ -20,6 +20,7 @@ const contracts = [
   ["positionManagerAbi", "PositionManager"],
   ["zkBlastVaultAbi", "ZKBlastVault"],
   ["shieldedStateRegistryAbi", "ShieldedStateRegistry"],
+  ["shieldedLPManagerAbi", "ShieldedLPManager"],
   ["erc20Abi", "IERC20Minimal"],
 ];
 

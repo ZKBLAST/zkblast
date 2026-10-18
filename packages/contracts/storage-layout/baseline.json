@@ -454,7 +454,7 @@
   "ZKBlastVault": {
     "storage": [
       {
-        "astId": 3097,
+        "astId": 5813,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "_initialized",
         "offset": 0,
@@ -462,7 +462,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 3099,
+        "astId": 5815,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "_initializing",
         "offset": 8,
@@ -478,7 +478,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 3314,
+        "astId": 6030,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "_status",
         "offset": 0,
@@ -486,7 +486,7 @@
         "type": "t_uint256"
       },
       {
-        "astId": 2376,
+        "astId": 4564,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "treeVersion",
         "offset": 0,
@@ -494,23 +494,23 @@
         "type": "t_uint64"
       },
       {
-        "astId": 2379,
+        "astId": 4567,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "stateRegistry",
         "offset": 8,
         "slot": "3",
-        "type": "t_contract(ShieldedStateRegistry)1688"
+        "type": "t_contract(ShieldedStateRegistry)3870"
       },
       {
-        "astId": 2382,
+        "astId": 4570,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "fieldHasher",
         "offset": 0,
         "slot": "4",
-        "type": "t_contract(IFieldHasher)604"
+        "type": "t_contract(IFieldHasher)1787"
       },
       {
-        "astId": 2384,
+        "astId": 4572,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "paused",
         "offset": 20,
@@ -518,23 +518,23 @@
         "type": "t_bool"
       },
       {
-        "astId": 2387,
+        "astId": 4575,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "_tree",
         "offset": 0,
         "slot": "5",
-        "type": "t_struct(Tree)935_storage"
+        "type": "t_struct(Tree)2596_storage"
       },
       {
-        "astId": 2392,
+        "astId": 4580,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "assetConfig",
         "offset": 0,
         "slot": "71",
-        "type": "t_mapping(t_address,t_struct(AssetConfig)2365_storage)"
+        "type": "t_mapping(t_address,t_struct(AssetConfig)4553_storage)"
       },
       {
-        "astId": 2396,
+        "astId": 4584,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "commitmentInserted",
         "offset": 0,
@@ -542,12 +542,28 @@
         "type": "t_mapping(t_bytes32,t_bool)"
       },
       {
-        "astId": 2399,
+        "astId": 4587,
         "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
         "label": "withdrawalAdapter",
         "offset": 0,
         "slot": "73",
-        "type": "t_contract(WithdrawalVerifierAdapter)2311"
+        "type": "t_contract(WithdrawalVerifierAdapter)4493"
+      },
+      {
+        "astId": 4591,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "liabilityRaw",
+        "offset": 0,
+        "slot": "74",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 4596,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "lpManagerForAsset",
+        "offset": 0,
+        "slot": "75",
+        "type": "t_mapping(t_address,t_contract(ShieldedLPManager)3404)"
       }
     ],
     "types": {
@@ -572,17 +588,22 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(IFieldHasher)604": {
+      "t_contract(IFieldHasher)1787": {
         "encoding": "inplace",
         "label": "contract IFieldHasher",
         "numberOfBytes": "20"
       },
-      "t_contract(ShieldedStateRegistry)1688": {
+      "t_contract(ShieldedLPManager)3404": {
+        "encoding": "inplace",
+        "label": "contract ShieldedLPManager",
+        "numberOfBytes": "20"
+      },
+      "t_contract(ShieldedStateRegistry)3870": {
         "encoding": "inplace",
         "label": "contract ShieldedStateRegistry",
         "numberOfBytes": "20"
       },
-      "t_contract(WithdrawalVerifierAdapter)2311": {
+      "t_contract(WithdrawalVerifierAdapter)4493": {
         "encoding": "inplace",
         "label": "contract WithdrawalVerifierAdapter",
         "numberOfBytes": "20"
@@ -594,12 +615,26 @@
         "numberOfBytes": "32",
         "value": "t_bool"
       },
-      "t_mapping(t_address,t_struct(AssetConfig)2365_storage)": {
+      "t_mapping(t_address,t_contract(ShieldedLPManager)3404)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => contract ShieldedLPManager)",
+        "numberOfBytes": "32",
+        "value": "t_contract(ShieldedLPManager)3404"
+      },
+      "t_mapping(t_address,t_struct(AssetConfig)4553_storage)": {
         "encoding": "mapping",
         "key": "t_address",
         "label": "mapping(address => struct ZKBlastVault.AssetConfig)",
         "numberOfBytes": "32",
-        "value": "t_struct(AssetConfig)2365_storage"
+        "value": "t_struct(AssetConfig)4553_storage"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
       },
       "t_mapping(t_bytes32,t_bool)": {
         "encoding": "mapping",
@@ -615,13 +650,13 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_struct(AssetConfig)2365_storage": {
+      "t_struct(AssetConfig)4553_storage": {
         "encoding": "inplace",
         "label": "struct ZKBlastVault.AssetConfig",
         "numberOfBytes": "32",
         "members": [
           {
-            "astId": 2362,
+            "astId": 4550,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "denomination",
             "offset": 0,
@@ -629,7 +664,7 @@
             "type": "t_uint128"
           },
           {
-            "astId": 2364,
+            "astId": 4552,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "enabled",
             "offset": 16,
@@ -638,13 +673,13 @@
           }
         ]
       },
-      "t_struct(Tree)935_storage": {
+      "t_struct(Tree)2596_storage": {
         "encoding": "inplace",
         "label": "struct IncrementalCommitmentTree.Tree",
         "numberOfBytes": "2112",
         "members": [
           {
-            "astId": 924,
+            "astId": 2585,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "zeroes",
             "offset": 0,
@@ -652,7 +687,7 @@
             "type": "t_array(t_bytes32)32_storage"
           },
           {
-            "astId": 928,
+            "astId": 2589,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "filledSubtrees",
             "offset": 0,
@@ -660,7 +695,7 @@
             "type": "t_array(t_bytes32)32_storage"
           },
           {
-            "astId": 930,
+            "astId": 2591,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "root",
             "offset": 0,
@@ -668,7 +703,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 932,
+            "astId": 2593,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "nextLeafIndex",
             "offset": 0,
@@ -676,7 +711,7 @@
             "type": "t_uint64"
           },
           {
-            "astId": 934,
+            "astId": 2595,
             "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
             "label": "initialized",
             "offset": 8,
