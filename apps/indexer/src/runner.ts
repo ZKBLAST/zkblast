@@ -20,11 +20,19 @@ const runner = runnerSchema.parse(process.env);
 const projectRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const manifest = parseDeploymentManifest(
   JSON.parse(
-    await readFile(resolve(projectRoot, config.DEPLOYMENT_MANIFEST_PATH), "utf8"),
+    await readFile(
+      resolve(projectRoot, config.DEPLOYMENT_MANIFEST_PATH),
+      "utf8",
+    ),
   ),
   { environment: config.APP_ENV, chainId: config.CHAIN_ID },
 );
-const addresses = Object.values(manifest.integration).map(getAddress);
+const addresses = [
+  ...Object.values(manifest.integration),
+  ...(manifest.shielded
+    ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
+    : []),
+].map(getAddress);
 const client = createPublicClient({ transport: http(config.RPC_URL) });
 const repository = new PostgresIndexerRepository(
   runner.SUPABASE_DIRECT_DATABASE_URL,
@@ -43,7 +51,14 @@ async function synchronize(): Promise<void> {
   syncing = true;
   try {
     const checkpoint = await service.sync(
-      BigInt(manifest.deploymentBlock),
+      BigInt(
+        manifest.shielded
+          ? Math.min(
+              manifest.deploymentBlock,
+              manifest.shielded.deploymentBlock,
+            )
+          : manifest.deploymentBlock,
+      ),
       BigInt(runner.INDEXER_BATCH_SIZE),
     );
     console.log(

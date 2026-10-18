@@ -12,6 +12,8 @@ import type { ProtocolService } from "./protocol-service.js";
 import type { SwapService } from "./swap-service.js";
 import type { LiquidityService } from "./liquidity-service.js";
 import type { OperationsService } from "./operations-service.js";
+import { createShieldedRouter } from "./shielded-router.js";
+import type { ShieldedService } from "./shielded-service.js";
 
 export type ApiPublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
@@ -19,6 +21,17 @@ export type ApiPublicConfig = Readonly<{
   chainName: string;
   explorerUrl: string;
   webOrigin: string;
+  shielded?: Readonly<{
+    vaultAddress: string;
+    stateRegistryAddress: string;
+    treeVersion: number;
+    assets: readonly Readonly<{
+      address: string;
+      symbol: string;
+      decimals: number;
+      denominationRaw: string;
+    }>[];
+  }>;
 }>;
 
 const publicConfigResponseSchema = z.object({
@@ -26,6 +39,21 @@ const publicConfigResponseSchema = z.object({
   chainId: z.number().int().positive(),
   chainName: z.string().min(1),
   explorerUrl: z.string().url(),
+  shielded: z
+    .object({
+      vaultAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
+      stateRegistryAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
+      treeVersion: z.number().int().positive(),
+      assets: z.array(
+        z.object({
+          address: z.string().regex(/^0x[\da-f]{40}$/iu),
+          symbol: z.string().min(1),
+          decimals: z.number().int().min(0).max(255),
+          denominationRaw: z.string().regex(/^[1-9]\d*$/u),
+        }),
+      ),
+    })
+    .optional(),
 });
 
 export function createApp(
@@ -37,6 +65,7 @@ export function createApp(
     swapService?: SwapService;
     liquidityService?: LiquidityService;
     operationsService?: OperationsService;
+    shieldedService?: ShieldedService;
   }> = {},
 ) {
   const app = express();
@@ -82,6 +111,7 @@ export function createApp(
       chainId: config.chainId,
       chainName: config.chainName,
       explorerUrl: config.explorerUrl,
+      shielded: config.shielded,
     });
     response.json(body);
   });
@@ -102,6 +132,9 @@ export function createApp(
         dependencies.operationsService,
       ),
     );
+  }
+  if (dependencies.shieldedService) {
+    app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
   }
 
   app.use((_request, response) => {

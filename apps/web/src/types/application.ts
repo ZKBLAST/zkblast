@@ -9,6 +9,17 @@ export type PublicConfig = Readonly<{
   chainId: number;
   chainName: string;
   explorerUrl: string;
+  shielded?: Readonly<{
+    vaultAddress: `0x${string}`;
+    stateRegistryAddress: `0x${string}`;
+    treeVersion: number;
+    assets: readonly Readonly<{
+      address: `0x${string}`;
+      symbol: string;
+      decimals: number;
+      denominationRaw: string;
+    }>[];
+  }>;
 }>;
 
 export type UserProfile = Readonly<{

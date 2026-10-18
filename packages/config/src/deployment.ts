@@ -113,6 +113,23 @@ export const deploymentManifestSchema = z.object({
     positionManager: addressSchema,
     poolQuoter: addressSchema,
   }),
+  shielded: z
+    .object({
+      vault: addressSchema,
+      stateRegistry: addressSchema,
+      fieldHasher: addressSchema,
+      treeVersion: z.number().int().positive(),
+      deploymentBlock: z.number().int().nonnegative(),
+      assets: z.array(
+        z.object({
+          address: addressSchema,
+          symbol: z.string().min(1),
+          decimals: z.number().int().min(0).max(255),
+          denominationRaw: unsignedIntegerSchema,
+        }),
+      ),
+    })
+    .optional(),
 });
 
 export type DeploymentManifest = z.infer<typeof deploymentManifestSchema>;

@@ -15,6 +15,7 @@ import { ProtocolService } from "./protocol-service.js";
 import { SwapService } from "./swap-service.js";
 import { LiquidityService } from "./liquidity-service.js";
 import { OperationsService } from "./operations-service.js";
+import { ShieldedService } from "./shielded-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -108,6 +109,13 @@ const operationsService = new OperationsService(
     recentTransactionFailures: serviceConfig.ALERT_TRANSACTION_FAILURES,
   },
 );
+const shieldedService = manifest.shielded
+  ? new ShieldedService(chainClient, {
+      vault: getAddress(manifest.shielded.vault),
+      fieldHasher: getAddress(manifest.shielded.fieldHasher),
+      deploymentBlock: BigInt(manifest.shielded.deploymentBlock),
+    })
+  : undefined;
 const app = createApp(
   {
     environment: serverConfig.APP_ENV,
@@ -115,6 +123,16 @@ const app = createApp(
     chainName: serverConfig.CHAIN_NAME,
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
+    ...(manifest.shielded
+      ? {
+          shielded: {
+            vaultAddress: manifest.shielded.vault,
+            stateRegistryAddress: manifest.shielded.stateRegistry,
+            treeVersion: manifest.shielded.treeVersion,
+            assets: manifest.shielded.assets,
+          },
+        }
+      : {}),
   },
   {
     authService,
@@ -123,6 +141,7 @@ const app = createApp(
     swapService,
     liquidityService,
     operationsService,
+    ...(shieldedService ? { shieldedService } : {}),
   },
 );
 

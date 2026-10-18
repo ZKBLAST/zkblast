@@ -2,7 +2,7 @@
   "PoolRegistry": {
     "storage": [
       {
-        "astId": 4613,
+        "astId": 6700,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "_initialized",
         "offset": 0,
@@ -10,7 +10,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 4615,
+        "astId": 6702,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "_initializing",
         "offset": 8,
@@ -26,7 +26,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 2564,
+        "astId": 2636,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "_pools",
         "offset": 0,
@@ -34,7 +34,7 @@
         "type": "t_mapping(t_bytes32,t_address)"
       },
       {
-        "astId": 2568,
+        "astId": 2640,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "_poolIds",
         "offset": 0,
@@ -42,7 +42,7 @@
         "type": "t_mapping(t_address,t_bytes32)"
       },
       {
-        "astId": 2572,
+        "astId": 2644,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "_registeredPools",
         "offset": 0,
@@ -50,7 +50,7 @@
         "type": "t_mapping(t_address,t_bool)"
       },
       {
-        "astId": 2574,
+        "astId": 2646,
         "contract": "src/core/PoolRegistry.sol:PoolRegistry",
         "label": "poolCount",
         "offset": 0,
@@ -117,7 +117,7 @@
   "PoolFactory": {
     "storage": [
       {
-        "astId": 4613,
+        "astId": 7276,
         "contract": "src/core/PoolFactory.sol:PoolFactory",
         "label": "_initialized",
         "offset": 0,
@@ -125,7 +125,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 4615,
+        "astId": 7278,
         "contract": "src/core/PoolFactory.sol:PoolFactory",
         "label": "_initializing",
         "offset": 8,
@@ -133,7 +133,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 32,
+        "astId": 405,
         "contract": "src/core/PoolFactory.sol:PoolFactory",
         "label": "_roles",
         "offset": 0,
@@ -141,12 +141,12 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 2256,
+        "astId": 2701,
         "contract": "src/core/PoolFactory.sol:PoolFactory",
         "label": "registry",
         "offset": 0,
         "slot": "2",
-        "type": "t_contract(PoolRegistry)2750"
+        "type": "t_contract(PoolRegistry)3195"
       }
     ],
     "types": {
@@ -165,7 +165,7 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(PoolRegistry)2750": {
+      "t_contract(PoolRegistry)3195": {
         "encoding": "inplace",
         "label": "contract PoolRegistry",
         "numberOfBytes": "20"
@@ -194,7 +194,7 @@
   "SwapRouter": {
     "storage": [
       {
-        "astId": 4613,
+        "astId": 7276,
         "contract": "src/router/SwapRouter.sol:SwapRouter",
         "label": "_initialized",
         "offset": 0,
@@ -202,7 +202,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 4615,
+        "astId": 7278,
         "contract": "src/router/SwapRouter.sol:SwapRouter",
         "label": "_initializing",
         "offset": 8,
@@ -210,7 +210,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 32,
+        "astId": 405,
         "contract": "src/router/SwapRouter.sol:SwapRouter",
         "label": "_roles",
         "offset": 0,
@@ -218,7 +218,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 5419,
+        "astId": 8082,
         "contract": "src/router/SwapRouter.sol:SwapRouter",
         "label": "_status",
         "offset": 0,
@@ -226,12 +226,12 @@
         "type": "t_uint256"
       },
       {
-        "astId": 5160,
+        "astId": 7823,
         "contract": "src/router/SwapRouter.sol:SwapRouter",
         "label": "registry",
         "offset": 0,
         "slot": "3",
-        "type": "t_contract(PoolRegistry)2750"
+        "type": "t_contract(PoolRegistry)3195"
       }
     ],
     "types": {
@@ -250,7 +250,7 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(PoolRegistry)2750": {
+      "t_contract(PoolRegistry)3195": {
         "encoding": "inplace",
         "label": "contract PoolRegistry",
         "numberOfBytes": "20"
@@ -284,7 +284,7 @@
   "PositionManager": {
     "storage": [
       {
-        "astId": 4613,
+        "astId": 7276,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "_initialized",
         "offset": 0,
@@ -292,7 +292,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 4615,
+        "astId": 7278,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "_initializing",
         "offset": 8,
@@ -300,7 +300,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 32,
+        "astId": 405,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "_roles",
         "offset": 0,
@@ -308,7 +308,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 5419,
+        "astId": 8082,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "_status",
         "offset": 0,
@@ -316,15 +316,15 @@
         "type": "t_uint256"
       },
       {
-        "astId": 3161,
+        "astId": 3708,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "registry",
         "offset": 0,
         "slot": "3",
-        "type": "t_contract(PoolRegistry)2750"
+        "type": "t_contract(PoolRegistry)3195"
       },
       {
-        "astId": 3163,
+        "astId": 3710,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "nextPositionId",
         "offset": 0,
@@ -332,12 +332,12 @@
         "type": "t_uint256"
       },
       {
-        "astId": 3168,
+        "astId": 3715,
         "contract": "src/liquidity/PositionManager.sol:PositionManager",
         "label": "positions",
         "offset": 0,
         "slot": "5",
-        "type": "t_mapping(t_uint256,t_struct(Position)3152_storage)"
+        "type": "t_mapping(t_uint256,t_struct(Position)3699_storage)"
       }
     ],
     "types": {
@@ -356,12 +356,12 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(PoolRegistry)2750": {
+      "t_contract(PoolRegistry)3195": {
         "encoding": "inplace",
         "label": "contract PoolRegistry",
         "numberOfBytes": "20"
       },
-      "t_enum(PoolModel)2755": {
+      "t_enum(PoolModel)3200": {
         "encoding": "inplace",
         "label": "enum PoolModel",
         "numberOfBytes": "1"
@@ -385,20 +385,20 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_mapping(t_uint256,t_struct(Position)3152_storage)": {
+      "t_mapping(t_uint256,t_struct(Position)3699_storage)": {
         "encoding": "mapping",
         "key": "t_uint256",
         "label": "mapping(uint256 => struct PositionManager.Position)",
         "numberOfBytes": "32",
-        "value": "t_struct(Position)3152_storage"
+        "value": "t_struct(Position)3699_storage"
       },
-      "t_struct(Position)3152_storage": {
+      "t_struct(Position)3699_storage": {
         "encoding": "inplace",
         "label": "struct PositionManager.Position",
         "numberOfBytes": "96",
         "members": [
           {
-            "astId": 3142,
+            "astId": 3689,
             "contract": "src/liquidity/PositionManager.sol:PositionManager",
             "label": "owner",
             "offset": 0,
@@ -406,7 +406,7 @@
             "type": "t_address"
           },
           {
-            "astId": 3144,
+            "astId": 3691,
             "contract": "src/liquidity/PositionManager.sol:PositionManager",
             "label": "pool",
             "offset": 0,
@@ -414,15 +414,15 @@
             "type": "t_address"
           },
           {
-            "astId": 3147,
+            "astId": 3694,
             "contract": "src/liquidity/PositionManager.sol:PositionManager",
             "label": "model",
             "offset": 20,
             "slot": "1",
-            "type": "t_enum(PoolModel)2755"
+            "type": "t_enum(PoolModel)3200"
           },
           {
-            "astId": 3149,
+            "astId": 3696,
             "contract": "src/liquidity/PositionManager.sol:PositionManager",
             "label": "binId",
             "offset": 21,
@@ -430,7 +430,7 @@
             "type": "t_int24"
           },
           {
-            "astId": 3151,
+            "astId": 3698,
             "contract": "src/liquidity/PositionManager.sol:PositionManager",
             "label": "shares",
             "offset": 0,
@@ -438,6 +438,257 @@
             "type": "t_uint256"
           }
         ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "ZKBlastVault": {
+    "storage": [
+      {
+        "astId": 3097,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 3099,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 405,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 3314,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 2376,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "treeVersion",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 2379,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "stateRegistry",
+        "offset": 8,
+        "slot": "3",
+        "type": "t_contract(ShieldedStateRegistry)1688"
+      },
+      {
+        "astId": 2382,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "fieldHasher",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(IFieldHasher)604"
+      },
+      {
+        "astId": 2384,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "paused",
+        "offset": 20,
+        "slot": "4",
+        "type": "t_bool"
+      },
+      {
+        "astId": 2387,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "_tree",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_struct(Tree)935_storage"
+      },
+      {
+        "astId": 2392,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "assetConfig",
+        "offset": 0,
+        "slot": "71",
+        "type": "t_mapping(t_address,t_struct(AssetConfig)2365_storage)"
+      },
+      {
+        "astId": 2396,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "commitmentInserted",
+        "offset": 0,
+        "slot": "72",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 2399,
+        "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+        "label": "withdrawalAdapter",
+        "offset": 0,
+        "slot": "73",
+        "type": "t_contract(WithdrawalVerifierAdapter)2311"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)32_storage": {
+        "encoding": "inplace",
+        "label": "bytes32[32]",
+        "numberOfBytes": "1024",
+        "base": "t_bytes32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IFieldHasher)604": {
+        "encoding": "inplace",
+        "label": "contract IFieldHasher",
+        "numberOfBytes": "20"
+      },
+      "t_contract(ShieldedStateRegistry)1688": {
+        "encoding": "inplace",
+        "label": "contract ShieldedStateRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_contract(WithdrawalVerifierAdapter)2311": {
+        "encoding": "inplace",
+        "label": "contract WithdrawalVerifierAdapter",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_struct(AssetConfig)2365_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct ZKBlastVault.AssetConfig)",
+        "numberOfBytes": "32",
+        "value": "t_struct(AssetConfig)2365_storage"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_struct(AssetConfig)2365_storage": {
+        "encoding": "inplace",
+        "label": "struct ZKBlastVault.AssetConfig",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 2362,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "denomination",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 2364,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "enabled",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_struct(Tree)935_storage": {
+        "encoding": "inplace",
+        "label": "struct IncrementalCommitmentTree.Tree",
+        "numberOfBytes": "2112",
+        "members": [
+          {
+            "astId": 924,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "zeroes",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_bytes32)32_storage"
+          },
+          {
+            "astId": 928,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "filledSubtrees",
+            "offset": 0,
+            "slot": "32",
+            "type": "t_array(t_bytes32)32_storage"
+          },
+          {
+            "astId": 930,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "root",
+            "offset": 0,
+            "slot": "64",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 932,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "nextLeafIndex",
+            "offset": 0,
+            "slot": "65",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 934,
+            "contract": "src/privacy/ZKBlastVault.sol:ZKBlastVault",
+            "label": "initialized",
+            "offset": 8,
+            "slot": "65",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint128": {
+        "encoding": "inplace",
+        "label": "uint128",
+        "numberOfBytes": "16"
       },
       "t_uint256": {
         "encoding": "inplace",

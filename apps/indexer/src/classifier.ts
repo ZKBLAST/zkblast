@@ -11,6 +11,8 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   LiquidityAdded: "liquidity",
   LiquidityRemoved: "liquidity",
   ProtocolFeesCollected: "fee",
+  CommitmentDeposited: "commitment",
+  RootRegistered: "root",
   TransactionReceipt: "receipt",
 };
 

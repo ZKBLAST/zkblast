@@ -28,6 +28,16 @@ library TokenTransfer {
         }
     }
 
+    function pushExact(address token, address recipient, uint256 amount) internal {
+        uint256 senderBefore = IERC20Minimal(token).balanceOf(address(this));
+        uint256 recipientBefore = IERC20Minimal(token).balanceOf(recipient);
+        push(token, recipient, amount);
+        if (
+            senderBefore - IERC20Minimal(token).balanceOf(address(this)) != amount
+                || IERC20Minimal(token).balanceOf(recipient) - recipientBefore != amount
+        ) revert UnsupportedTokenBehavior();
+    }
+
     function forceApprove(address token, address spender, uint256 amount) internal {
         if (!_approve(token, spender, amount)) {
             if (!_approve(token, spender, 0) || !_approve(token, spender, amount)) {

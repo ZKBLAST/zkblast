@@ -33,6 +33,7 @@
     "contracts:verify:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run verify:manifest",
     "contracts:accept:testnet-liquidity": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run accept:testnet-liquidity",
     "contracts:deploy:testnet-withdraw-verifier": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy:testnet-withdraw-verifier",
+    "contracts:deploy:testnet-vault": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy:testnet-vault",
     "contracts:verify:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run verify:manifest",
     "contracts:audit:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run audit:deployment",
     "contracts:audit:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run audit:deployment",

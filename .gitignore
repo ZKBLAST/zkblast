@@ -44,6 +44,15 @@ packages/contracts/cache/
 packages/contracts/out/
 packages/contracts/broadcast/
 packages/contracts/lib/
+!packages/contracts/lib/
+packages/contracts/lib/*
+!packages/contracts/lib/poseidon2-solidity/
+packages/contracts/lib/poseidon2-solidity/*
+!packages/contracts/lib/poseidon2-solidity/LICENSE
+!packages/contracts/lib/poseidon2-solidity/UPSTREAM.md
+!packages/contracts/lib/poseidon2-solidity/src/
+packages/contracts/lib/poseidon2-solidity/src/*
+!packages/contracts/lib/poseidon2-solidity/src/Poseidon2T4_BN254.sol
 packages/circuits/target/
 packages/circuits/proofs/
 packages/circuits/witnesses/

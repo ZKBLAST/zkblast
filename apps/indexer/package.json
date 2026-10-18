@@ -8,6 +8,7 @@
     "build": "tsup",
     "start": "node dist/runner.js",
     "backfill:testnet-market": "node --import tsx src/backfill-testnet-market.ts",
+    "backfill:testnet-shielded": "node --import tsx src/backfill-testnet-shielded.ts",
     "lint": "eslint src --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test test/**/*.test.ts"

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call -- preserved reference UI; runtime actions remain gated by the live app provider. */
 "use client";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

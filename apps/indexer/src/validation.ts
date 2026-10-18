@@ -13,6 +13,7 @@ const hexAddress = z.string().refine((value) => {
 
 const hash = z.string().refine((value) => isHash(value), "Invalid EVM hash");
 const payloadValue = z.union([z.string().max(2_048), z.number().finite(), z.boolean(), z.null()]);
+const secretPayloadKey = /(^|_)(secret|nonce|witness|path_siblings|path_directions|passphrase|private_key)($|_)/iu;
 
 const eventSchema = z.object({
   chainId: z.number().int().positive(),
@@ -21,7 +22,16 @@ const eventSchema = z.object({
   transactionHash: hash,
   logIndex: z.number().int().nonnegative().max(2_000_000),
   contractAddress: hexAddress,
-  kind: z.enum(["pool", "swap", "position", "liquidity", "fee", "receipt"]),
+  kind: z.enum([
+    "pool",
+    "swap",
+    "position",
+    "liquidity",
+    "fee",
+    "commitment",
+    "root",
+    "receipt",
+  ]),
   eventName: z.string().min(1).max(128),
   payload: z.record(z.string().min(1).max(128), payloadValue),
 }).strict();
@@ -39,6 +49,7 @@ export function validateBlockForPersistence(block: BlockEnvelope, expectedChainI
     if (event.chainId !== expectedChainId) throw new Error("EVENT_CHAIN_ID_MISMATCH");
     if (event.blockNumber !== parsed.number) throw new Error("EVENT_BLOCK_NUMBER_MISMATCH");
     if (event.blockHash.toLowerCase() !== parsed.hash.toLowerCase()) throw new Error("EVENT_BLOCK_HASH_MISMATCH");
+    rejectSecretPayload(event);
   }
   return parsed;
 }
@@ -46,5 +57,12 @@ export function validateBlockForPersistence(block: BlockEnvelope, expectedChainI
 export function validateEventForPersistence(event: IndexedEvent, expectedChainId: number): IndexedEvent {
   const parsed = eventSchema.parse(event) as IndexedEvent;
   if (parsed.chainId !== expectedChainId) throw new Error("EVENT_CHAIN_ID_MISMATCH");
+  rejectSecretPayload(parsed);
   return parsed;
+}
+
+function rejectSecretPayload(event: IndexedEvent): void {
+  if (Object.keys(event.payload).some((key) => secretPayloadKey.test(key))) {
+    throw new Error("SECRET_PAYLOAD_REJECTED");
+  }
 }

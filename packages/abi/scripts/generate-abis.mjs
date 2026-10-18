@@ -18,6 +18,8 @@ const contracts = [
   ["poolQuoterAbi", "PoolQuoter"],
   ["swapRouterAbi", "SwapRouter"],
   ["positionManagerAbi", "PositionManager"],
+  ["zkBlastVaultAbi", "ZKBlastVault"],
+  ["shieldedStateRegistryAbi", "ShieldedStateRegistry"],
   ["erc20Abi", "IERC20Minimal"],
 ];
 

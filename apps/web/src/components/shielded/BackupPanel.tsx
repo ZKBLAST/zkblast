@@ -1,84 +1,166 @@
 "use client";
 import { Download, Upload } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
-import { decryptNotes, download, encryptNotes, type Backup } from "@/lib/notecrypto";
-import type { LocalNote } from "./DepositFlow";
+import {
+  decryptNotes,
+  download,
+  encryptNotes,
+  isBackup,
+  type Backup,
+  type NoteEnvironment,
+  type ShieldedNoteV1,
+} from "@/lib/notecrypto";
 
-export function BackupPanel({ notes, onRestore }: { notes: LocalNote[]; onRestore: (n: LocalNote[]) => void }) {
+type Props = Readonly<{
+  notes: readonly ShieldedNoteV1[];
+  environment: NoteEnvironment;
+  chainId: number;
+  vaultAddress: string;
+  onRestore: (notes: readonly ShieldedNoteV1[]) => void;
+}>;
+
+export function BackupPanel({
+  notes,
+  environment,
+  chainId,
+  vaultAddress,
+  onRestore,
+}: Props) {
   const { toast } = useApp();
-  const [exportPass, setExportPass] = useState("");
-  const [file, setFile] = useState<Backup | null>(null);
+  const [exportPassphrase, setExportPassphrase] = useState("");
+  const [restorePassphrase, setRestorePassphrase] = useState("");
+  const [backup, setBackup] = useState<Backup | null>(null);
   const [fileName, setFileName] = useState("");
-  const [restorePass, setRestorePass] = useState("");
-  const [err, setErr] = useState("");
-  const [busy, setBusy] = useState<"exp" | "res" | null>(null);
-  const input = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const exportAll = async () => {
-    setBusy("exp");
+    setBusy(true);
     try {
-      download(`zkblast-notes-testnet-${new Date().toISOString().slice(0, 10)}.json`, await encryptNotes(notes, exportPass));
-      toast({ kind: "success", title: `Exported ${notes.length} notes`, body: "Encrypted with your passphrase" });
-    } finally { setBusy(null); }
+      download(
+        `zkblast-notes-${environment}-${chainId}.json`,
+        await encryptNotes(notes, exportPassphrase, environment, chainId),
+      );
+      toast({
+        kind: "success",
+        title: `Encrypted ${notes.length} note${notes.length === 1 ? "" : "s"}`,
+      });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "BACKUP_FAILED");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const onFile = async (f?: File) => {
-    setErr(""); setFile(null);
-    if (!f) return;
-    setFileName(f.name);
+  const selectFile = async (file?: File) => {
+    setError("");
+    setBackup(null);
+    if (!file) return;
+    setFileName(file.name);
     try {
-      const parsed: unknown = JSON.parse(await f.text());
+      const parsed: unknown = JSON.parse(await file.text());
       if (!isBackup(parsed)) throw new Error("INVALID_BACKUP");
-      setFile(parsed);
-    } catch { setErr("This file is not a ZKBLAST note backup. Pick the .json file you downloaded when depositing."); }
+      setBackup(parsed);
+    } catch {
+      setError("The selected file is not a valid encrypted ZKBLAST v1 backup.");
+    }
   };
 
   const restore = async () => {
-    if (!file) return;
-    setBusy("res"); setErr("");
+    if (!backup) return;
+    setBusy(true);
+    setError("");
     try {
-      const restored = await decryptNotes<LocalNote[]>(file, restorePass);
+      const restored = await decryptNotes(backup, restorePassphrase, {
+        environment,
+        chainId,
+      });
+      if (
+        restored.some(
+          (note) =>
+            note.vaultAddress.toLowerCase() !== vaultAddress.toLowerCase(),
+        )
+      )
+        throw new Error("NOTE_VAULT_MISMATCH");
       onRestore(restored);
-      toast({ kind: "success", title: `Restored ${restored.length} note${restored.length === 1 ? "" : "s"}` });
-      setFile(null); setFileName(""); setRestorePass("");
-    } catch { setErr("Wrong passphrase, or the file was changed. Check the passphrase and try again."); }
-    finally { setBusy(null); }
+      toast({
+        kind: "success",
+        title: `Restored ${restored.length} validated note${restored.length === 1 ? "" : "s"}`,
+      });
+      setBackup(null);
+      setFileName("");
+      setRestorePassphrase("");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "RESTORE_FAILED");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <div className="grid gap-8 md:grid-cols-2 md:gap-10">
+    <div className="grid gap-8 md:grid-cols-2">
       <section>
-        <h3 className="wide text-[13.5px]">Export all notes</h3>
-        <p className="mt-2 text-[14px] text-muted">Encrypts every note on this device into one file using PBKDF2 and AES-GCM in your browser.</p>
-        <label htmlFor="exp-pass" className="mt-4 block text-[13px] text-faint">Passphrase (at least 10 characters)</label>
-        <input id="exp-pass" type="password" autoComplete="new-password" value={exportPass} onChange={(e) => setExportPass(e.target.value)} className="mt-1.5 h-12 w-full rounded-sm border border-line bg-bg px-3 text-[16px] outline-none focus:border-lime/70 focus-visible:outline-none" />
-        <Button className="mt-4 w-full" disabled={exportPass.length < 10 || !notes.length} loading={busy === "exp"} onClick={() => void exportAll()}><Download className="size-4" aria-hidden /> Export {notes.length} notes</Button>
+        <h3 className="wide text-[13.5px]">Export encrypted notes</h3>
+        <p className="mt-2 text-sm text-muted">
+          The passphrase and plaintext notes never leave this browser.
+        </p>
+        <input
+          aria-label="Export passphrase"
+          type="password"
+          autoComplete="new-password"
+          value={exportPassphrase}
+          onChange={(event) => setExportPassphrase(event.target.value)}
+          className="mt-4 h-12 w-full rounded-sm border border-line bg-bg px-3"
+        />
+        <Button
+          className="mt-4 w-full"
+          disabled={exportPassphrase.length < 12 || !notes.length}
+          loading={busy}
+          onClick={() => void exportAll()}
+        >
+          <Download className="size-4" /> Export {notes.length}
+        </Button>
       </section>
       <section>
-        <h3 className="wide text-[13.5px]">Restore from backup</h3>
-        <p className="mt-2 text-[14px] text-muted">Decrypted locally. Restored notes are merged with the ones already here.</p>
-        <input ref={input} type="file" accept="application/json,.json" className="sr-only" id="restore-file" onChange={(e) => void onFile(e.target.files?.[0])} />
-        <label htmlFor="restore-file" className="mt-4 flex h-12 cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-line-strong text-[14px] text-muted transition-colors hover:border-lime/60 hover:text-fg">
-          <Upload className="size-4" aria-hidden /> {fileName || "Choose backup file"}
+        <h3 className="wide text-[13.5px]">Restore validated backup</h3>
+        <p className="mt-2 text-sm text-muted">
+          Network and vault bindings are checked before any note is accepted.
+        </p>
+        <label className="mt-4 flex h-12 cursor-pointer items-center justify-center gap-2 border border-dashed border-line-strong">
+          <Upload className="size-4" />
+          {fileName || "Choose backup"}
+          <input
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            onChange={(event) => void selectFile(event.target.files?.[0])}
+          />
         </label>
-        <label htmlFor="res-pass" className="mt-4 block text-[13px] text-faint">Passphrase</label>
-        <input id="res-pass" type="password" autoComplete="current-password" value={restorePass} onChange={(e) => setRestorePass(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") void restore(); }} className="mt-1.5 h-12 w-full rounded-sm border border-line bg-bg px-3 text-[16px] outline-none focus:border-lime/70 focus-visible:outline-none" />
-        {err && <p role="alert" className="mt-2 text-[13px] text-danger">{err}</p>}
-        <Button variant="secondary" className="mt-4 w-full" disabled={!file || !restorePass} loading={busy === "res"} onClick={() => void restore()}>Restore notes</Button>
+        <input
+          aria-label="Restore passphrase"
+          type="password"
+          autoComplete="current-password"
+          value={restorePassphrase}
+          onChange={(event) => setRestorePassphrase(event.target.value)}
+          className="mt-4 h-12 w-full rounded-sm border border-line bg-bg px-3"
+        />
+        {error && (
+          <p role="alert" className="mt-2 text-sm text-danger">
+            {error}
+          </p>
+        )}
+        <Button
+          variant="secondary"
+          className="mt-4 w-full"
+          disabled={!backup || restorePassphrase.length < 12}
+          loading={busy}
+          onClick={() => void restore()}
+        >
+          Restore notes
+        </Button>
       </section>
     </div>
   );
-}
-
-function isBackup(value: unknown): value is Backup {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
-  return candidate.format === "zkblast-note-backup"
-    && candidate.version === 0
-    && candidate.env === "testnet"
-    && typeof candidate.salt === "string"
-    && typeof candidate.iv === "string"
-    && typeof candidate.ct === "string";
 }

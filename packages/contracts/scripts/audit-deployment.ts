@@ -72,6 +72,7 @@ const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
   environment: string;
   chainId: number;
   contracts: Record<string, ContractRecord>;
+  shielded?: unknown;
 };
 assert(manifest.protocol === "ZKBLAST", "Protocol identity mismatch");
 assert(manifest.environment === environment, "Environment mismatch");
@@ -176,10 +177,12 @@ const audit = {
   contracts: results,
   claims: {
     publicAmmOnly: true,
-    zeroKnowledgeCircuitIncluded: false,
-    privacyClaimMadeForCurrentDeployment: false,
+    zeroKnowledgeCircuitIncluded: Boolean(manifest.shielded),
+    privacyClaimMadeForCurrentDeployment: Boolean(manifest.shielded),
     statement:
-      "Current deployment is the public AMM phase and makes no shielded-transaction claim.",
+      manifest.shielded
+        ? "The deployment includes a shielded-deposit commitment tree; withdrawal privacy is not claimed until Slice 13 is complete."
+        : "Current deployment is the public AMM phase and makes no shielded-transaction claim.",
   },
 };
 const auditPath = path.resolve(

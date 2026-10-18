@@ -17,6 +17,7 @@
     "deploy": "node --experimental-strip-types scripts/deploy-protocol.ts",
     "deploy:testnet-market": "node --experimental-strip-types scripts/deploy-testnet-market.ts",
     "deploy:testnet-withdraw-verifier": "node --experimental-strip-types scripts/deploy-testnet-withdraw-verifier.ts",
+    "deploy:testnet-vault": "node --experimental-strip-types scripts/deploy-testnet-vault.ts",
     "accept:testnet-liquidity": "node --experimental-strip-types scripts/accept-testnet-liquidity.ts",
     "verify:testnet-market": "node --experimental-strip-types scripts/verify-testnet-market.ts",
     "verify:manifest": "node --experimental-strip-types scripts/verify-manifest.ts",

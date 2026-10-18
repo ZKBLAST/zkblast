@@ -7,6 +7,8 @@ export {
   poolRegistryAbi,
   positionManagerAbi,
   swapRouterAbi,
+  zkBlastVaultAbi,
+  shieldedStateRegistryAbi,
 } from "./generated.js";
 
 import {
@@ -18,6 +20,8 @@ import {
   poolRegistryAbi,
   positionManagerAbi,
   swapRouterAbi,
+  zkBlastVaultAbi,
+  shieldedStateRegistryAbi,
 } from "./generated.js";
 
 export const protocolAbis = {
@@ -28,5 +32,7 @@ export const protocolAbis = {
   PoolQuoter: poolQuoterAbi,
   SwapRouter: swapRouterAbi,
   PositionManager: positionManagerAbi,
+  ZKBlastVault: zkBlastVaultAbi,
+  ShieldedStateRegistry: shieldedStateRegistryAbi,
   ERC20: erc20Abi,
 } as const;

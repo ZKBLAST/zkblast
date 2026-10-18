@@ -28,6 +28,7 @@ const contracts = [
   "PoolFactory",
   "SwapRouter",
   "PositionManager",
+  "ZKBlastVault",
 ] as const;
 
 async function currentSnapshot(): Promise<Snapshot> {

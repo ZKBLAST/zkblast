@@ -41,7 +41,7 @@ library IncrementalCommitmentTree {
     {
         if (!tree.initialized) revert TreeNotInitialized();
         _requireField(commitment);
-        if (tree.nextLeafIndex >= uint64(1) << DEPTH) revert TreeFull();
+        if (tree.nextLeafIndex >= uint64(uint256(1) << DEPTH)) revert TreeFull();
         leafIndex = uint32(tree.nextLeafIndex);
 
         uint256 pathIndex = leafIndex;

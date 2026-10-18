@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "generatedAt": "2026-10-18T03:25:05.946Z",
+  "contracts": {
+    "fieldHasher": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+    "stateRegistry": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+    "vault": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+    "vaultImplementation": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57"
+  },
+  "asset": {
+    "address": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+    "symbol": "ZKTB",
+    "decimals": 18,
+    "denominationRaw": "1000000000000000000"
+  },
+  "treeVersion": 1,
+  "acceptance": {
+    "commitment": "0x17268b80e84cc29e0b66b4dcf6bdf0ff2fcdfd44f10424344ab4bb4191fcb1c2",
+    "leafIndex": 0,
+    "root": "0x1278e1af2d689ab4dd1b5bd032fa279ff868203d9cb3095865b939693b3901a9",
+    "rootRegistered": true,
+    "encryptedBackupCreated": true
+  },
+  "transactions": {
+    "deployPoseidon2FieldHasher": {
+      "hash": "0x7c9366b39d61a902de1f0ed3cb2a8390e5caee073daa5f338dfe486384812f17",
+      "contractAddress": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+      "blockNumber": 137764733,
+      "blockHash": "0x928ad7fe1cec5e12f51309428d9ade6b11d2bfdd8bcfb85ade909a1d2ef5b9c6",
+      "gasUsed": "1403726",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "14037260000000",
+      "status": "success"
+    },
+    "deployShieldedStateRegistryImplementation": {
+      "hash": "0x948db178793e5a79e88a5f8475149ae33d8f5971e1f425ba23893e48482ac455",
+      "contractAddress": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+      "blockNumber": 137764740,
+      "blockHash": "0xa4da1d4448d4932f7c25b5456bc5f7bf9922863a4bd8ae0ebc5e03b9b16f27c2",
+      "gasUsed": "1115103",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "11151030000000",
+      "status": "success"
+    },
+    "deployShieldedStateRegistryProxy": {
+      "hash": "0x45652a387c29089a5a0fed81f334df73486c6487e9fce46e482df79b33ac3c06",
+      "contractAddress": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+      "blockNumber": 137764747,
+      "blockHash": "0x6b38a2d7e25a904afc9270ad9659860f973ae54adcc8c2b9f3f9e86781383c63",
+      "gasUsed": "182006",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "1820060000000",
+      "status": "success"
+    },
+    "deployZKBlastVaultImplementation": {
+      "hash": "0x66ad967d98f5ab628befca1b7ce8aa571be2eb36a77ba2ebeac9b874a66bce1d",
+      "contractAddress": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "blockNumber": 137764757,
+      "blockHash": "0x4c4b6ff074ebff326af72bbd9287d6bec3b74c8dee90a25b5d0b3eaf98f763d5",
+      "gasUsed": "1387301",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "13873010000000",
+      "status": "success"
+    },
+    "deployZKBlastVaultProxy": {
+      "hash": "0x3e78b57d70bfbcf52cea6785a89a22e15a9b112c33e82cef359ae522ac6b253c",
+      "contractAddress": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+      "blockNumber": 137764762,
+      "blockHash": "0xd2432b1856259e4bc0fe0dfc147959bbcc4007feb82de437ef932a52cd31aef6",
+      "gasUsed": "2531761",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "25317610000000",
+      "status": "success"
+    },
+    "authorizeVault": {
+      "hash": "0xb5ad0e81c516a3957e8d369ac16097802bdb15d927e1efca94befd33102429f5",
+      "contractAddress": null,
+      "blockNumber": 137764766,
+      "blockHash": "0x9e329d3a24aad6c10d0adf275d1b15b87ecf448042de19cda6aa4db03bdf2344",
+      "gasUsed": "52796",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "527960000000",
+      "status": "success"
+    },
+    "configureAsset": {
+      "hash": "0xd32e5d190b0a234631a4c0a65d6f18e1b8dcdb3b74be628e4d013bc9f02411d5",
+      "contractAddress": null,
+      "blockNumber": 137764774,
+      "blockHash": "0x8ff6d182593bf66985ffc51308312c6d5f372a43dc8e29cf2b1f6bdf1aece646",
+      "gasUsed": "53434",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "534340000000",
+      "status": "success"
+    },
+    "approveExactDeposit": {
+      "hash": "0x16ce8be9eb8b57c8f9c555caf881db660a3da63bdc818c321bd51c02ca2b6ebf",
+      "contractAddress": null,
+      "blockNumber": 137764781,
+      "blockHash": "0x4f8b7f93af2152d4188c0b418a99574e094ee2615f065ba9a35504e367be869e",
+      "gasUsed": "46152",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "461520000000",
+      "status": "success"
+    },
+    "depositE2E": {
+      "hash": "0xb79e454d621ebe88e0017b9f435e49273d4395486ffc0d24cf3efd5535d405f6",
+      "contractAddress": null,
+      "blockNumber": 137764787,
+      "blockHash": "0xca628b6dd5b924154cb3918d2fab8be79dd14c620414c939ac67077b1c73d1f2",
+      "gasUsed": "1286420",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "12864200000000",
+      "status": "success"
+    }
+  },
+  "totals": {
+    "transactionCount": 9,
+    "gasUsed": "8058699",
+    "totalFeeWei": "80586990000000"
+  },
+  "verification": {
+    "status": "verified",
+    "urls": [
+      "https://explorer.testnet.chain.robinhood.com/address/0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+      "https://explorer.testnet.chain.robinhood.com/address/0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+      "https://explorer.testnet.chain.robinhood.com/address/0x3C87569210706b413101ad6a30E9E623e38d8051"
+    ]
+  }
+}

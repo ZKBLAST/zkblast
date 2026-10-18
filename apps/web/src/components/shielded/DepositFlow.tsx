@@ -1,169 +1,250 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument -- preserved reference UI; runtime actions remain gated by the live app provider. */
 "use client";
-import { AnimatePresence, motion } from "motion/react";
-import { AlertTriangle, Copy, Download, Eye, EyeOff } from "lucide-react";
+import { AlertTriangle, Download } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "@/components/shell/AppProvider";
-import { TokenMark } from "@/components/ui/Badges";
 import { Button } from "@/components/ui/Button";
-import { Segmented } from "@/components/ui/Segmented";
-import { depositStages, shieldedWarnings, vault, type ShieldedNote } from "@/data/shielded";
-import { fmtAmount, fmtUsd, cx, randomHex, shortHex } from "@/lib/format";
-import { download, encryptNotes } from "@/lib/notecrypto";
-import { tokenBySymbol } from "@/data/tokens";
-import { ProofProgress } from "./ProofProgress";
+import { createShieldedNote } from "@/lib/note-circuit";
+import {
+  download,
+  encryptNotes,
+  storeEncryptedNotes,
+  type NoteEnvironment,
+  type ShieldedNoteV1,
+} from "@/lib/notecrypto";
 
-type Asset = "WETH" | "USDC";
-export type LocalNote = ShieldedNote & { secret?: string };
+export type VaultAsset = Readonly<{
+  symbol: string;
+  address: `0x${string}`;
+  denominationRaw: string;
+  decimals: number;
+}>;
+/** Temporary compatibility shape for the preserved withdrawal reference UI; Slice 13 replaces it with ShieldedNoteV1. */
+export type LocalNote = Readonly<{
+  id: string;
+  asset: "WETH" | "USDC";
+  amount: number;
+  secret?: string;
+  commitment: string;
+  leafIndex: number;
+  createdAt: string;
+  status: "pending" | "unspent" | "spent";
+  backedUp: boolean;
+}>;
+type Props = Readonly<{
+  environment: NoteEnvironment;
+  chainId: number;
+  vaultAddress: `0x${string}`;
+  treeVersion: number;
+  assets: readonly VaultAsset[];
+  onSubmit: (note: ShieldedNoteV1) => Promise<ShieldedNoteV1>;
+  onCreated: (note: ShieldedNoteV1) => void;
+}>;
 
-const slide = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24, transition: { duration: 0.15 } }, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const } };
+const formatAmount = (asset: VaultAsset): string => {
+  const scale = 10n ** BigInt(asset.decimals);
+  const amount = BigInt(asset.denominationRaw);
+  return `${amount / scale}${amount % scale ? `.${(amount % scale).toString().padStart(asset.decimals, "0").replace(/0+$/u, "")}` : ""}`;
+};
 
-export function DepositFlow({ onCreated, nextLeaf }: { onCreated: (n: LocalNote) => void; nextLeaf: number }) {
-  const { address, balances, connect, adjust, toast } = useApp();
-  const [step, setStep] = useState<"amount" | "backup" | "confirm" | "progress" | "done">("amount");
-  const [asset, setAsset] = useState<Asset>("USDC");
-  const [amount, setAmount] = useState<number>(vault.denominations.USDC[1]);
-  const [note, setNote] = useState<LocalNote | null>(null);
-  const [pass, setPass] = useState("");
-  const [show, setShow] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [acks, setAcks] = useState<boolean[]>(shieldedWarnings.map(() => false));
-  const [busy, setBusy] = useState(false);
+export function DepositFlow({
+  environment,
+  chainId,
+  vaultAddress,
+  treeVersion,
+  assets,
+  onSubmit,
+  onCreated,
+}: Props) {
+  const { address, connect, toast } = useApp();
+  const [assetAddress, setAssetAddress] = useState(assets[0]?.address ?? "");
+  const [note, setNote] = useState<ShieldedNoteV1 | null>(null);
+  const [passphrase, setPassphrase] = useState("");
+  const [backupSaved, setBackupSaved] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [busy, setBusy] = useState<"prepare" | "backup" | "submit" | null>(
+    null,
+  );
+  const [error, setError] = useState("");
+  const asset = assets.find((item) => item.address === assetAddress) ?? null;
 
-  const bal = balances[asset] ?? 0;
-  const over = !!address && amount > bal;
-  const noteString = note ? `zkblast-note-v0-testnet-${note.asset}-${note.amount}-${note.secret}` : "";
-
-  const start = () => {
-    const secret = randomHex(31).slice(2);
-    setNote({ id: `note-${Date.now().toString(36)}`, asset, amount, secret, commitment: shortHex(randomHex(32)), leafIndex: nextLeaf, createdAt: new Date().toISOString(), status: "pending", backedUp: false });
-    setStep("backup");
-  };
-
-  const saveBackup = async () => {
-    if (!note || pass.length < 10) return;
-    setBusy(true);
+  const prepare = async () => {
+    if (!asset) return;
+    setBusy("prepare");
+    setError("");
     try {
-      const file = await encryptNotes([{ ...note }], pass);
-      download(`zkblast-note-${note.asset}-${note.amount}-testnet.json`, file);
-      setSaved(true);
-      setNote({ ...note, backedUp: true });
-      toast({ kind: "success", title: "Encrypted backup saved", body: "Keep the file and the passphrase separately." });
-    } finally { setBusy(false); }
+      setNote(
+        await createShieldedNote({
+          environment,
+          chainId,
+          vaultAddress,
+          treeVersion,
+          assetAddress: asset.address,
+          amountRaw: asset.denominationRaw,
+        }),
+      );
+      setBackupSaved(false);
+      setAcknowledged(false);
+    } catch (reason) {
+      setError(
+        reason instanceof Error ? reason.message : "NOTE_PREPARATION_FAILED",
+      );
+    } finally {
+      setBusy(null);
+    }
   };
 
-  const finish = () => {
+  const backup = async () => {
     if (!note) return;
-    adjust(asset, -amount);
-    onCreated({ ...note, status: "unspent" });
-    setStep("done");
+    setBusy("backup");
+    setError("");
+    try {
+      const encrypted = await encryptNotes(
+        [note],
+        passphrase,
+        environment,
+        chainId,
+      );
+      download(
+        `zkblast-note-${environment}-${chainId}-${note.commitment.slice(0, 10)}.json`,
+        encrypted,
+      );
+      setBackupSaved(true);
+      toast({
+        kind: "success",
+        title: "Encrypted note backup downloaded",
+        body: "Store the file and passphrase separately.",
+      });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "BACKUP_FAILED");
+    } finally {
+      setBusy(null);
+    }
   };
 
-  const reset = () => { setStep("amount"); setNote(null); setPass(""); setSaved(false); setAcks(shieldedWarnings.map(() => false)); };
+  const submit = async () => {
+    if (!note || !backupSaved || !acknowledged) return;
+    setBusy("submit");
+    setError("");
+    try {
+      const submitted = await onSubmit(note);
+      await storeEncryptedNotes(window.localStorage, [submitted], passphrase);
+      onCreated(submitted);
+      setNote(submitted);
+      toast({ kind: "success", title: "Commitment deposit confirmed" });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "DEPOSIT_FAILED");
+    } finally {
+      setBusy(null);
+    }
+  };
 
+  if (!assets.length)
+    return (
+      <div className="panel p-6 text-sm text-muted">
+        No governance-approved vault asset is configured for this network.
+      </div>
+    );
   return (
-    <div className="min-h-[460px]">
-      <AnimatePresence mode="wait">
-        {step === "amount" && (
-          <motion.div key="amount" {...slide}>
-            <p className="text-[13px] text-faint">Asset</p>
-            <div className="mt-2">
-              <Segmented label="Asset" value={asset} onChange={(a) => { setAsset(a); setAmount(vault.denominations[a][1]); }} options={vault.allowlist.map((a) => ({ value: a, label: a }))} />
-            </div>
-            <p className="mt-6 text-[13px] text-faint">Amount</p>
-            <div className="mt-2 grid grid-cols-3 gap-2" role="radiogroup" aria-label="Deposit amount">
-              {vault.denominations[asset].map((d) => (
-                <button key={d} role="radio" aria-checked={amount === d} onClick={() => setAmount(d)}
-                  className={cx("rounded-md border px-3 py-4 text-left transition-colors cursor-pointer", amount === d ? "border-lime bg-lime/[0.06]" : "border-line hover:border-line-strong")}>
-                  <span className="num block text-[22px]">{fmtAmount(d)}</span>
-                  <span className="num block text-[12px] text-faint">{fmtUsd(d * tokenBySymbol(asset).priceUsd)}</span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 text-[13px] text-faint">Fixed amounts keep your deposit in a larger anonymity set. Current {asset} set (simulated): <span className="num text-fg">{vault.anonymitySet[asset]}</span> deposits.</p>
-            {address && <p className={cx("num mt-4 text-[13px]", over ? "text-danger" : "text-faint")}>Wallet balance {fmtAmount(bal)} {asset}{over && " · not enough for this amount"}</p>}
-            <Button size="lg" className="mt-6 w-full" disabled={!!address && over} onClick={() => (!address ? connect() : start())}>
-              {!address ? "Connect wallet" : over ? `Not enough ${asset}` : "Create note"}
-            </Button>
-            <p className="mt-3 text-center text-[12px] text-faint">The note is generated in this browser before anything is sent.</p>
-          </motion.div>
-        )}
-
-        {step === "backup" && note && (
-          <motion.div key="backup" {...slide}>
-            <h3 className="wide text-[13.5px]">Back up your note</h3>
-            <p className="mt-2 text-[14px] text-muted">This string is the only way to withdraw. Encrypt it with a passphrase and keep the file somewhere safe.</p>
-            <div className="mt-5 rounded-md border border-line bg-bg p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[12px] text-faint">note · testnet</span>
-                <div className="flex gap-1">
-                  <button onClick={() => setShow((s) => !s)} aria-label={show ? "Hide note" : "Show note"} className="grid size-9 place-items-center rounded-sm text-muted hover:bg-raised hover:text-fg cursor-pointer">{show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button>
-                  <button onClick={() => { void navigator.clipboard?.writeText(noteString); toast({ kind: "info", title: "Note copied", body: "Clear your clipboard after storing it." }); }} aria-label="Copy note" className="grid size-9 place-items-center rounded-sm text-muted hover:bg-raised hover:text-fg cursor-pointer"><Copy className="size-4" /></button>
-                </div>
-              </div>
-              <p className={cx("mt-2 break-all font-mono text-[13px] leading-relaxed transition-[filter] duration-200", show ? "text-fg" : "select-none text-muted blur-[5px]")}>{noteString}</p>
-            </div>
-            <label htmlFor="pass" className="mt-5 block text-[13px] text-faint">Backup passphrase (at least 10 characters)</label>
-            <input id="pass" type="password" value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="new-password"
-              className="mt-1.5 h-12 w-full rounded-sm border border-line bg-bg px-3 text-[16px] outline-none focus:border-lime/70 focus-visible:outline-none" />
-            {pass.length > 0 && pass.length < 10 && <p className="mt-1.5 text-[12px] text-warn">{10 - pass.length} more characters.</p>}
-            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-              <Button variant={saved ? "secondary" : "primary"} className="flex-1" loading={busy} disabled={pass.length < 10} onClick={() => void saveBackup()}>
-                <Download className="size-4" aria-hidden /> {saved ? "Download again" : "Download encrypted backup"}
-              </Button>
-              <Button variant="secondary" className="flex-1" disabled={!saved} onClick={() => setStep("confirm")}>Continue</Button>
-            </div>
-            <button onClick={reset} className="mt-4 text-[13px] text-faint hover:text-fg cursor-pointer">Cancel and discard this note</button>
-          </motion.div>
-        )}
-
-        {step === "confirm" && note && (
-          <motion.div key="confirm" {...slide}>
-            <div className="flex items-start gap-3 rounded-md border border-warn/50 bg-warn/[0.06] p-4">
-              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warn" aria-hidden />
-              <div>
-                <p className="font-semibold text-warn">Read before depositing</p>
-                <p className="mt-1 text-[13px] text-muted">A deposit cannot be undone, and a lost note cannot be recovered.</p>
-              </div>
-            </div>
-            <fieldset className="mt-5 space-y-3">
-              <legend className="sr-only">Acknowledge each warning</legend>
-              {shieldedWarnings.map((w, i) => (
-                <label key={i} className="flex cursor-pointer items-start gap-3 rounded-sm p-1 text-[14px]">
-                  <input type="checkbox" checked={acks[i]} onChange={(e) => setAcks((a) => a.map((x, k) => (k === i ? e.target.checked : x)))} className="mt-1 size-4 shrink-0 accent-[#dfe3ee]" />
-                  <span className={acks[i] ? "text-fg" : "text-muted"}>{w}</span>
-                </label>
-              ))}
-            </fieldset>
-            <dl className="mt-5 space-y-2 border-t border-line pt-4 text-[14px]">
-              <div className="flex justify-between"><dt className="text-faint">Deposit</dt><dd className="num inline-flex items-center gap-2"><TokenMark symbol={note.asset} size={18} />{fmtAmount(note.amount)} {note.asset}</dd></div>
-              <div className="flex justify-between"><dt className="text-faint">Commitment</dt><dd className="num">{note.commitment}</dd></div>
-              <div className="flex justify-between"><dt className="text-faint">Backup</dt><dd className="text-lime">Encrypted file saved</dd></div>
-            </dl>
-            <Button size="lg" className="mt-6 w-full" disabled={!acks.every(Boolean)} onClick={() => setStep("progress")}>
-              Deposit {fmtAmount(note.amount)} {note.asset}
-            </Button>
-          </motion.div>
-        )}
-
-        {step === "progress" && (
-          <motion.div key="progress" {...slide}>
-            <ProofProgress stages={depositStages} running onDone={finish} />
-          </motion.div>
-        )}
-
-        {step === "done" && note && (
-          <motion.div key="done" {...slide} className="text-center">
-            <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="mx-auto mt-6 grid size-20 place-items-center rounded-full border-2 border-lime">
-              <svg viewBox="0 0 24 24" className="size-9 text-lime" aria-hidden><motion.path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.2, duration: 0.5 }} /></svg>
-            </motion.div>
-            <h3 className="display mt-6 text-[32px]">Note created</h3>
-            <p className="mx-auto mt-2 max-w-sm text-[14px] text-muted">{fmtAmount(note.amount)} {note.asset} is in the vault as leaf #{note.leafIndex.toLocaleString("en-US")}. Waiting longer before withdrawing makes it harder to link.</p>
-            <p className="mt-3 font-mono text-[12px] text-faint">simulated · testnet · nothing was sent onchain</p>
-            <Button variant="secondary" className="mt-6" onClick={reset}>Make another deposit</Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-faint">Governance-approved denomination</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {assets.map((item) => (
+            <button
+              key={item.address}
+              onClick={() => {
+                setAssetAddress(item.address);
+                setNote(null);
+                setBackupSaved(false);
+              }}
+              className={`cursor-pointer border p-4 text-left ${assetAddress === item.address ? "border-lime bg-lime/[0.06]" : "border-line"}`}
+            >
+              <span className="num text-xl">
+                {formatAmount(item)} {item.symbol}
+              </span>
+              <span className="mt-1 block truncate font-mono text-[10px] text-faint">
+                {item.address}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {!note && (
+        <Button
+          size="lg"
+          className="w-full"
+          loading={busy === "prepare"}
+          onClick={() => (address ? void prepare() : connect())}
+        >
+          {address ? "Generate note locally" : "Connect wallet"}
+        </Button>
+      )}
+      {note && (
+        <section className="panel ticks space-y-5 p-5">
+          <div>
+            <p className="label">Prepared commitment</p>
+            <p className="mt-2 break-all font-mono text-xs text-fg">
+              {note.commitment}
+            </p>
+          </div>
+          <p className="text-sm text-muted">
+            The secret and nonce exist only inside the encrypted backup. They
+            are never submitted to ZKBLAST services.
+          </p>
+          <input
+            aria-label="Backup passphrase"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Backup passphrase, at least 12 characters"
+            value={passphrase}
+            onChange={(event) => setPassphrase(event.target.value)}
+            className="h-12 w-full rounded-sm border border-line bg-bg px-3"
+          />
+          <Button
+            className="w-full"
+            loading={busy === "backup"}
+            disabled={passphrase.length < 12}
+            onClick={() => void backup()}
+          >
+            <Download className="size-4" />{" "}
+            {backupSaved
+              ? "Download backup again"
+              : "Download encrypted backup"}
+          </Button>
+          <label className="flex items-start gap-3 border border-warn/40 bg-warn/[0.05] p-4 text-sm">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={acknowledged}
+              onChange={(event) => setAcknowledged(event.target.checked)}
+            />
+            <span>
+              <strong className="flex items-center gap-2 text-warn">
+                <AlertTriangle className="size-4" />
+                Irreversible-loss warning
+              </strong>
+              <span className="mt-1 block text-muted">
+                I understand that losing both the encrypted backup and its
+                passphrase permanently removes my ability to withdraw.
+              </span>
+            </span>
+          </label>
+          <Button
+            size="lg"
+            className="w-full"
+            loading={busy === "submit"}
+            disabled={!backupSaved || !acknowledged}
+            onClick={() => void submit()}
+          >
+            Approve exact amount and deposit
+          </Button>
+        </section>
+      )}
+      {error && (
+        <p role="alert" className="text-sm text-danger">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
   "protocol": "ZKBLAST",
   "environment": "testnet",
   "chainId": 46630,
-  "generatedAt": "2026-10-17T12:17:28.751Z",
+  "generatedAt": "2026-10-18T03:28:05.969Z",
   "contracts": {
     "PoolRegistry": {
       "abiHash": "0x53924c36e69fa6f4d14c20601310a05705e9fd55db269d0c0b2f43257fa05c30",
@@ -24,7 +24,7 @@
     },
     "PoolFactory": {
       "abiHash": "0x8c3d0d1bb02735dd8b93c3266642d91d1e2ff0699335345c32a237a6a1e438ac",
-      "metadataHash": "0x1228a20aaf3d0d1334e1b19b439f64c9a162616516acd4aaa0c228f314ff93fc",
+      "metadataHash": "0x63916f4ab11efcd7639f4c684f5c1a1c503edb23968d03a73840b149a255cb14",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0xCB331f29163CEB7afECc5cB82083B988483992C7",
@@ -41,7 +41,7 @@
     },
     "SwapRouter": {
       "abiHash": "0x066e276b209bf77e4bf3ec37c1c86f475166a91fcc36356a6300ad170471873d",
-      "metadataHash": "0xfa646fef9795ab8a7e919113590990d465fdf642aed805eb3bd177cd90321ced",
+      "metadataHash": "0xa6eb5e6e2ca1811ea43a811b417bf8218e8d92a65c00fa4d52a8877314250a39",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
@@ -58,7 +58,7 @@
     },
     "PositionManager": {
       "abiHash": "0x311794bfa271afe9f44d3627b993f3acaaa7d4bce547e590799958079da91da8",
-      "metadataHash": "0xc698fe269cdaef18db477bbbe9436439021415597661fdb3950a2ac013c802f7",
+      "metadataHash": "0x0239592affbe0ac63edcc24819e2417817a05e442a63bfee96fcf8b93a59b71c",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [
         "0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
@@ -75,10 +75,56 @@
     },
     "PoolQuoter": {
       "abiHash": "0xeb757f429e6664e5099b10d6e815e85c7ddf87a99beecdfe3471a1d3b9bd0b98",
-      "metadataHash": "0x156856c9b18027ea8809e18c4a3977171b4debdbbe25852181e4facd737dcde5",
+      "metadataHash": "0xf3a5d33ce1520707f9453a43310966cf66bcb08a40e97fec318536516a598762",
       "implementationConstructorArguments": [],
       "proxyConstructorArguments": [],
       "initializerArguments": [],
+      "creationInputVerified": true,
+      "runtimeBytecodeVerified": true,
+      "sourceVerificationDeclared": true
+    },
+    "Poseidon2FieldHasher": {
+      "abiHash": "0x17fcf9300889c0931f74f2fe6cd64177f881560d3c3e0509a2bb0d4640c6e7da",
+      "metadataHash": "0x8ebfc7454965a707fdae43053a22d3dd311ca5e2497171d8e1ec6aab113a7b5e",
+      "implementationConstructorArguments": [],
+      "proxyConstructorArguments": [],
+      "initializerArguments": [],
+      "creationInputVerified": true,
+      "runtimeBytecodeVerified": true,
+      "sourceVerificationDeclared": true
+    },
+    "ShieldedStateRegistry": {
+      "abiHash": "0xee9729689a9deb6e15f182a0ea9403ad93ac29daac5b83c16a1a27c9417d00b3",
+      "metadataHash": "0xa695a985c52e9a46914907fbe36c219a2a416b1a40d9e927005b7654d50ac0fd",
+      "implementationConstructorArguments": [],
+      "proxyConstructorArguments": [
+        "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+        "0x485cc9550000000000000000000000002e8ca95e429f34e6e876e078dcd8e51eb31645b900000000000000000000000048e7bcfe8f469fbc72e6bcef0d0ce70d51ffbbed"
+      ],
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed"
+      ],
+      "creationInputVerified": true,
+      "runtimeBytecodeVerified": true,
+      "sourceVerificationDeclared": true
+    },
+    "ZKBlastVault": {
+      "abiHash": "0xf8a12d38381e4186db6a2bde0c028422ead038aa0cc307c8c92df62d0d5db1c9",
+      "metadataHash": "0x4a1bf8cab8aa61532bfc15f37410562800c8ad5b95b9873eeaf0d8954d7bdbc0",
+      "implementationConstructorArguments": [],
+      "proxyConstructorArguments": [
+        "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+        "0xd1ec290a0000000000000000000000002e8ca95e429f34e6e876e078dcd8e51eb31645b900000000000000000000000048e7bcfe8f469fbc72e6bcef0d0ce70d51ffbbed000000000000000000000000e1e89984a58cffcb9584c47ad04be37026a8d38900000000000000000000000004085eb4c1f597aa3fbd1c809784baed80fb6c2b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001"
+      ],
+      "initializerArguments": [
+        "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+        "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+        "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+        "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+        "0x0000000000000000000000000000000000000000000000000000000000000001",
+        1
+      ],
       "creationInputVerified": true,
       "runtimeBytecodeVerified": true,
       "sourceVerificationDeclared": true
@@ -86,8 +132,8 @@
   },
   "claims": {
     "publicAmmOnly": true,
-    "zeroKnowledgeCircuitIncluded": false,
-    "privacyClaimMadeForCurrentDeployment": false,
-    "statement": "Current deployment is the public AMM phase and makes no shielded-transaction claim."
+    "zeroKnowledgeCircuitIncluded": true,
+    "privacyClaimMadeForCurrentDeployment": true,
+    "statement": "The deployment includes a shielded-deposit commitment tree; withdrawal privacy is not claimed until Slice 13 is complete."
   }
 }

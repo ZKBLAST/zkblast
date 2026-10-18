@@ -38,3 +38,18 @@ test("rejects an event whose block hash does not match its envelope", () => {
   const invalid = { ...block, events: [{ ...block.events[0]!, blockHash: hash("d") }] };
   assert.throws(() => validateBlockForPersistence(invalid, 46630), /EVENT_BLOCK_HASH_MISMATCH/u);
 });
+
+test("rejects note secrets and witnesses before persistence", () => {
+  const block = validBlock();
+  const secret = {
+    ...block,
+    events: [{ ...block.events[0]!, kind: "commitment" as const, payload: { secret: "never-store" } }],
+  };
+  assert.throws(() => validateBlockForPersistence(secret, 46630), /SECRET_PAYLOAD_REJECTED/u);
+
+  const witness = {
+    ...block,
+    events: [{ ...block.events[0]!, kind: "commitment" as const, payload: { path_siblings: "never-store" } }],
+  };
+  assert.throws(() => validateBlockForPersistence(witness, 46630), /SECRET_PAYLOAD_REJECTED/u);
+});

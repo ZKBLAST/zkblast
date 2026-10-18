@@ -1,7 +1,14 @@
 import type { Address, Hex } from "viem";
 
 export type ProtocolEventKind =
-  "pool" | "swap" | "position" | "liquidity" | "fee" | "receipt";
+  | "pool"
+  | "swap"
+  | "position"
+  | "liquidity"
+  | "fee"
+  | "commitment"
+  | "root"
+  | "receipt";
 export type IndexedEvent = Readonly<{
   chainId: number;
   blockNumber: bigint;
