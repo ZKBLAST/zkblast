@@ -19,18 +19,6 @@ export const docs: { group: string; sections: DocSection[] }[] = [
           },
         ],
       },
-      {
-        id: "quickstart",
-        title: "Quickstart",
-        body: [
-          "Run the interface locally:",
-          { code: "pnpm install\npnpm dev\n# open http://localhost:3000" },
-          "The interface reads network configuration, deployed contracts, pools, swaps, positions and markets from the ZKBLAST API. It does not use fallback market or protocol mock data.",
-          {
-            note: "Before signing, verify that your wallet network matches the environment and chain shown by the interface. Testnet and mainnet are separate deployments and databases.",
-          },
-        ],
-      },
     ],
   },
   {
