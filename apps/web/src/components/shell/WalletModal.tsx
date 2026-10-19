@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Puzzle } from "lucide-react";
+import { Loader2, LogOut, Puzzle } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { useApp } from "./AppProvider";
 
@@ -8,7 +8,7 @@ export function WalletModal({
   open,
   onClose,
 }: Readonly<{ open: boolean; onClose: () => void }>) {
-  const { busy, injectedAddress, loginInjected } = useApp();
+  const { busy, disconnect, injectedAddress, loginInjected } = useApp();
   return (
     <Modal open={open} onClose={onClose} title="Connect a wallet">
       <button
@@ -38,6 +38,19 @@ export function WalletModal({
           <Loader2 className="size-4 animate-spin text-lime" aria-hidden />
         )}
       </button>
+      {injectedAddress ? (
+        <button
+          type="button"
+          onClick={() => void disconnect().then(onClose)}
+          disabled={busy}
+          className="mt-2 flex w-full cursor-pointer items-center gap-4 border border-line bg-bg px-4 py-3 text-left text-danger transition-colors hover:border-danger/60 disabled:cursor-wait disabled:opacity-60"
+        >
+          <LogOut className="size-5" aria-hidden />
+          <span className="font-mono text-[12px] uppercase tracking-[0.05em]">
+            Disconnect wallet
+          </span>
+        </button>
+      ) : null}
       <p className="mt-5 font-mono text-[12px] leading-relaxed text-faint">
         ZKBLAST only requests a login signature. It never asks for a seed phrase
         or private key.

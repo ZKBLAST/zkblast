@@ -185,12 +185,31 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   const disconnect = useCallback(async () => {
     setBusy(true);
+    let walletPermissionRevoked = false;
     try {
-      await apiRequest(apiUrl, "/v1/auth/logout", { method: "POST" });
+      await apiRequest(apiUrl, "/v1/auth/logout", { method: "POST" }).catch(
+        () => undefined,
+      );
+      if (window.ethereum) {
+        walletPermissionRevoked = await window.ethereum
+          .request({
+            method: "wallet_revokePermissions",
+            params: [{ eth_accounts: {} }],
+          })
+          .then(() => true)
+          .catch(() => false);
+      }
       setProfile(null);
       setTrades([]);
+      setInjectedAddress(null);
       setStatus("Session closed");
-      toast({ kind: "info", title: "Wallet session disconnected" });
+      toast({
+        kind: "info",
+        title: "Wallet disconnected",
+        body: walletPermissionRevoked
+          ? "The ZKBLAST session and wallet permission were removed."
+          : "The ZKBLAST session was removed. This wallet does not support permission revocation; disconnect the site from the extension if needed.",
+      });
     } finally {
       setBusy(false);
     }
