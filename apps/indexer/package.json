@@ -15,6 +15,7 @@
     "markets:curate": "node --import tsx src/curate-external-markets.ts",
     "markets:curate:validate": "node --import tsx src/curate-external-markets.ts validate",
     "markets:curate:pons-logos": "node --import tsx src/curate-pons-logos.ts",
+    "markets:update:quote-logos": "node --import tsx src/update-quote-asset-logos.ts",
     "sync:external-market-pairs": "node --import tsx src/sync-external-market-pairs.ts",
     "map:testnet-market-tokens": "node --import tsx src/map-testnet-market-tokens.ts",
     "discover:testnet-market-routes": "node --import tsx src/discover-testnet-market-routes.ts",

@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 
 import type { ExternalMarket } from "@/types/application";
 
+export function isNearlySquare(width: number, height: number) {
+  if (width <= 0 || height <= 0) return false;
+  const ratio = width / height;
+  return ratio >= 0.9 && ratio <= 1.1;
+}
+
 export function MarketPairLogo({ market }: { market: ExternalMarket }) {
   const quote =
     market.pairCandidates.find((pair) => pair.routeStatus === "validated") ??
@@ -39,7 +45,11 @@ function AssetLogo({
   className: string;
 }) {
   const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [url]);
+  const [square, setSquare] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+    setSquare(false);
+  }, [url]);
 
   return (
     <span
@@ -50,8 +60,16 @@ function AssetLogo({
         <img
           src={url}
           alt=""
-          className="size-full object-contain p-1"
+          className={
+            square
+              ? "size-full scale-[1.08] object-cover"
+              : "size-full object-contain p-1"
+          }
           referrerPolicy="no-referrer"
+          onLoad={(event) => {
+            const image = event.currentTarget;
+            setSquare(isNearlySquare(image.naturalWidth, image.naturalHeight));
+          }}
           onError={() => setFailed(true)}
         />
       ) : (

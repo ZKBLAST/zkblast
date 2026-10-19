@@ -72,6 +72,7 @@
     "markets:curation:apply:testnet": "dotenv -e .env.testnet -- env MARKET_CURATION_FILE=../../data/market-curation.testnet.json pnpm --filter @zkblast/indexer run markets:curate apply",
     "markets:curation:validate:testnet": "dotenv -e .env.testnet -- env MARKET_CURATION_FILE=../../data/market-curation.testnet.json pnpm --filter @zkblast/indexer run markets:curate:validate",
     "markets:curation:pons-logos:testnet": "dotenv -e .env.testnet -- env PONS_LOGO_CURATION_FILE=../../data/pons-logo-curation.testnet.json pnpm --filter @zkblast/indexer run markets:curate:pons-logos",
+    "markets:update:quote-logos:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run markets:update:quote-logos",
     "markets:sync:pairs:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run sync:external-market-pairs",
     "markets:map:tokens:testnet": "dotenv -e .env.testnet -- env TESTNET_MARKET_MAPPING_FILE=../../data/testnet-market-mappings.json pnpm --filter @zkblast/indexer run map:testnet-market-tokens",
     "markets:discover:routes:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run discover:testnet-market-routes",

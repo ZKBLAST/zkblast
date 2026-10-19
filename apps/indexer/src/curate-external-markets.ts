@@ -5,6 +5,7 @@ import postgres from "postgres";
 import { z } from "zod";
 
 import { stockMarketClassification } from "./stock-market-classifications.js";
+import { quoteAssetLogos } from "./quote-asset-logos.js";
 
 const config = z
   .object({
@@ -37,9 +38,6 @@ type MarketRow = Readonly<{
   candidate_logo_url: string | null;
   logo_status: string;
 }>;
-
-const usdGlobalDollarLogoUrl =
-  "https://api.eulerpool.com/api/1/logo/crypto/USDG";
 
 const sql = postgres(config.SUPABASE_DIRECT_DATABASE_URL, {
   max: 1,
@@ -209,7 +207,7 @@ async function applyFile() {
           record.region,
           record.logoDecision,
           logoUrl,
-          usdGlobalDollarLogoUrl,
+          quoteAssetLogos.USDG,
         ],
       );
     }

@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 import postgres from "postgres";
 import { z } from "zod";
+import { quoteAssetLogos } from "./quote-asset-logos.js";
 
 const config = z
   .object({
@@ -47,8 +48,6 @@ const approvedSources = new Map([
     },
   ],
 ]);
-const wrappedEtherLogoUrl = "https://api.eulerpool.com/api/1/logo/crypto/WETH";
-
 function hasImageSignature(bytes: Uint8Array) {
   const png = [137, 80, 78, 71, 13, 10, 26, 10];
   const ico = [0, 0, 1, 0];
@@ -128,7 +127,7 @@ async function main() {
                'quoteLogos',jsonb_build_object('WETH',$4::text)
              )
            where id=$1`,
-          [row.id, record.logoUrl, record.sourceUrl, wrappedEtherLogoUrl],
+          [row.id, record.logoUrl, record.sourceUrl, quoteAssetLogos.WETH],
         );
       }
       await transaction.unsafe(
@@ -137,7 +136,7 @@ async function main() {
            'quoteLogos',jsonb_build_object('WETH',$1::text)
          ),updated_at=now()
          where source='pons_graduated'`,
-        [wrappedEtherLogoUrl],
+        [quoteAssetLogos.WETH],
       );
     });
     console.log(JSON.stringify({ applied: input.records.length, path }));

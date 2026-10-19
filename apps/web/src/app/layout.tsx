@@ -8,6 +8,14 @@ import { SmoothScroll } from "@/components/shell/SmoothScroll";
 export const metadata: Metadata = {
   title: { default: "ZKBLAST · Liquidity Without Exposure", template: "%s · ZKBLAST" },
   description: "Zero-knowledge liquidity infrastructure on Robinhood Chain. Public DLMM and DAMM pools with a shielded vault on testnet.",
+  icons: {
+    icon: [
+      { url: "/zk/logo.png" },
+      { url: "/zk/logo.png", type: "image/png" },
+    ],
+    shortcut: "/zk/logo.png",
+    apple: "/zk/logo.png",
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#06060c", colorScheme: "dark" };
