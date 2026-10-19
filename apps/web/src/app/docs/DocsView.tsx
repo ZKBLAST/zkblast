@@ -4,6 +4,7 @@ import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LaneBadge } from "@/components/ui/Badges";
 import { ContractDirectory } from "@/components/docs/ContractDirectory";
+import { useApp } from "@/components/shell/AppProvider";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { docs } from "@/data/docs";
 import { cx } from "@/lib/format";
@@ -11,6 +12,7 @@ import { cx } from "@/lib/format";
 const all = docs.flatMap((g) => g.sections);
 
 export function DocsView() {
+  const { config } = useApp();
   const [active, setActive] = useState(all[0].id);
 
   useEffect(() => {
@@ -38,7 +40,10 @@ export function DocsView() {
         badges={
           <>
             <LaneBadge lane="public" />
-            <LaneBadge lane="shielded" />
+            <LaneBadge
+              lane="shielded"
+              stage={config?.environment === "testnet"}
+            />
           </>
         }
       />

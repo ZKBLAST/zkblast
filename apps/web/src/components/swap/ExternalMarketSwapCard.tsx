@@ -5,10 +5,12 @@ import { useState } from "react";
 import { ExternalMarketTrade } from "@/components/markets/ExternalMarketTrade";
 import { MarketPairLogo } from "@/components/markets/MarketPairLogo";
 import { RealDataState } from "@/components/protocol/real-data-state";
+import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge } from "@/components/ui/Badges";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 
 export function ExternalMarketSwapCard() {
+  const { config } = useApp();
   const { items, loading, error, refresh } = useExternalMarkets();
   const markets = items.filter((market) => market.canTrade);
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
@@ -34,7 +36,9 @@ export function ExternalMarketSwapCard() {
         />
         {selectedMarket ? (
           <label className="block">
-            <span className="label">Testnet market</span>
+            <span className="label">
+              {config?.environment === "mainnet" ? "Mainnet" : "Testnet"} market
+            </span>
             <span className="mt-2 flex items-center gap-3 border border-line bg-bg p-3">
               <MarketPairLogo market={selectedMarket} />
               <select

@@ -108,28 +108,36 @@ const liquidityService = new LiquidityService(
       args: [pool],
     }),
 );
-const market = JSON.parse(
-  await readFile(
-    resolve(projectRoot, `deployments/${serverConfig.APP_ENV}/market.json`),
-    "utf8",
-  ),
-) as { pool: { address: string } };
-const operationsService = new OperationsService(
-  protocolService,
-  liquidityService,
-  chainClient,
-  getAddress(market.pool.address),
-  {
-    rpcLagBlocks: BigInt(serviceConfig.ALERT_RPC_LAG_BLOCKS),
-    checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
-    recentTransactionFailures: serviceConfig.ALERT_TRANSACTION_FAILURES,
-    externalRouteAgeSeconds: serviceConfig.ALERT_EXTERNAL_ROUTE_AGE_SECONDS,
-    receiptFailures: serviceConfig.ALERT_RECEIPT_FAILURES,
-  },
-  undefined,
-  externalMarketService,
-  tradeReceiptService,
+const marketPath = resolve(
+  projectRoot,
+  `deployments/${serverConfig.APP_ENV}/market.json`,
 );
+let operationsService: OperationsService | undefined;
+try {
+  const market = JSON.parse(await readFile(marketPath, "utf8")) as {
+    pool: { address: string };
+  };
+  operationsService = new OperationsService(
+    protocolService,
+    liquidityService,
+    chainClient,
+    getAddress(market.pool.address),
+    {
+      rpcLagBlocks: BigInt(serviceConfig.ALERT_RPC_LAG_BLOCKS),
+      checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
+      recentTransactionFailures: serviceConfig.ALERT_TRANSACTION_FAILURES,
+      externalRouteAgeSeconds: serviceConfig.ALERT_EXTERNAL_ROUTE_AGE_SECONDS,
+      receiptFailures: serviceConfig.ALERT_RECEIPT_FAILURES,
+    },
+    undefined,
+    externalMarketService,
+    tradeReceiptService,
+  );
+} catch (error) {
+  if (!(error instanceof Error && "code" in error && error.code === "ENOENT")) {
+    throw error;
+  }
+}
 const shieldedService = manifest.shielded
   ? new ShieldedService(chainClient, {
       vault: getAddress(manifest.shielded.vault),
@@ -172,9 +180,9 @@ const app = createApp(
     protocolService,
     swapService,
     liquidityService,
-    operationsService,
     externalMarketService,
     tradeReceiptService,
+    ...(operationsService ? { operationsService } : {}),
     ...(shieldedService ? { shieldedService } : {}),
   },
 );

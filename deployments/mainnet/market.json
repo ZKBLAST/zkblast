@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "generatedAt": "2026-10-19T15:08:25.037Z",
+  "explorerUrl": "https://robinhoodchain.blockscout.com",
+  "tokens": [
+    {
+      "address": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+      "name": "WETH",
+      "symbol": "WETH",
+      "decimals": 18
+    },
+    {
+      "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "name": "Global Dollar",
+      "symbol": "USDG",
+      "decimals": 6
+    }
+  ],
+  "pool": {
+    "address": "0x04235f09dBf73E83fE6a49E9235851bb53eB8f71",
+    "model": "damm",
+    "feePips": 3000,
+    "feeBps": 30,
+    "createdBlock": 92708797,
+    "liquidityStatus": "awaiting_initial_liquidity",
+    "reserve0": "0",
+    "reserve1": "0",
+    "totalShares": "0"
+  },
+  "governance": {
+    "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "safeNonce": "0",
+    "safeTransactionHash": "0x983a839d85f9eaeffc68e0f2aa321622b72ff72f70f6a2202fd8f46f6e3d5315"
+  },
+  "transaction": {
+    "hash": "0x10a2cad29f9df79dc86a7e377cc1a5102360ed9aabbb7d231722e22a01c23223",
+    "blockNumber": 92708797,
+    "blockHash": "0x782fa5ae3826df57adbb7c3e800186953fc283b6534959bf8ee98f55a0d4a60b",
+    "gasUsed": "1542883",
+    "effectiveGasPriceWei": "20492000",
+    "totalFeeWei": "31616758436000",
+    "status": "success"
+  },
+  "verification": {
+    "registry": "verified",
+    "runtimeBytecodeHash": "0xe12d9dbf05d37a9215d981b4bb67b78f5884dddbc5a9a036f18f4b1430eedfba"
+  }
+}

@@ -19,7 +19,7 @@ export function PoolsView() {
     <>
       <PageHeader
         title="Pools"
-        lead="Execution pools with a validated token identity, on-chain address, liquidity, and fresh testnet route."
+        lead={`Execution pools with validated token identity, on-chain address, liquidity, and fresh ${config?.environment ?? "network"} routes.`}
         badges={<LaneBadge lane="public" />}
         aside={
           <dl className="grid grid-cols-2 gap-6">

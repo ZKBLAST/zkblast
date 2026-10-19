@@ -4,6 +4,7 @@ import { CircleCheck, Clock3 } from "lucide-react";
 import { useState } from "react";
 
 import { RealDataState } from "@/components/protocol/real-data-state";
+import { useApp } from "@/components/shell/AppProvider";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
 import {
   marketDisplayQuoteSymbol,
@@ -18,6 +19,9 @@ type MarketTab = "all" | "pons" | "us" | "china" | "other";
 type Availability = "all" | "active" | "planned";
 
 export function ExternalMarkets() {
+  const { config } = useApp();
+  const environment = config?.environment ?? "network";
+  const chainId = config?.chainId ?? "—";
   const { items, loading, error, refresh } = useExternalMarkets();
   const [tab, setTab] = useState<MarketTab>("all");
   const [availability, setAvailability] = useState<Availability>("all");
@@ -53,8 +57,8 @@ export function ExternalMarkets() {
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
             All verified reference markets remain discoverable. A market is
-            active on testnet only when its chain-46630 token, pool, liquidity,
-            and route have passed independent validation.
+            active on {environment} only when its chain-{chainId} token, pool,
+            liquidity, and route have passed independent validation.
           </p>
         </div>
         <div
@@ -92,12 +96,12 @@ export function ExternalMarkets() {
         <div
           className="panel-inset flex p-1"
           role="tablist"
-          aria-label="Testnet availability"
+          aria-label={`${environment} availability`}
         >
           {(
             [
               ["all", "All"],
-              ["active", "Active on testnet"],
+              ["active", `Active on ${environment}`],
               ["planned", "Reference only"],
             ] as const
           ).map(([value, label]) => (
@@ -161,7 +165,7 @@ export function ExternalMarkets() {
                   }
                 />
                 <MarketDatum
-                  label="Testnet pairs"
+                  label={`${environment} pairs`}
                   value={
                     market.pairCandidates.length
                       ? market.pairCandidates
@@ -176,7 +180,9 @@ export function ExternalMarkets() {
                 <MarketDatum
                   label="Execution"
                   value={
-                    market.canTrade ? "Active on testnet" : "Reference only"
+                    market.canTrade
+                      ? `Active on ${environment}`
+                      : "Reference only"
                   }
                 />
                 <MarketStatus active={market.canTrade} />

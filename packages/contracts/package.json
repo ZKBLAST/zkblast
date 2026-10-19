@@ -23,6 +23,8 @@
     "deploy:testnet-withdrawal": "node --experimental-strip-types scripts/deploy-testnet-withdrawal.ts",
     "deploy:mainnet-safe": "node --experimental-strip-types scripts/deploy-mainnet-safe.ts",
     "deploy:mainnet-timelock": "node --experimental-strip-types scripts/deploy-mainnet-timelock.ts",
+    "create:mainnet-market": "node --experimental-strip-types scripts/create-mainnet-market.ts",
+    "create:mainnet-stock-markets": "node --experimental-strip-types scripts/create-mainnet-stock-markets.ts",
     "plan:mainnet-deployment": "node --experimental-strip-types scripts/prepare-mainnet-deployment.ts",
     "configure:testnet-shielded-usdg": "node --experimental-strip-types scripts/configure-testnet-shielded-usdg.ts",
     "accept:testnet-liquidity": "node --experimental-strip-types scripts/accept-testnet-liquidity.ts",

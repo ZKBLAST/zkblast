@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "updatedAt": "2026-10-19T15:15:38.919Z",
+  "markets": {
+    "AMD": {
+      "symbol": "AMD",
+      "name": "AMD • Robinhood Token",
+      "baseAddress": "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0x6f6451971bc3640B122fB8200582BddB0Bf2364b",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0x90e002f1063ae45b961e6b7ae60453ee14facae6c3aca130d5d3b749b05ce01b",
+        "blockNumber": 92713038,
+        "blockHash": "0x01a00d05586e5bef92b348addd3f80486ea38ffb647ceb4bc537feadd72eca5c",
+        "gasUsed": "1508693",
+        "effectiveGasPriceWei": "20496000",
+        "totalFeeWei": "30922171728000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0x0b897823673f1ebb8057fc7b90942105510f9ddc81aeca778007b139812a9aba"
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "name": "Amazon • Robinhood Token",
+      "baseAddress": "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0xa4E4D3254a41C460f9522B9B3FA78413F46DF53F",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0x2606d3f165e3f07744acc6c27dc0b5f3f2d54c7a32e7f7072030828307697300",
+        "blockNumber": 92713046,
+        "blockHash": "0x346aa3e61e4ed0cddc0671d525034de8983285169ead1fe97d7a35f7253820ca",
+        "gasUsed": "1508683",
+        "effectiveGasPriceWei": "20572000",
+        "totalFeeWei": "31036626676000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0x010a6df22ff1f47c3484747347a5da0d323a140b468bdd8cd83c70ff03bd5c9f"
+    },
+    "NFLX": {
+      "symbol": "NFLX",
+      "name": "Netflix • Robinhood Token",
+      "baseAddress": "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0xfC81e903218c5C50486f750D44D54d8a002d2FB4",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0xa14820d09ccd2c667b1c4c9e64a1d5a159042c7e5e6d74aa3d521c21d1da061c",
+        "blockNumber": 92713053,
+        "blockHash": "0x3d91b95628f7214431e842e4ac3cbc47aaa23bd2333246ec294942038ba94751",
+        "gasUsed": "1508681",
+        "effectiveGasPriceWei": "20364000",
+        "totalFeeWei": "30722779884000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0xf5c5ac7cfd8a85c9c7e5eff34d88c6c1c4dbbb7cf53751840c71e81d17e72105"
+    },
+    "PLTR": {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies • Robinhood Token",
+      "baseAddress": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0xBDB9D62e9604F3A6ea48f6F24B8cF1693dE27a28",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0xf670ac29fd9ad38e63f8a49987ba12d1d154caba5171c9da0e6302aad23e4ef4",
+        "blockNumber": 92713060,
+        "blockHash": "0x12bc1593e71ad8dd95be79dd073d03e350e18be852f15389a0915cfff775e536",
+        "gasUsed": "1508693",
+        "effectiveGasPriceWei": "20318000",
+        "totalFeeWei": "30653624374000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0x263d9540aeb864cda85740a84ec51220815297e48d2cff1fe45f456ac7a307ae"
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "name": "Tesla • Robinhood Token",
+      "baseAddress": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0x99A9d62B9e1730F3E1E9230e5F1433Ffa99c6e20",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0x238fd2d999868091a760760e580ff11edabefdd3fa255016e88036052df45a7a",
+        "blockNumber": 92713067,
+        "blockHash": "0x1528c2118b6133f27d81d38e7140d1b61b392c53c1c373727e6dfb70d504253c",
+        "gasUsed": "1508659",
+        "effectiveGasPriceWei": "20542000",
+        "totalFeeWei": "30990873178000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0x3d41824688be50343425ed7dd60645e9ae946d27414699652f6da7c21e0f508a"
+    }
+  },
+  "explorerUrl": "https://robinhoodchain.blockscout.com"
+}

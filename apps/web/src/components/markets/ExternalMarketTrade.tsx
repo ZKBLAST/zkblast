@@ -128,13 +128,15 @@ export function ExternalMarketTrade({
     <div className="border-t border-line p-4 sm:p-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="label">Validated testnet execution</p>
+          <p className="label">
+            Validated {config?.environment ?? "network"} execution
+          </p>
           <h3 className="mt-2 flex items-center gap-2 text-lg text-fg">
             {market.symbol} <ArrowRightLeft className="size-4 text-lime" />{" "}
             {route.quoteSymbol}
           </h3>
           <p className="mt-1 font-mono text-[10px] uppercase text-faint">
-            ZKBLAST DAMM · chain 46630 · 0.5% slippage
+            ZKBLAST DAMM · chain {config?.chainId ?? "—"} · 0.5% slippage
           </p>
         </div>
         <div className="flex w-full gap-2 sm:w-auto">

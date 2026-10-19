@@ -68,7 +68,10 @@ export function LiveSwapPanel({
 
   async function requestQuote() {
     if (!account) return connect();
-    if (!pool) return setNotice("No verified testnet pool is indexed yet.");
+    if (!pool)
+      return setNotice(
+        `No verified ${config?.environment ?? "network"} pool is indexed yet.`,
+      );
     setState("quoting");
     setNotice("");
     setTransactionHash("");

@@ -19,7 +19,7 @@ export function AnalyticsView() {
     <>
       <PageHeader
         title="Analytics"
-        lead="Validated testnet market coverage and indexer health. Invented TVL, APR, volume, and synthetic protocol values are not displayed."
+        lead={`Validated ${config?.environment ?? "network"} market coverage and indexer health. Invented TVL, APR, volume, and synthetic protocol values are not displayed.`}
         aside={
           <dl className="grid grid-cols-3 gap-6">
             <Stat label="Markets listed" value={markets.items.length} />

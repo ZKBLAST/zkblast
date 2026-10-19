@@ -90,6 +90,10 @@
     "markets:map:tokens:testnet": "dotenv -e .env.testnet -- env TESTNET_MARKET_MAPPING_FILE=../../data/testnet-market-mappings.json pnpm --filter @zkblast/indexer run map:testnet-market-tokens",
     "markets:discover:routes:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run discover:testnet-market-routes",
     "markets:seed:pools:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run seed:testnet-external-markets",
+    "markets:create:mainnet": "dotenv -e .env.mainnet -e .env.testnet -- pnpm --filter @zkblast/contracts run create:mainnet-market",
+    "markets:create:stocks:mainnet": "dotenv -e .env.mainnet -e .env.testnet -- pnpm --filter @zkblast/contracts run create:mainnet-stock-markets",
+    "db:register:mainnet-market": "dotenv -e .env.mainnet -- node scripts/register-mainnet-market.mjs",
+    "db:register:mainnet-stock-markets": "dotenv -e .env.mainnet -- node scripts/register-mainnet-stock-markets.mjs",
     "check:db:migrations": "node scripts/check-database-migrations.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

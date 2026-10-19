@@ -26,7 +26,12 @@ export function ShieldedView() {
         <PageHeader
           title="Shielded vault"
           lead="No user-facing shielded asset is enabled for the active network."
-          badges={<LaneBadge lane="shielded" />}
+          badges={
+            <LaneBadge
+              lane="shielded"
+              stage={config?.environment === "testnet"}
+            />
+          }
         />
         <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
           <section className="panel ticks flex items-start gap-4 p-8">
@@ -36,10 +41,10 @@ export function ShieldedView() {
                 Shielded deposits are unavailable
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                The deployed testnet vault currently exposes only internal
-                regression assets. Controls remain disabled until governance
-                configures and verifies a user-facing asset such as USDG. The UI
-                will not relabel or substitute a different token address.
+                The active network has no governance-approved public shielded
+                asset. Controls remain disabled until governance configures and
+                verifies a user-facing asset such as USDG. The UI will not
+                relabel or substitute a different token address.
               </p>
             </div>
           </section>
@@ -63,7 +68,9 @@ export function ShieldedView() {
       <PageHeader
         title="Shielded vault"
         lead="Create the note locally, save an encrypted backup, then deposit the exact governance-approved denomination."
-        badges={<LaneBadge lane="shielded" />}
+        badges={
+          <LaneBadge lane="shielded" stage={config.environment === "testnet"} />
+        }
       />
       <div className="mx-auto grid max-w-[1360px] gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="panel ticks border-warn/40 p-5 lg:col-span-2">
