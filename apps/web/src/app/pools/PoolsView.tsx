@@ -3,6 +3,7 @@
 import { ExternalLink } from "lucide-react";
 
 import { MarketPairLogo } from "@/components/markets/MarketPairLogo";
+import { ExternalLiquidityPanel } from "@/components/protocol/ExternalLiquidityPanel";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge } from "@/components/ui/Badges";
@@ -78,6 +79,7 @@ export function PoolsView() {
             })}
           </ul>
         ) : null}
+        {markets.length ? <ExternalLiquidityPanel markets={markets} /> : null}
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { Layers } from "lucide-react";
+import { ExternalLink, Layers, Minus } from "lucide-react";
+import { useState } from "react";
 
 import { AccountPanel } from "@/components/account/AccountPanel";
 import { RealDataState } from "@/components/protocol/real-data-state";
@@ -8,10 +9,19 @@ import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge, PairMark, TypeTag } from "@/components/ui/Badges";
 import { Button } from "@/components/ui/Button";
 import { PageHeader, Stat } from "@/components/ui/PageHeader";
+import { webPublicConfig } from "@/config/public-env";
+import { apiRequest } from "@/lib/api-client";
+import {
+  executeTransactions,
+  swapErrorMessage,
+  type PreparedTransaction,
+  type TransactionExecutionState,
+} from "@/lib/swap-flow";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import type { ProtocolPosition } from "@/types/application";
 
 export function PositionsView() {
-  const { address, connect } = useApp();
+  const { address, connect, config, toast } = useApp();
   const data = useProtocolData(address);
 
   if (!address)
@@ -76,39 +86,160 @@ export function PositionsView() {
         {data.positions.length ? (
           <ul className="space-y-3">
             {data.positions.map((position) => (
-              <li
+              <PositionItem
                 key={`${position.poolAddress}:${position.onchainPositionId}`}
-                className="panel ticks grid gap-4 p-5 md:grid-cols-[1fr_auto_auto] md:items-center"
-              >
-                <span className="flex items-center gap-3">
-                  <PairMark
-                    base={position.token0Symbol}
-                    quote={position.token1Symbol}
-                  />
-                  <span>
-                    <strong>
-                      {position.token0Symbol}/{position.token1Symbol}
-                    </strong>
-                    <span className="mt-1 block font-mono text-xs text-faint">
-                      Position {position.onchainPositionId}
-                    </span>
-                  </span>
-                </span>
-                <TypeTag
-                  type={position.model.toUpperCase() as "DAMM" | "DLMM"}
-                />
-                <dl className="text-right">
-                  <dt className="text-xs text-faint">Raw liquidity</dt>
-                  <dd className="num">{position.liquidityRaw}</dd>
-                  <dd className="mt-1 font-mono text-xs uppercase text-muted">
-                    {position.status}
-                  </dd>
-                </dl>
-              </li>
+                position={position}
+                owner={address}
+                explorerUrl={config?.explorerUrl}
+                onConfirmed={data.refresh}
+                onToast={toast}
+              />
             ))}
           </ul>
         ) : null}
       </div>
     </>
+  );
+}
+
+type PreparedAction = Readonly<{
+  chainId: number;
+  position: PreparedTransaction;
+}>;
+
+function PositionItem({
+  position,
+  owner,
+  explorerUrl,
+  onConfirmed,
+  onToast,
+}: Readonly<{
+  position: ProtocolPosition;
+  owner: string;
+  explorerUrl?: string;
+  onConfirmed: () => Promise<void>;
+  onToast: (value: {
+    kind: "success" | "error" | "info";
+    title: string;
+    body?: string;
+  }) => void;
+}>) {
+  const [percent, setPercent] = useState(100);
+  const [state, setState] = useState<
+    TransactionExecutionState | "idle" | "preparing" | "failed"
+  >("idle");
+  const [notice, setNotice] = useState("");
+  const [transactionHash, setTransactionHash] = useState("");
+  const shares = (BigInt(position.liquidityRaw) * BigInt(percent)) / 100n;
+  const busy = !["idle", "failed", "confirmed"].includes(state);
+
+  async function removeLiquidity() {
+    if (!window.ethereum || shares <= 0n) return;
+    setState("preparing");
+    setNotice("");
+    try {
+      const prepared = await apiRequest<PreparedAction>(
+        webPublicConfig.apiUrl,
+        "/v1/protocol/positions/decrease",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            owner,
+            positionId: position.onchainPositionId,
+            shares: shares.toString(),
+            minimumAmount0: "0",
+            minimumAmount1: "0",
+            recipient: owner,
+            deadline: String(Math.floor(Date.now() / 1_000) + 1_200),
+          }),
+        },
+      );
+      const hash = await executeTransactions(
+        window.ethereum,
+        owner,
+        prepared.chainId,
+        [prepared.position],
+        (next, transaction) => {
+          setState(next);
+          if (transaction) setTransactionHash(transaction);
+        },
+      );
+      setTransactionHash(hash);
+      await onConfirmed();
+      onToast({
+        kind: "success",
+        title: "Liquidity removed",
+        body: `${percent}% of position ${position.onchainPositionId} was confirmed on-chain.`,
+      });
+    } catch (error) {
+      setState("failed");
+      setNotice(swapErrorMessage(error));
+    }
+  }
+
+  return (
+    <li className="panel ticks p-5">
+      <div className="grid gap-4 md:grid-cols-[1fr_auto_auto] md:items-center">
+        <span className="flex items-center gap-3">
+          <PairMark
+            base={position.token0Symbol}
+            quote={position.token1Symbol}
+          />
+          <span>
+            <strong>
+              {position.token0Symbol}/{position.token1Symbol}
+            </strong>
+            <span className="mt-1 block font-mono text-xs text-faint">
+              Position {position.onchainPositionId}
+            </span>
+          </span>
+        </span>
+        <TypeTag type={position.model.toUpperCase() as "DAMM" | "DLMM"} />
+        <dl className="text-right">
+          <dt className="text-xs text-faint">Current LP shares</dt>
+          <dd className="num break-all">{position.liquidityRaw}</dd>
+          <dd className="mt-1 font-mono text-xs uppercase text-muted">
+            {position.status}
+          </dd>
+        </dl>
+      </div>
+      <div className="mt-5 border-t border-line pt-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {[25, 50, 75, 100].map((value) => (
+            <Button
+              key={value}
+              variant={percent === value ? "primary" : "secondary"}
+              onClick={() => setPercent(value)}
+              disabled={busy}
+            >
+              {value}%
+            </Button>
+          ))}
+          <Button
+            className="sm:ml-auto"
+            variant="secondary"
+            disabled={busy || shares <= 0n}
+            onClick={() => void removeLiquidity()}
+          >
+            <Minus className="size-4" />
+            {busy ? state.replaceAll("-", " ") : "Remove liquidity"}
+          </Button>
+        </div>
+        <p className="mt-3 break-all font-mono text-xs text-faint">
+          Removing {shares.toString()} shares · pool {position.poolAddress}
+        </p>
+        {notice ? <p className="mt-3 text-sm text-danger">{notice}</p> : null}
+        {transactionHash && explorerUrl ? (
+          <a
+            className="mt-3 inline-flex items-center gap-1 font-mono text-xs text-lime"
+            href={`${explorerUrl.replace(/\/$/u, "")}/tx/${transactionHash}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View receipt <ExternalLink className="size-3" />
+          </a>
+        ) : null}
+      </div>
+    </li>
   );
 }

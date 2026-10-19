@@ -91,12 +91,16 @@ export type ProtocolPosition = Readonly<{
   lowerBound: number | null;
   upperBound: number | null;
   status: string;
-  openedAt: string;
-  updatedAt: string;
+  openedAt?: string;
+  updatedAt?: string;
   poolAddress: string;
   model: "damm" | "dlmm";
+  token0Address: string;
   token0Symbol: string;
+  token0Decimals: number;
+  token1Address: string;
   token1Symbol: string;
+  token1Decimals: number;
 }>;
 
 export type IndexerMetrics = Readonly<{

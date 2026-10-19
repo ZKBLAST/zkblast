@@ -104,8 +104,12 @@ export function createProtocolRouter(
   });
   router.get("/positions", async (request, response, next) => {
     try {
+      const query = querySchema.parse(request.query);
       response.json({
-        items: await service.positions(querySchema.parse(request.query)),
+        items:
+          query.owner && liquidityService
+            ? await liquidityService.positionsForOwner(query.owner)
+            : await service.positions(query),
       });
     } catch (error) {
       next(error);

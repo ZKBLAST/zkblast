@@ -138,15 +138,51 @@ export class LiquidityService {
       const position = await this.ownedPosition(positionId, input.owner);
       const shares = this.positive(input.shares);
       if (shares > position[4]) throw new Error("INSUFFICIENT_POSITION_SHARES");
+      const poolAbi = position[2] === 0 ? dammPoolAbi : dlmmPoolAbi;
+      const [reserve0Value, reserve1Value, totalSharesValue] =
+        await Promise.all(
+          ["reserve0", "reserve1", "totalShares"].map((functionName) =>
+            this.client.readContract({
+              address: position[1],
+              abi: poolAbi,
+              functionName,
+            }),
+          ),
+        );
+      if (
+        typeof reserve0Value !== "bigint" ||
+        typeof reserve1Value !== "bigint" ||
+        typeof totalSharesValue !== "bigint" ||
+        totalSharesValue <= 0n
+      )
+        throw new Error("INVALID_POOL_ACCOUNTING");
+      const safeMinimum0 =
+        ((shares * reserve0Value) / totalSharesValue) * 99n / 100n;
+      const safeMinimum1 =
+        ((shares * reserve1Value) / totalSharesValue) * 99n / 100n;
+      const requestedMinimum0 = this.unsigned(input.minimumAmount0);
+      const requestedMinimum1 = this.unsigned(input.minimumAmount1);
       return {
         chainId: this.chainId,
+        minimumAmount0: (requestedMinimum0 > safeMinimum0
+          ? requestedMinimum0
+          : safeMinimum0
+        ).toString(),
+        minimumAmount1: (requestedMinimum1 > safeMinimum1
+          ? requestedMinimum1
+          : safeMinimum1
+        ).toString(),
         position: encodeTransaction(
           buildDecreasePosition(
             this.addresses.positionManager,
             positionId,
             shares,
-            this.unsigned(input.minimumAmount0),
-            this.unsigned(input.minimumAmount1),
+            requestedMinimum0 > safeMinimum0
+              ? requestedMinimum0
+              : safeMinimum0,
+            requestedMinimum1 > safeMinimum1
+              ? requestedMinimum1
+              : safeMinimum1,
             getAddress(input.recipient),
             this.positive(input.deadline),
           ),
@@ -202,6 +238,82 @@ export class LiquidityService {
             )
           : null,
       };
+    });
+  }
+
+  async positionsForOwner(ownerInput: string) {
+    return this.normalize(async () => {
+      const owner = getAddress(ownerInput);
+      const nextPositionId = await this.client.readContract({
+        address: this.addresses.positionManager,
+        abi: positionManagerAbi,
+        functionName: "nextPositionId",
+      });
+      if (typeof nextPositionId !== "bigint" || nextPositionId > 5_001n)
+        throw new Error("POSITION_SCAN_LIMIT_EXCEEDED");
+      const positionIds = Array.from(
+        { length: Number(nextPositionId > 0n ? nextPositionId - 1n : 0n) },
+        (_, index) => BigInt(index + 1),
+      );
+      const positions = await Promise.all(
+        positionIds.map(async (positionId) => ({
+          positionId,
+          value: await this.position(positionId),
+        })),
+      );
+      const owned = positions.filter(
+        ({ value }) => getAddress(value[0]) === owner && value[4] > 0n,
+      );
+      return Promise.all(
+        owned.map(async ({ positionId, value }) => {
+          const [token0, token1] = await this.poolTokens(value[1], value[2]);
+          const [token0Symbol, token0Decimals, token1Symbol, token1Decimals] =
+            await Promise.all([
+              this.client.readContract({
+                address: token0,
+                abi: erc20Abi,
+                functionName: "symbol",
+              }),
+              this.client.readContract({
+                address: token0,
+                abi: erc20Abi,
+                functionName: "decimals",
+              }),
+              this.client.readContract({
+                address: token1,
+                abi: erc20Abi,
+                functionName: "symbol",
+              }),
+              this.client.readContract({
+                address: token1,
+                abi: erc20Abi,
+                functionName: "decimals",
+              }),
+            ]);
+          if (
+            typeof token0Symbol !== "string" ||
+            typeof token1Symbol !== "string" ||
+            typeof token0Decimals !== "number" ||
+            typeof token1Decimals !== "number"
+          )
+            throw new Error("INVALID_POSITION_TOKEN_METADATA");
+          return {
+            onchainPositionId: positionId.toString(),
+            liquidityRaw: value[4].toString(),
+            lowerBound: value[2] === 1 ? value[3] : null,
+            upperBound: value[2] === 1 ? value[3] : null,
+            status: "open" as const,
+            poolAddress: value[1],
+            model: value[2] === 0 ? ("damm" as const) : ("dlmm" as const),
+            token0Address: token0,
+            token0Symbol,
+            token0Decimals,
+            token1Address: token1,
+            token1Symbol,
+            token1Decimals,
+          };
+        }),
+      );
     });
   }
 

@@ -62,6 +62,64 @@ test("rejects a position mutation prepared by a non-owner", async () => {
   );
 });
 
+test("applies a one-percent withdrawal bound from live pool accounting", async () => {
+  const values: Record<string, unknown> = {
+    positions: [owner, pool, 0, 0, 100n],
+    reserve0: 1_000n,
+    reserve1: 2_000n,
+    totalShares: 100n,
+  };
+  const service = new LiquidityService(
+    {
+      readContract: async (request) => values[String(request.functionName)],
+    },
+    addresses,
+    46630,
+    async () => true,
+  );
+  const result = await service.prepareDecrease({
+    owner,
+    positionId: "1",
+    shares: "50",
+    minimumAmount0: "0",
+    minimumAmount1: "0",
+    recipient: owner,
+    deadline: "2000000000",
+  });
+  assert.equal(result.minimumAmount0, "495");
+  assert.equal(result.minimumAmount1, "990");
+});
+
+test("lists only live positions owned by the requested wallet", async () => {
+  const other = address("10");
+  const service = new LiquidityService(
+    {
+      readContract: async (request) => {
+        if (request.functionName === "nextPositionId") return 3n;
+        if (request.functionName === "positions")
+          return request.args?.[0] === 1n
+            ? [owner, pool, 0, 0, 50n]
+            : [other, pool, 0, 0, 25n];
+        if (request.functionName === "token0") return token0;
+        if (request.functionName === "token1") return token1;
+        if (request.functionName === "symbol")
+          return request.address === token0 ? "AMD" : "USDG";
+        if (request.functionName === "decimals")
+          return request.address === token0 ? 18 : 6;
+        throw new Error("UNEXPECTED_READ");
+      },
+    },
+    addresses,
+    46630,
+    async () => true,
+  );
+  const result = await service.positionsForOwner(owner);
+  assert.equal(result.length, 1);
+  assert.equal(result[0]?.onchainPositionId, "1");
+  assert.equal(result[0]?.token0Symbol, "AMD");
+  assert.equal(result[0]?.token1Symbol, "USDG");
+});
+
 test("fee claims are withheld unless the wallet is the onchain recipient", async () => {
   const service = new LiquidityService(
     { readContract: async () => owner },
