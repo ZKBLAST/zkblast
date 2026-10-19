@@ -19,11 +19,12 @@
     "deploy:testnet-withdraw-verifier": "node --experimental-strip-types scripts/deploy-testnet-withdraw-verifier.ts",
     "deploy:testnet-vault": "node --experimental-strip-types scripts/deploy-testnet-vault.ts",
     "deploy:testnet-withdrawal": "node --experimental-strip-types scripts/deploy-testnet-withdrawal.ts",
+    "configure:testnet-shielded-usdg": "node --experimental-strip-types scripts/configure-testnet-shielded-usdg.ts",
     "accept:testnet-liquidity": "node --experimental-strip-types scripts/accept-testnet-liquidity.ts",
     "verify:testnet-market": "node --experimental-strip-types scripts/verify-testnet-market.ts",
     "seed:testnet-external-markets": "node --experimental-strip-types scripts/seed-external-market-pools.ts",
-    "verify:manifest": "node --experimental-strip-types scripts/verify-manifest.ts",
-    "audit:deployment": "node --experimental-strip-types scripts/audit-deployment.ts"
+    "verify:manifest": "node --import tsx scripts/verify-manifest.ts",
+    "audit:deployment": "node --import tsx scripts/audit-deployment.ts"
   },
   "dependencies": {
     "@zkblast/config": "workspace:*",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.6.0"
   }
 }

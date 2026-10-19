@@ -30,6 +30,7 @@
     "check:network:testnet": "dotenv -e .env.testnet -- node scripts/check-network.mjs",
     "check:network:mainnet": "dotenv -e .env.mainnet -- node scripts/check-network.mjs",
     "check:mainnet:readiness": "dotenv -e .env.mainnet -- node scripts/check-mainnet-readiness.mjs",
+    "rehearse:recovery:testnet": "dotenv -e .env.testnet -- node scripts/run-testnet-recovery-rehearsal.mjs",
     "configure:mainnet:from-testnet": "node scripts/configure-mainnet-from-testnet.mjs",
     "configure:operations-tokens": "node scripts/ensure-operations-tokens.mjs",
     "contracts:deploy:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy",
@@ -39,6 +40,7 @@
     "contracts:deploy:testnet-withdraw-verifier": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy:testnet-withdraw-verifier",
     "contracts:deploy:testnet-vault": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy:testnet-vault",
     "contracts:deploy:testnet-withdrawal": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy:testnet-withdrawal",
+    "contracts:configure:testnet-shielded-usdg": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run configure:testnet-shielded-usdg",
     "contracts:verify:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run verify:manifest",
     "contracts:audit:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run audit:deployment",
     "contracts:audit:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run audit:deployment",
@@ -89,6 +91,7 @@
     "postgres": "^3.4.5",
     "turbo": "^2.3.0",
     "typescript": "^5.6.0",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "viem": "^2.21.0"
   }
 }

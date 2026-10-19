@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "configuredAt": "2026-10-19T06:25:06.971Z",
+  "vault": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+  "asset": {
+    "address": "0x7E955252E15c84f5768B83c41a71F9eba181802F",
+    "symbol": "USDG",
+    "decimals": 6,
+    "denominationRaw": "1000000"
+  },
+  "enabled": true,
+  "transaction": {
+    "hash": "0xc6d7de67b5fdbf62e950ca6d261c7a72b174c20afdb251a7bfa34813d4bd0d10",
+    "contractAddress": null,
+    "blockNumber": 138558406,
+    "blockHash": "0x8bedb34408333bf062356dae82da9760d4781eccc54d7aa87adf5513916e8a3f",
+    "gasUsed": "53518",
+    "effectiveGasPriceWei": "10000000",
+    "totalFeeWei": "535180000000",
+    "status": "success"
+  },
+  "result": "configured"
+}
