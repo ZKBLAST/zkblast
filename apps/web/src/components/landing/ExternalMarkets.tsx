@@ -5,7 +5,10 @@ import { useState } from "react";
 
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
-import { MarketPairLogo } from "@/components/markets/MarketPairLogo";
+import {
+  marketDisplayQuoteSymbol,
+  MarketPairLogo,
+} from "@/components/markets/MarketPairLogo";
 import { ExternalMarketTrade } from "@/components/markets/ExternalMarketTrade";
 import { Bay } from "@/components/ui/Frame";
 import { cx } from "@/lib/format";
@@ -142,7 +145,7 @@ export function ExternalMarkets() {
                   <MarketPairLogo market={market} />
                   <span>
                     <span className="block font-mono text-sm text-fg">
-                      {market.symbol}/{market.quoteSymbol}
+                      {market.symbol}/{marketDisplayQuoteSymbol(market)}
                     </span>
                     <span className="block text-xs text-faint">
                       {market.name}

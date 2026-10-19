@@ -11,15 +11,34 @@ export function isNearlySquare(width: number, height: number) {
   return ratio >= 0.9 && ratio <= 1.1;
 }
 
-export function MarketPairLogo({ market }: { market: ExternalMarket }) {
-  const quote =
+type MarketPairSource = Readonly<{
+  quoteSymbol: string;
+  pairCandidates: readonly Readonly<{
+    quoteSymbol: "USDG" | "WETH";
+    logoUrl: string | null;
+    routeStatus: "planned" | "observed" | "validated" | "disabled";
+  }>[];
+}>;
+
+export function preferredMarketPair(market: MarketPairSource) {
+  return (
     market.pairCandidates.find((pair) => pair.routeStatus === "validated") ??
-    market.pairCandidates[0];
+    market.pairCandidates[0] ??
+    null
+  );
+}
+
+export function marketDisplayQuoteSymbol(market: MarketPairSource) {
+  return preferredMarketPair(market)?.quoteSymbol ?? market.quoteSymbol;
+}
+
+export function MarketPairLogo({ market }: { market: ExternalMarket }) {
+  const quote = preferredMarketPair(market);
 
   return (
     <span
       className="relative block h-10 w-14 shrink-0"
-      aria-label={`${market.symbol}/${quote?.quoteSymbol ?? market.quoteSymbol}`}
+      aria-label={`${market.symbol}/${marketDisplayQuoteSymbol(market)}`}
     >
       <AssetLogo
         url={market.logoUrl}
