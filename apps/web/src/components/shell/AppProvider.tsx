@@ -14,6 +14,7 @@ import {
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import { parsePublicConfig } from "@/lib/network-config";
+import { createWalletVerifyPayload } from "@/lib/wallet-auth";
 import type { PublicConfig, Trade, UserProfile } from "@/types/application";
 import { WalletModal } from "./WalletModal";
 
@@ -160,7 +161,9 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       })) as string;
       await apiRequest(apiUrl, "/v1/auth/verify", {
         method: "POST",
-        body: JSON.stringify({ ...challenge, walletAddress, signature }),
+        body: JSON.stringify(
+          createWalletVerifyPayload(challenge, walletAddress, signature),
+        ),
       });
       await refreshAccount();
       setWalletOpen(false);

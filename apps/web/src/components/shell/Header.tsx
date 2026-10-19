@@ -174,10 +174,15 @@ export function Header() {
             ) : (
               <button
                 onClick={connect}
+                title={
+                  injectedAddress
+                    ? "Wallet connected — sign in to create a ZKBLAST session"
+                    : "Connect wallet"
+                }
                 className="inline-flex h-10 items-center gap-2 border border-line-strong bg-[linear-gradient(180deg,#1a1b2a,#11111c)] px-4 font-mono text-[12.5px] uppercase tracking-[0.06em] text-fg shadow-[inset_0_1px_0_rgba(174,188,229,0.08)] transition-colors hover:border-lime/60 hover:text-lime cursor-pointer"
               >
                 <Wallet className="size-4" aria-hidden />{" "}
-                {injectedAddress ? "Sign in" : "Connect"}
+                {injectedAddress ? shortHex(injectedAddress) : "Connect"}
               </button>
             )}
 
