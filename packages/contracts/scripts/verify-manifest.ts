@@ -29,6 +29,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 const environment = required("APP_ENV");
+const rehearsal = process.argv.includes("--rehearsal");
 assert(
   environment === "testnet" || environment === "mainnet",
   "APP_ENV is invalid",
@@ -36,10 +37,20 @@ assert(
 const chainId = Number(required("CHAIN_ID"));
 const chainName = required("CHAIN_NAME");
 const rpcUrl = required("RPC_URL");
+if (rehearsal) {
+  const hostname = new URL(rpcUrl).hostname;
+  assert(
+    hostname === "127.0.0.1" || hostname === "localhost",
+    "Manifest rehearsal requires a loopback RPC URL",
+  );
+}
 const explorerUrl = required("BLOCK_EXPLORER_URL");
 const relativeManifestPath = required("DEPLOYMENT_MANIFEST_PATH");
 assert(
-  relativeManifestPath === `deployments/${environment}/manifest.json`,
+  relativeManifestPath ===
+    (rehearsal
+      ? "deployments/mainnet/rehearsal-manifest.json"
+      : `deployments/${environment}/manifest.json`),
   "Manifest path does not match environment",
 );
 
@@ -303,8 +314,7 @@ async function assertExplorerVerified(address: string, label: string) {
   );
 }
 
-await Promise.all(
-  Object.entries(contracts).flatMap(([name, contract]) => {
+const explorerChecks = Object.entries(contracts).flatMap(([name, contract]) => {
     const verification = contract.verification as Record<string, unknown>;
     const checks: Promise<void>[] = [];
     if (verification.implementation === "verified") {
@@ -324,9 +334,9 @@ await Promise.all(
       );
     }
     return checks;
-  }),
-);
+  });
+await Promise.all(explorerChecks);
 
 console.log(`Verified deployment manifest: ${environment} chain ${chainId}`);
 console.log(`Verified contracts: ${Object.keys(contracts).length}`);
-console.log("Verified explorer sources: 9 addresses");
+console.log(`Verified explorer sources: ${explorerChecks.length} addresses`);

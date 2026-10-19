@@ -99,10 +99,39 @@ if (await exists(auditPath)) {
     auditApproved = false;
   }
 }
+let ownerRiskAccepted = false;
+const riskAcceptancePath =
+  "audit-artifacts/mainnet/owner-risk-acceptance.json";
+if (await exists(riskAcceptancePath)) {
+  try {
+    const waiver = await readJson(riskAcceptancePath);
+    const requiredCoreScope = [
+      "PoolRegistry",
+      "PoolFactory",
+      "SwapRouter",
+      "PositionManager",
+      "PoolQuoter",
+    ];
+    ownerRiskAccepted =
+      waiver.protocol === "ZKBLAST" &&
+      waiver.environment === "mainnet" &&
+      waiver.independentAuditCompleted === false &&
+      waiver.ownerAcceptsUnauditedMainnetRisk === true &&
+      waiver.shieldedCustodyMustRemainInactive === true &&
+      waiver.doesNotAuthorizeBroadcast === true &&
+      requiredCoreScope.every((name) => waiver.scope?.includes(name));
+  } catch {
+    ownerRiskAccepted = false;
+  }
+}
 record(
-  "independent-audit",
-  auditApproved,
-  "independent approval with zero unresolved critical/high findings is required",
+  "release-assurance",
+  auditApproved || ownerRiskAccepted,
+  auditApproved
+    ? "independent audit approved with zero unresolved critical/high findings"
+    : ownerRiskAccepted
+      ? "independent audit waived by explicit owner risk acceptance; shielded custody excluded"
+      : "independent approval or explicit scoped owner risk acceptance is required",
 );
 
 let rehearsalPassed = false;

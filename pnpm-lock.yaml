@@ -299,6 +299,12 @@ importers:
 
   packages/contracts:
     dependencies:
+      '@openzeppelin/contracts':
+        specifier: 5.7.0
+        version: 5.7.0
+      '@safe-global/safe-deployments':
+        specifier: 1.37.58
+        version: 1.37.58
       '@zkblast/config':
         specifier: workspace:*
         version: link:../config
@@ -1061,6 +1067,9 @@ packages:
   '@noir-lang/types@1.0.0-rc.5':
     resolution: {integrity: sha512-aVYD1xKUK78KSwdwYGIe2V2FWwiNL4RU2v8BmuA9GqjIMbHFzfC/WyyiA4ozrF0ZlCTi7N6J25XooXRvNmnECA==}
 
+  '@openzeppelin/contracts@5.7.0':
+    resolution: {integrity: sha512-IL2AZpI+7THMzt1u6Cxmc1zLwVnudtUGvrqXQ/HnbLKfQ/8dIWMMQPDwPIjRQzNrlAo4cxZaCGRB/XvwPo9ILA==}
+
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
 
@@ -1188,6 +1197,10 @@ packages:
     resolution: {integrity: sha512-EhX6N3XPMEnVU5cRfNgzPOKcSucsbu3nNNWuoAaEuKIqmddBKHN5b9d4rPe65T1I+FaOT176JKiZNsUBp3rqbA==}
     cpu: [x64]
     os: [win32]
+
+  '@safe-global/safe-deployments@1.37.58':
+    resolution: {integrity: sha512-OZJamxC1rI4s/EWH9ss+FOMPutbDsSOUHjdtjkSqHXRca+p+/yMERduQSKi3Th3vzLDFqnpdch1+/sx0DJVJHQ==}
+    engines: {node: '>=22.0.0', pnpm: '>=10.16.0'}
 
   '@scure/base@1.2.6':
     resolution: {integrity: sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg==}
@@ -3275,6 +3288,8 @@ snapshots:
 
   '@noir-lang/types@1.0.0-rc.5': {}
 
+  '@openzeppelin/contracts@5.7.0': {}
+
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
       '@noble/hashes': 1.8.0
@@ -3353,6 +3368,10 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.64.7':
     optional: true
+
+  '@safe-global/safe-deployments@1.37.58':
+    dependencies:
+      semver: 7.8.5
 
   '@scure/base@1.2.6': {}
 

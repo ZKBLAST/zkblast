@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "deployedAt": "2026-10-19T14:09:02.265Z",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governanceMultisigAddress": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "governanceOwnerCount": 2,
+  "governanceThreshold": "2",
+  "timelockAddress": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+  "minimumDelaySeconds": "300",
+  "artifactCreationBytecodeHash": "0xf3a282f7733e411f069ad3905767e318da20bb64891395c625bc0c1c159df75f",
+  "deployedRuntimeBytecodeHash": "0xc86a66eb96baf95b1f1e4bcf6e9beca7231c8e4a56c2c552d335aa69c3cebfe2",
+  "transaction": {
+    "hash": "0xc1025aad421a9258c3543fe09c3bd92759d59ef684eeee7312f78c7674827f34",
+    "blockNumber": 92673796,
+    "blockHash": "0x7062f929f160190a62004870df8eddad8e122d47d3cde6893f1e0e2306d385cc",
+    "gasUsed": "1603917",
+    "effectiveGasPriceWei": "20396000",
+    "totalFeeWei": "32713491132000",
+    "status": "success"
+  }
+}

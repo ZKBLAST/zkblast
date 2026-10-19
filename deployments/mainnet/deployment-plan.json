@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "kind": "predeployment-plan",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "generatedAt": "2026-10-19T14:13:02.628Z",
+  "referenceBlock": 92676180,
+  "referenceBlockHash": "0x6c491079278b35884ccf8a4ed307beccae0534bbd8e45d14230f618b00de17b6",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "startingNonce": 327,
+  "governance": {
+    "safeAddress": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "owners": [
+      "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed"
+    ],
+    "threshold": "2",
+    "timelockAddress": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+    "timelockDelaySeconds": "300"
+  },
+  "transactionCount": 9,
+  "contracts": {
+    "PoolRegistry": {
+      "implementation": "0xcC7e1f6849139AE99751227cf8A15073D1E55528",
+      "proxy": "0x64Eb3AA5BfeBeF34cc596b63c90c7665F75c72d1",
+      "creationBytecodeHash": "0xdd556d54c22f948b194b38b1cc15416b58c4a95b3eb179efdf45fba8188dc82c",
+      "runtimeBytecodeHash": "0xea3dc3da6f799dd5e4985e1e28d90313548a606839bdbe68731f61a98d7210d6",
+      "initializerArguments": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+        "0x202A08e43bb7C93a2f88dd225c80E8622b626aBd"
+      ],
+      "initializerCalldataHash": "0xbb894ff0b76783c4ed55ebca717bcf8c854af8cd97997cedd12625cc009ee7b2"
+    },
+    "PoolFactory": {
+      "implementation": "0x2aBa3e1FA705Eb28C26C2B10275a5C448D79C1Ba",
+      "proxy": "0x202A08e43bb7C93a2f88dd225c80E8622b626aBd",
+      "creationBytecodeHash": "0x49c0e7b3c7411c51bf1efa451e09a33a9f539f518051a8b51a6797798ad7567b",
+      "runtimeBytecodeHash": "0x06a35b5e82b6570eab87dd34a3e937f80109a32f63db78f3e266df1eab22d612",
+      "initializerArguments": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+        "0x64Eb3AA5BfeBeF34cc596b63c90c7665F75c72d1"
+      ],
+      "initializerCalldataHash": "0x0d17687c0cdd050a1561d313de8465b6fa48261c452c537dc36528a6bb282a33"
+    },
+    "SwapRouter": {
+      "implementation": "0xa2A2d09D6E5b6eC489CeA608530118E4Db3b1c24",
+      "proxy": "0x0a8ee592Dc05870383EfCCD298aCdC05D367a5EA",
+      "creationBytecodeHash": "0xe23a7ab7f657dd8bc11a971cbf4ada5857269a585bf971c6fa87add250884a3b",
+      "runtimeBytecodeHash": "0x47a71ab136fc6ed7b654ad60c6108d31d98e227893b351859abfca6b04d63827",
+      "initializerArguments": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+        "0x64Eb3AA5BfeBeF34cc596b63c90c7665F75c72d1"
+      ],
+      "initializerCalldataHash": "0x0d17687c0cdd050a1561d313de8465b6fa48261c452c537dc36528a6bb282a33"
+    },
+    "PositionManager": {
+      "implementation": "0x13b19636B259F36D23C0F08AB93aF6312CB2941c",
+      "proxy": "0x2eab219792E2fd586aB4C415e1f20a90886247b1",
+      "creationBytecodeHash": "0x21a0a130db96316d67b21b9bc3ab5bcbfec5653f937201dec7ed66fd5940ddae",
+      "runtimeBytecodeHash": "0x9c1e72fc6f2d9ad17857fe1954ec021e870b328a7f01120318cb7d5b59040bcc",
+      "initializerArguments": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+        "0x64Eb3AA5BfeBeF34cc596b63c90c7665F75c72d1"
+      ],
+      "initializerCalldataHash": "0x0d17687c0cdd050a1561d313de8465b6fa48261c452c537dc36528a6bb282a33"
+    },
+    "PoolQuoter": {
+      "implementation": "0xeDC71840758Ed9a2891D1BEEe21B414E910C0Ef7",
+      "proxy": null,
+      "creationBytecodeHash": "0x9c6b47c870f39bd3433ec0245868f47346311039bcbb2a9fa1da5a9f856e9bc7",
+      "runtimeBytecodeHash": "0xa574db139399e4232e4ce0b9963fba0165853b6d3e42a2d77fe1ead7bca9e8d3",
+      "initializerArguments": null,
+      "initializerCalldataHash": null
+    }
+  },
+  "proxy": {
+    "creationBytecodeHash": "0x8d521118b5f55999011a67154a1db04a6708824e8c8e6bb1652249a13b5b7b5b",
+    "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e"
+  },
+  "approval": {
+    "broadcastApproved": false,
+    "independentAuditApproved": false,
+    "note": "This plan is not a live deployment manifest and authorizes no transaction."
+  }
+}

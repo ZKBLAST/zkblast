@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "protocol": "ZKBLAST",
+  "services": [
+    {
+      "name": "web-testnet",
+      "environment": "testnet",
+      "kind": "web",
+      "buildCommand": "pnpm --filter @zkblast/web build",
+      "startCommand": "pnpm --filter @zkblast/web start",
+      "healthcheckPath": "/",
+      "requiredVariables": ["API_URL"],
+      "forbiddenVariables": [
+        "RPC_URL",
+        "WS_RPC_URL",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    },
+    {
+      "name": "api-testnet",
+      "environment": "testnet",
+      "kind": "api",
+      "buildCommand": "pnpm --filter @zkblast/api build",
+      "startCommand": "pnpm --filter @zkblast/api start",
+      "healthcheckPath": "/health",
+      "requiredVariables": [
+        "APP_ENV",
+        "CHAIN_ID",
+        "CHAIN_NAME",
+        "RPC_URL",
+        "BLOCK_EXPLORER_URL",
+        "DEPLOYMENT_MANIFEST_PATH",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "SUPABASE_SCHEMA",
+        "WEB_ORIGIN",
+        "OPERATIONS_API_TOKEN"
+      ],
+      "forbiddenVariables": [
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    },
+    {
+      "name": "indexer-testnet",
+      "environment": "testnet",
+      "kind": "indexer",
+      "buildCommand": "pnpm --filter @zkblast/indexer build",
+      "startCommand": "pnpm --filter @zkblast/indexer start",
+      "healthcheckPath": null,
+      "requiredVariables": [
+        "APP_ENV",
+        "CHAIN_ID",
+        "CHAIN_NAME",
+        "RPC_URL",
+        "WS_RPC_URL",
+        "BLOCK_EXPLORER_URL",
+        "DEPLOYMENT_MANIFEST_PATH",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "SUPABASE_SCHEMA"
+      ],
+      "forbiddenVariables": [
+        "WEB_ORIGIN",
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    },
+    {
+      "name": "web-mainnet",
+      "environment": "mainnet",
+      "kind": "web",
+      "buildCommand": "pnpm --filter @zkblast/web build",
+      "startCommand": "pnpm --filter @zkblast/web start",
+      "healthcheckPath": "/",
+      "requiredVariables": ["API_URL"],
+      "forbiddenVariables": [
+        "RPC_URL",
+        "WS_RPC_URL",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    },
+    {
+      "name": "api-mainnet",
+      "environment": "mainnet",
+      "kind": "api",
+      "buildCommand": "pnpm --filter @zkblast/api build",
+      "startCommand": "pnpm --filter @zkblast/api start",
+      "healthcheckPath": "/health",
+      "requiredVariables": [
+        "APP_ENV",
+        "CHAIN_ID",
+        "CHAIN_NAME",
+        "RPC_URL",
+        "BLOCK_EXPLORER_URL",
+        "DEPLOYMENT_MANIFEST_PATH",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "SUPABASE_SCHEMA",
+        "WEB_ORIGIN",
+        "OPERATIONS_API_TOKEN"
+      ],
+      "forbiddenVariables": [
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    },
+    {
+      "name": "indexer-mainnet",
+      "environment": "mainnet",
+      "kind": "indexer",
+      "buildCommand": "pnpm --filter @zkblast/indexer build",
+      "startCommand": "pnpm --filter @zkblast/indexer start",
+      "healthcheckPath": null,
+      "requiredVariables": [
+        "APP_ENV",
+        "CHAIN_ID",
+        "CHAIN_NAME",
+        "RPC_URL",
+        "WS_RPC_URL",
+        "BLOCK_EXPLORER_URL",
+        "DEPLOYMENT_MANIFEST_PATH",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_DIRECT_DATABASE_URL",
+        "SUPABASE_SCHEMA"
+      ],
+      "forbiddenVariables": [
+        "WEB_ORIGIN",
+        "DEPLOYER_PRIVATE_KEY",
+        "GOVERNANCE_PRIVATE_KEY",
+        "UPGRADER_PRIVATE_KEY"
+      ]
+    }
+  ]
+}

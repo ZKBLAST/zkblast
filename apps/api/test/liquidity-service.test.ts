@@ -97,7 +97,7 @@ test("lists only live positions owned by the requested wallet", async () => {
       readContract: async (request) => {
         if (request.functionName === "nextPositionId") return 3n;
         if (request.functionName === "positions")
-          return request.args?.[0] === 1n
+          return (request.args as readonly unknown[] | undefined)?.[0] === 1n
             ? [owner, pool, 0, 0, 50n]
             : [other, pool, 0, 0, 25n];
         if (request.functionName === "token0") return token0;

@@ -1,4 +1,5 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -40,6 +41,54 @@ type TransactionRecord = Readonly<{
   status: "success";
 }>;
 
+type MainnetPlan = Readonly<{
+  protocol: "ZKBLAST";
+  kind: "predeployment-plan";
+  environment: "mainnet";
+  chainId: 4663;
+  deployerAddress: Address;
+  startingNonce: number;
+  governance: {
+    safeAddress: Address;
+    timelockAddress: Address;
+    timelockDelaySeconds: string;
+  };
+  transactionCount: 9;
+  contracts: Record<
+    string,
+    {
+      implementation: Address;
+      proxy: Address | null;
+      creationBytecodeHash: Hex;
+      runtimeBytecodeHash: Hex;
+    }
+  >;
+  proxy: {
+    creationBytecodeHash: Hex;
+    runtimeBytecodeHash: Hex;
+  };
+}>;
+
+type AuditApproval = Readonly<{
+  protocol: "ZKBLAST";
+  approved: boolean;
+  unresolvedCritical: number;
+  unresolvedHigh: number;
+  auditors: readonly string[];
+}>;
+
+type OwnerRiskAcceptance = Readonly<{
+  protocol: "ZKBLAST";
+  environment: "mainnet";
+  independentAuditCompleted: false;
+  ownerAcceptsUnauditedMainnetRisk: true;
+  deploymentPlanSha256: string;
+  scope: readonly string[];
+  excludedScope: readonly string[];
+  shieldedCustodyMustRemainInactive: true;
+  doesNotAuthorizeBroadcast: true;
+}>;
+
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "../../..");
 const artifactRoot = path.resolve(scriptDirectory, "../out");
@@ -62,12 +111,20 @@ async function artifact(source: string, contract: string): Promise<Artifact> {
   return JSON.parse(await readFile(location, "utf8")) as Artifact;
 }
 
+async function readJson<T>(location: string): Promise<T> {
+  return JSON.parse(await readFile(location, "utf8")) as T;
+}
+
 const environment = required("APP_ENV");
+const checkOnly = process.argv.includes("--check-only");
+const rehearsal = process.argv.includes("--rehearsal");
 if (environment !== "testnet" && environment !== "mainnet") {
   throw new Error("APP_ENV must be testnet or mainnet");
 }
 if (
   environment === "mainnet" &&
+  !checkOnly &&
+  !rehearsal &&
   process.env.CONFIRM_MAINNET_DEPLOYMENT !== "DEPLOY_ZKBLAST_MAINNET"
 ) {
   throw new Error(
@@ -79,9 +136,17 @@ if (!Number.isSafeInteger(chainId) || chainId <= 0)
   throw new Error("CHAIN_ID is invalid");
 const chainName = required("CHAIN_NAME");
 const rpcUrl = required("RPC_URL");
+if (rehearsal) {
+  const hostname = new URL(rpcUrl).hostname;
+  if (hostname !== "127.0.0.1" && hostname !== "localhost") {
+    throw new Error("Mainnet rehearsal requires a loopback RPC URL");
+  }
+}
 const explorerUrl = required("BLOCK_EXPLORER_URL");
 const manifestRelativePath = required("DEPLOYMENT_MANIFEST_PATH");
-const expectedPath = `deployments/${environment}/manifest.json`;
+const expectedPath = rehearsal
+  ? "deployments/mainnet/rehearsal-manifest.json"
+  : `deployments/${environment}/manifest.json`;
 if (manifestRelativePath !== expectedPath)
   throw new Error(`DEPLOYMENT_MANIFEST_PATH must be ${expectedPath}`);
 
@@ -105,7 +170,7 @@ const walletClient = createWalletClient({
 });
 const journalPath = path.resolve(
   repositoryRoot,
-  `deployments/${environment}/deployment-${Date.now()}.private.json`,
+  `deployments/${environment}/${rehearsal ? "rehearsal" : "deployment"}-${Date.now()}.private.json`,
 );
 
 const actualChainId = await publicClient.getChainId();
@@ -117,6 +182,129 @@ if (actualChainId !== chainId)
 const proxyArtifact = await artifact("ERC1967Proxy", "ERC1967Proxy");
 const deployments: Record<string, unknown> = {};
 const allTransactions: TransactionRecord[] = [];
+
+async function assertMainnetReleaseGates(
+  startingNonce: number,
+  artifacts: Readonly<Record<string, Artifact>>,
+): Promise<void> {
+  if (environment !== "mainnet") return;
+  const plan = await readJson<MainnetPlan>(
+    path.resolve(repositoryRoot, "deployments/mainnet/deployment-plan.json"),
+  );
+  if (
+    plan.protocol !== "ZKBLAST" ||
+    plan.kind !== "predeployment-plan" ||
+    plan.environment !== "mainnet" ||
+    plan.chainId !== 4663 ||
+    plan.transactionCount !== 9
+  ) {
+    throw new Error("Invalid mainnet deployment plan");
+  }
+  if (
+    getAddress(plan.deployerAddress) !== account.address ||
+    getAddress(plan.governance.safeAddress) !== governance ||
+    getAddress(plan.governance.timelockAddress) !== upgrader ||
+    plan.governance.timelockDelaySeconds !== "300"
+  ) {
+    throw new Error("Mainnet deployment plan authority mismatch");
+  }
+  if (plan.startingNonce !== startingNonce) {
+    throw new Error(
+      `Mainnet deployment plan nonce is stale: expected ${plan.startingNonce}, received ${startingNonce}`,
+    );
+  }
+  const sequence = [
+    ["PoolRegistry", 0, 1],
+    ["PoolFactory", 2, 3],
+    ["SwapRouter", 4, 5],
+    ["PositionManager", 6, 7],
+    ["PoolQuoter", 8, null],
+  ] as const;
+  for (const [name, implementationOffset, proxyOffset] of sequence) {
+    const planned = plan.contracts[name];
+    const value = artifacts[name];
+    if (!planned || !value) throw new Error(`${name} missing from release plan`);
+    const implementation = getContractAddress({
+      from: account.address,
+      nonce: BigInt(startingNonce + implementationOffset),
+    });
+    const proxy =
+      proxyOffset === null
+        ? null
+        : getContractAddress({
+            from: account.address,
+            nonce: BigInt(startingNonce + proxyOffset),
+          });
+    if (planned.implementation !== implementation || planned.proxy !== proxy) {
+      throw new Error(`${name} predicted address mismatch`);
+    }
+    if (
+      planned.creationBytecodeHash !== keccak256(value.bytecode.object) ||
+      planned.runtimeBytecodeHash !== keccak256(value.deployedBytecode.object)
+    ) {
+      throw new Error(`${name} artifact hash mismatch`);
+    }
+  }
+  if (
+    plan.proxy.creationBytecodeHash !== keccak256(proxyArtifact.bytecode.object) ||
+    plan.proxy.runtimeBytecodeHash !==
+      keccak256(proxyArtifact.deployedBytecode.object)
+  ) {
+    throw new Error("ERC1967Proxy artifact hash mismatch");
+  }
+  if (rehearsal) return;
+  let audit: AuditApproval | undefined;
+  try {
+    audit = await readJson<AuditApproval>(
+      path.resolve(repositoryRoot, "audit-artifacts/mainnet/approval.json"),
+    );
+  } catch {}
+  const auditApproved = Boolean(
+    audit &&
+      audit.protocol === "ZKBLAST" &&
+      audit.approved === true &&
+      audit.unresolvedCritical === 0 &&
+      audit.unresolvedHigh === 0 &&
+      Array.isArray(audit.auditors) &&
+      audit.auditors.length > 0,
+  );
+  let waiver: OwnerRiskAcceptance | undefined;
+  try {
+    waiver = await readJson<OwnerRiskAcceptance>(
+      path.resolve(
+        repositoryRoot,
+        "audit-artifacts/mainnet/owner-risk-acceptance.json",
+      ),
+    );
+  } catch {}
+  const requiredCoreScope = [
+    "PoolRegistry",
+    "PoolFactory",
+    "SwapRouter",
+    "PositionManager",
+    "PoolQuoter",
+  ];
+  const planBytes = await readFile(
+    path.resolve(repositoryRoot, "deployments/mainnet/deployment-plan.json"),
+  );
+  const planHash = createHash("sha256").update(planBytes).digest("hex");
+  const waiverAccepted = Boolean(
+    waiver &&
+      waiver.protocol === "ZKBLAST" &&
+      waiver.environment === "mainnet" &&
+      waiver.independentAuditCompleted === false &&
+      waiver.ownerAcceptsUnauditedMainnetRisk === true &&
+      waiver.deploymentPlanSha256 === planHash &&
+      waiver.shieldedCustodyMustRemainInactive === true &&
+      waiver.doesNotAuthorizeBroadcast === true &&
+      requiredCoreScope.every((name) => waiver?.scope.includes(name)),
+  );
+  if (!auditApproved && !waiverAccepted) {
+    throw new Error(
+      "Independent audit approval or explicit scoped owner risk acceptance is required",
+    );
+  }
+}
 
 async function receipt(hash: Hash): Promise<TransactionRecord> {
   const value = await publicClient.waitForTransactionReceipt({
@@ -244,6 +432,18 @@ const startingNonce = await publicClient.getTransactionCount({
   address: account.address,
   blockTag: "pending",
 });
+const releaseArtifacts = {
+  PoolRegistry: await artifact("PoolRegistry", "PoolRegistry"),
+  PoolFactory: await artifact("PoolFactory", "PoolFactory"),
+  SwapRouter: await artifact("SwapRouter", "SwapRouter"),
+  PositionManager: await artifact("PositionManager", "PositionManager"),
+  PoolQuoter: await artifact("PoolQuoter", "PoolQuoter"),
+};
+await assertMainnetReleaseGates(startingNonce, releaseArtifacts);
+if (checkOnly) {
+  console.log(`Mainnet release gates passed at nonce ${startingNonce}`);
+  process.exit(0);
+}
 const predictedFactoryAddress = getContractAddress({
   from: account.address,
   nonce: BigInt(startingNonce + 3),

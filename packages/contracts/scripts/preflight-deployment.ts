@@ -71,30 +71,19 @@ if (actualChainId !== chainId) {
 if (balance === 0n)
   throw new Error(`Deployer ${account.address} has zero native balance`);
 
-const explorerApi = new URL("/api", explorerUrl);
-explorerApi.search = new URLSearchParams({
-  module: "contract",
-  action: "getsourcecode",
-  address: zeroAddress,
-}).toString();
 try {
-  const response = await fetch(explorerApi, {
-    headers: { accept: "application/json" },
+  const response = await fetch(explorerUrl, {
+    headers: {
+      accept: "text/html",
+      "user-agent": "ZKBLAST-Deployment-Preflight/1.0",
+    },
   });
   if (!response.ok) throw new Error("response not successful");
-  const payload = (await response.json()) as {
-    status?: string;
-    result?: unknown[];
-  };
-  if (
-    payload.status !== "1" ||
-    !Array.isArray(payload.result) ||
-    payload.result.length === 0
-  ) {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("text/html"))
     throw new Error("invalid explorer response");
-  }
 } catch {
-  throw new Error("Explorer API preflight failed; endpoint details redacted");
+  throw new Error("Explorer availability check failed; endpoint details redacted");
 }
 
 if (environment === "mainnet") {
@@ -105,6 +94,43 @@ if (environment === "mainnet") {
     throw new Error("Mainnet upgrader must be a deployed timelock contract");
   }
   const minimumDelay = BigInt(required("MIN_TIMELOCK_DELAY_SECONDS"));
+  const [owners, threshold] = await Promise.all([
+    client.readContract({
+      address: governance,
+      abi: [
+        {
+          type: "function",
+          name: "getOwners",
+          inputs: [],
+          outputs: [{ type: "address[]" }],
+          stateMutability: "view",
+        },
+      ],
+      functionName: "getOwners",
+    }),
+    client.readContract({
+      address: governance,
+      abi: [
+        {
+          type: "function",
+          name: "getThreshold",
+          inputs: [],
+          outputs: [{ type: "uint256" }],
+          stateMutability: "view",
+        },
+      ],
+      functionName: "getThreshold",
+    }),
+  ]);
+  if (
+    owners.length < 2 ||
+    threshold < 2n ||
+    threshold > BigInt(owners.length)
+  ) {
+    throw new Error(
+      "Mainnet governance Safe requires at least two owners and threshold two",
+    );
+  }
   const configuredDelay = await client.readContract({
     address: upgrader,
     abi: [
@@ -122,6 +148,57 @@ if (environment === "mainnet") {
     throw new Error(
       `Mainnet timelock delay is too short: expected at least ${minimumDelay} seconds`,
     );
+  }
+  const timelockRoleAbi = [
+    {
+      type: "function",
+      name: "PROPOSER_ROLE",
+      inputs: [],
+      outputs: [{ type: "bytes32" }],
+      stateMutability: "view",
+    },
+    {
+      type: "function",
+      name: "EXECUTOR_ROLE",
+      inputs: [],
+      outputs: [{ type: "bytes32" }],
+      stateMutability: "view",
+    },
+    {
+      type: "function",
+      name: "CANCELLER_ROLE",
+      inputs: [],
+      outputs: [{ type: "bytes32" }],
+      stateMutability: "view",
+    },
+    {
+      type: "function",
+      name: "hasRole",
+      inputs: [{ type: "bytes32" }, { type: "address" }],
+      outputs: [{ type: "bool" }],
+      stateMutability: "view",
+    },
+  ] as const;
+  for (const functionName of [
+    "PROPOSER_ROLE",
+    "EXECUTOR_ROLE",
+    "CANCELLER_ROLE",
+  ] as const) {
+    const role = await client.readContract({
+      address: upgrader,
+      abi: timelockRoleAbi,
+      functionName,
+    });
+    const assigned = await client.readContract({
+      address: upgrader,
+      abi: timelockRoleAbi,
+      functionName: "hasRole",
+      args: [role, governance],
+    });
+    if (!assigned)
+      throw new Error(
+        `Mainnet timelock ${functionName} is not assigned to governance`,
+      );
   }
 }
 

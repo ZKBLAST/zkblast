@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "deployedAt": "2026-10-19T14:00:24.202Z",
+  "safe": {
+    "address": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "version": "1.4.1",
+    "owners": [
+      "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed"
+    ],
+    "threshold": "2",
+    "saltNonce": "0",
+    "singleton": "0x41675C099F32341bf84BFc5382aF534df5C7461a",
+    "proxyFactory": "0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67",
+    "fallbackHandler": "0xfd0732Dc9E303f09fCEf3a7388Ad10A83459Ec99",
+    "runtimeBytecodeHash": "0xd7d408ebcd99b2b70be43e20253d6d92a8ea8fab29bd3be7f55b10032331fb4c"
+  },
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "transaction": {
+    "hash": "0xfaf7379ee18e4f1c1c6e6e91fbdef8fa012f9e07eb0404d31d789c4254b49408",
+    "blockNumber": 92668761,
+    "blockHash": "0x34d5352703d41d75b660c95017fc87b432d17e9ed0a0b20bc238bb6f80b043e3",
+    "gasUsed": "282359",
+    "effectiveGasPriceWei": "20224000",
+    "totalFeeWei": "5710428416000",
+    "status": "success"
+  }
+}
