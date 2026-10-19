@@ -4,7 +4,7 @@
   "environment": "mainnet",
   "chainId": 4663,
   "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
-  "updatedAt": "2026-10-19T15:15:38.919Z",
+  "updatedAt": "2026-10-19T15:25:17.118Z",
   "markets": {
     "AMD": {
       "symbol": "AMD",
@@ -105,6 +105,46 @@
         "status": "success"
       },
       "runtimeBytecodeHash": "0x3d41824688be50343425ed7dd60645e9ae946d27414699652f6da7c21e0f508a"
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "name": "Microsoft • Robinhood Token",
+      "baseAddress": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0x2AAfE4d1fA1b1C75951D5fD325E82B420558CA48",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0xcc89a23438048922a9319a1e6bab7ce7b9119a5a733ddd64310c6ac3533b46a9",
+        "blockNumber": 92718199,
+        "blockHash": "0xf1a02c612e3bea081e7f5924337e9623a30bc9d22356326d6f4845efc24de423",
+        "gasUsed": "1508693",
+        "effectiveGasPriceWei": "20374000",
+        "totalFeeWei": "30738111182000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0xf24f3debf779fe5390dde1235b882e6fe2e78478f350855f6ac7c5f19a659e9b"
+    },
+    "META": {
+      "symbol": "META",
+      "name": "Meta Platforms • Robinhood Token",
+      "baseAddress": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+      "quoteAddress": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "poolAddress": "0xef6892976b7E69890986746583909Ce0Cc9dfa95",
+      "feePips": 3000,
+      "model": "DAMM",
+      "liquidityStatus": "awaiting_initial_liquidity",
+      "transaction": {
+        "hash": "0x3a6f92aa6c6172e2b90689d30449560d955108110a4a23158703b9e7fae20413",
+        "blockNumber": 92718206,
+        "blockHash": "0x2862bb15d87a3f2193b429fda0d438e858b7d2eeb55b95d03d0455c202321b4d",
+        "gasUsed": "1508693",
+        "effectiveGasPriceWei": "20318000",
+        "totalFeeWei": "30653624374000",
+        "status": "success"
+      },
+      "runtimeBytecodeHash": "0xd436e39ab90cc965a5858b1b055932c1602847bfe991dfd0755f6ca4bf7ca3fc"
     }
   },
   "explorerUrl": "https://robinhoodchain.blockscout.com"

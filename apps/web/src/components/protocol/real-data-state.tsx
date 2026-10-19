@@ -17,7 +17,7 @@ export function RealDataState({
   onRetry: () => Promise<void>;
 }>) {
   const { config } = useApp();
-  const network = config?.environment === "mainnet" ? "mainnet" : "testnet";
+  const network = config?.environment ?? "network";
   if (loading)
     return (
       <div className="panel p-8 text-sm text-muted">

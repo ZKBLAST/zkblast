@@ -9,7 +9,7 @@ const querySchema = z.object({
   source: z.enum(["pons_graduated", "robinhood_stock_token"]).optional(),
   region: z.enum(["unclassified", "crypto", "us", "china"]).optional(),
   minMarketCapUsd: z.coerce.number().nonnegative().optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(25),
+  limit: z.coerce.number().int().min(1).max(250).default(25),
   cursor: z.string().uuid().optional(),
 });
 

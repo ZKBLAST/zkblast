@@ -4,9 +4,10 @@ import { ExternalLink, Layers, Minus } from "lucide-react";
 import { useState } from "react";
 
 import { AccountPanel } from "@/components/account/AccountPanel";
+import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { useApp } from "@/components/shell/AppProvider";
-import { LaneBadge, PairMark, TypeTag } from "@/components/ui/Badges";
+import { LaneBadge, TypeTag } from "@/components/ui/Badges";
 import { Button } from "@/components/ui/Button";
 import { PageHeader, Stat } from "@/components/ui/PageHeader";
 import { webPublicConfig } from "@/config/public-env";
@@ -18,11 +19,13 @@ import {
   type TransactionExecutionState,
 } from "@/lib/swap-flow";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 import type { ProtocolPosition } from "@/types/application";
 
 export function PositionsView() {
   const { address, connect, config, toast } = useApp();
   const data = useProtocolData(address);
+  const { items: externalMarkets } = useExternalMarkets();
 
   if (!address)
     return (
@@ -89,6 +92,7 @@ export function PositionsView() {
               <PositionItem
                 key={`${position.poolAddress}:${position.onchainPositionId}`}
                 position={position}
+                markets={externalMarkets}
                 owner={address}
                 explorerUrl={config?.explorerUrl}
                 onConfirmed={data.refresh}
@@ -109,12 +113,14 @@ type PreparedAction = Readonly<{
 
 function PositionItem({
   position,
+  markets,
   owner,
   explorerUrl,
   onConfirmed,
   onToast,
 }: Readonly<{
   position: ProtocolPosition;
+  markets: ReturnType<typeof useExternalMarkets>["items"];
   owner: string;
   explorerUrl?: string;
   onConfirmed: () => Promise<void>;
@@ -181,9 +187,10 @@ function PositionItem({
     <li className="panel ticks p-5">
       <div className="grid gap-4 md:grid-cols-[1fr_auto_auto] md:items-center">
         <span className="flex items-center gap-3">
-          <PairMark
+          <ProtocolPairLogo
             base={position.token0Symbol}
             quote={position.token1Symbol}
+            markets={markets}
           />
           <span>
             <strong>

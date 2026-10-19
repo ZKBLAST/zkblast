@@ -4,14 +4,17 @@ import { ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Bay } from "@/components/ui/Frame";
-import { PairMark, TypeTag } from "@/components/ui/Badges";
+import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { TypeTag } from "@/components/ui/Badges";
 import { MaskHeading } from "@/components/ui/Reveal";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 import { cx } from "@/lib/format";
 
 export function MarketsTable() {
   const { pools, loading, error, refresh } = useProtocolData();
+  const { items: externalMarkets } = useExternalMarkets();
   const [type, setType] = useState<"all" | "DLMM" | "DAMM">("all");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const rows = pools.filter(
@@ -139,10 +142,10 @@ export function MarketsTable() {
                     href={`/pools/${pool.address}`}
                     className="flex min-w-0 items-center gap-3"
                   >
-                    <PairMark
+                    <ProtocolPairLogo
                       base={pool.token0Symbol}
                       quote={pool.token1Symbol}
-                      size={26}
+                      markets={externalMarkets}
                     />
                     <span className="min-w-0">
                       <span className="block truncate font-mono text-[13.5px] text-fg group-hover:text-lime">

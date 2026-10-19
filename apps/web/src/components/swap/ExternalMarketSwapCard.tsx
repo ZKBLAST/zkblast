@@ -37,7 +37,10 @@ export function ExternalMarketSwapCard() {
         {selectedMarket ? (
           <label className="block">
             <span className="label">
-              {config?.environment === "mainnet" ? "Mainnet" : "Testnet"} market
+              {config
+                ? `${config.environment[0]?.toUpperCase()}${config.environment.slice(1)}`
+                : "Network"}{" "}
+              market
             </span>
             <span className="mt-2 flex items-center gap-3 border border-line bg-bg p-3">
               <MarketPairLogo market={selectedMarket} />

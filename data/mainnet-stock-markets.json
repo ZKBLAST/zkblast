@@ -1,7 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "chainId": 4663,
   "quoteSymbol": "USDG",
+  "generatedAt": "2026-10-19T15:22:50.261Z",
+  "source": "validated_database_snapshot",
   "markets": [
     {
       "symbol": "AMD",
@@ -29,9 +31,585 @@
     },
     {
       "symbol": "TSLA",
-      "name": "Tesla • Robinhood Token",
+      "name": "TSLA • Robinhood Token",
       "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
       "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSLA"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft • Robinhood Token",
+      "address": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MSFT"
+    },
+    {
+      "symbol": "META",
+      "name": "Meta Platforms • Robinhood Token",
+      "address": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/META"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Class A • Robinhood Token",
+      "address": "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GOOGL"
+    },
+    {
+      "symbol": "AEHR",
+      "name": "Aehr • Robinhood Token",
+      "address": "0x5F604fBA1162193A4388A5DFa56F556f3E133cC2",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AEHR"
+    },
+    {
+      "symbol": "ALAB",
+      "name": "Astera Labs, Inc. • Robinhood Token",
+      "address": "0x748c32c3ca24eDf31ea597Db1F3d330a7a6DA3Dc",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ALAB"
+    },
+    {
+      "symbol": "APLD",
+      "name": "Applied Digital • Robinhood Token",
+      "address": "0xb8DBf92F9741c9ac1c32115E78581f23509916FD",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/APLD"
+    },
+    {
+      "symbol": "ASTS",
+      "name": "AST SpaceMobile • Robinhood Token",
+      "address": "0x1AF6446f07eb1d97c546AFC8c9544cBDF3AD5137",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ASTS"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom • Robinhood Token",
+      "address": "0x156E175DD063a8cE274C50654eF40e0032b3fbcF",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AVGO"
+    },
+    {
+      "symbol": "AXTI",
+      "name": "AXT • Robinhood Token",
+      "address": "0x141eEa040c2250eEc0314e336975e81f85f6585e",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AXTI"
+    },
+    {
+      "symbol": "BA",
+      "name": "Boeing • Robinhood Token",
+      "address": "0x4D21483a44Bf67a86b77E3dA301411880797D452",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BA"
+    },
+    {
+      "symbol": "BABA",
+      "name": "Alibaba • Robinhood Token",
+      "address": "0xad25Ac6C84D497db898fa1E8387bf6Af3532a1c4",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BABA"
+    },
+    {
+      "symbol": "BB",
+      "name": "Blackberry • Robinhood Token",
+      "address": "0x48E39E56aCdbA37b09020C0b734A613C9a2f100A",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BB"
+    },
+    {
+      "symbol": "BND",
+      "name": "Vanguard Total Bond Market ETF • Robinhood Token",
+      "address": "0x2F62fC9fAbb470C690f141c28340eD832bB27020",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BND"
+    },
+    {
+      "symbol": "BULL",
+      "name": "Webull • Robinhood Token",
+      "address": "0xceF9027c7d6985b85f0BA431125073529A947A68",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BULL"
+    },
+    {
+      "symbol": "CBRS",
+      "name": "Cerebras Systems • Robinhood Token",
+      "address": "0x5c90450Bbb4273D7b2f17CF6917AEB237A569679",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CBRS"
+    },
+    {
+      "symbol": "CCL",
+      "name": "Carnival Corporation • Robinhood Token",
+      "address": "0x9651342CeA770aE9a2969Ba2A52611523146aef9",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CCL"
+    },
+    {
+      "symbol": "CEG",
+      "name": "Constellation Energy • Robinhood Token",
+      "address": "0xaE517A2903E68bd929Dfd15be875F8369D53e94a",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CEG"
+    },
+    {
+      "symbol": "CIEN",
+      "name": "Ciena • Robinhood Token",
+      "address": "0x44f6D488021f8233B9416294d1FE9b1fEe28382d",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CIEN"
+    },
+    {
+      "symbol": "CLOV",
+      "name": "Clover Health Investments • Robinhood Token",
+      "address": "0x62200915e7DEab1eC7f79fb246daDbB80eACdDd0",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLOV"
+    },
+    {
+      "symbol": "CLS",
+      "name": "Celestica • Robinhood Token",
+      "address": "0xBf449977089c718C004a66C554B26B94ef3Ad4De",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLS"
+    },
+    {
+      "symbol": "CLSK",
+      "name": "CleanSpark • Robinhood Token",
+      "address": "0xcBB95BBF36099d34dA091dc6Fa6F49EfA257Cee3",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLSK"
+    },
+    {
+      "symbol": "CRCL",
+      "name": "Circle Internet Group • Robinhood Token",
+      "address": "0xdF0992E440dD0be65BD8439b609d6D4366bf1CB5",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRCL"
+    },
+    {
+      "symbol": "CRDO",
+      "name": "Credo Technology Group • Robinhood Token",
+      "address": "0x4D67253bc223e6b0e104F1084c1fb2b669dDC41b",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRDO"
+    },
+    {
+      "symbol": "CRM",
+      "name": "Salesforce • Robinhood Token",
+      "address": "0xd95B44124e475743a7589e68F3D74008A5536D44",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRM"
+    },
+    {
+      "symbol": "CRWD",
+      "name": "CrowdStrike Holdings • Robinhood Token",
+      "address": "0xea72Ecca2d0f6bFA1394DBBCff85b52CD4233931",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRWD"
+    },
+    {
+      "symbol": "CRWV",
+      "name": "CoreWeave • Robinhood Token",
+      "address": "0x5f10A1C971B69e47e059e1dC91901B59b3fB49C3",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRWV"
+    },
+    {
+      "symbol": "CSCO",
+      "name": "Cisco Systems • Robinhood Token",
+      "address": "0xF543967EEBB6f1917992eF0E68De63ab07a5a0dA",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CSCO"
+    },
+    {
+      "symbol": "CVNA",
+      "name": "Carvana • Robinhood Token",
+      "address": "0xa4f319104089FE321dc8093C6E707d4fE190A988",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CVNA"
+    },
+    {
+      "symbol": "DELL",
+      "name": "Dell • Robinhood Token",
+      "address": "0x941AE714EC6D8130c7B75d67160Ca08f1e7d11Dd",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/DELL"
+    },
+    {
+      "symbol": "ELF",
+      "name": "e.l.f. Beauty • Robinhood Token",
+      "address": "0x39EC44Bee4F6A116c6F9B8De566848a985C53C60",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ELF"
+    },
+    {
+      "symbol": "EWY",
+      "name": "iShares MSCI South Korea fund • Robinhood Token",
+      "address": "0x7f0aBeF0C07280F82c6a08ead09dEd6BAE2C13Fc",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/EWY"
+    },
+    {
+      "symbol": "FICO",
+      "name": "Fair Isaac • Robinhood Token",
+      "address": "0xa48F22A46C0F1C46CA7D111CB6c137c271987180",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FICO"
+    },
+    {
+      "symbol": "FIG",
+      "name": "Figma • Robinhood Token",
+      "address": "0x41F4267525a8AFf329540eF24fD83d9044758B33",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FIG"
+    },
+    {
+      "symbol": "FISV",
+      "name": "Fiserv • Robinhood Token",
+      "address": "0x9ECe29A4A2397C0a35fb5fA8EE2b9509130a98cc",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FISV"
+    },
+    {
+      "symbol": "FIX",
+      "name": "Comfort Systems • Robinhood Token",
+      "address": "0x93Dbb1d2Dc5D63F4abACFF30485273f538Df68Ac",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FIX"
+    },
+    {
+      "symbol": "FLY",
+      "name": "Firefly Aerospace Inc. • Robinhood Token",
+      "address": "0x03BC731Ffb162cdd7B98D3C6542bFC291126075d",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FLY"
+    },
+    {
+      "symbol": "FUTU",
+      "name": "Futu Holdings • Robinhood Token",
+      "address": "0xeB30663bDFf0622Ef4e4E5cBb4E975F19f33f51D",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FUTU"
+    },
+    {
+      "symbol": "GE",
+      "name": "General Electric • Robinhood Token",
+      "address": "0x63b814DDBd6BF339f25Fed8c36158a008D5B373e",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GE"
+    },
+    {
+      "symbol": "GLD",
+      "name": "SPDR Gold Trust • Robinhood Token",
+      "address": "0xC9a981FEE1F9DEc688bb123ccDeCc63D0deBFC4e",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLD"
+    },
+    {
+      "symbol": "GLW",
+      "name": "Corning • Robinhood Token",
+      "address": "0x7c04E6A3368F2A1DE3874f0e80d2e0A1a9915da6",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLW"
+    },
+    {
+      "symbol": "GLXY",
+      "name": "Galaxy Digital Inc. • Robinhood Token",
+      "address": "0x2D427692E928fa156ec22acfaBaFA0447C5805B7",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLXY"
+    },
+    {
+      "symbol": "INFQ",
+      "name": "Infleqtion • Robinhood Token",
+      "address": "0xB853bC83a753342a4f8320ea680b4B1E84118D21",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INFQ"
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel • Robinhood Token",
+      "address": "0xc72b96e0E48ecd4DC75E1e45396e26300BC39681",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INTC"
+    },
+    {
+      "symbol": "INTU",
+      "name": "Intuit • Robinhood Token",
+      "address": "0x56d23beE5f41A7120170b0c603Dae30128e460e9",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INTU"
+    },
+    {
+      "symbol": "IREN",
+      "name": "IREN Limited • Robinhood Token",
+      "address": "0xF0AB0c93bE6F41369d302e55db1A96b3c430212D",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/IREN"
+    },
+    {
+      "symbol": "LHX",
+      "name": "L3Harris • Robinhood Token",
+      "address": "0x48d60243c66437c6ac3c2495Be94747aEd5Dfe25",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LHX"
+    },
+    {
+      "symbol": "LMT",
+      "name": "Lockheed • Robinhood Token",
+      "address": "0x329fcACEb9AD6F9580DD5F643fed0646900D043c",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LMT"
+    },
+    {
+      "symbol": "LRCX",
+      "name": "Lam Research Corp • Robinhood Token",
+      "address": "0x57b0030166DB0C31690d1A5aA167e2e26e2C29a4",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LRCX"
+    },
+    {
+      "symbol": "LULU",
+      "name": "Lululemon • Robinhood Token",
+      "address": "0x4e62068525Ab11FE768e29dfD00ef909B9803016",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LULU"
+    },
+    {
+      "symbol": "MOD",
+      "name": "Modine • Robinhood Token",
+      "address": "0xc6Cbad1016b38B797610c25E1dc7D95988B1f362",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MOD"
+    },
+    {
+      "symbol": "MRNA",
+      "name": "Moderna • Robinhood Token",
+      "address": "0x43B07D15cE533bEc5476d70C22a78a1B2B662155",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MRNA"
+    },
+    {
+      "symbol": "MTSI",
+      "name": "MACOM • Robinhood Token",
+      "address": "0xC93f4d80e268AB922e871bd169156C3CC41894e6",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MTSI"
+    },
+    {
+      "symbol": "MU",
+      "name": "Micron Technology • Robinhood Token",
+      "address": "0xfF080c8ce2E5feadaCa0Da81314Ae59D232d4afD",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MU"
+    },
+    {
+      "symbol": "MXL",
+      "name": "MaxLinear • Robinhood Token",
+      "address": "0x48961813349333209994750ffA89b3c5C22eC969",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MXL"
+    },
+    {
+      "symbol": "NNE",
+      "name": "Nano Nuclear Energy • Robinhood Token",
+      "address": "0xBEF75684C43c4ea7BD18Dd532a2244674Ee8b926",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/NNE"
+    },
+    {
+      "symbol": "NU",
+      "name": "Nu • Robinhood Token",
+      "address": "0x408c14038a04f7bD235329E26d2bf569ee20e250",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/NU"
+    },
+    {
+      "symbol": "ON",
+      "name": "ON Semiconductor • Robinhood Token",
+      "address": "0xbBD09F72b025360FeE5C928053Dca6248d35be54",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ON"
+    },
+    {
+      "symbol": "OUST",
+      "name": "Ouster • Robinhood Token",
+      "address": "0x40E7a279850e443f582059ae5dC1c3b6563E6395",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/OUST"
+    },
+    {
+      "symbol": "P",
+      "name": "Everpure • Robinhood Token",
+      "address": "0x1Cdad396DB64BDa184d5182A97Dd9B3C62100b7D",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/P"
+    },
+    {
+      "symbol": "PANW",
+      "name": "Palo Alto Networks • Robinhood Token",
+      "address": "0xB039597eD45CBa7B6E2fb9E8BE51802969CEe5Be",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/PANW"
+    },
+    {
+      "symbol": "POWL",
+      "name": "Powell Industries • Robinhood Token",
+      "address": "0x237c16D66590F67B886d978ACD362EAeaD8B18c7",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/POWL"
+    },
+    {
+      "symbol": "PR",
+      "name": "Permian Resources • Robinhood Token",
+      "address": "0x4189F0c66EBBB0bfeF1C31f763131361EF32f77C",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/PR"
+    },
+    {
+      "symbol": "QBTS",
+      "name": "D-Wave Quantum Inc. Common Stock • Robinhood Token",
+      "address": "0xC583c60aeF9Dc401Da72cEC1B404743a93cea1Cc",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/QBTS"
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Invesco QQQ • Robinhood Token",
+      "address": "0xD5f3879160bc7c32ebb4dC785F8a4F505888de68",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/QQQ"
+    },
+    {
+      "symbol": "RCAT",
+      "name": "Red Cat • Robinhood Token",
+      "address": "0xFDE6b5d9BB419B10C23268c74e369AbFF39C0460",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RCAT"
+    },
+    {
+      "symbol": "RDDT",
+      "name": "Reddit • Robinhood Token",
+      "address": "0x05b37Fb53A299a1b874A619e1c4C404D52C36F4C",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RDDT"
+    },
+    {
+      "symbol": "RGTI",
+      "name": "Rigetti Computing • Robinhood Token",
+      "address": "0x284358abc07F9359f19f4b5b4aC91901Be2597Ba",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RGTI"
+    },
+    {
+      "symbol": "RKLB",
+      "name": "Rocket Lab Corporation • Robinhood Token",
+      "address": "0x3b14C39E89D60D627b42a1A4CA45b5bb45Fc12e2",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RKLB"
+    },
+    {
+      "symbol": "RUN",
+      "name": "Sunrun • Robinhood Token",
+      "address": "0x756Bc80af765C82da966a788858d65aDF14f3793",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RUN"
+    },
+    {
+      "symbol": "SATS",
+      "name": "EchoStar • Robinhood Token",
+      "address": "0x95052ddcd5DC25641657424A8Cf04834997E1730",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SATS"
+    },
+    {
+      "symbol": "SGOV",
+      "name": "iShares 0-3 Month Treasury Bond • Robinhood Token",
+      "address": "0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SGOV"
+    },
+    {
+      "symbol": "SIMO",
+      "name": "Silicon Motion • Robinhood Token",
+      "address": "0x77E655E37F4d913fB9540e0d541D824171a60e81",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SIMO"
+    },
+    {
+      "symbol": "SKHY",
+      "name": "SK hynix Inc. American Depositary Shares • Robinhood Token",
+      "address": "0x84CAb63bc87912E71ad199ff14A0bA45de68FeF8",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SKHY"
+    },
+    {
+      "symbol": "SLS",
+      "name": "SELLAS Life Sciences • Robinhood Token",
+      "address": "0x285b231728c7E4333799183DF1094d775246a535",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SLS"
+    },
+    {
+      "symbol": "SMCI",
+      "name": "Super Micro Computer • Robinhood Token",
+      "address": "0xc01aA1fECeC0605b13bc84874ff7256C0f5F562a",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SMCI"
+    },
+    {
+      "symbol": "SMH",
+      "name": "VanEck Semiconductor ETF • Robinhood Token",
+      "address": "0x072f979c2CAc8e1391B0162a87Fee094bF8744a0",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SMH"
+    },
+    {
+      "symbol": "SNAP",
+      "name": "Snap • Robinhood Token",
+      "address": "0xF6589F11Bc40b669e584073F428B05562F568733",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNAP"
+    },
+    {
+      "symbol": "SNDK",
+      "name": "Sandisk Corporation • Robinhood Token",
+      "address": "0xB90A19fF0Af67f7779afF50A882A9CfF42446400",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNDK"
+    },
+    {
+      "symbol": "SNOW",
+      "name": "Snowflake • Robinhood Token",
+      "address": "0xBa0CAB75495255d0cB58E22B648bFED4ECD1F47E",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNOW"
+    },
+    {
+      "symbol": "SPCX",
+      "name": "Space Exploration Technologies Corp. Class A Common Stock • Robinhood Token",
+      "address": "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SPCX"
+    },
+    {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF Trust • Robinhood Token",
+      "address": "0x117cc2133c37B721F49dE2A7a74833232B3B4C0C",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SPY"
+    },
+    {
+      "symbol": "TEAM",
+      "name": "Atlassian Corporation • Robinhood Token",
+      "address": "0x5B97476b922F3305131B8f0B9D333172E87f4aaE",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TEAM"
+    },
+    {
+      "symbol": "TEM",
+      "name": "Tempus AI • Robinhood Token",
+      "address": "0xB1CC0EC7Db69Cf43539119814df40071b9d61793",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TEM"
+    },
+    {
+      "symbol": "TER",
+      "name": "Teradyne • Robinhood Token",
+      "address": "0x2778C5024D5cA2CdB0f8eAD671ffc69963AdCD9C",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TER"
+    },
+    {
+      "symbol": "TSEM",
+      "name": "Tower Semiconductor • Robinhood Token",
+      "address": "0x89776d4Cd68193597A2fC132cfaC1fDe36CCeA8a",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSEM"
+    },
+    {
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor Manufacturing • Robinhood Token",
+      "address": "0x58FfE4a942d3885bAa22D7520691F611EF09e7AA",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSM"
+    },
+    {
+      "symbol": "TTWO",
+      "name": "Take-Two Interactive Software • Robinhood Token",
+      "address": "0x5e81213613b6B86EaB4c6c50d718d34359459786",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TTWO"
+    },
+    {
+      "symbol": "UNH",
+      "name": "UnitedHealth • Robinhood Token",
+      "address": "0xcF364ea52787e289De6F32077834056E3E70D6A8",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/UNH"
+    },
+    {
+      "symbol": "UPS",
+      "name": "UPS • Robinhood Token",
+      "address": "0xf23250dac154D05Bb671CB0d0eBEf3c635c79CE2",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/UPS"
+    },
+    {
+      "symbol": "USAR",
+      "name": "USA Rare Earth • Robinhood Token",
+      "address": "0xd917B029C761D264c6A312BBbcDA868658eF86a6",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/USAR"
+    },
+    {
+      "symbol": "VICR",
+      "name": "Vicor • Robinhood Token",
+      "address": "0x6006ed4B2F94110851ff7509D97D034f0EeD9226",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VICR"
+    },
+    {
+      "symbol": "VST",
+      "name": "Vistra • Robinhood Token",
+      "address": "0x561e2a49212b7cCF47f2744Ccb83e200722fADBc",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VST"
+    },
+    {
+      "symbol": "VTI",
+      "name": "Vanguard Morningstar Total Stock Market ETF • Robinhood Token",
+      "address": "0x0594134DF3f171a354D9C85eBD65b7A6148F6D09",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VTI"
+    },
+    {
+      "symbol": "WDAY",
+      "name": "Workday • Robinhood Token",
+      "address": "0x82DA4646242e1D962e96e932269Dc644c94a9CaA",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WDAY"
+    },
+    {
+      "symbol": "WDC",
+      "name": "Western Digital • Robinhood Token",
+      "address": "0xF52597345A8Edf418bc4071b4a35112472277D3e",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WDC"
+    },
+    {
+      "symbol": "WYFI",
+      "name": "WhiteFiber, Inc. • Robinhood Token",
+      "address": "0x9e7ABD3C9139D14E4c86DcE0e455AAB7A0C2FB3E",
+      "logoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WYFI"
     }
   ]
 }

@@ -41,10 +41,13 @@ const quoteLogo =
 
 try {
   const validated = [];
-  for (const definition of catalogue.markets) {
-    const deployed = deployment.markets[definition.symbol];
-    if (!deployed)
-      throw new Error(`Missing deployed pool: ${definition.symbol}`);
+  const definitions = new Map(
+    catalogue.markets.map((market) => [market.symbol, market]),
+  );
+  for (const deployed of Object.values(deployment.markets)) {
+    const definition = definitions.get(deployed.symbol);
+    if (!definition)
+      throw new Error(`Missing catalogue market: ${deployed.symbol}`);
     const pool = getAddress(deployed.poolAddress);
     const base = getAddress(definition.address);
     const [code, token0, token1, feePips, reserve0, reserve1, shares] =
@@ -105,7 +108,7 @@ try {
     for (const { definition, deployed, pool, base } of validated) {
       const baseRows = await transaction`
         insert into zkblast_mainnet.assets (chain_id,address,symbol,name,decimals,is_verified)
-        values (4663,${base.toLowerCase()},${definition.symbol},${definition.name},18,true)
+        values (4663,${base.toLowerCase()},${definition.symbol},${deployed.name},18,true)
         on conflict (chain_id,address) do update set symbol=excluded.symbol,name=excluded.name,decimals=18,is_verified=true,updated_at=now()
         returning id
       `;
@@ -121,17 +124,42 @@ try {
         executionTokenType: "canonical_mainnet_stock_token",
         quoteLogos: { USDG: quoteLogo },
       };
-      const marketRows = await transaction`
-        insert into zkblast_mainnet.external_markets
-          (source,external_id,chain_id,execution_chain_id,contract_address,symbol,name,quote_symbol,status,read_only,market_region,candidate_logo_url,logo_url,logo_status,logo_validated_at,metadata,validated_at)
-        values ('robinhood_stock_token',${`mainnet:${base.toLowerCase()}`},4663,4663,${base.toLowerCase()},${definition.symbol},${definition.name},'USDG','active',true,'us',${definition.logoUrl},${definition.logoUrl},'approved',now(),${sql.json(metadata)},now())
-        on conflict (source,external_id) do update set execution_chain_id=4663,contract_address=excluded.contract_address,symbol=excluded.symbol,name=excluded.name,quote_symbol='USDG',status='active',read_only=true,market_region='us',candidate_logo_url=excluded.candidate_logo_url,logo_url=excluded.logo_url,logo_status='approved',logo_validated_at=now(),metadata=excluded.metadata,validated_at=now(),updated_at=now()
-        returning id
+      const existingMarkets = await transaction`
+        select market.id,
+               (select count(*) from zkblast_mainnet.external_market_pairs pair where pair.market_id=market.id)::int as route_count
+          from zkblast_mainnet.external_markets market
+         where market.source='robinhood_stock_token' and market.symbol=${definition.symbol}
+         order by route_count desc,market.updated_at desc
       `;
+      let marketId = existingMarkets[0]?.id;
+      if (marketId) {
+        await transaction`
+          update zkblast_mainnet.external_markets
+             set execution_chain_id=4663,contract_address=${base.toLowerCase()},name=${deployed.name},
+                 quote_symbol='USDG',status='active',read_only=true,market_region='us',
+                 candidate_logo_url=${definition.logoUrl},logo_url=${definition.logoUrl},
+                 logo_status='approved',logo_validated_at=now(),metadata=${sql.json(metadata)},
+                 validated_at=now(),updated_at=now()
+           where id=${marketId}
+        `;
+        const duplicateIds = existingMarkets.slice(1).map((row) => row.id);
+        if (duplicateIds.length)
+          await transaction`
+            delete from zkblast_mainnet.external_markets where id = any(${duplicateIds}::uuid[])
+          `;
+      } else {
+        const marketRows = await transaction`
+          insert into zkblast_mainnet.external_markets
+            (source,external_id,chain_id,execution_chain_id,contract_address,symbol,name,quote_symbol,status,read_only,market_region,candidate_logo_url,logo_url,logo_status,logo_validated_at,metadata,validated_at)
+          values ('robinhood_stock_token',${`mainnet:${base.toLowerCase()}`},4663,4663,${base.toLowerCase()},${definition.symbol},${deployed.name},'USDG','active',true,'us',${definition.logoUrl},${definition.logoUrl},'approved',now(),${sql.json(metadata)},now())
+          returning id
+        `;
+        marketId = marketRows[0].id;
+      }
       await transaction`
         insert into zkblast_mainnet.external_market_pairs
           (market_id,data_chain_id,execution_chain_id,quote_symbol,quote_address,base_address,priority,route_status,venue,pool_identifier,fee_tier,liquidity_raw,observed_block,observed_at,metadata)
-        values (${marketRows[0].id},4663,4663,'USDG',${quoteAddress.toLowerCase()},${base.toLowerCase()},1,'observed','zkblast_damm',${pool.toLowerCase()},3000,0,${deployed.transaction.blockNumber},now(),${sql.json({ liquidityStatus: "awaiting_initial_liquidity" })})
+        values (${marketId},4663,4663,'USDG',${quoteAddress.toLowerCase()},${base.toLowerCase()},1,'observed','zkblast_damm',${pool.toLowerCase()},3000,0,${deployed.transaction.blockNumber},now(),${sql.json({ liquidityStatus: "awaiting_initial_liquidity" })})
         on conflict (market_id,quote_address) do update set execution_chain_id=4663,base_address=excluded.base_address,route_status='observed',venue='zkblast_damm',pool_identifier=excluded.pool_identifier,fee_tier=3000,liquidity_raw=0,observed_block=excluded.observed_block,observed_at=now(),validated_at=null,metadata=excluded.metadata,updated_at=now()
       `;
     }

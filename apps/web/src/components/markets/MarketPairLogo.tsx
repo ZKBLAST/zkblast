@@ -54,6 +54,46 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
   );
 }
 
+const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
+  USDG: "https://mintcdn.com/paxos-0ac97319/ykAU2vouTvwgGjtD/images/usdg.png?fit=max&auto=format&n=ykAU2vouTvwgGjtD&q=85&s=3a2dfa481556c8322f0271baedb00afe",
+  WETH: "https://images.cryptorank.io/coins/weth1701090834118.png",
+  ETH: "https://pbs.twimg.com/media/HM8jiM9WAAAGui1?format=webp&name=large",
+};
+
+export function ProtocolPairLogo({
+  base,
+  quote,
+  markets,
+}: Readonly<{
+  base: string;
+  quote: string;
+  markets: readonly ExternalMarket[];
+}>) {
+  const market = markets.find(
+    (candidate) => candidate.symbol.toUpperCase() === base.toUpperCase(),
+  );
+  const pair = market?.pairCandidates.find(
+    (candidate) => candidate.quoteSymbol === quote.toUpperCase(),
+  );
+  return (
+    <span
+      className="relative block h-10 w-14 shrink-0"
+      aria-label={`${base}/${quote}`}
+    >
+      <AssetLogo
+        url={market?.logoUrl ?? KNOWN_ASSET_LOGOS[base.toUpperCase()] ?? null}
+        label={base}
+        className="absolute left-0 top-0 z-10"
+      />
+      <AssetLogo
+        url={pair?.logoUrl ?? KNOWN_ASSET_LOGOS[quote.toUpperCase()] ?? null}
+        label={quote}
+        className="absolute left-5 top-1"
+      />
+    </span>
+  );
+}
+
 function AssetLogo({
   url,
   label,

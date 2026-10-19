@@ -25,6 +25,14 @@ import { privateKeyToAccount } from "viem/accounts";
 const CHAIN_ID = 4663;
 const CONFIRMATION = "CREATE_ZKBLAST_MAINNET_STOCK_POOLS";
 const FEE_PIPS = 3_000;
+const batchLimit = Number(process.env.MAINNET_POOL_BATCH_LIMIT ?? "0");
+const gasReserveWei = BigInt(
+  process.env.MAINNET_POOL_GAS_RESERVE_WEI ?? "20000000000000",
+);
+invariant(
+  Number.isSafeInteger(batchLimit) && batchLimit >= 0,
+  "MAINNET_POOL_BATCH_LIMIT must be a non-negative integer",
+);
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -69,7 +77,7 @@ const catalogue = JSON.parse(
     symbol: string;
     name: string;
     address: Address;
-    logoUrl: string;
+    logoUrl: string | null;
   }[];
 };
 invariant(required("APP_ENV") === "mainnet", "Mainnet environment required");
@@ -79,7 +87,7 @@ invariant(
   "Deployment manifest mismatch",
 );
 invariant(
-  catalogue.version === 1 &&
+  catalogue.version >= 1 &&
     catalogue.chainId === CHAIN_ID &&
     catalogue.quoteSymbol === "USDG" &&
     catalogue.markets.length > 0,
@@ -329,6 +337,7 @@ async function safeRequest(data: Hex) {
 }
 
 const seen = new Set<string>();
+let broadcastCount = 0;
 for (const definition of catalogue.markets) {
   invariant(
     !seen.has(definition.symbol),
@@ -361,9 +370,10 @@ for (const definition of catalogue.markets) {
     `${definition.symbol} token invalid`,
   );
   invariant(
-    symbol === definition.symbol && name === definition.name && decimals === 18,
+    symbol === definition.symbol && name.trim().length > 0 && decimals === 18,
     `${definition.symbol} metadata mismatch`,
   );
+  const onchainName = name;
   const token0 = base.toLowerCase() < quote.toLowerCase() ? base : quote;
   const token1 = token0 === base ? quote : base;
   const poolAddress = getAddress(
@@ -379,6 +389,10 @@ for (const definition of catalogue.markets) {
   );
   const existingCode = await client.getBytecode({ address: poolAddress });
   if (!existingCode || existingCode === "0x") {
+    if (batchLimit > 0 && broadcastCount >= batchLimit) {
+      console.log(`Batch limit reached after ${broadcastCount} new pools`);
+      break;
+    }
     const data = encodeFunctionData({
       abi: artifact.abi,
       functionName: "createPool",
@@ -389,7 +403,25 @@ for (const definition of catalogue.markets) {
       `${definition.symbol}: predicted ${poolAddress}, Safe nonce ${prepared.nonce}`,
     );
     if (process.env.CONFIRM_MAINNET_STOCK_POOLS !== CONFIRMATION) continue;
-    const hash = await wallet.writeContract(prepared.request);
+    const [balance, gasPrice] = await Promise.all([
+      client.getBalance({ address: relay.address }),
+      client.getGasPrice(),
+    ]);
+    // Safe transactions with safeTxGas=0 can produce GS013 during RPC gas
+    // binary-search estimation even after eth_call simulation succeeds. Use a
+    // conservative ceiling over the measured <=1,508,693 gas deployments.
+    const estimatedGas = 1_550_000n;
+    const requiredBalance = estimatedGas * gasPrice + gasReserveWei;
+    if (balance < requiredBalance) {
+      console.log(
+        `${definition.symbol}: stopped before broadcast; balance ${balance} wei is below ${requiredBalance} wei including reserve`,
+      );
+      break;
+    }
+    const hash = await wallet.writeContract({
+      ...prepared.request,
+      gas: estimatedGas,
+    });
     const receipt = await client.waitForTransactionReceipt({
       hash,
       confirmations: 1,
@@ -400,7 +432,7 @@ for (const definition of catalogue.markets) {
     );
     journal.markets[definition.symbol] = {
       symbol: definition.symbol,
-      name: definition.name,
+      name: onchainName,
       baseAddress: base,
       quoteAddress: quote,
       poolAddress,
@@ -410,10 +442,11 @@ for (const definition of catalogue.markets) {
       transaction: receiptRecord(receipt),
     };
     await saveJournal();
+    broadcastCount += 1;
   } else {
     journal.markets[definition.symbol] ??= {
       symbol: definition.symbol,
-      name: definition.name,
+      name: onchainName,
       baseAddress: base,
       quoteAddress: quote,
       poolAddress,

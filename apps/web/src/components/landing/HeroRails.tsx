@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "motion/react";
-import { TokenMark } from "@/components/ui/Badges";
+import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 import { useProtocolData } from "@/lib/use-protocol-data";
 
 function ColHead({ left, right }: { left: string; right: string }) {
@@ -30,6 +31,7 @@ function ColFoot({ text }: { text: string }) {
 
 export function PoolRail() {
   const { pools, loading } = useProtocolData();
+  const { items: markets } = useExternalMarkets();
   return (
     <div className="flex h-full min-h-0 flex-col">
       <ColHead left="Pools" right={`${pools.length} indexed`} />
@@ -43,7 +45,11 @@ export function PoolRail() {
               transition={{ delay: 0.3 + index * 0.06, duration: 0.5 }}
               className="panel flex items-center gap-2.5 px-2.5 py-2"
             >
-              <TokenMark symbol={pool.token0Symbol} size={22} />
+              <ProtocolPairLogo
+                base={pool.token0Symbol}
+                quote={pool.token1Symbol}
+                markets={markets}
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-mono text-[11px] text-fg">
                   {pool.token0Symbol}/{pool.token1Symbol}

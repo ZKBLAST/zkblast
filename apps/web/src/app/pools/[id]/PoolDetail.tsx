@@ -3,9 +3,10 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AreaChart } from "@/components/charts/AreaChart";
+import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
 import { BinChart, type Shape } from "@/components/pools/BinChart";
 import { useApp } from "@/components/shell/AppProvider";
-import { LaneBadge, PairMark, TokenMark, TypeTag } from "@/components/ui/Badges";
+import { LaneBadge, TokenMark, TypeTag } from "@/components/ui/Badges";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Stat } from "@/components/ui/PageHeader";
@@ -15,10 +16,12 @@ import { TxSteps, type StepState } from "@/components/swap/TxSteps";
 import { binsFor, poolById, priceHistory } from "@/data/pools";
 import { tokenBySymbol } from "@/data/tokens";
 import { fmtAmount, fmtPrice, fmtUsd, fmtUsdCompact, cx } from "@/lib/format";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 
 export function PoolDetail({ id }: { id: string }) {
   const pool = poolById(id)!;
   const { address, balances, connect, adjust, toast } = useApp();
+  const { items: externalMarkets } = useExternalMarkets();
   const bins = useMemo(() => (pool.type === "DLMM" ? binsFor(pool, 34) : []), [pool]);
   const hist = useMemo(() => priceHistory(pool, 96), [pool]);
   const [lo, setLo] = useState(-10);
@@ -62,7 +65,11 @@ export function PoolDetail({ id }: { id: string }) {
 
       <Reveal>
         <div className="mt-4 flex flex-wrap items-center gap-4">
-          <PairMark base={pool.base} quote={pool.quote} size={40} />
+          <ProtocolPairLogo
+            base={pool.base}
+            quote={pool.quote}
+            markets={externalMarkets}
+          />
           <h1 className="display text-[clamp(2.4rem,6vw,4.8rem)]">{pool.base}/{pool.quote}</h1>
           <div className="flex flex-wrap gap-2"><TypeTag type={pool.type} /><LaneBadge lane="public" /></div>
         </div>

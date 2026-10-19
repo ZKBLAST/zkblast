@@ -22,15 +22,15 @@ export function useExternalMarkets() {
           ),
           apiRequest<{ items: ExternalMarket[] }>(
             webPublicConfig.apiUrl,
-            "/v1/markets?source=robinhood_stock_token&region=us&limit=100",
+            "/v1/markets?source=robinhood_stock_token&region=us&limit=200",
           ),
           apiRequest<{ items: ExternalMarket[] }>(
             webPublicConfig.apiUrl,
-            "/v1/markets?source=robinhood_stock_token&region=china&limit=100",
+            "/v1/markets?source=robinhood_stock_token&region=china&limit=200",
           ),
           apiRequest<{ items: ExternalMarket[] }>(
             webPublicConfig.apiUrl,
-            "/v1/markets?source=robinhood_stock_token&region=unclassified&limit=100",
+            "/v1/markets?source=robinhood_stock_token&region=unclassified&limit=200",
           ),
         ]);
       setItems([
