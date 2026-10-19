@@ -8,6 +8,7 @@ import { WithdrawFlow } from "@/components/shielded/WithdrawFlow";
 import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge } from "@/components/ui/Badges";
 import { PageHeader } from "@/components/ui/PageHeader";
+import internalTestAssets from "@/data/internal-test-assets.json";
 import { executeShieldedDeposit } from "@/lib/shielded-deposit";
 import type { ShieldedNoteV1 } from "@/lib/notecrypto";
 
@@ -15,13 +16,16 @@ export function ShieldedView() {
   const { address, config } = useApp();
   const [notes, setNotes] = useState<readonly ShieldedNoteV1[]>([]);
   const shielded = config?.shielded;
+  const publicAssets = shielded?.assets.filter(
+    (asset) => !internalTestAssets.symbols.includes(asset.symbol),
+  );
 
-  if (!config || !shielded) {
+  if (!config || !shielded || !publicAssets?.length) {
     return (
       <>
         <PageHeader
           title="Shielded vault"
-          lead="The custody vault is not available for the active network."
+          lead="No user-facing shielded asset is enabled for the active network."
           badges={<LaneBadge lane="shielded" />}
         />
         <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
@@ -29,11 +33,13 @@ export function ShieldedView() {
             <ShieldAlert className="size-6 shrink-0 text-warn" aria-hidden />
             <div>
               <h2 className="wide text-base">
-                No validated on-chain vault configuration
+                Shielded deposits are unavailable
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Controls remain disabled until the API publishes a
-                deployment-manifest-backed vault for this chain.
+                The deployed testnet vault currently exposes only internal
+                regression assets. Controls remain disabled until governance
+                configures and verifies a user-facing asset such as USDG. The UI
+                will not relabel or substitute a different token address.
               </p>
             </div>
           </section>
@@ -61,13 +67,15 @@ export function ShieldedView() {
       />
       <div className="mx-auto grid max-w-[1360px] gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="panel ticks border-warn/40 p-5 lg:col-span-2">
-          <h2 className="wide text-sm text-warn">Aggregate LP privacy boundary</h2>
+          <h2 className="wide text-sm text-warn">
+            Aggregate LP privacy boundary
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
-            Shielded notes hide note ownership data, not AMM activity. Any future
-            vault-managed LP position will expose its pool, assets, reserves,
-            manager shares, investment and redemption amounts, blocks, and timing.
-            The LP manager remains undeployed pending independent review and does
-            not currently hold user funds.
+            Shielded notes hide note ownership data, not AMM activity. Any
+            future vault-managed LP position will expose its pool, assets,
+            reserves, manager shares, investment and redemption amounts, blocks,
+            and timing. The LP manager remains undeployed pending independent
+            review and does not currently hold user funds.
           </p>
         </section>
         <section className="panel ticks p-6">
@@ -76,7 +84,7 @@ export function ShieldedView() {
             chainId={config.chainId}
             vaultAddress={shielded.vaultAddress}
             treeVersion={shielded.treeVersion}
-            assets={shielded.assets}
+            assets={publicAssets}
             onSubmit={submit}
             onCreated={(note) =>
               setNotes((current) => [

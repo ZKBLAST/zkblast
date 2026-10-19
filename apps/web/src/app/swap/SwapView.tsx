@@ -2,45 +2,46 @@
 
 import { ExternalLink } from "lucide-react";
 
-import { RealDataState } from "@/components/protocol/real-data-state";
 import { useApp } from "@/components/shell/AppProvider";
 import { ExternalMarketSwapCard } from "@/components/swap/ExternalMarketSwapCard";
-import { useProtocolData } from "@/lib/use-protocol-data";
+import { Button } from "@/components/ui/Button";
 
 export function SwapView() {
-  const { config } = useApp();
-  const data = useProtocolData();
+  const { address, config, connect, trades } = useApp();
 
   return (
     <div className="mx-auto grid max-w-[1360px] gap-8 px-4 pb-16 pt-[calc(var(--header-h)+2rem)] sm:px-6 lg:grid-cols-[1fr_440px]">
       <section>
-        <p className="label">Finalized testnet events</p>
-        <h1 className="display mt-3 text-5xl">Recent swaps</h1>
-        <div className="mt-6">
-          <RealDataState
-            loading={data.loading}
-            error={data.error}
-            empty={!data.swaps.length}
-            onRetry={data.refresh}
-          />
-        </div>
-        {data.swaps.length ? (
+        <p className="label">Authenticated receipts</p>
+        <h1 className="display mt-3 text-5xl">Your market swaps</h1>
+        {!address ? (
+          <div className="panel mt-6 p-6">
+            <p className="text-sm text-muted">
+              Sign in to load receipt-derived trade history for this wallet.
+            </p>
+            <Button className="mt-4" onClick={connect}>
+              Connect wallet
+            </Button>
+          </div>
+        ) : trades.length ? (
           <ul className="mt-6 divide-y divide-line border-y border-line">
-            {data.swaps.map((swap) => (
+            {trades.map((trade) => (
               <li
-                key={`${swap.transaction_hash}:${swap.log_index}`}
+                key={trade.id}
                 className="grid gap-2 py-4 sm:grid-cols-[1fr_auto]"
               >
                 <div>
-                  <p className="font-mono text-xs">Block {swap.block_number}</p>
+                  <p className="font-mono text-xs uppercase">
+                    {trade.action} · {trade.status}
+                  </p>
                   <p className="mt-1 text-sm text-muted">
-                    Raw input {swap.amount_in_raw} · raw output{" "}
-                    {swap.amount_out_raw} · fee {swap.fee_raw}
+                    {trade.venue} ·{" "}
+                    {new Date(trade.submittedAt).toLocaleString()}
                   </p>
                 </div>
-                {config ? (
+                {config && trade.transactionHash ? (
                   <a
-                    href={`${config.explorerUrl.replace(/\/$/u, "")}/tx/${swap.transaction_hash}`}
+                    href={`${config.explorerUrl.replace(/\/$/u, "")}/tx/${trade.transactionHash}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 text-xs text-lime"
@@ -51,7 +52,11 @@ export function SwapView() {
               </li>
             ))}
           </ul>
-        ) : null}
+        ) : (
+          <p className="mt-6 border border-line p-5 text-sm text-muted">
+            No confirmed market swap is stored for this wallet yet.
+          </p>
+        )}
       </section>
       <aside>
         <div className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
