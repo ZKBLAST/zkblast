@@ -25,6 +25,18 @@ export type ApiPublicConfig = Readonly<{
   explorerUrl: string;
   webOrigin: string;
   operationsToken?: string;
+  contracts?: readonly Readonly<{
+    name: string;
+    proxyKind: "uups" | "none";
+    address: string;
+    proxyAddress: string | null;
+    implementationAddress: string;
+    verification: Readonly<{
+      implementation: "pending" | "verified" | "failed";
+      proxy: "pending" | "verified" | "failed" | "not_applicable";
+      urls: readonly string[];
+    }>;
+  }>[];
   shielded?: Readonly<{
     vaultAddress: string;
     stateRegistryAddress: string;
@@ -44,6 +56,25 @@ const publicConfigResponseSchema = z
     chainId: z.number().int().positive(),
     chainName: z.string().min(1),
     explorerUrl: z.string().url(),
+    contracts: z
+      .array(
+        z.object({
+          name: z.string().min(1),
+          proxyKind: z.enum(["uups", "none"]),
+          address: z.string().regex(/^0x[\da-f]{40}$/iu),
+          proxyAddress: z
+            .string()
+            .regex(/^0x[\da-f]{40}$/iu)
+            .nullable(),
+          implementationAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
+          verification: z.object({
+            implementation: z.enum(["pending", "verified", "failed"]),
+            proxy: z.enum(["pending", "verified", "failed", "not_applicable"]),
+            urls: z.array(z.string().url()),
+          }),
+        }),
+      )
+      .optional(),
     shielded: z
       .object({
         vaultAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
@@ -129,6 +160,7 @@ export function createApp(
       chainId: config.chainId,
       chainName: config.chainName,
       explorerUrl: config.explorerUrl,
+      contracts: config.contracts,
       shielded: config.shielded,
     });
     response.json(body);

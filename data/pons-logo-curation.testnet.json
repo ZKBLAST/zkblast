@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "curator": "zkblast-source-verified-research",
+  "records": [
+    {
+      "symbol": "LINK",
+      "contractAddress": "0xe6864e4630d4d7a0cad2e61f6bc2c0dcad777712",
+      "logoUrl": "https://www.hoodlink.run/favicon.ico",
+      "sourceUrl": "https://www.hoodlink.run/",
+      "reason": "The project website identifies the exact Robinhood Chain contract and publishes this icon."
+    },
+    {
+      "symbol": "PONS",
+      "contractAddress": "0x39dbed3a2bd333467115de45665cc57f813c4571",
+      "logoUrl": "https://pons.club/pons-token.png",
+      "sourceUrl": "https://pons.club/",
+      "reason": "The PONS Club website identifies the exact Robinhood Chain contract and publishes this token image."
+    }
+  ]
+}

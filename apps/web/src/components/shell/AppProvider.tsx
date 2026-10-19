@@ -25,6 +25,7 @@ type Toast = Readonly<{
 }>;
 type AppContextValue = Readonly<{
   address: string | null;
+  injectedAddress: string | null;
   config: PublicConfig | null;
   profile: UserProfile | null;
   trades: readonly Trade[];
@@ -58,6 +59,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("Connecting to the ZKBLAST API");
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [injectedAddress, setInjectedAddress] = useState<string | null>(null);
   const apiUrl = webPublicConfig.apiUrl;
   const address = profile?.wallets[0]?.address ?? null;
 
@@ -95,6 +97,27 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     ]).catch(() => setStatus("ZKBLAST API is unavailable"));
   }, [apiUrl, refreshAccount]);
 
+  useEffect(() => {
+    const provider = window.ethereum;
+    if (!provider) return;
+
+    const syncInjectedAccount = (accounts: unknown) => {
+      const walletAddress =
+        Array.isArray(accounts) && typeof accounts[0] === "string"
+          ? accounts[0]
+          : null;
+      setInjectedAddress(walletAddress);
+    };
+    void provider
+      .request({ method: "eth_accounts" })
+      .then(syncInjectedAccount)
+      .catch(() => setInjectedAddress(null));
+    provider.on?.("accountsChanged", syncInjectedAccount);
+
+    return () =>
+      provider.removeListener?.("accountsChanged", syncInjectedAccount);
+  }, []);
+
   const loginInjected = useCallback(async () => {
     if (!window.ethereum) {
       toast({
@@ -111,6 +134,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       })) as string[];
       const walletAddress = accounts[0];
       if (!walletAddress) throw new Error("WALLET_ACCOUNT_MISSING");
+      setInjectedAddress(walletAddress);
       const activeConfig =
         config ??
         parsePublicConfig(await apiRequest<unknown>(apiUrl, "/v1/config"));
@@ -189,6 +213,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       trades,
       busy,
       status,
+      injectedAddress,
       balances: {},
       adjust: () => undefined,
       connect: () => setWalletOpen(true),
@@ -208,6 +233,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       profile,
       refreshAccount,
       status,
+      injectedAddress,
       toast,
       trades,
       updateUsername,

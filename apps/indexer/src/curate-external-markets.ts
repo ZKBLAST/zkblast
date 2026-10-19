@@ -38,6 +38,9 @@ type MarketRow = Readonly<{
   logo_status: string;
 }>;
 
+const usdGlobalDollarLogoUrl =
+  "https://api.eulerpool.com/api/1/logo/crypto/USDG";
+
 const sql = postgres(config.SUPABASE_DIRECT_DATABASE_URL, {
   max: 1,
   prepare: true,
@@ -104,8 +107,22 @@ async function validateFile() {
   console.log(JSON.stringify({ validated: input.records.length, path }));
 }
 
-function validCandidateLogo(url: string, contractAddress: string) {
+function validCandidateLogo(
+  url: string,
+  contractAddress: string,
+  symbol: string,
+) {
   const parsed = new URL(url);
+  if (
+    parsed.protocol === "https:" &&
+    parsed.hostname === "api.eulerpool.com" &&
+    parsed.pathname === `/api/1/logo/ticker/${encodeURIComponent(symbol)}` &&
+    !parsed.username &&
+    !parsed.password &&
+    !parsed.search &&
+    !parsed.hash
+  )
+    return true;
   return (
     parsed.protocol === "https:" &&
     parsed.hostname === "cdn.robinhood.com" &&
@@ -154,8 +171,11 @@ async function applyFile() {
       if (record.logoDecision === "approved") {
         if (
           !record.candidateLogoUrl ||
-          record.candidateLogoUrl !== row.candidate_logo_url ||
-          !validCandidateLogo(record.candidateLogoUrl, record.contractAddress)
+          !validCandidateLogo(
+            record.candidateLogoUrl,
+            record.contractAddress,
+            record.symbol,
+          )
         )
           throw new Error(`Unsafe logo candidate: ${record.symbol}`);
         logoUrl = record.candidateLogoUrl;
@@ -177,10 +197,20 @@ async function applyFile() {
       await transaction.unsafe(
         `update ${config.SUPABASE_SCHEMA}.external_markets
          set market_region=$2,logo_status=$3,logo_url=$4,
+           candidate_logo_url=$4,
            logo_validated_at=case when $3='approved' then now() else null end,
+           metadata=metadata || jsonb_build_object(
+             'quoteLogos',jsonb_build_object('USDG',$5::text)
+           ),
            updated_at=now()
          where id=$1`,
-        [row.id, record.region, record.logoDecision, logoUrl],
+        [
+          row.id,
+          record.region,
+          record.logoDecision,
+          logoUrl,
+          usdGlobalDollarLogoUrl,
+        ],
       );
     }
   });

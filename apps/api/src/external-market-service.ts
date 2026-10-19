@@ -22,6 +22,7 @@ const rowSchema = z.object({
   pairCandidates: z.array(
     z.object({
       quoteSymbol: z.enum(["USDG", "WETH"]),
+      logoUrl: z.string().url().nullable(),
       quoteAddress: z.string().regex(/^0x[0-9a-f]{40}$/u),
       executionChainId: z.coerce.number().int().positive(),
       baseAddress: z
@@ -78,7 +79,7 @@ export class ExternalMarketService {
   ) {
     const rows = await this.#sql.unsafe(
       `select m.id,m.source,m.external_id as "externalId",m.chain_id as "chainId",m.execution_chain_id as "executionChainId",m.contract_address as "contractAddress",m.symbol,m.name,m.quote_symbol as "quoteSymbol",m.status,m.read_only as "readOnly",m.market_region as "marketRegion",m.market_cap_usd::text as "marketCapUsd",m.market_cap_observed_at as "marketCapObservedAt",case when m.logo_status='approved' then m.logo_url end as "logoUrl",m.logo_status as "logoStatus",m.oracle_provider as "oracleProvider",m.metadata,m.validated_at as "validatedAt",q.bid::text,q.ask::text,q.currency,q.daily_volume::text as "dailyVolume",q.observed_at as "quoteObservedAt",
-       coalesce((select jsonb_agg(jsonb_build_object('quoteSymbol',p.quote_symbol,'quoteAddress',p.quote_address,'executionChainId',p.execution_chain_id,'baseAddress',p.base_address,'priority',p.priority,'routeStatus',p.route_status,'venue',p.venue,'poolIdentifier',p.pool_identifier,'liquidityRaw',p.liquidity_raw::text) order by p.priority) from ${this.schema}.external_market_pairs p where p.market_id=m.id),'[]'::jsonb) as "pairCandidates"
+       coalesce((select jsonb_agg(jsonb_build_object('quoteSymbol',p.quote_symbol,'logoUrl',m.metadata->'quoteLogos'->>p.quote_symbol,'quoteAddress',p.quote_address,'executionChainId',p.execution_chain_id,'baseAddress',p.base_address,'priority',p.priority,'routeStatus',p.route_status,'venue',p.venue,'poolIdentifier',p.pool_identifier,'liquidityRaw',p.liquidity_raw::text) order by p.priority) from ${this.schema}.external_market_pairs p where p.market_id=m.id),'[]'::jsonb) as "pairCandidates"
        from ${this.schema}.external_markets m
        left join lateral (select bid,ask,currency,daily_volume,observed_at from ${this.schema}.external_market_quotes where market_id=m.id order by observed_at desc limit 1) q on true
        where ($1::text is null or m.source=$1)

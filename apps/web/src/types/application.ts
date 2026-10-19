@@ -2,6 +2,14 @@ export type EthereumProvider = Readonly<{
   request(
     input: Readonly<{ method: string; params?: unknown[] }>,
   ): Promise<unknown>;
+  on?: (
+    event: "accountsChanged",
+    listener: (accounts: unknown) => void,
+  ) => void;
+  removeListener?: (
+    event: "accountsChanged",
+    listener: (accounts: unknown) => void,
+  ) => void;
 }>;
 
 export type PublicConfig = Readonly<{
@@ -9,6 +17,18 @@ export type PublicConfig = Readonly<{
   chainId: number;
   chainName: string;
   explorerUrl: string;
+  contracts?: readonly Readonly<{
+    name: string;
+    proxyKind: "uups" | "none";
+    address: `0x${string}`;
+    proxyAddress: `0x${string}` | null;
+    implementationAddress: `0x${string}`;
+    verification: Readonly<{
+      implementation: "pending" | "verified" | "failed";
+      proxy: "pending" | "verified" | "failed" | "not_applicable";
+      urls: readonly string[];
+    }>;
+  }>[];
   shielded?: Readonly<{
     vaultAddress: `0x${string}`;
     stateRegistryAddress: `0x${string}`;
@@ -107,6 +127,7 @@ export type ExternalMarket = Readonly<{
   oracleProvider: string | null;
   pairCandidates: readonly Readonly<{
     quoteSymbol: "USDG" | "WETH";
+    logoUrl: string | null;
     quoteAddress: string;
     executionChainId: number;
     baseAddress: string | null;

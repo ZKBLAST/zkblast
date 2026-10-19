@@ -1,16 +1,11 @@
 "use client";
 
-import {
-  CircleCheck,
-  Clock3,
-  Database,
-  Image as ImageIcon,
-  ShieldCheck,
-} from "lucide-react";
+import { CircleCheck, Clock3 } from "lucide-react";
 import { useState } from "react";
 
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
+import { MarketPairLogo } from "@/components/markets/MarketPairLogo";
 import { ExternalMarketTrade } from "@/components/markets/ExternalMarketTrade";
 import { Bay } from "@/components/ui/Frame";
 import { cx } from "@/lib/format";
@@ -144,7 +139,7 @@ export function ExternalMarkets() {
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <MarketLogo market={market} />
+                  <MarketPairLogo market={market} />
                   <span>
                     <span className="block font-mono text-sm text-fg">
                       {market.symbol}/{market.quoteSymbol}
@@ -204,35 +199,6 @@ function MarketStatus({ active }: { active: boolean }) {
     >
       <Icon className="size-3" aria-hidden="true" />
       {active ? "Trading enabled" : "No validated route"}
-    </span>
-  );
-}
-
-function MarketLogo({
-  market,
-}: {
-  market: ReturnType<typeof useExternalMarkets>["items"][number];
-}) {
-  if (market.logoUrl) {
-    return (
-      // URLs are returned by the API only after manual approval.
-      <img
-        src={market.logoUrl}
-        alt=""
-        className="size-9 border border-line object-contain"
-        referrerPolicy="no-referrer"
-      />
-    );
-  }
-  const Icon =
-    market.source === "pons_graduated"
-      ? ShieldCheck
-      : market.logoStatus === "pending"
-        ? ImageIcon
-        : Database;
-  return (
-    <span className="grid size-9 place-items-center border border-line text-lime">
-      <Icon className="size-4" aria-hidden="true" />
     </span>
   );
 }

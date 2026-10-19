@@ -145,6 +145,16 @@ const app = createApp(
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
     operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
+    contracts: Object.values(manifest.contracts)
+      .map((contract) => ({
+        name: contract.contractName,
+        proxyKind: contract.proxyKind,
+        address: contract.proxyAddress ?? contract.implementationAddress,
+        proxyAddress: contract.proxyAddress,
+        implementationAddress: contract.implementationAddress,
+        verification: contract.verification,
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name)),
     ...(manifest.shielded
       ? {
           shielded: {

@@ -7,9 +7,9 @@
       "contractAddress": "0x5f604fba1162193a4388a5dfa56f556f3e133cc2",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5f604fba1162193a4388a5dfa56f556f3e133cc2.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AEHR",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -17,9 +17,9 @@
       "contractAddress": "0x748c32c3ca24edf31ea597db1f3d330a7a6da3dc",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x748c32c3ca24edf31ea597db1f3d330a7a6da3dc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ALAB",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -27,9 +27,9 @@
       "contractAddress": "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc",
       "region": "us",
       "regionReason": "AMD identifies itself as a Delaware company headquartered in Santa Clara, California, United States.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x86923f96303d656e4aa86d9d42d1e57ad2023fdc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AMD",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://www.amd.com/en/legal/privacy.html"
     },
     {
@@ -37,9 +37,9 @@
       "contractAddress": "0x12f190a9f9d7d37a250758b26824b97ce941bf54",
       "region": "us",
       "regionReason": "Amazon states that it is incorporated in Delaware and its principal corporate offices are in Seattle, Washington.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x12f190a9f9d7d37a250758b26824b97ce941bf54.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AMZN",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://ir.aboutamazon.com/faqs/default.aspx"
     },
     {
@@ -47,9 +47,9 @@
       "contractAddress": "0xb8dbf92f9741c9ac1c32115e78581f23509916fd",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb8dbf92f9741c9ac1c32115e78581f23509916fd.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/APLD",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -57,9 +57,9 @@
       "contractAddress": "0x1af6446f07eb1d97c546afc8c9544cbdf3ad5137",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x1af6446f07eb1d97c546afc8c9544cbdf3ad5137.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ASTS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -67,9 +67,9 @@
       "contractAddress": "0x156e175dd063a8ce274c50654ef40e0032b3fbcf",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x156e175dd063a8ce274c50654ef40e0032b3fbcf.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AVGO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -77,9 +77,9 @@
       "contractAddress": "0x141eea040c2250eec0314e336975e81f85f6585e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x141eea040c2250eec0314e336975e81f85f6585e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/AXTI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -87,9 +87,9 @@
       "contractAddress": "0x4d21483a44bf67a86b77e3da301411880797d452",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4d21483a44bf67a86b77e3da301411880797d452.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BA",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -97,9 +97,9 @@
       "contractAddress": "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",
       "region": "china",
       "regionReason": "Alibaba Group identifies the principal executive offices of its main operations in Hangzhou, Zhejiang, China.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xad25ac6c84d497db898fa1e8387bf6af3532a1c4.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BABA",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://www.alibabagroup.com/en-US/faqs-corporate-information"
     },
     {
@@ -107,9 +107,9 @@
       "contractAddress": "0x48e39e56acdba37b09020c0b734a613c9a2f100a",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48e39e56acdba37b09020c0b734a613c9a2f100a.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BB",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -117,9 +117,9 @@
       "contractAddress": "0x2f62fc9fabb470c690f141c28340ed832bb27020",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2f62fc9fabb470c690f141c28340ed832bb27020.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BND",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -127,9 +127,9 @@
       "contractAddress": "0xcef9027c7d6985b85f0ba431125073529a947a68",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcef9027c7d6985b85f0ba431125073529a947a68.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/BULL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -137,9 +137,9 @@
       "contractAddress": "0x5c90450bbb4273d7b2f17cf6917aeb237a569679",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5c90450bbb4273d7b2f17cf6917aeb237a569679.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CBRS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -147,9 +147,9 @@
       "contractAddress": "0x9651342cea770ae9a2969ba2a52611523146aef9",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9651342cea770ae9a2969ba2a52611523146aef9.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CCL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -157,9 +157,9 @@
       "contractAddress": "0xae517a2903e68bd929dfd15be875f8369d53e94a",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xae517a2903e68bd929dfd15be875f8369d53e94a.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CEG",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -167,9 +167,9 @@
       "contractAddress": "0x44f6d488021f8233b9416294d1fe9b1fee28382d",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x44f6d488021f8233b9416294d1fe9b1fee28382d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CIEN",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -177,9 +177,9 @@
       "contractAddress": "0x62200915e7deab1ec7f79fb246dadbb80eacddd0",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x62200915e7deab1ec7f79fb246dadbb80eacddd0.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLOV",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -187,9 +187,9 @@
       "contractAddress": "0xbf449977089c718c004a66c554b26b94ef3ad4de",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbf449977089c718c004a66c554b26b94ef3ad4de.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -197,9 +197,9 @@
       "contractAddress": "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcbb95bbf36099d34da091dc6fa6f49efa257cee3.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CLSK",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -207,9 +207,9 @@
       "contractAddress": "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRCL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -217,9 +217,9 @@
       "contractAddress": "0x4d67253bc223e6b0e104f1084c1fb2b669ddc41b",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4d67253bc223e6b0e104f1084c1fb2b669ddc41b.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRDO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -227,9 +227,9 @@
       "contractAddress": "0xd95b44124e475743a7589e68f3d74008a5536d44",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd95b44124e475743a7589e68f3d74008a5536d44.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRM",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -237,9 +237,9 @@
       "contractAddress": "0xea72ecca2d0f6bfa1394dbbcff85b52cd4233931",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xea72ecca2d0f6bfa1394dbbcff85b52cd4233931.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRWD",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -247,9 +247,9 @@
       "contractAddress": "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CRWV",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -257,9 +257,9 @@
       "contractAddress": "0xf543967eebb6f1917992ef0e68de63ab07a5a0da",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf543967eebb6f1917992ef0e68de63ab07a5a0da.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CSCO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -267,9 +267,9 @@
       "contractAddress": "0xa4f319104089fe321dc8093c6e707d4fe190a988",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xa4f319104089fe321dc8093c6e707d4fe190a988.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/CVNA",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -277,9 +277,9 @@
       "contractAddress": "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/DELL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -287,9 +287,9 @@
       "contractAddress": "0x39ec44bee4f6a116c6f9b8de566848a985c53c60",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x39ec44bee4f6a116c6f9b8de566848a985c53c60.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ELF",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -297,9 +297,9 @@
       "contractAddress": "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/EWY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -307,9 +307,9 @@
       "contractAddress": "0xa48f22a46c0f1c46ca7d111cb6c137c271987180",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xa48f22a46c0f1c46ca7d111cb6c137c271987180.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FICO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -317,9 +317,9 @@
       "contractAddress": "0x41f4267525a8aff329540ef24fd83d9044758b33",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x41f4267525a8aff329540ef24fd83d9044758b33.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FIG",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -327,9 +327,9 @@
       "contractAddress": "0x9ece29a4a2397c0a35fb5fa8ee2b9509130a98cc",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9ece29a4a2397c0a35fb5fa8ee2b9509130a98cc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FISV",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -337,9 +337,9 @@
       "contractAddress": "0x93dbb1d2dc5d63f4abacff30485273f538df68ac",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x93dbb1d2dc5d63f4abacff30485273f538df68ac.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FIX",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -347,9 +347,9 @@
       "contractAddress": "0x03bc731ffb162cdd7b98d3c6542bfc291126075d",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x03bc731ffb162cdd7b98d3c6542bfc291126075d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FLY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -357,9 +357,9 @@
       "contractAddress": "0xeb30663bdff0622ef4e4e5cbb4e975f19f33f51d",
       "region": "china",
       "regionReason": "Futu Holdings' annual issuer filing identifies its corporate headquarters in Hong Kong and material operations in Mainland China and Hong Kong.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xeb30663bdff0622ef4e4e5cbb4e975f19f33f51d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/FUTU",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://ir.futuholdings.com/static-files/02a38af2-a156-4bf4-8472-6ab0ac1ac028"
     },
     {
@@ -367,9 +367,9 @@
       "contractAddress": "0x63b814ddbd6bf339f25fed8c36158a008d5b373e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x63b814ddbd6bf339f25fed8c36158a008d5b373e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GE",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -377,9 +377,9 @@
       "contractAddress": "0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLD",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -387,9 +387,9 @@
       "contractAddress": "0x7c04e6a3368f2a1de3874f0e80d2e0a1a9915da6",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x7c04e6a3368f2a1de3874f0e80d2e0a1a9915da6.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLW",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -397,9 +397,9 @@
       "contractAddress": "0x2d427692e928fa156ec22acfabafa0447c5805b7",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2d427692e928fa156ec22acfabafa0447c5805b7.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GLXY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -407,9 +407,9 @@
       "contractAddress": "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/GOOGL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -417,9 +417,9 @@
       "contractAddress": "0xb853bc83a753342a4f8320ea680b4b1e84118d21",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb853bc83a753342a4f8320ea680b4b1e84118d21.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INFQ",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -427,9 +427,9 @@
       "contractAddress": "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc72b96e0e48ecd4dc75e1e45396e26300bc39681.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INTC",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -437,9 +437,9 @@
       "contractAddress": "0x56d23bee5f41a7120170b0c603dae30128e460e9",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x56d23bee5f41a7120170b0c603dae30128e460e9.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/INTU",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -447,9 +447,9 @@
       "contractAddress": "0xf0ab0c93be6f41369d302e55db1a96b3c430212d",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf0ab0c93be6f41369d302e55db1a96b3c430212d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/IREN",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -457,9 +457,9 @@
       "contractAddress": "0x48d60243c66437c6ac3c2495be94747aed5dfe25",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48d60243c66437c6ac3c2495be94747aed5dfe25.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LHX",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -467,9 +467,9 @@
       "contractAddress": "0x329fcaceb9ad6f9580dd5f643fed0646900d043c",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x329fcaceb9ad6f9580dd5f643fed0646900d043c.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LMT",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -477,9 +477,9 @@
       "contractAddress": "0x57b0030166db0c31690d1a5aa167e2e26e2c29a4",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x57b0030166db0c31690d1a5aa167e2e26e2c29a4.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LRCX",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -487,9 +487,9 @@
       "contractAddress": "0x4e62068525ab11fe768e29dfd00ef909b9803016",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4e62068525ab11fe768e29dfd00ef909b9803016.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/LULU",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -497,9 +497,9 @@
       "contractAddress": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc0d6457c16cc70d6790dd43521c899c87ce02f35.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/META",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -507,9 +507,9 @@
       "contractAddress": "0xc6cbad1016b38b797610c25e1dc7d95988b1f362",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc6cbad1016b38b797610c25e1dc7d95988b1f362.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MOD",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -517,9 +517,9 @@
       "contractAddress": "0x43b07d15ce533bec5476d70c22a78a1b2b662155",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x43b07d15ce533bec5476d70c22a78a1b2b662155.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MRNA",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -527,9 +527,9 @@
       "contractAddress": "0xe93237c50d904957cf27e7b1133b510c669c2e74",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe93237c50d904957cf27e7b1133b510c669c2e74.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MSFT",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -537,9 +537,9 @@
       "contractAddress": "0xc93f4d80e268ab922e871bd169156c3cc41894e6",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc93f4d80e268ab922e871bd169156c3cc41894e6.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MTSI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -547,9 +547,9 @@
       "contractAddress": "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xff080c8ce2e5feadaca0da81314ae59d232d4afd.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MU",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -557,9 +557,9 @@
       "contractAddress": "0x48961813349333209994750ffa89b3c5c22ec969",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x48961813349333209994750ffa89b3c5c22ec969.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/MXL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -567,9 +567,9 @@
       "contractAddress": "0xe0444ef8bf4ed74f74fd73686e2ddf4c1c5591e8",
       "region": "us",
       "regionReason": "Netflix's issuer filing identifies Netflix, Inc. as a Delaware corporation with principal executive offices in Los Gatos, California.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe0444ef8bf4ed74f74fd73686e2ddf4c1c5591e8.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/NFLX",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://ir.netflix.net/financials/sec-filings/sec-filings-details/default.aspx?FilingId=18130423"
     },
     {
@@ -577,9 +577,9 @@
       "contractAddress": "0xbef75684c43c4ea7bd18dd532a2244674ee8b926",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbef75684c43c4ea7bd18dd532a2244674ee8b926.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/NNE",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -587,9 +587,9 @@
       "contractAddress": "0x408c14038a04f7bd235329e26d2bf569ee20e250",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x408c14038a04f7bd235329e26d2bf569ee20e250.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/NU",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -597,9 +597,9 @@
       "contractAddress": "0xbbd09f72b025360fee5c928053dca6248d35be54",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xbbd09f72b025360fee5c928053dca6248d35be54.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/ON",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -607,9 +607,9 @@
       "contractAddress": "0x40e7a279850e443f582059ae5dc1c3b6563e6395",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x40e7a279850e443f582059ae5dc1c3b6563e6395.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/OUST",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -617,9 +617,9 @@
       "contractAddress": "0x1cdad396db64bda184d5182a97dd9b3c62100b7d",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x1cdad396db64bda184d5182a97dd9b3c62100b7d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/P",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -627,9 +627,9 @@
       "contractAddress": "0xb039597ed45cba7b6e2fb9e8be51802969cee5be",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb039597ed45cba7b6e2fb9e8be51802969cee5be.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/PANW",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -637,9 +637,9 @@
       "contractAddress": "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a",
       "region": "us",
       "regionReason": "Palantir's issuer notice identifies its current principal executive office in Aventura, Florida, United States.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/PLTR",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://investors.palantir.com/news-details/2026/Notice-of-Principal-Executive-Office-Address-Change-2/"
     },
     {
@@ -647,9 +647,9 @@
       "contractAddress": "0x237c16d66590f67b886d978acd362eaead8b18c7",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x237c16d66590f67b886d978acd362eaead8b18c7.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/POWL",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -657,9 +657,9 @@
       "contractAddress": "0x4189f0c66ebbb0bfef1c31f763131361ef32f77c",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4189f0c66ebbb0bfef1c31f763131361ef32f77c.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/PR",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -667,9 +667,9 @@
       "contractAddress": "0xc583c60aef9dc401da72cec1b404743a93cea1cc",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc583c60aef9dc401da72cec1b404743a93cea1cc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/QBTS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -677,9 +677,9 @@
       "contractAddress": "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd5f3879160bc7c32ebb4dc785f8a4f505888de68.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/QQQ",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -687,9 +687,9 @@
       "contractAddress": "0xfde6b5d9bb419b10c23268c74e369abff39c0460",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xfde6b5d9bb419b10c23268c74e369abff39c0460.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RCAT",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -697,9 +697,9 @@
       "contractAddress": "0x05b37fb53a299a1b874a619e1c4c404d52c36f4c",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x05b37fb53a299a1b874a619e1c4c404d52c36f4c.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RDDT",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -707,9 +707,9 @@
       "contractAddress": "0x284358abc07f9359f19f4b5b4ac91901be2597ba",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x284358abc07f9359f19f4b5b4ac91901be2597ba.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RGTI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -717,9 +717,9 @@
       "contractAddress": "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RKLB",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -727,9 +727,9 @@
       "contractAddress": "0x756bc80af765c82da966a788858d65adf14f3793",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x756bc80af765c82da966a788858d65adf14f3793.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/RUN",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -737,9 +737,9 @@
       "contractAddress": "0x95052ddcd5dc25641657424a8cf04834997e1730",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x95052ddcd5dc25641657424a8cf04834997e1730.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SATS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -747,9 +747,9 @@
       "contractAddress": "0x92fd66527192e3e61d4ddd13322aa222de86f9b5",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x92fd66527192e3e61d4ddd13322aa222de86f9b5.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SGOV",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -757,9 +757,9 @@
       "contractAddress": "0x77e655e37f4d913fb9540e0d541d824171a60e81",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x77e655e37f4d913fb9540e0d541d824171a60e81.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SIMO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -767,9 +767,9 @@
       "contractAddress": "0x84cab63bc87912e71ad199ff14a0ba45de68fef8",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x84cab63bc87912e71ad199ff14a0ba45de68fef8.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SKHY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -777,9 +777,9 @@
       "contractAddress": "0x285b231728c7e4333799183df1094d775246a535",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x285b231728c7e4333799183df1094d775246a535.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SLS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -787,9 +787,9 @@
       "contractAddress": "0xc01aa1fecec0605b13bc84874ff7256c0f5f562a",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc01aa1fecec0605b13bc84874ff7256c0f5f562a.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SMCI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -797,9 +797,9 @@
       "contractAddress": "0x072f979c2cac8e1391b0162a87fee094bf8744a0",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x072f979c2cac8e1391b0162a87fee094bf8744a0.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SMH",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -807,9 +807,9 @@
       "contractAddress": "0xf6589f11bc40b669e584073f428b05562f568733",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf6589f11bc40b669e584073f428b05562f568733.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNAP",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -817,9 +817,9 @@
       "contractAddress": "0xb90a19ff0af67f7779aff50a882a9cff42446400",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb90a19ff0af67f7779aff50a882a9cff42446400.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNDK",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -827,9 +827,9 @@
       "contractAddress": "0xba0cab75495255d0cb58e22b648bfed4ecd1f47e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xba0cab75495255d0cb58e22b648bfed4ecd1f47e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SNOW",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -837,9 +837,9 @@
       "contractAddress": "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SPCX",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -847,9 +847,9 @@
       "contractAddress": "0x117cc2133c37b721f49de2a7a74833232b3b4c0c",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x117cc2133c37b721f49de2a7a74833232b3b4c0c.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/SPY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -857,9 +857,9 @@
       "contractAddress": "0x5b97476b922f3305131b8f0b9d333172e87f4aae",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5b97476b922f3305131b8f0b9d333172e87f4aae.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TEAM",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -867,9 +867,9 @@
       "contractAddress": "0xb1cc0ec7db69cf43539119814df40071b9d61793",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xb1cc0ec7db69cf43539119814df40071b9d61793.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TEM",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -877,9 +877,9 @@
       "contractAddress": "0x2778c5024d5ca2cdb0f8ead671ffc69963adcd9c",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2778c5024d5ca2cdb0f8ead671ffc69963adcd9c.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TER",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -887,9 +887,9 @@
       "contractAddress": "0x89776d4cd68193597a2fc132cfac1fde36ccea8a",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x89776d4cd68193597a2fc132cfac1fde36ccea8a.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSEM",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -897,9 +897,9 @@
       "contractAddress": "0x58ffe4a942d3885baa22d7520691f611ef09e7aa",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x58ffe4a942d3885baa22d7520691f611ef09e7aa.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSM",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -907,9 +907,9 @@
       "contractAddress": "0x322f0929c4625ed5bad873c95208d54e1c003b2d",
       "region": "us",
       "regionReason": "Tesla Investor Relations identifies Tesla, Inc.'s corporate headquarters in Austin, Texas, United States.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x322f0929c4625ed5bad873c95208d54e1c003b2d.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TSLA",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": "https://ir.tesla.com/contact-us"
     },
     {
@@ -917,9 +917,9 @@
       "contractAddress": "0x5e81213613b6b86eab4c6c50d718d34359459786",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x5e81213613b6b86eab4c6c50d718d34359459786.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/TTWO",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -927,9 +927,9 @@
       "contractAddress": "0xcf364ea52787e289de6f32077834056e3e70d6a8",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xcf364ea52787e289de6f32077834056e3e70d6a8.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/UNH",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -937,9 +937,9 @@
       "contractAddress": "0xf23250dac154d05bb671cb0d0ebef3c635c79ce2",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf23250dac154d05bb671cb0d0ebef3c635c79ce2.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/UPS",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -947,9 +947,9 @@
       "contractAddress": "0xd917b029c761d264c6a312bbbcda868658ef86a6",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd917b029c761d264c6a312bbbcda868658ef86a6.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/USAR",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -957,9 +957,9 @@
       "contractAddress": "0x6006ed4b2f94110851ff7509d97d034f0eed9226",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x6006ed4b2f94110851ff7509d97d034f0eed9226.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VICR",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -967,9 +967,9 @@
       "contractAddress": "0x561e2a49212b7ccf47f2744ccb83e200722fadbc",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x561e2a49212b7ccf47f2744ccb83e200722fadbc.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VST",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -977,9 +977,9 @@
       "contractAddress": "0x0594134df3f171a354d9c85ebd65b7a6148f6d09",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x0594134df3f171a354d9c85ebd65b7a6148f6d09.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/VTI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -987,9 +987,9 @@
       "contractAddress": "0x82da4646242e1d962e96e932269dc644c94a9caa",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x82da4646242e1d962e96e932269dc644c94a9caa.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WDAY",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -997,9 +997,9 @@
       "contractAddress": "0xf52597345a8edf418bc4071b4a35112472277d3e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf52597345a8edf418bc4071b4a35112472277d3e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WDC",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     },
     {
@@ -1007,9 +1007,9 @@
       "contractAddress": "0x9e7abd3c9139d14e4c86dce0e455aab7a0c2fb3e",
       "region": "unclassified",
       "regionReason": "No authoritative issuer classification has been approved.",
-      "candidateLogoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9e7abd3c9139d14e4c86dce0e455aab7a0c2fb3e.png",
-      "logoDecision": "pending",
-      "logoReason": "Awaiting owner visual and URL review.",
+      "candidateLogoUrl": "https://api.eulerpool.com/api/1/logo/ticker/WYFI",
+      "logoDecision": "approved",
+      "logoReason": "Ticker logo matched to the validated Robinhood Stock Token symbol and passed HTTP, image/webp, size, and WebP signature validation on 2026-10-19.",
       "classificationSourceUrl": null
     }
   ]

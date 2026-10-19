@@ -1,5 +1,17 @@
 import type { NextConfig } from "next";
 
+const apiProxyTarget =
+  process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? null;
+
+function getApiProxyTarget(): string | null {
+  if (!apiProxyTarget) return null;
+  const target = new URL(apiProxyTarget);
+  if (target.protocol !== "http:" && target.protocol !== "https:") {
+    throw new Error("API_URL must use HTTP or HTTPS");
+  }
+  return target.toString().replace(/\/$/u, "");
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -10,6 +22,12 @@ const nextConfig: NextConfig = {
       ".js": [".ts", ".tsx", ".js"],
     };
     return config;
+  },
+  async rewrites() {
+    const target = getApiProxyTarget();
+    return target
+      ? [{ source: "/api/:path*", destination: `${target}/:path*` }]
+      : [];
   },
   async headers() {
     return [

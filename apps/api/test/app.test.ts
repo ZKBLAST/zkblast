@@ -11,6 +11,22 @@ const app = createApp({
   chainName: "Test Chain",
   explorerUrl: "https://explorer.example",
   webOrigin: "http://127.0.0.1:3000",
+  contracts: [
+    {
+      name: "SwapRouter",
+      proxyKind: "uups",
+      address: "0x1111111111111111111111111111111111111111",
+      proxyAddress: "0x1111111111111111111111111111111111111111",
+      implementationAddress: "0x2222222222222222222222222222222222222222",
+      verification: {
+        implementation: "verified",
+        proxy: "verified",
+        urls: [
+          "https://explorer.example/address/0x1111111111111111111111111111111111111111",
+        ],
+      },
+    },
+  ],
 });
 
 test("public config excludes internal connection details", async () => {
@@ -30,6 +46,22 @@ test("public config excludes internal connection details", async () => {
     chainId: 46_630,
     chainName: "Test Chain",
     explorerUrl: "https://explorer.example",
+    contracts: [
+      {
+        name: "SwapRouter",
+        proxyKind: "uups",
+        address: "0x1111111111111111111111111111111111111111",
+        proxyAddress: "0x1111111111111111111111111111111111111111",
+        implementationAddress: "0x2222222222222222222222222222222222222222",
+        verification: {
+          implementation: "verified",
+          proxy: "verified",
+          urls: [
+            "https://explorer.example/address/0x1111111111111111111111111111111111111111",
+          ],
+        },
+      },
+    ],
   });
 });
 
