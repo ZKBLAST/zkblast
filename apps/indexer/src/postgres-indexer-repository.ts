@@ -2,6 +2,7 @@ import postgres from "postgres";
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
 import { validateBlockForPersistence } from "./validation.js";
+import { transactionObservation } from "./transaction-reconciliation.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -52,10 +53,15 @@ export class PostgresIndexerRepository implements IndexerRepository {
     block: BlockEnvelope,
     checkpoint: IndexerCheckpoint,
   ): Promise<void> {
-    const validatedBlock = validateBlockForPersistence(block, checkpoint.chainId);
+    const validatedBlock = validateBlockForPersistence(
+      block,
+      checkpoint.chainId,
+    );
     if (validatedBlock.number !== checkpoint.blockNumber)
       throw new Error("CHECKPOINT_BLOCK_MISMATCH");
-    if (validatedBlock.hash.toLowerCase() !== checkpoint.blockHash.toLowerCase())
+    if (
+      validatedBlock.hash.toLowerCase() !== checkpoint.blockHash.toLowerCase()
+    )
       throw new Error("CHECKPOINT_HASH_MISMATCH");
     await this.sql.begin(async (transaction) => {
       await transaction.unsafe(
@@ -67,7 +73,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
           validatedBlock.parentHash.toLowerCase(),
         ],
       );
-      for (const event of validatedBlock.events)
+      for (const event of validatedBlock.events) {
         await transaction.unsafe(
           `insert into ${this.schema}.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,contract_address=excluded.contract_address,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
           [
@@ -82,6 +88,27 @@ export class PostgresIndexerRepository implements IndexerRepository {
             JSON.stringify(event.payload),
           ],
         );
+        const observation = transactionObservation(event);
+        if (observation)
+          await transaction.unsafe(
+            `insert into ${this.schema}.transactions
+              (chain_id,transaction_hash,status,block_number,gas_used,effective_gas_price_wei)
+             values ($1,$2,$3,$4,$5,$6)
+             on conflict (chain_id,transaction_hash) do update set
+               status=excluded.status,block_number=excluded.block_number,
+               gas_used=excluded.gas_used,
+               effective_gas_price_wei=excluded.effective_gas_price_wei,
+               updated_at=now()`,
+            [
+              observation.chainId,
+              observation.transactionHash,
+              observation.status,
+              observation.blockNumber.toString(),
+              observation.gasUsed,
+              observation.effectiveGasPriceWei,
+            ],
+          );
+      }
       await transaction.unsafe(
         `insert into ${this.schema}.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ('protocol',$1,$2,$3,$4) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
         [
@@ -96,6 +123,19 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   async rewind(chainId: number, fromBlock: bigint): Promise<void> {
     await this.sql.begin(async (transaction) => {
+      await transaction.unsafe(
+        `delete from ${this.schema}.transactions
+         where chain_id=$1 and block_number >= $2
+           and user_id is null and wallet_id is null and client_request_id is null`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.transactions
+         set status='submitted',block_number=null,gas_used=null,
+             effective_gas_price_wei=null,updated_at=now()
+         where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
       await transaction.unsafe(
         `delete from ${this.schema}.protocol_events where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],

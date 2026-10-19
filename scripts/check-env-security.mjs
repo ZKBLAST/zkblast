@@ -9,6 +9,7 @@ const privateKeys = [
   "UPGRADER_PRIVATE_KEY",
   "DATABASE_URL",
   "WS_RPC_URL",
+  "OPERATIONS_API_TOKEN",
 ];
 
 function parseEnv(content) {

@@ -1,5 +1,10 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { verifyMessage } from "viem";
+import {
+  compactSignatureToSignature,
+  parseCompactSignature,
+  serializeSignature,
+  verifyMessage,
+} from "viem";
 import { z } from "zod";
 
 const walletAddressSchema = z
@@ -7,7 +12,19 @@ const walletAddressSchema = z
   .regex(/^0x[0-9a-fA-F]{40}$/u)
   .transform((value) => value.toLowerCase());
 
-const signatureSchema = z.string().regex(/^0x[0-9a-fA-F]{130}$/u);
+const signatureSchema = z
+  .string()
+  .regex(/^0x(?:[0-9a-fA-F]{128}|[0-9a-fA-F]{130})$/u);
+
+function normalizeSignature(signature: string): `0x${string}` {
+  if (signature.length !== 130) return signature as `0x${string}`;
+
+  return serializeSignature(
+    compactSignatureToSignature(
+      parseCompactSignature(signature as `0x${string}`),
+    ),
+  );
+}
 
 export type LoginChallenge = Readonly<{
   id: string;
@@ -95,14 +112,16 @@ export class AuthService {
   }): Promise<AuthenticatedSession> {
     const challengeId = z.string().uuid().parse(input.challengeId);
     const walletAddress = walletAddressSchema.parse(input.walletAddress);
-    const signature = signatureSchema.parse(input.signature);
+    const signature = normalizeSignature(
+      signatureSchema.parse(input.signature),
+    );
     const nonce = /^Nonce: ([a-f0-9]{32})$/mu.exec(input.message)?.[1];
     if (!nonce) throw new Error("INVALID_LOGIN_MESSAGE");
 
     const signatureValid = await verifyMessage({
       address: walletAddress as `0x${string}`,
       message: input.message,
-      signature: signature as `0x${string}`,
+      signature,
     });
     if (!signatureValid) throw new Error("INVALID_WALLET_SIGNATURE");
 

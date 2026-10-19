@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "units": "raw integer amounts",
+  "dammExactInput": [
+    {
+      "name": "balanced 0.30 percent fee",
+      "amountIn": "10000000000000000000",
+      "reserveIn": "1000000000000000000000",
+      "reserveOut": "2000000000000000000000",
+      "feePips": 3000,
+      "expectedFee": "30000000000000000",
+      "expectedAmountOut": "19743160687941225977"
+    },
+    {
+      "name": "round fee against trader",
+      "amountIn": "1",
+      "reserveIn": "1000000",
+      "reserveOut": "2000000",
+      "feePips": 1,
+      "expectedFee": "1",
+      "expectedError": "INSUFFICIENT_LIQUIDITY"
+    }
+  ],
+  "dammExactOutput": [
+    {
+      "name": "balanced 0.30 percent fee",
+      "amountOut": "20000000000000000000",
+      "reserveIn": "1000000000000000000000",
+      "reserveOut": "2000000000000000000000",
+      "feePips": 3000,
+      "expectedAmountIn": "10131404313951956882",
+      "expectedFee": "30394212941855871"
+    }
+  ],
+  "dlmmPrices": [
+    {
+      "name": "negative ten bins",
+      "binId": -10,
+      "binStepBps": 25,
+      "expectedPriceX18": "975340340235394666"
+    },
+    {
+      "name": "parity bin",
+      "binId": 0,
+      "binStepBps": 25,
+      "expectedPriceX18": "1000000000000000000"
+    },
+    {
+      "name": "positive ten bins",
+      "binId": 10,
+      "binStepBps": 25,
+      "expectedPriceX18": "1025283133227785717"
+    }
+  ]
+}

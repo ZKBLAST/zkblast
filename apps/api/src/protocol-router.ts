@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { z } from "zod";
 import type { ProtocolService } from "./protocol-service.js";
@@ -8,7 +9,11 @@ import type { OperationsService } from "./operations-service.js";
 const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(25),
   cursor: z.string().min(1).optional(),
-  owner: z.string().regex(/^0x[0-9a-fA-F]{40}$/u).transform((value) => value.toLowerCase()).optional(),
+  owner: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{40}$/u)
+    .transform((value) => value.toLowerCase())
+    .optional(),
 });
 
 const swapSchema = z
@@ -76,6 +81,7 @@ export function createProtocolRouter(
   swapService?: SwapService,
   liquidityService?: LiquidityService,
   operationsService?: OperationsService,
+  operationsToken?: string,
 ) {
   const router = Router();
   router.get("/pools", async (request, response, next) => {
@@ -192,14 +198,33 @@ export function createProtocolRouter(
       }
     });
   }
-  if (operationsService)
-    router.get("/operations/health", async (_request, response, next) => {
+  if (operationsService) {
+    if (!operationsToken || operationsToken.length < 32)
+      throw new Error("OPERATIONS_API_TOKEN_REQUIRED");
+    router.get("/operations/health", async (request, response, next) => {
       try {
+        const authorization = request.header("authorization") ?? "";
+        const supplied = authorization.startsWith("Bearer ")
+          ? authorization.slice(7)
+          : "";
+        const expectedBytes = Buffer.from(operationsToken);
+        const suppliedBytes = Buffer.from(supplied);
+        if (
+          suppliedBytes.length !== expectedBytes.length ||
+          !timingSafeEqual(suppliedBytes, expectedBytes)
+        ) {
+          return response
+            .status(401)
+            .json({ error: { code: "OPERATIONS_AUTH_REQUIRED" } });
+        }
         const health = await operationsService.health();
-        response.status(health.status === "healthy" ? 200 : 503).json(health);
+        return response
+          .status(health.status === "healthy" ? 200 : 503)
+          .json(health);
       } catch (error) {
-        next(error);
+        return next(error);
       }
     });
+  }
   return router;
 }

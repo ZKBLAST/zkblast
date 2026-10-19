@@ -16,7 +16,7 @@ import { Bay } from "@/components/ui/Frame";
 import { cx } from "@/lib/format";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 
-type MarketTab = "all" | "pons" | "us" | "china";
+type MarketTab = "all" | "pons" | "us" | "china" | "other";
 type Availability = "all" | "active" | "planned";
 
 export function ExternalMarkets() {
@@ -28,7 +28,8 @@ export function ExternalMarkets() {
       tab === "all" ||
       (tab === "pons"
         ? item.source === "pons_graduated"
-        : item.source === "robinhood_stock_token" && item.marketRegion === tab);
+        : item.source === "robinhood_stock_token" &&
+          item.marketRegion === (tab === "other" ? "unclassified" : tab));
     const availabilityMatches =
       availability === "all" ||
       (availability === "active" ? item.canTrade : !item.canTrade);
@@ -69,6 +70,7 @@ export function ExternalMarkets() {
               ["pons", "pons > $1m"],
               ["us", "US stocks"],
               ["china", "China stocks"],
+              ["other", "Other / pending"],
             ] as const
           ).map(([value, label]) => (
             <button

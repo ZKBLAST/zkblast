@@ -8,6 +8,7 @@ import {
   ProtocolService,
   type ProtocolReadStore,
 } from "../src/protocol-service.js";
+import type { OperationsService } from "../src/operations-service.js";
 
 const store: ProtocolReadStore = {
   pools: async () => [{ address: "0xpool", kind: "damm" }],
@@ -62,4 +63,43 @@ test("structured log redaction recursively removes server credentials", () => {
       rpcUrl: "[REDACTED]",
     },
   });
+});
+
+test("operations detail requires the environment-scoped bearer token", async () => {
+  const operationsToken = "test-operations-token-that-is-long-enough";
+  const operationsService = {
+    health: async () => ({
+      status: "healthy",
+      checkedAt: new Date(0).toISOString(),
+    }),
+  } as unknown as OperationsService;
+  const protectedApp = createApp(
+    {
+      environment: "testnet",
+      chainId: 46_630,
+      chainName: "Testnet",
+      explorerUrl: "https://explorer.example",
+      webOrigin: "https://app.example",
+      operationsToken,
+    },
+    { protocolService: service, operationsService },
+  );
+
+  const missing = await request(protectedApp).get(
+    "/v1/protocol/operations/health",
+  );
+  const invalid = await request(protectedApp)
+    .get("/v1/protocol/operations/health")
+    .set("authorization", "Bearer wrong-token");
+  const valid = await request(protectedApp)
+    .get("/v1/protocol/operations/health")
+    .set("authorization", `Bearer ${operationsToken}`);
+
+  assert.equal(missing.status, 401);
+  assert.equal(invalid.status, 401);
+  assert.equal(valid.status, 200);
+  assert.deepEqual(missing.body, {
+    error: { code: "OPERATIONS_AUTH_REQUIRED" },
+  });
+  assert.equal(valid.body.status, "healthy");
 });

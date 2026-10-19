@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import request from "supertest";
-import { privateKeyToAccount } from "viem/accounts";
+import {
+  hexToBigInt,
+  parseSignature,
+  serializeCompactSignature,
+  toHex,
+} from "viem";
+import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { createApp } from "../src/app.js";
 import {
   AuthService,
@@ -37,10 +43,14 @@ class MemoryAuthStore implements AuthStore {
   }
 }
 
-void test("wallet signature creates a secure server session", async () => {
-  const account = privateKeyToAccount(
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-  );
+const account = privateKeyToAccount(
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+);
+
+async function verifyLogin(
+  account: PrivateKeyAccount,
+  compactSignature: boolean,
+) {
   const authService = new AuthService(new MemoryAuthStore(), {
     chainId: 46_630,
     domain: "127.0.0.1:3000",
@@ -62,9 +72,19 @@ void test("wallet signature creates a secure server session", async () => {
     .send({ walletAddress: account.address });
   assert.equal(challenge.status, 201);
 
-  const signature = await account.signMessage({
+  const canonicalSignature = await account.signMessage({
     message: challenge.body.message as string,
   });
+  const parsed = parseSignature(canonicalSignature);
+  const signature = compactSignature
+    ? serializeCompactSignature({
+        r: parsed.r,
+        yParityAndS: toHex(
+          hexToBigInt(parsed.s) | (BigInt(parsed.yParity) << 255n),
+          { size: 32 },
+        ),
+      })
+    : canonicalSignature;
   const verified = await request(app).post("/v1/auth/verify").send({
     challengeId: challenge.body.challengeId,
     walletAddress: account.address,
@@ -78,4 +98,12 @@ void test("wallet signature creates a secure server session", async () => {
   assert.match(verified.headers["set-cookie"]?.[0] ?? "", /Secure/u);
   assert.match(verified.headers["set-cookie"]?.[0] ?? "", /SameSite=Strict/u);
   assert.doesNotMatch(JSON.stringify(verified.body), /sessionToken/u);
+}
+
+void test("wallet signature creates a secure server session", async () => {
+  await verifyLogin(account, false);
+});
+
+void test("compact EIP-2098 wallet signature creates a session", async () => {
+  await verifyLogin(account, true);
 });

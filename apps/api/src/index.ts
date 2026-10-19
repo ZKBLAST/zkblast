@@ -32,6 +32,7 @@ const serviceSchema = z.object({
     .positive()
     .default(86_400),
   ALERT_RECEIPT_FAILURES: z.coerce.number().int().positive().default(5),
+  OPERATIONS_API_TOKEN: z.string().min(32),
 });
 
 const serverConfig = loadServerConfig(process.env);
@@ -143,6 +144,7 @@ const app = createApp(
     chainName: serverConfig.CHAIN_NAME,
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
+    operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
     ...(manifest.shielded
       ? {
           shielded: {

@@ -2,13 +2,27 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { Check, CircleAlert, Info, X } from "lucide-react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
+import { parsePublicConfig } from "@/lib/network-config";
 import type { PublicConfig, Trade, UserProfile } from "@/types/application";
 import { WalletModal } from "./WalletModal";
 
-type Toast = Readonly<{ id: number; kind: "success" | "error" | "info"; title: string; body?: string }>;
+type Toast = Readonly<{
+  id: number;
+  kind: "success" | "error" | "info";
+  title: string;
+  body?: string;
+}>;
 type AppContextValue = Readonly<{
   address: string | null;
   config: PublicConfig | null;
@@ -50,7 +64,10 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   const toast = useCallback((next: Omit<Toast, "id">) => {
     const id = Date.now() + Math.random();
     setToasts((current) => [...current.slice(-2), { ...next, id }]);
-    window.setTimeout(() => setToasts((current) => current.filter((item) => item.id !== id)), 4_800);
+    window.setTimeout(
+      () => setToasts((current) => current.filter((item) => item.id !== id)),
+      4_800,
+    );
   }, []);
 
   const refreshAccount = useCallback(async () => {
@@ -71,30 +88,45 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   useEffect(() => {
     void Promise.all([
-      apiRequest<PublicConfig>(apiUrl, "/v1/config").then(setConfig),
+      apiRequest<unknown>(apiUrl, "/v1/config").then((value) =>
+        setConfig(parsePublicConfig(value)),
+      ),
       refreshAccount(),
     ]).catch(() => setStatus("ZKBLAST API is unavailable"));
   }, [apiUrl, refreshAccount]);
 
   const loginInjected = useCallback(async () => {
     if (!window.ethereum) {
-      toast({ kind: "error", title: "Wallet extension not detected", body: "Install an EVM browser wallet and try again." });
+      toast({
+        kind: "error",
+        title: "Wallet extension not detected",
+        body: "Install an EVM browser wallet and try again.",
+      });
       return;
     }
     setBusy(true);
     try {
-      const accounts = (await window.ethereum.request({ method: "eth_requestAccounts" })) as string[];
+      const accounts = (await window.ethereum.request({
+        method: "eth_requestAccounts",
+      })) as string[];
       const walletAddress = accounts[0];
       if (!walletAddress) throw new Error("WALLET_ACCOUNT_MISSING");
-      const activeConfig = config ?? (await apiRequest<PublicConfig>(apiUrl, "/v1/config"));
-      const walletChain = (await window.ethereum.request({ method: "eth_chainId" })) as string;
+      const activeConfig =
+        config ??
+        parsePublicConfig(await apiRequest<unknown>(apiUrl, "/v1/config"));
+      const walletChain = (await window.ethereum.request({
+        method: "eth_chainId",
+      })) as string;
       if (Number.parseInt(walletChain, 16) !== activeConfig.chainId) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${activeConfig.chainId.toString(16)}` }],
         });
       }
-      const challenge = await apiRequest<{ challengeId: string; message: string }>(apiUrl, "/v1/auth/challenge", {
+      const challenge = await apiRequest<{
+        challengeId: string;
+        message: string;
+      }>(apiUrl, "/v1/auth/challenge", {
         method: "POST",
         body: JSON.stringify({ walletAddress }),
       });
@@ -108,9 +140,17 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       });
       await refreshAccount();
       setWalletOpen(false);
-      toast({ kind: "success", title: "Wallet connected", body: `Signed in on ${activeConfig.chainName}` });
+      toast({
+        kind: "success",
+        title: "Wallet connected",
+        body: `Signed in on ${activeConfig.chainName}`,
+      });
     } catch (error) {
-      toast({ kind: "error", title: "Wallet login failed", body: error instanceof Error ? error.message : "Request rejected" });
+      toast({
+        kind: "error",
+        title: "Wallet login failed",
+        body: error instanceof Error ? error.message : "Request rejected",
+      });
     } finally {
       setBusy(false);
     }
@@ -129,44 +169,91 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     }
   }, [apiUrl, toast]);
 
-  const updateUsername = useCallback(async (username: string) => {
-    await apiRequest(apiUrl, "/v1/me/username", { method: "PATCH", body: JSON.stringify({ username }) });
-    await refreshAccount();
-    toast({ kind: "success", title: "Username updated" });
-  }, [apiUrl, refreshAccount, toast]);
+  const updateUsername = useCallback(
+    async (username: string) => {
+      await apiRequest(apiUrl, "/v1/me/username", {
+        method: "PATCH",
+        body: JSON.stringify({ username }),
+      });
+      await refreshAccount();
+      toast({ kind: "success", title: "Username updated" });
+    },
+    [apiUrl, refreshAccount, toast],
+  );
 
-  const value = useMemo<AppContextValue>(() => ({
-    address,
-    config,
-    profile,
-    trades,
-    busy,
-    status,
-    balances: {},
-    adjust: () => undefined,
-    connect: () => setWalletOpen(true),
-    loginInjected,
-    openWallet: () => setWalletOpen(true),
-    disconnect,
-    updateUsername,
-    refreshAccount,
-    toast,
-  }), [address, busy, config, disconnect, loginInjected, profile, refreshAccount, status, toast, trades, updateUsername]);
+  const value = useMemo<AppContextValue>(
+    () => ({
+      address,
+      config,
+      profile,
+      trades,
+      busy,
+      status,
+      balances: {},
+      adjust: () => undefined,
+      connect: () => setWalletOpen(true),
+      loginInjected,
+      openWallet: () => setWalletOpen(true),
+      disconnect,
+      updateUsername,
+      refreshAccount,
+      toast,
+    }),
+    [
+      address,
+      busy,
+      config,
+      disconnect,
+      loginInjected,
+      profile,
+      refreshAccount,
+      status,
+      toast,
+      trades,
+      updateUsername,
+    ],
+  );
 
   return (
     <AppContext.Provider value={value}>
       {children}
       <WalletModal open={walletOpen} onClose={() => setWalletOpen(false)} />
-      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-4 z-[120] flex flex-col items-center gap-2 px-4 sm:inset-x-auto sm:right-6 sm:items-end">
+      <div
+        aria-live="polite"
+        className="pointer-events-none fixed inset-x-0 bottom-4 z-[120] flex flex-col items-center gap-2 px-4 sm:inset-x-auto sm:right-6 sm:items-end"
+      >
         <AnimatePresence initial={false}>
           {toasts.map((item) => (
-            <motion.div key={item.id} layout initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 24, transition: { duration: 0.15 } }} className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border border-line-strong bg-raised px-4 py-3 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.9)]">
-              {item.kind === "success" ? <Check className="mt-0.5 size-4 shrink-0 text-lime" /> : item.kind === "error" ? <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" /> : <Info className="mt-0.5 size-4 shrink-0 text-muted" />}
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 24, transition: { duration: 0.15 } }}
+              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border border-line-strong bg-raised px-4 py-3 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.9)]"
+            >
+              {item.kind === "success" ? (
+                <Check className="mt-0.5 size-4 shrink-0 text-lime" />
+              ) : item.kind === "error" ? (
+                <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" />
+              ) : (
+                <Info className="mt-0.5 size-4 shrink-0 text-muted" />
+              )}
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">{item.title}</p>
-                {item.body && <p className="mt-0.5 text-[13px] text-muted">{item.body}</p>}
+                {item.body && (
+                  <p className="mt-0.5 text-[13px] text-muted">{item.body}</p>
+                )}
               </div>
-              <button aria-label="Dismiss notification" onClick={() => setToasts((current) => current.filter((toastItem) => toastItem.id !== item.id))} className="-m-1 grid size-7 cursor-pointer place-items-center rounded-xs text-faint hover:text-fg">
+              <button
+                aria-label="Dismiss notification"
+                onClick={() =>
+                  setToasts((current) =>
+                    current.filter((toastItem) => toastItem.id !== item.id),
+                  )
+                }
+                className="-m-1 grid size-7 cursor-pointer place-items-center rounded-xs text-faint hover:text-fg"
+              >
                 <X className="size-3.5" />
               </button>
             </motion.div>

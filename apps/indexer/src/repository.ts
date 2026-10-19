@@ -4,6 +4,10 @@ import {
   type IndexedEvent,
   type IndexerCheckpoint,
 } from "./domain.js";
+import {
+  transactionObservation,
+  type TransactionObservation,
+} from "./transaction-reconciliation.js";
 
 export interface IndexerRepository {
   checkpoint(chainId: number): Promise<IndexerCheckpoint | null>;
@@ -18,6 +22,7 @@ export interface IndexerRepository {
 export class MemoryIndexerRepository implements IndexerRepository {
   readonly events = new Map<string, IndexedEvent>();
   readonly blocks = new Map<string, string>();
+  readonly transactions = new Map<string, TransactionObservation>();
   private readonly checkpoints = new Map<number, IndexerCheckpoint>();
 
   checkpoint(chainId: number): Promise<IndexerCheckpoint | null> {
@@ -34,8 +39,15 @@ export class MemoryIndexerRepository implements IndexerRepository {
     checkpoint: IndexerCheckpoint,
   ): Promise<void> {
     this.blocks.set(`${checkpoint.chainId}:${block.number}`, block.hash);
-    for (const event of block.events)
+    for (const event of block.events) {
       this.events.set(eventIdentity(event), event);
+      const observation = transactionObservation(event);
+      if (observation)
+        this.transactions.set(
+          `${observation.chainId}:${observation.transactionHash}`,
+          observation,
+        );
+    }
     this.checkpoints.set(checkpoint.chainId, checkpoint);
     return Promise.resolve();
   }
@@ -52,6 +64,12 @@ export class MemoryIndexerRepository implements IndexerRepository {
       )
         this.blocks.delete(key);
     }
+    for (const [key, transaction] of this.transactions)
+      if (
+        transaction.chainId === chainId &&
+        transaction.blockNumber >= fromBlock
+      )
+        this.transactions.delete(key);
     const previous = fromBlock - 1n;
     const hash = this.blocks.get(`${chainId}:${previous}`);
     const current = this.checkpoints.get(chainId);

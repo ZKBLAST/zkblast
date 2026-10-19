@@ -16,6 +16,8 @@ import {
 } from "viem";
 import { z } from "zod";
 
+import { stockMarketClassification } from "./stock-market-classifications.js";
+
 const config = z
   .object({
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -311,10 +313,12 @@ async function syncStocks() {
     if (!quote || quote.tokenSymbol !== asset.tokenSymbol) continue;
     const deployment = asset.deployments.find((item) => item.chainId === 4663)!;
     const status = quote.isTradingHalt ? "halted" : "active";
+    const classification = stockMarketClassification(asset.tokenSymbol);
     const metadata = {
       currentMultiplier: asset.currentMultiplier,
       pendingMultiplier: asset.pendingMultiplier,
       logoUrl: asset.logoUrl,
+      marketClassification: classification,
     };
     await sql.unsafe(
       `update ${config.SUPABASE_SCHEMA}.external_markets candidate
@@ -330,8 +334,8 @@ async function syncStocks() {
     const rows = await sql.unsafe<{ id: string }[]>(
       `insert into ${config.SUPABASE_SCHEMA}.external_markets
         (source,external_id,chain_id,contract_address,symbol,name,quote_symbol,status,read_only,market_region,candidate_logo_url,logo_status,metadata,validated_at)
-       values ('robinhood_stock_token',$1,4663,$2,$3,$4,'USD',$5,true,'unclassified',$6,'pending',$7::jsonb,$8)
-       on conflict (source,external_id) do update set contract_address=excluded.contract_address,symbol=excluded.symbol,name=excluded.name,status=excluded.status,candidate_logo_url=excluded.candidate_logo_url,metadata=${config.SUPABASE_SCHEMA}.external_markets.metadata || excluded.metadata,validated_at=excluded.validated_at,updated_at=now()
+       values ('robinhood_stock_token',$1,4663,$2,$3,$4,'USD',$5,true,$6,$7,'pending',$8::jsonb,$9)
+       on conflict (source,external_id) do update set contract_address=excluded.contract_address,symbol=excluded.symbol,name=excluded.name,status=excluded.status,market_region=excluded.market_region,candidate_logo_url=excluded.candidate_logo_url,metadata=${config.SUPABASE_SCHEMA}.external_markets.metadata || excluded.metadata,validated_at=excluded.validated_at,updated_at=now()
        returning id`,
       [
         asset.id,
@@ -339,6 +343,7 @@ async function syncStocks() {
         asset.tokenSymbol,
         asset.tokenName,
         status,
+        classification?.region ?? "unclassified",
         asset.logoUrl,
         metadata,
         quote.generatedAt,

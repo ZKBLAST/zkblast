@@ -24,6 +24,7 @@ export type ApiPublicConfig = Readonly<{
   chainName: string;
   explorerUrl: string;
   webOrigin: string;
+  operationsToken?: string;
   shielded?: Readonly<{
     vaultAddress: string;
     stateRegistryAddress: string;
@@ -37,27 +38,38 @@ export type ApiPublicConfig = Readonly<{
   }>;
 }>;
 
-const publicConfigResponseSchema = z.object({
-  environment: z.enum(["testnet", "mainnet"]),
-  chainId: z.number().int().positive(),
-  chainName: z.string().min(1),
-  explorerUrl: z.string().url(),
-  shielded: z
-    .object({
-      vaultAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
-      stateRegistryAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
-      treeVersion: z.number().int().positive(),
-      assets: z.array(
-        z.object({
-          address: z.string().regex(/^0x[\da-f]{40}$/iu),
-          symbol: z.string().min(1),
-          decimals: z.number().int().min(0).max(255),
-          denominationRaw: z.string().regex(/^[1-9]\d*$/u),
-        }),
-      ),
-    })
-    .optional(),
-});
+const publicConfigResponseSchema = z
+  .object({
+    environment: z.enum(["testnet", "mainnet"]),
+    chainId: z.number().int().positive(),
+    chainName: z.string().min(1),
+    explorerUrl: z.string().url(),
+    shielded: z
+      .object({
+        vaultAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
+        stateRegistryAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
+        treeVersion: z.number().int().positive(),
+        assets: z.array(
+          z.object({
+            address: z.string().regex(/^0x[\da-f]{40}$/iu),
+            symbol: z.string().min(1),
+            decimals: z.number().int().min(0).max(255),
+            denominationRaw: z.string().regex(/^[1-9]\d*$/u),
+          }),
+        ),
+      })
+      .optional(),
+  })
+  .superRefine((value, context) => {
+    const expected = value.environment === "testnet" ? 46_630 : 4_663;
+    if (value.chainId !== expected) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["chainId"],
+        message: `${value.environment} requires chain ${expected}`,
+      });
+    }
+  });
 
 export function createApp(
   config: ApiPublicConfig,
@@ -74,6 +86,7 @@ export function createApp(
   }> = {},
 ) {
   const app = express();
+  app.set("trust proxy", 1);
   app.disable("x-powered-by");
   app.use(helmet());
   app.use(
@@ -141,6 +154,7 @@ export function createApp(
         dependencies.swapService,
         dependencies.liquidityService,
         dependencies.operationsService,
+        config.operationsToken,
       ),
     );
   }

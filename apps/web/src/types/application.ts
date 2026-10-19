@@ -7,7 +7,6 @@ export type EthereumProvider = Readonly<{
 export type PublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
   chainId: number;
-  executionChainId: number | null;
   chainName: string;
   explorerUrl: string;
   shielded?: Readonly<{

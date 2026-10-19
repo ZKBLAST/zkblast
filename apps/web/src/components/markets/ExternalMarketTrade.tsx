@@ -45,7 +45,9 @@ export function ExternalMarketTrade({
   );
   const route =
     validatedRoutes?.find((candidate) => candidate.quoteSymbol === "USDG") ??
-    validatedRoutes?.find((candidate) => candidate.quoteSymbol === "WETH");
+    (config?.environment === "mainnet"
+      ? validatedRoutes?.find((candidate) => candidate.quoteSymbol === "WETH")
+      : undefined);
 
   useEffect(() => {
     setQuote(null);

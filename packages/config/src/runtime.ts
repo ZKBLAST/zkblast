@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const appEnvironmentSchema = z.enum(["testnet", "mainnet"]);
 export type AppEnvironment = z.infer<typeof appEnvironmentSchema>;
+const chainIds: Readonly<Record<AppEnvironment, number>> = {
+  testnet: 46_630,
+  mainnet: 4_663,
+};
 
 const publicConfigSchema = z.object({
   APP_ENV: appEnvironmentSchema,
@@ -22,6 +26,12 @@ export type PublicConfig = z.infer<typeof publicConfigSchema>;
 export type ServerConfig = z.infer<typeof serverConfigSchema>;
 
 function assertEnvironmentBoundary(config: PublicConfig): void {
+  const expectedChainId = chainIds[config.APP_ENV];
+  if (config.CHAIN_ID !== expectedChainId) {
+    throw new Error(
+      `${config.APP_ENV} requires Robinhood chain ${expectedChainId}`,
+    );
+  }
   const expectedSchema = `zkblast_${config.APP_ENV}`;
   if (config.SUPABASE_SCHEMA !== expectedSchema) {
     throw new Error(

@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 import postgres from "postgres";
 import { z } from "zod";
 
+import { stockMarketClassification } from "./stock-market-classifications.js";
+
 const config = z
   .object({
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -15,8 +17,9 @@ const config = z
 const recordSchema = z.object({
   symbol: z.string().trim().min(1).max(32),
   contractAddress: z.string().regex(/^0x[0-9a-f]{40}$/u),
-  region: z.enum(["us", "china"]),
+  region: z.enum(["unclassified", "us", "china"]),
   regionReason: z.string().trim().min(3).max(500),
+  classificationSourceUrl: z.string().url().nullable(),
   candidateLogoUrl: z.string().url().nullable(),
   logoDecision: z.enum(["pending", "approved", "rejected"]),
   logoReason: z.string().trim().min(3).max(500),
@@ -40,8 +43,6 @@ const sql = postgres(config.SUPABASE_DIRECT_DATABASE_URL, {
   prepare: true,
 });
 const path = resolve(process.cwd(), config.MARKET_CURATION_FILE);
-const chinaLinkedSymbols = new Set(["BABA", "FUTU"]);
-
 async function markets() {
   return sql.unsafe<MarketRow[]>(
     `select id,symbol,contract_address,market_region,candidate_logo_url,logo_status
@@ -56,14 +57,15 @@ async function exportFile() {
     version: 1 as const,
     curator: "zkblast-owner-review",
     records: rows.map((row) => {
-      const chinaLinked = chinaLinkedSymbols.has(row.symbol);
+      const classification = stockMarketClassification(row.symbol);
       return {
         symbol: row.symbol,
         contractAddress: row.contract_address,
-        region: chinaLinked ? ("china" as const) : ("us" as const),
-        regionReason: chinaLinked
-          ? "Initial explicit China-linked issuer curation; owner review required."
-          : "US-listed market catalog classification; owner review required.",
+        region: classification?.region ?? ("unclassified" as const),
+        regionReason:
+          classification?.basis ??
+          "No authoritative issuer classification has been approved.",
+        classificationSourceUrl: classification?.sourceUrl ?? null,
         candidateLogoUrl: row.candidate_logo_url,
         logoDecision: "pending" as const,
         logoReason: "Awaiting owner visual and URL review.",
@@ -76,6 +78,30 @@ async function exportFile() {
     flag: "wx",
   });
   console.log(JSON.stringify({ exported: rows.length, path }));
+}
+
+function assertVerifiedClassification(record: z.infer<typeof recordSchema>) {
+  const classification = stockMarketClassification(record.symbol);
+  if (
+    record.region !== (classification?.region ?? "unclassified") ||
+    record.classificationSourceUrl !== (classification?.sourceUrl ?? null) ||
+    record.regionReason !==
+      (classification?.basis ??
+        "No authoritative issuer classification has been approved.")
+  )
+    throw new Error(`Unverified market classification: ${record.symbol}`);
+}
+
+async function validateFile() {
+  const input = fileSchema.parse(JSON.parse(await readFile(path, "utf8")));
+  const seen = new Set<string>();
+  for (const record of input.records) {
+    if (seen.has(record.symbol))
+      throw new Error(`Duplicate curation symbol: ${record.symbol}`);
+    seen.add(record.symbol);
+    assertVerifiedClassification(record);
+  }
+  console.log(JSON.stringify({ validated: input.records.length, path }));
 }
 
 function validCandidateLogo(url: string, contractAddress: string) {
@@ -109,6 +135,7 @@ async function applyFile() {
       const row = bySymbol.get(record.symbol);
       if (!row || row.contract_address !== record.contractAddress)
         throw new Error(`Market identity mismatch: ${record.symbol}`);
+      assertVerifiedClassification(record);
       if (row.market_region !== record.region) {
         await transaction.unsafe(
           `insert into ${config.SUPABASE_SCHEMA}.external_market_curation_audit
@@ -164,7 +191,9 @@ try {
   const mode = process.argv[2];
   if (mode === "export") await exportFile();
   else if (mode === "apply") await applyFile();
-  else throw new Error("Usage: curate-external-markets.ts export|apply");
+  else if (mode === "validate") await validateFile();
+  else
+    throw new Error("Usage: curate-external-markets.ts export|validate|apply");
 } finally {
   await sql.end();
 }

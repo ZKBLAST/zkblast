@@ -5,3 +5,4 @@ export * from "./postgres-indexer-repository.js";
 export * from "./repository.js";
 export * from "./viem-chain-reader.js";
 export * from "./validation.js";
+export * from "./transaction-reconciliation.js";
