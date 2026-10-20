@@ -4,16 +4,22 @@ import { formatUnits } from "viem";
 import { ArrowDownUp, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
-import { useProtocolWorkspace } from "@/lib/use-protocol-workspace";
+import {
+  useProtocolWorkspace,
+  type WorkspaceOptions,
+} from "@/lib/use-protocol-workspace";
 
 const control = "mt-2 h-11 w-full border border-line bg-bg px-3 text-fg";
 
 export function ProtocolPoolWorkspace({
   mode,
-}: {
+  compact = false,
+  ...options
+}: WorkspaceOptions & {
   mode: "swap" | "liquidity";
+  compact?: boolean;
 }) {
-  const state = useProtocolWorkspace(mode);
+  const state = useProtocolWorkspace(mode, options);
   const { pool, bins, amount, busy, quote, amounts, config } = state;
   const disabled =
     busy ||
@@ -29,10 +35,12 @@ export function ProtocolPoolWorkspace({
           : "Get quote";
 
   return (
-    <section className="panel ticks my-8 p-5 sm:p-6">
-      <p className="label">Public protocol pools</p>
+    <section className={compact ? "p-4" : "panel ticks my-8 p-5 sm:p-6"}>
+      <p className="label">
+        {compact ? "Public execution" : "Public protocol pools"}
+      </p>
       <h2 className="mt-2 text-xl font-semibold">
-        {mode === "swap" ? "DAMM / DLMM swap" : "DAMM / DLMM liquidity"}
+        {mode === "swap" ? "Swap" : "Add liquidity"}
       </h2>
       {pool ? (
         <>
@@ -47,22 +55,24 @@ export function ProtocolPoolWorkspace({
               {pool.token1Symbol}
             </span>
           </div>
-          <label className="mt-4 block text-sm text-muted">
-            Pool
-            <select
-              className={control}
-              value={pool.address}
-              disabled={busy}
-              onChange={(event) => state.selectPool(event.target.value)}
-            >
-              {state.data.pools.map((item) => (
-                <option key={item.address} value={item.address}>
-                  {item.token0Symbol}/{item.token1Symbol} ·{" "}
-                  {item.model.toUpperCase()} · {item.feeBps} bps
-                </option>
-              ))}
-            </select>
-          </label>
+          {!options.pool && (
+            <label className="mt-4 block text-sm text-muted">
+              Pool
+              <select
+                className={control}
+                value={pool.address}
+                disabled={busy}
+                onChange={(event) => state.selectPool(event.target.value)}
+              >
+                {state.data.pools.map((item) => (
+                  <option key={item.address} value={item.address}>
+                    {item.token0Symbol}/{item.token1Symbol} ·{" "}
+                    {item.model.toUpperCase()} · {item.feeBps} bps
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="mt-4 flex items-end gap-3">
             <label className="min-w-0 flex-1 text-sm text-muted">
               {mode === "swap" ? "You pay" : "Deposit"} {state.inputSymbol}

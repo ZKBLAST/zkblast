@@ -1,29 +1,37 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import type { MarketPricePoint } from "@/types/application";
 
 export type PriceSource = "swap" | "oracle" | "reference";
+export type ChartRange = "1H" | "1D" | "1W";
+const rangeHours: Record<ChartRange, number> = { "1H": 1, "1D": 24, "1W": 168 };
 
 export function useMarketPriceHistory(
   marketId: string | null,
   source: PriceSource,
+  range: ChartRange = "1W",
 ) {
-  const [items, setItems] = useState<readonly MarketPricePoint[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const requestId = useRef(0);
+  const key = `${marketId}:${source}:${range}`;
+  const [snapshot, setSnapshot] = useState<{
+    key: string;
+    items: readonly MarketPricePoint[];
+    loading: boolean;
+    error: string | null;
+  }>({ key, items: [], loading: Boolean(marketId), error: null });
   const refresh = useCallback(async () => {
+    const current = ++requestId.current;
     if (!marketId) {
-      setItems([]);
+      setSnapshot({ key, items: [], loading: false, error: null });
       return;
     }
-    setLoading(true);
-    setError(null);
+    setSnapshot({ key, items: [], loading: true, error: null });
     const to = new Date();
-    const from = new Date(to.getTime() - 7 * 86_400_000);
+    const from = new Date(to.getTime() - rangeHours[range] * 3_600_000);
     const query = new URLSearchParams({
       source,
       from: from.toISOString(),
@@ -35,17 +43,33 @@ export function useMarketPriceHistory(
         webPublicConfig.apiUrl,
         `/v1/markets/${marketId}/chart?${query.toString()}`,
       );
-      setItems(response.items);
+      if (current === requestId.current)
+        setSnapshot({
+          key,
+          items: response.items,
+          loading: false,
+          error: null,
+        });
     } catch (reason) {
-      setError(
-        reason instanceof Error ? reason.message : "CHART_DATA_UNAVAILABLE",
-      );
-    } finally {
-      setLoading(false);
+      if (current === requestId.current)
+        setSnapshot({
+          key,
+          items: [],
+          loading: false,
+          error:
+            reason instanceof Error ? reason.message : "CHART_DATA_UNAVAILABLE",
+        });
     }
-  }, [marketId, source]);
+  }, [marketId, source, range, key]);
   useEffect(() => {
     void refresh();
+    return () => {
+      requestId.current += 1;
+    };
   }, [refresh]);
-  return { items, loading, error, refresh };
+  const visible =
+    snapshot.key === key
+      ? snapshot
+      : { items: [], loading: Boolean(marketId), error: null };
+  return { ...visible, refresh };
 }

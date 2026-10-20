@@ -22,7 +22,13 @@ import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import type { ProtocolPosition } from "@/types/application";
 
-export function PositionsView() {
+export function PositionsView({
+  compact = false,
+  onSelectPool,
+}: {
+  compact?: boolean;
+  onSelectPool?: (address: string) => void;
+} = {}) {
   const { address, connect, config, toast } = useApp();
   const data = useProtocolData(address);
   const { items: externalMarkets } = useExternalMarkets();
@@ -30,12 +36,16 @@ export function PositionsView() {
   if (!address)
     return (
       <>
-        <PageHeader
-          title="Positions"
-          lead="Validated liquidity positions belonging to your authenticated wallet."
-          badges={<LaneBadge lane="public" />}
-        />
-        <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
+        {!compact && (
+          <PageHeader
+            title="Positions"
+            lead="Validated liquidity positions belonging to your authenticated wallet."
+            badges={<LaneBadge lane="public" />}
+          />
+        )}
+        <div
+          className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}
+        >
           <div className="panel flex items-start gap-4 p-8">
             <Layers className="size-5 text-muted" />
             <div>
@@ -43,7 +53,7 @@ export function PositionsView() {
                 Connect a wallet to query positions
               </p>
               <p className="mt-1 text-sm text-muted">
-                No placeholder position or internal regression asset is loaded.
+                Your liquidity positions appear here after you sign in.
               </p>
               <Button className="mt-4" onClick={connect}>
                 Connect wallet
@@ -56,24 +66,26 @@ export function PositionsView() {
 
   return (
     <>
-      <PageHeader
-        title="Positions"
-        lead="Liquidity positions are wallet-scoped. Swaps appear in account trade history and do not create LP positions."
-        badges={<LaneBadge lane="public" />}
-        aside={
-          <dl className="grid grid-cols-2 gap-6">
-            <Stat label="Indexed positions" value={data.positions.length} />
-            <Stat
-              label="Open"
-              value={
-                data.positions.filter((item) => item.status === "open").length
-              }
-            />
-          </dl>
-        }
-      />
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
-        <AccountPanel />
+      {!compact && (
+        <PageHeader
+          title="Positions"
+          lead="Liquidity positions are wallet-scoped. Swaps appear in account trade history and do not create LP positions."
+          badges={<LaneBadge lane="public" />}
+          aside={
+            <dl className="grid grid-cols-2 gap-6">
+              <Stat label="Indexed positions" value={data.positions.length} />
+              <Stat
+                label="Open"
+                value={
+                  data.positions.filter((item) => item.status === "open").length
+                }
+              />
+            </dl>
+          }
+        />
+      )}
+      <div className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}>
+        {!compact && <AccountPanel />}
         <RealDataState
           loading={data.loading}
           error={data.error}
@@ -97,6 +109,7 @@ export function PositionsView() {
                 explorerUrl={config?.explorerUrl}
                 onConfirmed={data.refresh}
                 onToast={toast}
+                onSelectPool={onSelectPool}
               />
             ))}
           </ul>
@@ -118,12 +131,14 @@ function PositionItem({
   explorerUrl,
   onConfirmed,
   onToast,
+  onSelectPool,
 }: Readonly<{
   position: ProtocolPosition;
   markets: ReturnType<typeof useExternalMarkets>["items"];
   owner: string;
   explorerUrl?: string;
   onConfirmed: () => Promise<void>;
+  onSelectPool?: (address: string) => void;
   onToast: (value: {
     kind: "success" | "error" | "info";
     title: string;
@@ -199,6 +214,16 @@ function PositionItem({
             <span className="mt-1 block font-mono text-xs text-faint">
               Position {position.onchainPositionId}
             </span>
+            {onSelectPool && (
+              <button
+                type="button"
+                className="mt-2 cursor-pointer text-xs text-lime"
+                disabled={busy}
+                onClick={() => onSelectPool(position.poolAddress)}
+              >
+                View market
+              </button>
+            )}
           </span>
         </span>
         <TypeTag type={position.model.toUpperCase() as "DAMM" | "DLMM"} />

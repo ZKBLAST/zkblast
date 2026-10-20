@@ -1,16 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import type { ExternalMarket } from "@/types/application";
 
-export function useExternalMarkets() {
+type MarketData = {
+  items: readonly ExternalMarket[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+};
+export const MarketDataContext = createContext<MarketData | null>(null);
+
+export function useExternalMarkets(): MarketData {
+  const shared = useContext(MarketDataContext);
   const [items, setItems] = useState<readonly ExternalMarket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
+    if (shared) return shared.refresh();
     setLoading(true);
     setError(null);
     try {
@@ -46,9 +62,10 @@ export function useExternalMarkets() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [shared]);
   useEffect(() => {
+    if (shared) return;
     void refresh();
-  }, [refresh]);
-  return { items, loading, error, refresh };
+  }, [refresh, shared]);
+  return shared ?? { items, loading, error, refresh };
 }

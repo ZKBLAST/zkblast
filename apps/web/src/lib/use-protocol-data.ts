@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import internalTestAssets from "@/data/internal-test-assets.json";
@@ -11,7 +18,7 @@ import type {
   ProtocolSwap,
 } from "@/types/application";
 
-type ProtocolData = Readonly<{
+export type ProtocolData = Readonly<{
   pools: readonly ProtocolPool[];
   swaps: readonly ProtocolSwap[];
   positions: readonly ProtocolPosition[];
@@ -21,19 +28,31 @@ type ProtocolData = Readonly<{
   refresh: () => Promise<void>;
 }>;
 
+export const ProtocolDataContext = createContext<{
+  owner: string | null | undefined;
+  data: ProtocolData;
+} | null>(null);
+
 const hiddenSymbols = new Set(internalTestAssets.symbols);
 const isPublicPair = (token0: string, token1: string) =>
   !hiddenSymbols.has(token0) && !hiddenSymbols.has(token1);
 
 export function useProtocolData(owner?: string | null): ProtocolData {
+  const context = useContext(ProtocolDataContext);
+  const shared =
+    context && (!owner || owner === context.owner) ? context.data : null;
+  const requestId = useRef(0);
   const [pools, setPools] = useState<readonly ProtocolPool[]>([]);
   const [swaps, setSwaps] = useState<readonly ProtocolSwap[]>([]);
   const [positions, setPositions] = useState<readonly ProtocolPosition[]>([]);
+  const [positionsOwner, setPositionsOwner] = useState(owner);
   const [metrics, setMetrics] = useState<IndexerMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
+    if (shared) return shared.refresh();
+    const currentRequest = ++requestId.current;
     setLoading(true);
     setError(null);
     try {
@@ -58,6 +77,8 @@ export function useProtocolData(owner?: string | null): ProtocolData {
           ),
         ],
       );
+      if (currentRequest !== requestId.current) return;
+      setPositionsOwner(owner);
       setPools(
         poolPage.items.filter((pool) =>
           isPublicPair(pool.token0Symbol, pool.token1Symbol),
@@ -71,16 +92,30 @@ export function useProtocolData(owner?: string | null): ProtocolData {
       );
       setMetrics(nextMetrics);
     } catch (reason) {
+      if (currentRequest !== requestId.current) return;
       setError(
         reason instanceof Error ? reason.message : "PROTOCOL_DATA_UNAVAILABLE",
       );
     } finally {
-      setLoading(false);
+      if (currentRequest === requestId.current) setLoading(false);
     }
-  }, [owner]);
+  }, [owner, shared]);
 
   useEffect(() => {
+    if (shared) return;
     void refresh();
-  }, [refresh]);
-  return { pools, swaps, positions, metrics, loading, error, refresh };
+    return () => {
+      requestId.current += 1;
+    };
+  }, [refresh, shared]);
+  if (shared) return shared;
+  return {
+    pools,
+    swaps,
+    positions: positionsOwner === owner ? positions : [],
+    metrics,
+    loading,
+    error,
+    refresh,
+  };
 }

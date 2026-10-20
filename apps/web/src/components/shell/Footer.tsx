@@ -1,12 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useApp } from "@/components/shell/AppProvider";
 import { nav } from "@/lib/nav";
 import { Logo } from "./Logo";
 
 export function Footer() {
   const { config } = useApp();
+  const path = usePathname();
+  if (path === "/trade")
+    return (
+      <footer className="mx-auto flex max-w-[1600px] flex-wrap justify-between gap-3 border-t border-line px-4 py-5 font-mono text-[10px] text-faint">
+        <span>
+          ZKBLAST · {config?.chainName ?? "Connecting to API"} ·{" "}
+          {config?.environment ?? "Network pending"}
+        </span>
+        <span>
+          Onchain transactions carry risk.{" "}
+          <Link className="text-muted hover:text-fg" href="/docs">
+            Read the user guide
+          </Link>
+        </span>
+      </footer>
+    );
   return (
     <footer className="mx-auto mt-32 max-w-[1392px] px-3 pb-3 sm:px-4">
       <div className="panel ticks p-2">

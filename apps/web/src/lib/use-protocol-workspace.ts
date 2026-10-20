@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { parseUnits } from "viem";
 import { useApp } from "@/components/shell/AppProvider";
 import { webPublicConfig } from "@/config/public-env";
@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/api-client";
 import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import { useDlmmBins } from "@/lib/use-dlmm-bins";
+import type { ProtocolExecutionPool } from "@/types/application";
 import {
   executeTransactions,
   swapErrorMessage,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/swap-flow";
 
 type Quote = {
+  expiresAt: number;
   chainId: number;
   amountOut: string;
   approval: PreparedTransaction;
@@ -27,8 +29,17 @@ type PreparedLiquidity = {
 };
 type Reserves = { reserve0: string; reserve1: string; totalShares: string };
 
-export function useProtocolWorkspace(mode: "swap" | "liquidity") {
-  const { address, config, connect, toast } = useApp();
+export type WorkspaceOptions = {
+  pool?: ProtocolExecutionPool;
+  onBusyChange?: (busy: boolean) => void;
+  onConfirmed?: () => void;
+};
+
+export function useProtocolWorkspace(
+  mode: "swap" | "liquidity",
+  options: WorkspaceOptions = {},
+) {
+  const { address, config, connect, toast, refreshAccount } = useApp();
   const data = useProtocolData();
   const markets = useExternalMarkets();
   const [selected, setSelected] = useState("");
@@ -41,13 +52,26 @@ export function useProtocolWorkspace(mode: "swap" | "liquidity") {
   const [accounting, setAccounting] = useState<Reserves | null>(null);
   const [revision, setRevision] = useState(0);
   const pool =
+    options.pool ??
     data.pools.find((item) => item.address === selected) ??
     data.pools.find((item) => item.model === "dlmm") ??
     data.pools[0];
+  const context = `${address}:${config?.chainId}:${pool?.address}:${mode}:${reversed}:${amount}`;
+  const currentContext = useRef(context);
+  currentContext.current = context;
   const bins = useDlmmBins(
     pool?.model === "dlmm" ? pool.address : undefined,
     revision,
   );
+
+  useEffect(() => {
+    options.onBusyChange?.(busy);
+  }, [busy, options.onBusyChange]);
+  useEffect(() => {
+    setQuote(null);
+    setAmount("");
+    setReversed(false);
+  }, [pool?.address, address, config?.chainId, mode]);
 
   useEffect(() => {
     let cancelled = false;
@@ -111,6 +135,7 @@ export function useProtocolWorkspace(mode: "swap" | "liquidity") {
     if (!pool || !window.ethereum) return;
     setBusy(true);
     setNotice("");
+    const requestedContext = context;
     try {
       const deadline = String(Math.floor(Date.now() / 1000) + 900);
       if (mode === "swap" && !quote) {
@@ -135,7 +160,8 @@ export function useProtocolWorkspace(mode: "swap" | "liquidity") {
             }),
           },
         );
-        setQuote(result);
+        if (currentContext.current !== requestedContext) return;
+        setQuote({ ...result, expiresAt: Number(deadline) * 1000 });
         return;
       }
       let transactions: readonly PreparedTransaction[];
@@ -167,9 +193,18 @@ export function useProtocolWorkspace(mode: "swap" | "liquidity") {
         chainId = prepared.chainId;
       } else {
         if (!quote) return;
+        if (Date.now() >= quote.expiresAt) {
+          setQuote(null);
+          setNotice("Quote expired. Request a fresh quote before signing.");
+          return;
+        }
         transactions = [quote.approval, quote.swap];
         chainId = quote.chainId;
       }
+      if (currentContext.current !== requestedContext)
+        throw new Error(
+          "Wallet or market changed. Prepare the transaction again.",
+        );
       const hash = await executeTransactions(
         window.ethereum,
         address,
@@ -185,12 +220,62 @@ export function useProtocolWorkspace(mode: "swap" | "liquidity") {
       setNotice(
         "Transaction confirmed. Positions and pool activity refresh from the network.",
       );
+      if (mode === "swap") {
+        const tokenIn = reversed ? pool.token1Address : pool.token0Address;
+        const market = markets.items.find(
+          (item) =>
+            item.contractAddress.toLowerCase() === tokenIn.toLowerCase() &&
+            item.pairCandidates.some(
+              (route) =>
+                route.routeStatus === "validated" &&
+                route.poolIdentifier?.toLowerCase() ===
+                  pool.address.toLowerCase(),
+            ),
+        );
+        const route = market?.pairCandidates.find(
+          (item) =>
+            item.routeStatus === "validated" &&
+            item.poolIdentifier?.toLowerCase() === pool.address.toLowerCase(),
+        );
+        if (
+          pool.model === "damm" &&
+          market &&
+          route &&
+          route.quoteSymbol !== "ETH"
+        ) {
+          try {
+            await apiRequest(webPublicConfig.apiUrl, "/v1/me/trades/confirm", {
+              method: "POST",
+              body: JSON.stringify({
+                clientRequestId: crypto.randomUUID(),
+                marketId: market.id,
+                quoteSymbol: route.quoteSymbol,
+                transactionHash: hash,
+              }),
+            });
+          } catch {
+            setNotice(
+              "Transaction confirmed onchain. Account history sync is pending; keep the receipt.",
+            );
+          }
+        } else {
+          setNotice(
+            "Transaction confirmed onchain. Use the receipt for this route; saved account history may not include it yet.",
+          );
+        }
+      }
       toast({
         kind: "success",
         title: mode === "swap" ? "Pool swap confirmed" : "LP position created",
       });
       setRevision((value) => value + 1);
+      options.onConfirmed?.();
       await data.refresh();
+      await refreshAccount().catch(() => {
+        setNotice(
+          "Transaction confirmed onchain. Sign in again to refresh account history.",
+        );
+      });
     } catch (error) {
       setNotice(swapErrorMessage(error));
     } finally {

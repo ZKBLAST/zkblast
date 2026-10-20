@@ -139,7 +139,7 @@ export function MarketsTable() {
                     />
                   </button>
                   <Link
-                    href={`/pools/${pool.address}`}
+                    href={`/trade?pool=${pool.address}`}
                     className="flex min-w-0 items-center gap-3"
                   >
                     <ProtocolPairLogo
@@ -166,7 +166,7 @@ export function MarketsTable() {
                     {pool.address}
                   </span>
                   <Link
-                    href="/swap"
+                    href="/trade"
                     className="hidden items-center gap-1 justify-self-end border border-line-strong px-2.5 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted hover:border-lime/60 hover:text-lime lg:inline-flex"
                   >
                     Trade <ArrowUpRight className="size-3" aria-hidden />
@@ -179,7 +179,7 @@ export function MarketsTable() {
       </div>
       <div className="px-1.5 pt-3">
         <Link
-          href="/pools"
+          href="/trade?mode=liquidity"
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-fg/85 hover:text-lime"
         >
           View all pools <ArrowUpRight className="size-3.5" aria-hidden />

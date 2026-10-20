@@ -43,7 +43,7 @@ export function Header() {
         Skip to content
       </a>
       <motion.header
-        animate={{ y: hidden ? "-100%" : "0%" }}
+        animate={{ y: hidden && path !== "/trade" ? "-100%" : "0%" }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         className={cx(
           "fixed inset-x-0 top-0 z-50 h-[var(--header-h)] border-b transition-colors duration-200",
@@ -147,13 +147,19 @@ export function Header() {
                         {address}
                       </p>
                       <Link
-                        href="/positions"
+                        href="/trade?panel=positions"
+                        onClick={() => setAcct(false)}
                         className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
                       >
                         My positions
                       </Link>
+                      <Link href="/trade?panel=history" onClick={() => setAcct(false)}
+                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg">
+                        Account and history
+                      </Link>
                       <Link
-                        href="/shielded"
+                        href="/trade?mode=shielded"
+                        onClick={() => setAcct(false)}
                         className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
                       >
                         My notes

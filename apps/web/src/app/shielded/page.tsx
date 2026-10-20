@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ShieldedView } from "./ShieldedView";
+import { redirect } from "next/navigation";
+import { legacyTradeUrl } from "@/lib/legacy-trade-url";
 
 export const metadata: Metadata = { title: "Shielded vault" };
-export default function Page() { return <Suspense><ShieldedView /></Suspense>; }
+export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  redirect(legacyTradeUrl(await searchParams, { mode: "shielded" }));
+}

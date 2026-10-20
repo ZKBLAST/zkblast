@@ -83,54 +83,77 @@ const contractDeploymentSchema = z
     }
   });
 
-export const deploymentManifestSchema = z.object({
-  schemaVersion: z.literal(2),
-  protocol: z.literal("ZKBLAST"),
-  environment: z.enum(["testnet", "mainnet"]),
-  chainId: z.number().int().positive(),
-  chainName: z.string().min(1),
-  generatedAt: z.string().datetime(),
-  deploymentBlock: z.number().int().nonnegative(),
-  deploymentBlockHash: hashSchema,
-  deployerAddress: addressSchema,
-  governanceAddress: addressSchema,
-  upgraderAddress: addressSchema,
-  contracts: z.record(z.string().min(1), contractDeploymentSchema),
-  roles: z.object({
-    defaultAdmin: addressSchema,
-    upgrader: addressSchema,
-    factory: addressSchema,
-  }),
-  totals: z.object({
-    transactionCount: z.number().int().positive(),
-    gasUsed: unsignedIntegerSchema,
-    totalFeeWei: unsignedIntegerSchema,
-  }),
-  integration: z.object({
-    poolRegistry: addressSchema,
-    poolFactory: addressSchema,
-    swapRouter: addressSchema,
-    positionManager: addressSchema,
-    poolQuoter: addressSchema,
-  }),
-  shielded: z
-    .object({
-      vault: addressSchema,
-      stateRegistry: addressSchema,
-      fieldHasher: addressSchema,
-      treeVersion: z.number().int().positive(),
-      deploymentBlock: z.number().int().nonnegative(),
-      assets: z.array(
-        z.object({
-          address: addressSchema,
-          symbol: z.string().min(1),
-          decimals: z.number().int().min(0).max(255),
-          denominationRaw: unsignedIntegerSchema,
-        }),
-      ),
-    })
-    .optional(),
-});
+export const deploymentManifestSchema = z
+  .object({
+    schemaVersion: z.literal(2),
+    protocol: z.literal("ZKBLAST"),
+    environment: z.enum(["testnet", "mainnet"]),
+    chainId: z.number().int().positive(),
+    chainName: z.string().min(1),
+    generatedAt: z.string().datetime(),
+    deploymentBlock: z.number().int().nonnegative(),
+    deploymentBlockHash: hashSchema,
+    deployerAddress: addressSchema,
+    governanceAddress: addressSchema,
+    upgraderAddress: addressSchema,
+    contracts: z.record(z.string().min(1), contractDeploymentSchema),
+    roles: z.object({
+      defaultAdmin: addressSchema,
+      upgrader: addressSchema,
+      factory: addressSchema,
+    }),
+    totals: z.object({
+      transactionCount: z.number().int().positive(),
+      gasUsed: unsignedIntegerSchema,
+      totalFeeWei: unsignedIntegerSchema,
+    }),
+    integration: z.object({
+      poolRegistry: addressSchema,
+      poolFactory: addressSchema,
+      swapRouter: addressSchema,
+      positionManager: addressSchema,
+      poolQuoter: addressSchema,
+    }),
+    shielded: z
+      .object({
+        vault: addressSchema,
+        stateRegistry: addressSchema,
+        fieldHasher: addressSchema,
+        treeVersion: z.number().int().positive(),
+        deploymentBlock: z.number().int().nonnegative(),
+        proverRelease: z
+          .object({
+            manifestPath: z
+              .string()
+              .regex(/^\/zk\/mainnet\/[a-zA-Z0-9._-]+\.json$/u),
+            manifestSha256: z.string().regex(/^[a-f0-9]{64}$/u),
+          })
+          .optional(),
+        assets: z.array(
+          z.object({
+            address: addressSchema,
+            symbol: z.string().min(1),
+            decimals: z.number().int().min(0).max(255),
+            denominationRaw: unsignedIntegerSchema,
+          }),
+        ),
+      })
+      .optional(),
+  })
+  .superRefine((manifest, context) => {
+    if (
+      manifest.environment === "mainnet" &&
+      manifest.shielded &&
+      !manifest.shielded.proverRelease
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["shielded", "proverRelease"],
+        message:
+          "Shielded mainnet requires a pinned, mainnet-specific prover release",
+      });
+    }
+  });
 
 export type DeploymentManifest = z.infer<typeof deploymentManifestSchema>;
 

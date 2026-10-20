@@ -74,6 +74,11 @@ export type ProtocolPool = Readonly<{
   token1Decimals: number;
 }>;
 
+export type ProtocolExecutionPool = Omit<ProtocolPool, "feeBps" | "createdBlock"> & {
+  feeBps: number | null;
+  createdBlock: string | null;
+};
+
 export type ProtocolSwap = Readonly<{
   chain_id: number;
   transaction_hash: string;
@@ -149,6 +154,7 @@ export type ExternalMarket = Readonly<{
   dailyVolume: string | null;
   quoteObservedAt: string | null;
   canTrade: boolean;
+  metadata?: Readonly<Record<string, unknown>>;
   provenance: string;
 }>;
 

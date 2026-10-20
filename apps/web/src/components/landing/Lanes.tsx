@@ -13,7 +13,7 @@ const lanes = [
     title: "Public lane",
     lead: "DLMM bins and DAMM pools. Every swap, bin and fee is visible onchain, the way an AMM should be when you want price discovery.",
     points: ["Concentrate liquidity in price bins", "Dynamic fees on full-range pools", "Route swaps across both pool types", "Claim fees per position"],
-    href: "/pools",
+    href: "/trade?mode=liquidity",
     cta: "Browse pools",
   },
   {
@@ -21,7 +21,7 @@ const lanes = [
     title: "Shielded lane",
     lead: "A vault where a deposit becomes a private note. Withdrawing proves you own an unspent note without pointing at which deposit was yours.",
     points: ["Notes created in your browser", "Proofs generated locally", "Nullifiers stop double spends", "Encrypted note backup and restore"],
-    href: "/shielded",
+    href: "/trade?mode=shielded",
     cta: "Open the vault",
   },
 ];

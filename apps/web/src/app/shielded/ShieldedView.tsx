@@ -11,29 +11,41 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import internalTestAssets from "@/data/internal-test-assets.json";
 import { executeShieldedDeposit } from "@/lib/shielded-deposit";
 import type { ShieldedNoteV1 } from "@/lib/notecrypto";
+import { TerminalTabs } from "@/components/trade/TerminalTabs";
 
-export function ShieldedView() {
+export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
   const { address, config } = useApp();
   const [notes, setNotes] = useState<readonly ShieldedNoteV1[]>([]);
+  const [vaultTab, setVaultTab] = useState("deposit");
   const shielded = config?.shielded;
   const publicAssets = shielded?.assets.filter(
     (asset) => !internalTestAssets.symbols.includes(asset.symbol),
   );
+  if (!config)
+    return (
+      <p className="p-5 text-sm text-muted" role="status">
+        Loading vault configuration…
+      </p>
+    );
 
   if (!config || !shielded || !publicAssets?.length) {
     return (
       <>
-        <PageHeader
-          title="Shielded vault"
-          lead="No user-facing shielded asset is enabled for the active network."
-          badges={
-            <LaneBadge
-              lane="shielded"
-              stage={config?.environment === "testnet"}
-            />
-          }
-        />
-        <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
+        {!compact && (
+          <PageHeader
+            title="Shielded vault"
+            lead="No user-facing shielded asset is enabled for the active network."
+            badges={
+              <LaneBadge
+                lane="shielded"
+                stage={config?.environment === "testnet"}
+              />
+            }
+          />
+        )}
+        <div
+          className={compact ? "p-3" : "mx-auto max-w-[1360px] px-4 sm:px-6"}
+        >
           <section className="panel ticks flex items-start gap-4 p-8">
             <ShieldAlert className="size-6 shrink-0 text-warn" aria-hidden />
             <div>
@@ -65,15 +77,41 @@ export function ShieldedView() {
 
   return (
     <>
-      <PageHeader
-        title="Shielded vault"
-        lead="Create the note locally, save an encrypted backup, then deposit the exact governance-approved denomination."
-        badges={
-          <LaneBadge lane="shielded" stage={config.environment === "testnet"} />
+      {!compact && (
+        <PageHeader
+          title="Shielded vault"
+          lead="Create the note locally, save an encrypted backup, then deposit the exact governance-approved denomination."
+          badges={
+            <LaneBadge
+              lane="shielded"
+              stage={config.environment === "testnet"}
+            />
+          }
+        />
+      )}
+      <div
+        className={
+          compact
+            ? "grid gap-3 p-3"
+            : "mx-auto grid max-w-[1360px] gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]"
         }
-      />
-      <div className="mx-auto grid max-w-[1360px] gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="panel ticks border-warn/40 p-5 lg:col-span-2">
+      >
+        {compact && (
+          <TerminalTabs
+            prefix="vault"
+            label="Vault actions"
+            value={vaultTab}
+            onChange={setVaultTab}
+            items={[
+              { value: "deposit", label: "Deposit" },
+              { value: "backup", label: "Backup" },
+              { value: "withdraw", label: "Withdraw" },
+            ]}
+          />
+        )}
+        <section
+          className={`panel ticks border-warn/40 p-5 ${compact ? "" : "lg:col-span-2"}`}
+        >
           <h2 className="wide text-sm text-warn">
             Aggregate LP privacy boundary
           </h2>
@@ -85,7 +123,17 @@ export function ShieldedView() {
             review and does not currently hold user funds.
           </p>
         </section>
-        <section className="panel ticks p-6">
+        <section
+          className="panel ticks p-6"
+          hidden={compact && vaultTab !== "deposit"}
+          {...(compact
+            ? {
+                role: "tabpanel",
+                id: "vault-panel-deposit",
+                "aria-labelledby": "vault-tab-deposit",
+              }
+            : {})}
+        >
           <DepositFlow
             environment={config.environment}
             chainId={config.chainId}
@@ -103,7 +151,17 @@ export function ShieldedView() {
             }
           />
         </section>
-        <section className="panel ticks p-6">
+        <section
+          className="panel ticks p-6"
+          hidden={compact && vaultTab !== "backup"}
+          {...(compact
+            ? {
+                role: "tabpanel",
+                id: "vault-panel-backup",
+                "aria-labelledby": "vault-tab-backup",
+              }
+            : {})}
+        >
           <BackupPanel
             notes={notes}
             environment={config.environment}
@@ -112,7 +170,17 @@ export function ShieldedView() {
             onRestore={setNotes}
           />
         </section>
-        <section className="panel ticks p-6 lg:col-span-2">
+        <section
+          className={`panel ticks p-6 ${compact ? "" : "lg:col-span-2"}`}
+          hidden={compact && vaultTab !== "withdraw"}
+          {...(compact
+            ? {
+                role: "tabpanel",
+                id: "vault-panel-withdraw",
+                "aria-labelledby": "vault-tab-withdraw",
+              }
+            : {})}
+        >
           <h2 className="display mb-5 text-2xl">Withdraw an unspent note</h2>
           <WithdrawFlow
             notes={notes}

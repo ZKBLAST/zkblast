@@ -5,6 +5,11 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const response = await fetch(`${apiUrl}${path}`, {
     ...init,
+    signal:
+      init?.signal ??
+      ((init?.method ?? "GET") === "GET"
+        ? AbortSignal.timeout(20_000)
+        : undefined),
     credentials: "include",
     headers: { "content-type": "application/json", ...init?.headers },
   });

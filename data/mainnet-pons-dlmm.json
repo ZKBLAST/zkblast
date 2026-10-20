@@ -1,0 +1,17 @@
+{
+  "chainId": 4663,
+  "source": "https://docs.ponsfamily.com/#contracts",
+  "pons": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+  "sourcePool": "0x10CC6BD38112cAc182db90B6a71d8Bb5939526bA",
+  "sourceFactory": "0x1f7d7550B1b028f7571E69A784071F0205FD2EfA",
+  "sourceRouter": "0xCaf681a66D020601342297493863E78C959E5cb2",
+  "sourceQuoter": "0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7",
+  "sourceFeePips": 10000,
+  "purchaseWethRaw": "10000000000000",
+  "maximumUsdgRaw": "30000",
+  "slippageBps": 100,
+  "feePips": 3000,
+  "binStepBps": 50,
+  "maxFeePerGasWei": "60312000",
+  "maxExecutionFeeWei": "400000000000000"
+}

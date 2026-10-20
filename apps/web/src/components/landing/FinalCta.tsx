@@ -29,7 +29,7 @@ export function FinalCta() {
         <div className="panel ticks p-3">
           <div className="grid gap-2 sm:grid-cols-2">
             <ButtonLink href="/docs" size="lg" variant="secondary">Read the docs</ButtonLink>
-            <ButtonLink href="/swap" size="lg">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
+            <ButtonLink href="/trade" size="lg">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
           </div>
         </div>
       </motion.div>

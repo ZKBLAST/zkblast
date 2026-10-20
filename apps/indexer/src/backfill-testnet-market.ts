@@ -9,9 +9,16 @@ import { createPublicClient, getAddress, http } from "viem";
 import { ViemChainReader } from "./viem-chain-reader.js";
 import { validateBlockForPersistence } from "./validation.js";
 
-if (process.env.APP_ENV !== "testnet")
-  throw new Error("Testnet environment required");
+const mainnetPons = process.argv.includes("--mainnet-pons-dlmm");
+const environment = mainnetPons ? "mainnet" : "testnet";
+if (process.env.APP_ENV !== environment)
+  throw new Error("Backfill environment mismatch");
 const config = loadServerConfig(process.env);
+if (
+  config.CHAIN_ID !== (mainnetPons ? 4663 : 46630) ||
+  config.SUPABASE_SCHEMA !== `zkblast_${environment}`
+)
+  throw new Error("Backfill chain/schema mismatch");
 const databaseUrl = process.env.SUPABASE_DIRECT_DATABASE_URL?.trim();
 if (!databaseUrl) throw new Error("SUPABASE_DIRECT_DATABASE_URL is required");
 const root = path.resolve(
@@ -20,15 +27,17 @@ const root = path.resolve(
 );
 const protocol = await loadDeploymentManifestFile(
   path.resolve(root, config.DEPLOYMENT_MANIFEST_PATH),
-  { environment: "testnet", chainId: config.CHAIN_ID },
+  { environment, chainId: config.CHAIN_ID },
 );
 const market = JSON.parse(
   await readFile(
     path.resolve(
       root,
-      process.argv.includes("--dlmm")
-        ? "deployments/testnet/dlmm-market.json"
-        : "deployments/testnet/market.json",
+      mainnetPons
+        ? "deployments/mainnet/pons-dlmm-market.json"
+        : process.argv.includes("--dlmm")
+          ? "deployments/testnet/dlmm-market.json"
+          : "deployments/testnet/market.json",
     ),
     "utf8",
   ),
@@ -63,7 +72,7 @@ try {
     );
     await sql.begin(async (transaction) => {
       await transaction.unsafe(
-        `insert into zkblast_testnet.indexed_blocks (chain_id,block_number,block_hash,parent_hash) values ($1,$2,$3,$4) on conflict (chain_id,block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
+        `insert into ${config.SUPABASE_SCHEMA}.indexed_blocks (chain_id,block_number,block_hash,parent_hash) values ($1,$2,$3,$4) on conflict (chain_id,block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
         [
           config.CHAIN_ID,
           block.number.toString(),
@@ -73,7 +82,7 @@ try {
       );
       for (const event of block.events) {
         await transaction.unsafe(
-          `insert into zkblast_testnet.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
+          `insert into ${config.SUPABASE_SCHEMA}.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
           [
             event.chainId,
             event.transactionHash.toLowerCase(),
@@ -94,11 +103,13 @@ try {
     await reader.block(BigInt(blocks.at(-1) ?? 0)),
     config.CHAIN_ID,
   );
-  const consumer = process.argv.includes("--dlmm")
-    ? "dlmm-acceptance"
-    : "market-acceptance";
+  const consumer = mainnetPons
+    ? "pons-dlmm-acceptance"
+    : process.argv.includes("--dlmm")
+      ? "dlmm-acceptance"
+      : "market-acceptance";
   await sql.unsafe(
-    `insert into zkblast_testnet.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ($4,$1,$2,$3,$2) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
+    `insert into ${config.SUPABASE_SCHEMA}.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ($4,$1,$2,$3,$2) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
     [
       config.CHAIN_ID,
       lastBlock.number.toString(),
@@ -107,7 +118,7 @@ try {
     ],
   );
   console.log(
-    `Backfilled ${eventCount} canonical protocol/receipt events across ${blocks.length} testnet blocks`,
+    `Backfilled ${eventCount} canonical protocol/receipt events across ${blocks.length} ${environment} blocks`,
   );
 } finally {
   await sql.end();

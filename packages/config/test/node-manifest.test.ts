@@ -3,6 +3,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { loadDeploymentManifestFile } from "../src/node.js";
+import { parseDeploymentManifest } from "../src/deployment.js";
 
 const testnetManifest = fileURLToPath(
   new URL("../../../deployments/testnet/manifest.json", import.meta.url),
@@ -34,4 +35,37 @@ test("rejects environment and chain crossover", async () => {
     }),
     /chain mismatch/iu,
   );
+});
+
+test("mainnet shielded configuration rejects an unpinned or testnet prover", async () => {
+  const manifest = await loadDeploymentManifestFile(testnetManifest);
+  assert.ok(manifest.shielded);
+  const mainnet = { ...manifest, environment: "mainnet", chainId: 4663 };
+  assert.throws(
+    () => parseDeploymentManifest(mainnet),
+    /mainnet-specific prover release/u,
+  );
+  assert.throws(() =>
+    parseDeploymentManifest({
+      ...mainnet,
+      shielded: {
+        ...manifest.shielded,
+        proverRelease: {
+          manifestPath: "/zk/testnet/withdraw.json",
+          manifestSha256: "a".repeat(64),
+        },
+      },
+    }),
+  );
+});
+
+test("core-only mainnet configuration remains valid without shielded custody", async () => {
+  const manifest = await loadDeploymentManifestFile(testnetManifest);
+  const parsed = parseDeploymentManifest({
+    ...manifest,
+    environment: "mainnet",
+    chainId: 4663,
+    shielded: undefined,
+  });
+  assert.equal(parsed.shielded, undefined);
 });
