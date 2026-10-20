@@ -128,6 +128,11 @@ export class LiquidityService {
         abi: dlmmPoolAbi,
         functionName: "binStepBps",
       });
+      const minimumLockedLiquidity = await this.client.readContract({
+        address: pool,
+        abi: dlmmPoolAbi,
+        functionName: "MINIMUM_BIN_LIQUIDITY",
+      });
       const start = Math.max(-10_000, active - 8);
       const end = Math.min(10_000, active + 8);
       const bins = await Promise.all(
@@ -159,6 +164,7 @@ export class LiquidityService {
         pool,
         activeBin: active,
         binStepBps: Number(step),
+        minimumLockedLiquidity: String(minimumLockedLiquidity),
         bins,
       };
     });
@@ -407,6 +413,7 @@ export class LiquidityService {
         "totalShares",
         "protocolFees0",
         "protocolFees1",
+        "MINIMUM_LIQUIDITY",
       ] as const;
       const values = await Promise.all(
         fields.map((functionName) =>
@@ -460,6 +467,7 @@ export class LiquidityService {
         reserve0: reserve0.toString(),
         reserve1: reserve1.toString(),
         totalShares: (values[4] as bigint).toString(),
+        minimumLockedLiquidity: String(values[7]),
         protocolFees0: fee0.toString(),
         protocolFees1: fee1.toString(),
         tokenBalance0: balance0.toString(),

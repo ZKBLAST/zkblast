@@ -16,7 +16,8 @@ export function useMarketPriceHistory(
   range: ChartRange = "1W",
   poolAddress: string | null = null,
 ) {
-  const available = source === "swap" ? Boolean(poolAddress || marketId) : Boolean(marketId);
+  const available =
+    source === "swap" ? Boolean(poolAddress || marketId) : Boolean(marketId);
   const requestId = useRef(0);
   const key = `${marketId}:${poolAddress}:${source}:${range}`;
   const [snapshot, setSnapshot] = useState<{
@@ -24,7 +25,7 @@ export function useMarketPriceHistory(
     items: readonly MarketPricePoint[];
     loading: boolean;
     error: string | null;
-  }>({ key, items: [], loading: Boolean(marketId), error: null });
+  }>({ key, items: [], loading: available, error: null });
   const refresh = useCallback(async () => {
     const current = ++requestId.current;
     if (!available) {

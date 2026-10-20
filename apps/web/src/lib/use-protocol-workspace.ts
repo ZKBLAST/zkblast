@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { parseUnits } from "viem";
+import { parseTokenAmount } from "@zkblast/sdk";
+import { liquidityAmounts } from "./liquidity-amounts";
+import type {
+  WorkspaceQuote as Quote,
+  PreparedLiquidity,
+  PoolReserves as Reserves,
+} from "./protocol-workspace-types";
+import { usePoolTokenBalances } from "./use-pool-token-balances";
 import { useApp } from "@/components/shell/AppProvider";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
@@ -14,20 +21,6 @@ import {
   swapErrorMessage,
   type PreparedTransaction,
 } from "@/lib/swap-flow";
-
-type Quote = {
-  expiresAt: number;
-  chainId: number;
-  amountOut: string;
-  approval: PreparedTransaction;
-  swap: PreparedTransaction;
-};
-type PreparedLiquidity = {
-  chainId: number;
-  approvals: PreparedTransaction[];
-  position: PreparedTransaction;
-};
-type Reserves = { reserve0: string; reserve1: string; totalShares: string };
 
 export type WorkspaceOptions = {
   pool?: ProtocolExecutionPool;
@@ -44,6 +37,9 @@ export function useProtocolWorkspace(
   const markets = useExternalMarkets();
   const [selected, setSelected] = useState("");
   const [amount, setAmount] = useState("");
+  const [seedAmount, setSeedAmount] = useState("");
+  const [selectedBin, setSelectedBin] = useState<number | null>(null);
+  const [slippageBps, setSlippageBps] = useState(100);
   const [reversed, setReversed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -56,7 +52,7 @@ export function useProtocolWorkspace(
     data.pools.find((item) => item.address === selected) ??
     data.pools.find((item) => item.model === "dlmm") ??
     data.pools[0];
-  const context = `${address}:${config?.chainId}:${pool?.address}:${mode}:${reversed}:${amount}`;
+  const context = `${address}:${config?.chainId}:${pool?.address}:${mode}:${reversed}:${amount}:${seedAmount}:${selectedBin}:${slippageBps}`;
   const currentContext = useRef(context);
   currentContext.current = context;
   const bins = useDlmmBins(
@@ -71,6 +67,8 @@ export function useProtocolWorkspace(
     setQuote(null);
     setAmount("");
     setReversed(false);
+    setSeedAmount("");
+    setSelectedBin(null);
   }, [pool?.address, address, config?.chainId, mode]);
 
   useEffect(() => {
@@ -94,41 +92,53 @@ export function useProtocolWorkspace(
     };
   }, [pool?.address, pool?.model, mode, revision]);
 
+  const activeBin = selectedBin ?? bins.data?.activeBin;
   const state =
     pool?.model === "dlmm" &&
     bins.data?.pool.toLowerCase() === pool.address.toLowerCase()
-      ? bins.data.bins.find((bin) => bin.binId === bins.data?.activeBin)
+      ? bins.data.bins.find((bin) => bin.binId === activeBin)
       : accounting;
-  let amounts: {
-    amount0: bigint;
-    amount1: bigint;
-    minimumShares: bigint;
-  } | null = null;
-  if (pool && state && mode === "liquidity") {
-    try {
-      const amount0 = parseUnits(amount, pool.token0Decimals);
-      const reserve0 = BigInt(state.reserve0);
-      const reserve1 = BigInt(state.reserve1);
-      const totalShares = BigInt(state.totalShares);
-      if (amount0 > 0n && reserve0 > 0n && reserve1 > 0n && totalShares > 0n) {
-        const amount1 = (amount0 * reserve1) / reserve0;
-        const shares0 = (amount0 * totalShares) / reserve0;
-        const shares1 = (amount1 * totalShares) / reserve1;
-        if (amount1 > 0n)
-          amounts = {
-            amount0,
-            amount1,
-            minimumShares:
-              ((shares0 < shares1 ? shares0 : shares1) * 99n) / 100n,
-          };
-      }
-    } catch {
-      /* Incomplete decimal input leaves submission disabled. */
-    }
-  }
+  const amounts =
+    pool && mode === "liquidity"
+      ? liquidityAmounts({
+          amount,
+          seedAmount,
+          slippageBps,
+          state,
+          decimals0: pool.token0Decimals,
+          decimals1: pool.token1Decimals,
+          minimumLockedLiquidity:
+            pool.model === "dlmm"
+              ? bins.data?.minimumLockedLiquidity
+              : accounting?.minimumLockedLiquidity,
+        })
+      : null;
+  const balances = usePoolTokenBalances(
+    pool,
+    address,
+    config?.chainId,
+    revision,
+  );
+  const bootstrap = Boolean(state && BigInt(state.totalShares) === 0n);
   const inputSymbol =
     reversed && mode === "swap" ? pool?.token1Symbol : pool?.token0Symbol;
   const outputSymbol = reversed ? pool?.token0Symbol : pool?.token1Symbol;
+  let validAmount = false;
+  let insufficientBalance = false;
+  try {
+    const raw = parseTokenAmount(
+      amount,
+      reversed && mode === "swap" ? pool.token1Decimals : pool.token0Decimals,
+    );
+    validAmount = raw > 0n;
+    if (balances)
+      insufficientBalance =
+        mode === "liquidity" && amounts
+          ? amounts.amount0 > balances[0] || amounts.amount1 > balances[1]
+          : raw > balances[reversed && mode === "swap" ? 1 : 0];
+  } catch {
+    /* Invalid/over-precision input cannot be submitted. */
+  }
 
   async function submit() {
     if (!address) return connect();
@@ -137,6 +147,8 @@ export function useProtocolWorkspace(
     setNotice("");
     const requestedContext = context;
     try {
+      if (!validAmount || insufficientBalance)
+        throw new Error("Enter a valid amount within your token balance.");
       const deadline = String(Math.floor(Date.now() / 1000) + 900);
       if (mode === "swap" && !quote) {
         const result = await apiRequest<Quote>(
@@ -148,11 +160,11 @@ export function useProtocolWorkspace(
               model: pool.model,
               pool: pool.address,
               tokenIn: reversed ? pool.token1Address : pool.token0Address,
-              amountIn: parseUnits(
+              amountIn: parseTokenAmount(
                 amount,
                 reversed ? pool.token1Decimals : pool.token0Decimals,
               ).toString(),
-              slippageBps: 100,
+              slippageBps,
               recipient: address,
               deadline,
               token0ToToken1: !reversed,
@@ -185,7 +197,7 @@ export function useProtocolWorkspace(
               amount1: amounts.amount1.toString(),
               minimumShares: amounts.minimumShares.toString(),
               deadline,
-              ...(pool.model === "dlmm" ? { binId: bins.data?.activeBin } : {}),
+              ...(pool.model === "dlmm" ? { binId: activeBin } : {}),
             }),
           },
         );
@@ -297,6 +309,20 @@ export function useProtocolWorkspace(
     quote,
     amounts,
     reversed,
+    seedAmount,
+    setSeedAmount,
+    bootstrap,
+    activeBin,
+    selectedBin,
+    setSelectedBin,
+    slippageBps,
+    setSlippageBps: (value: number) => {
+      setSlippageBps(value);
+      setQuote(null);
+    },
+    balances,
+    validAmount,
+    insufficientBalance,
     inputSymbol,
     outputSymbol,
     submit,

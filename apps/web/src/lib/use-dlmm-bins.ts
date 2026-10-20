@@ -9,6 +9,7 @@ export type DlmmBins = Readonly<{
   pool: string;
   activeBin: number;
   binStepBps: number;
+  minimumLockedLiquidity?: string;
   bins: readonly Readonly<{
     binId: number;
     reserve0: string;

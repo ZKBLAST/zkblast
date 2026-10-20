@@ -1,5 +1,10 @@
 import postgres from "postgres";
-import type { PageQuery, PoolChartQuery, ProtocolReadStore } from "./protocol-service.js";
+import { z } from "zod";
+import type {
+  PageQuery,
+  PoolChartQuery,
+  ProtocolReadStore,
+} from "./protocol-service.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -39,12 +44,17 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
         from ${this.schema}.swaps s join ${this.schema}.pools p on p.id=s.pool_id
         join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id
         where p.address=$1 and s.canonical and s.amount_in_raw>0 and s.amount_out_raw>0
+        and ((s.token_in_id=p.token_x_id and s.token_out_id=p.token_y_id)
+          or (s.token_in_id=p.token_y_id and s.token_out_id=p.token_x_id))
         and s.block_timestamp >= $2 and s.block_timestamp <= $3
         order by s.block_timestamp desc,s.block_number desc,s.log_index desc limit $4
       ) observations order by "observedAt" asc,"blockNumber"::numeric asc`,
       [pool, query.from, query.to, query.limit],
     );
-    return rows.map((row) => ({ ...row, observedAt: new Date(row.observedAt).toISOString() }));
+    return rows.map((row) => ({
+      ...row,
+      observedAt: z.coerce.date().parse(row.observedAt).toISOString(),
+    }));
   }
   positions(query: PageQuery) {
     return this.sql.unsafe(

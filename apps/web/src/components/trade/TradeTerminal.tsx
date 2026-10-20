@@ -76,6 +76,7 @@ function Terminal() {
           disabled={busy}
           onSelect={(id) => update("pool", id)}
           onRetry={() => void refresh()}
+          onCreate={() => update("mode", "create")}
         />
         <section
           className="flex min-h-0 min-w-0 flex-col bg-[#0a0a12]/60 xl:overflow-y-auto"
@@ -100,8 +101,12 @@ function Terminal() {
             key={`${selected?.market?.id ?? "no-market"}:${revision}`}
             marketId={selected?.market?.id ?? null}
             poolAddress={selected?.pool?.address ?? null}
-            pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
-            inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
+            pairLabel={
+              selected ? `${selected.base}/${selected.quote}` : undefined
+            }
+            inverted={Boolean(
+              selected?.pool && selected.base !== selected.pool.token0Symbol,
+            )}
           />
           <p className="px-4 pb-4 text-xs leading-relaxed text-faint">
             Chart sources are shown separately. Oracle/reference prices are not

@@ -86,13 +86,29 @@ export function createProtocolRouter(
   const router = Router();
   router.get("/pools/:pool/chart", async (request, response, next) => {
     try {
-      const pool = z.string().regex(/^0x[\da-f]{40}$/iu).parse(request.params.pool);
-      const query = z.object({ from: z.coerce.date(), to: z.coerce.date(),
-        limit: z.coerce.number().int().min(1).max(2000).default(1000) })
-        .refine((q) => q.to > q.from && q.to.getTime() - q.from.getTime() <= 31 * 86400000)
+      const pool = z
+        .string()
+        .regex(/^0x[\da-f]{40}$/iu)
+        .parse(request.params.pool);
+      const query = z
+        .object({
+          from: z.coerce.date(),
+          to: z.coerce.date(),
+          limit: z.coerce.number().int().min(1).max(2000).default(1000),
+        })
+        .refine(
+          (q) =>
+            q.to > q.from && q.to.getTime() - q.from.getTime() <= 31 * 86400000,
+        )
         .parse(request.query);
-      response.json({ pool, source: "swap", items: await service.priceHistory(pool, query) });
-    } catch (error) { next(error); }
+      response.json({
+        pool,
+        source: "swap",
+        items: await service.priceHistory(pool, query),
+      });
+    } catch (error) {
+      next(error);
+    }
   });
   router.get("/pools", async (request, response, next) => {
     try {

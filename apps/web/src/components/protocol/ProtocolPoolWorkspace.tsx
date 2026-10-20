@@ -4,6 +4,7 @@ import { formatUnits } from "viem";
 import { ArrowDownUp, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { TokenAmountField } from "./TokenAmountField";
 import {
   useProtocolWorkspace,
   type WorkspaceOptions,
@@ -23,7 +24,12 @@ export function ProtocolPoolWorkspace({
   const { pool, bins, amount, busy, quote, amounts, config } = state;
   const disabled =
     busy ||
-    Boolean(state.address && (!amount || (mode === "liquidity" && !amounts)));
+    Boolean(
+      state.address &&
+      (!state.validAmount ||
+        state.insufficientBalance ||
+        (mode === "liquidity" && !amounts)),
+    );
   const actionLabel = !state.address
     ? "Connect wallet"
     : busy
@@ -73,51 +79,126 @@ export function ProtocolPoolWorkspace({
               </select>
             </label>
           )}
-          <div className="mt-4 flex items-end gap-3">
-            <label className="min-w-0 flex-1 text-sm text-muted">
-              {mode === "swap" ? "You pay" : "Deposit"} {state.inputSymbol}
-              <input
-                className={control}
-                inputMode="decimal"
-                value={amount}
-                placeholder="0.0"
+          <TokenAmountField
+            label={mode === "swap" ? "You pay" : "Deposit token 0"}
+            symbol={state.inputSymbol ?? ""}
+            decimals={
+              state.reversed && mode === "swap"
+                ? pool.token1Decimals
+                : pool.token0Decimals
+            }
+            value={amount}
+            balance={
+              state.balances?.[state.reversed && mode === "swap" ? 1 : 0]
+            }
+            disabled={busy}
+            onChange={state.changeAmount}
+          />
+          {mode === "swap" ? (
+            <Button
+              className="mx-auto mt-2 flex"
+              aria-label="Reverse swap direction"
+              variant="secondary"
+              disabled={busy}
+              onClick={state.reverse}
+            >
+              <ArrowDownUp className="size-4" />
+            </Button>
+          ) : null}
+          {mode === "swap" && (
+            <TokenAmountField
+              label="You receive (quote)"
+              symbol={state.outputSymbol ?? ""}
+              decimals={
+                state.reversed ? pool.token0Decimals : pool.token1Decimals
+              }
+              value={
+                quote
+                  ? formatUnits(
+                      BigInt(quote.amountOut),
+                      state.reversed
+                        ? pool.token0Decimals
+                        : pool.token1Decimals,
+                    )
+                  : ""
+              }
+              balance={state.balances?.[state.reversed ? 0 : 1]}
+              disabled={busy}
+              readOnly
+            />
+          )}
+          {mode === "liquidity" && (
+            <>
+              <TokenAmountField
+                label={
+                  state.bootstrap ? "Initial paired deposit" : "Paired deposit"
+                }
+                symbol={pool.token1Symbol}
+                decimals={pool.token1Decimals}
+                value={
+                  state.bootstrap
+                    ? state.seedAmount
+                    : amounts
+                      ? formatUnits(amounts.amount1, pool.token1Decimals)
+                      : ""
+                }
+                balance={state.balances?.[1]}
                 disabled={busy}
-                onChange={(event) => state.changeAmount(event.target.value)}
+                readOnly={!state.bootstrap}
+                onChange={state.setSeedAmount}
               />
-            </label>
-            {mode === "swap" ? (
-              <Button
-                aria-label="Reverse swap direction"
-                variant="secondary"
-                disabled={busy}
-                onClick={state.reverse}
-              >
-                <ArrowDownUp className="size-4" />
-              </Button>
-            ) : null}
-          </div>
-          {mode === "swap" && quote ? (
-            <p className="mt-3 text-sm">
-              Receive{" "}
-              {formatUnits(
-                BigInt(quote.amountOut),
-                state.reversed ? pool.token0Decimals : pool.token1Decimals,
-              )}{" "}
-              {state.outputSymbol}
+              {state.bootstrap && (
+                <p className="mt-2 text-xs text-warn">
+                  {pool.model === "dlmm"
+                    ? "This initializes liquidity in the selected fixed-price bin; deposit amounts do not change its price."
+                    : "First liquidity sets the reserve ratio."} A minimum share
+                  amount is permanently locked; review both amounts carefully.
+                </p>
+              )}
+              {pool.model === "dlmm" && (
+                <label className="mt-4 block text-xs text-muted">
+                  DLMM position — single bin
+                  <select
+                    className={control}
+                    disabled={busy || !bins.data}
+                    value={state.activeBin ?? ""}
+                    onChange={(e) =>
+                      state.setSelectedBin(Number(e.target.value))
+                    }
+                  >
+                    {bins.data?.bins.map((bin) => (
+                      <option key={bin.binId} value={bin.binId}>
+                        Bin {bin.binId}
+                        {bin.binId === bins.data?.activeBin ? " · active" : ""}
+                        {BigInt(bin.totalShares) === 0n
+                          ? " · initialize"
+                          : " · funded"}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </>
+          )}
+          <label className="mt-4 flex items-center justify-between gap-3 text-xs text-muted">
+            Slippage limit
+            <select
+              aria-label="Slippage limit"
+              className="h-9 border border-line bg-bg px-2"
+              value={state.slippageBps}
+              disabled={busy}
+              onChange={(e) => state.setSlippageBps(Number(e.target.value))}
+            >
+              <option value={10}>0.1%</option>
+              <option value={50}>0.5%</option>
+              <option value={100}>1%</option>
+            </select>
+          </label>
+          {state.insufficientBalance && (
+            <p role="alert" className="mt-2 text-xs text-warn">
+              Insufficient token balance for these amounts.
             </p>
-          ) : null}
-          {mode === "liquidity" ? (
-            <p className="mt-3 text-sm text-muted">
-              Paired deposit:{" "}
-              {amounts
-                ? formatUnits(amounts.amount1, pool.token1Decimals)
-                : "—"}{" "}
-              {pool.token1Symbol}
-              {pool.model === "dlmm"
-                ? ` · bin ${bins.data?.activeBin ?? "loading"}`
-                : ""}
-            </p>
-          ) : null}
+          )}
           {mode === "liquidity" && pool.model === "dlmm" && bins.error ? (
             <p className="mt-3 text-sm text-warn">{bins.error}</p>
           ) : null}
@@ -130,7 +211,8 @@ export function ProtocolPoolWorkspace({
             {actionLabel}
           </Button>
           <p className="mt-3 text-xs text-faint">
-            1% slippage bound · {config?.chainName ?? "Loading network"}
+            {state.slippageBps / 100}% slippage bound ·{" "}
+            {config?.chainName ?? "Loading network"}
           </p>
           {state.notice ? (
             <p className="mt-3 text-sm text-muted" role="status">

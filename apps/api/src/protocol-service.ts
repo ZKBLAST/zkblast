@@ -6,7 +6,10 @@ export type PageQuery = Readonly<{
 export type PoolChartQuery = Readonly<{ from: Date; to: Date; limit: number }>;
 
 export interface ProtocolReadStore {
-  priceHistory?(pool: string, query: PoolChartQuery): Promise<readonly unknown[]>;
+  priceHistory?(
+    pool: string,
+    query: PoolChartQuery,
+  ): Promise<readonly unknown[]>;
   pools(query: PageQuery): Promise<readonly unknown[]>;
   swaps(query: PageQuery): Promise<readonly unknown[]>;
   positions(query: PageQuery): Promise<readonly unknown[]>;

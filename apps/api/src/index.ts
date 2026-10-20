@@ -90,7 +90,12 @@ const swapService = new SwapService(
       args: [pool],
     }),
 );
-const poolCreationService = new PoolCreationService(chainClient, protocolAddresses.poolFactory, protocolAddresses.poolRegistry, serverConfig.CHAIN_ID);
+const poolCreationService = new PoolCreationService(
+  chainClient,
+  protocolAddresses.poolFactory,
+  protocolAddresses.poolRegistry,
+  serverConfig.CHAIN_ID,
+);
 const tradeReceiptService = new TradeReceiptService(
   chainClient,
   externalMarketService,

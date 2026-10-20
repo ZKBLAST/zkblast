@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { useState } from "react";
 import {
   MarketPairLogo,
@@ -34,6 +34,7 @@ export function MarketBrowser({
   disabled,
   onSelect,
   onRetry,
+  onCreate,
 }: {
   items: readonly TradeInstrument[];
   selected: string | undefined;
@@ -42,6 +43,7 @@ export function MarketBrowser({
   disabled: boolean;
   onSelect: (id: string) => void;
   onRetry: () => void;
+  onCreate: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -66,10 +68,22 @@ export function MarketBrowser({
           <ChevronDown className="size-4" />
         )}
       </button>
-      <div className={`${expanded ? "flex" : "hidden"} min-h-0 flex-1 flex-col xl:flex`}>
+      <div
+        className={`${expanded ? "flex" : "hidden"} min-h-0 flex-1 flex-col xl:flex`}
+      >
         <div className="flex h-12 items-center justify-between border-b border-line px-4">
           <h2 className="label">Markets</h2>
           <span className="text-xs text-faint">{items.length}</span>
+          <button
+            type="button"
+            onClick={onCreate}
+            disabled={disabled}
+            aria-label="Create pool"
+            title="Create pool"
+            className="cursor-pointer p-1 text-muted hover:text-fg"
+          >
+            <Plus className="size-4" aria-hidden />
+          </button>
         </div>
         <label className="m-3 flex items-center gap-2 border border-line px-3">
           <Search className="size-4 text-faint" aria-hidden />
@@ -81,7 +95,11 @@ export function MarketBrowser({
             className="h-10 w-full min-w-0 bg-transparent text-sm outline-none"
           />
         </label>
-        <div className="max-h-[28rem] min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 xl:max-h-none" tabIndex={0} aria-label="Scrollable market list">
+        <div
+          className="max-h-[28rem] min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 xl:max-h-none"
+          tabIndex={0}
+          aria-label="Scrollable market list"
+        >
           {loading && !items.length ? (
             <p className="p-3 text-sm text-muted" role="status">
               Loading markets…

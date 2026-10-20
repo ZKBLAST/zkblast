@@ -42,36 +42,76 @@ export function TradeActions({
         disabled={busy}
         onChange={onModeChange}
       />
-      {(mode === "liquidity" || mode === "create") && <TerminalTabs prefix="liquidity" label="Liquidity tools" value={mode} disabled={busy} onChange={onModeChange}
-        items={[{ value: "liquidity", label: "Add liquidity" }, { value: "create", label: "Create pool" }]} />}
-      {mode === "create" && <div role="tabpanel" id="action-panel-liquidity" aria-labelledby="action-tab-liquidity"><CreatePoolPanel onBusyChange={onBusyChange} onConfirmed={onConfirmed} /></div>}
-      {(["swap", "liquidity"] as const).map((value) => (
+      {(mode === "liquidity" || mode === "create") && (
+        <TerminalTabs
+          prefix="liquidity"
+          label="Liquidity tools"
+          value={mode}
+          disabled={busy}
+          onChange={onModeChange}
+          items={[
+            { value: "liquidity", label: "Add liquidity" },
+            { value: "create", label: "Create pool" },
+          ]}
+        />
+      )}
+      {mode === "create" && (
         <div
-          key={value}
           role="tabpanel"
-          id={`action-panel-${value}`}
-          aria-labelledby={`action-tab-${value}`}
-          hidden={mode !== value}
+          id="action-panel-liquidity"
+          aria-labelledby="action-tab-liquidity"
         >
-          {publicMode === value &&
-            (selected?.pool ? (
-              <ProtocolPoolWorkspace
-                key={selected.pool.address}
-                compact
-                pool={selected.pool}
-                mode={publicMode}
-                onBusyChange={onBusyChange}
-                onConfirmed={onConfirmed}
-              />
-            ) : (
-              <p className="p-5 text-sm leading-relaxed text-muted">
-                You can browse this market's chart. Swaps and liquidity become
-                available only after its onchain execution pool is validated and
-                funded.
-              </p>
-            ))}
+          <div
+            role="tabpanel"
+            id="liquidity-panel-create"
+            aria-labelledby="liquidity-tab-create"
+          >
+            <CreatePoolPanel
+              onBusyChange={onBusyChange}
+              onConfirmed={onConfirmed}
+            />
+          </div>
         </div>
-      ))}
+      )}
+      {(["swap", "liquidity"] as const)
+        .filter(() => mode !== "create")
+        .map((value) => (
+          <div
+            key={value}
+            role="tabpanel"
+            id={`action-panel-${value}`}
+            aria-labelledby={`action-tab-${value}`}
+            hidden={mode !== value}
+          >
+            <div
+              role={value === "liquidity" ? "tabpanel" : undefined}
+              id={
+                value === "liquidity" ? "liquidity-panel-liquidity" : undefined
+              }
+              aria-labelledby={
+                value === "liquidity" ? "liquidity-tab-liquidity" : undefined
+              }
+            >
+              {publicMode === value &&
+                (selected?.pool ? (
+                  <ProtocolPoolWorkspace
+                    key={selected.pool.address}
+                    compact
+                    pool={selected.pool}
+                    mode={publicMode}
+                    onBusyChange={onBusyChange}
+                    onConfirmed={onConfirmed}
+                  />
+                ) : (
+                  <p className="p-5 text-sm leading-relaxed text-muted">
+                    You can browse this market's chart. Swaps and liquidity
+                    become available only after its onchain execution pool is
+                    validated and funded.
+                  </p>
+                ))}
+            </div>
+          </div>
+        ))}
       <div
         role="tabpanel"
         id="action-panel-shielded"

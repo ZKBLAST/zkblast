@@ -15,8 +15,16 @@ const width = 800;
 const height = 220;
 const padding = 16;
 
-export function MarketPriceChart({ marketId, poolAddress = null, pairLabel, inverted = false }: {
-  marketId: string | null; poolAddress?: string | null; pairLabel?: string; inverted?: boolean;
+export function MarketPriceChart({
+  marketId,
+  poolAddress = null,
+  pairLabel,
+  inverted = false,
+}: {
+  marketId: string | null;
+  poolAddress?: string | null;
+  pairLabel?: string;
+  inverted?: boolean;
 }) {
   const [source, setSource] = useState<PriceSource>("swap");
   const [range, setRange] = useState<ChartRange>("1W");
@@ -26,14 +34,25 @@ export function MarketPriceChart({ marketId, poolAddress = null, pairLabel, inve
     range,
     poolAddress,
   );
-  const observations = useMemo(() => items.map((item) => ({ ...item,
-    price: source === "swap" && poolAddress && inverted ? String(1 / Number(item.price)) : item.price,
-  })), [items, source, poolAddress, inverted]);
+  const observations = useMemo(
+    () =>
+      items.map((item) => ({
+        ...item,
+        price:
+          source === "swap" && poolAddress && inverted
+            ? String(1 / Number(item.price))
+            : item.price,
+      })),
+    [items, source, poolAddress, inverted],
+  );
   const points = useMemo(() => chartPoints(observations), [observations]);
   const latest = observations.at(-1);
 
   return (
-    <section className="flex min-h-[24rem] flex-1 flex-col p-4" aria-label="Market chart">
+    <section
+      className="flex min-h-[24rem] flex-1 flex-col p-4"
+      aria-label="Market chart"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-faint">
@@ -71,8 +90,12 @@ export function MarketPriceChart({ marketId, poolAddress = null, pairLabel, inve
         </div>
       </div>
       <p className="mt-3 font-mono text-xs text-muted">
-        {source === "swap" && poolAddress ? `Executed pool prices · ${pairLabel ?? "token1 per token0"}` : `${source === "oracle" ? "Verified oracle reports" : "Provider reference prices"} · USD denomination`}
-        {latest ? ` · Latest ${Number(latest.price).toLocaleString("en-US", { maximumSignificantDigits: 8 })} · ${new Date(latest.observedAt).toLocaleString()}` : ""}
+        {source === "swap" && poolAddress
+          ? `Executed pool prices · ${pairLabel ?? "token1 per token0"}`
+          : `${source === "oracle" ? "Verified oracle reports" : "Provider reference prices"} · USD denomination`}
+        {latest
+          ? ` · Latest ${Number(latest.price).toLocaleString("en-US", { maximumSignificantDigits: 8 })} · ${new Date(latest.observedAt).toLocaleString()}`
+          : ""}
       </p>
       <div
         className="mt-3 flex items-center gap-1"

@@ -123,7 +123,7 @@ export function tradeInstruments(
   ];
 }
 
-export const tradeModes = ["swap", "liquidity", "shielded"] as const;
+export const tradeModes = ["swap", "liquidity", "shielded", "create"] as const;
 export type TradeMode = (typeof tradeModes)[number];
 export const tradePanels = ["positions", "history", "activity"] as const;
 export type TradePanel = (typeof tradePanels)[number];

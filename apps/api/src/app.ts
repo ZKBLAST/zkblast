@@ -209,7 +209,11 @@ export function createApp(
   if (dependencies.shieldedService) {
     app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
   }
-  if (dependencies.poolCreationService) app.use("/v1/protocol/pool-creation", createPoolCreationRouter(dependencies.poolCreationService));
+  if (dependencies.poolCreationService)
+    app.use(
+      "/v1/protocol/pool-creation",
+      createPoolCreationRouter(dependencies.poolCreationService),
+    );
   if (dependencies.externalMarketService) {
     app.use(
       "/v1/markets",
