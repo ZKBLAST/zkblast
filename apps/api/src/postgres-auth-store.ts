@@ -298,7 +298,7 @@ export class PostgresAuthStore
          amount_in_raw,amount_out_raw,fee_raw,gas_used,effective_gas_price_wei,
          block_number,block_timestamp,submitted_at,confirmed_at)
        values ($1,$2,$3,$4,$5,$6,'swap','confirmed',$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,now(),now())
-       on conflict (client_request_id) do update set
+       on conflict (chain_id,transaction_hash,log_index) where transaction_hash is not null and log_index is not null do update set
          transaction_hash=excluded.transaction_hash,log_index=excluded.log_index,
          status='confirmed',amount_out_raw=excluded.amount_out_raw,
          fee_raw=excluded.fee_raw,gas_used=excluded.gas_used,

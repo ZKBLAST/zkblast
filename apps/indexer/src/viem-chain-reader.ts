@@ -4,6 +4,7 @@ import {
   zeroAddress,
   type Address,
   type PublicClient,
+  type Log,
 } from "viem";
 import { classifyProtocolEvent } from "./classifier.js";
 import type { BlockEnvelope, IndexedEvent } from "./domain.js";
@@ -40,14 +41,18 @@ export class ViemChainReader implements ChainReader {
     return this.client.getBlockNumber();
   }
 
-  async block(blockNumber: bigint): Promise<BlockEnvelope> {
+  async block(
+    blockNumber: bigint,
+    suppliedLogs?: readonly Log[],
+  ): Promise<BlockEnvelope> {
     const [block, logs] = await Promise.all([
       this.client.getBlock({ blockNumber }),
-      this.client.getLogs({
-        address: [...this.addresses],
-        fromBlock: blockNumber,
-        toBlock: blockNumber,
-      }),
+      suppliedLogs ??
+        this.client.getLogs({
+          address: [...this.addresses],
+          fromBlock: blockNumber,
+          toBlock: blockNumber,
+        }),
     ]);
     const events: IndexedEvent[] = [];
     for (const log of logs) {
@@ -92,6 +97,22 @@ export class ViemChainReader implements ChainReader {
       ),
     );
     receipts.forEach((receipt, index) => {
+      if (
+        receipt.blockNumber !== blockNumber ||
+        receipt.blockHash !== block.hash
+      )
+        throw new Error("RECEIPT_BLOCK_MISMATCH");
+      for (let i = 0; i < events.length; i++) {
+        const event = events[i]!;
+        if (event.transactionHash === receipt.transactionHash)
+          events[i] = {
+            ...event,
+            payload: {
+              ...event.payload,
+              transactionSender: receipt.from.toLowerCase(),
+            },
+          };
+      }
       events.push({
         chainId: this.chainId,
         blockNumber,

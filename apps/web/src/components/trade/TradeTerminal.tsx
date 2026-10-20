@@ -108,11 +108,6 @@ function Terminal() {
               selected?.pool && selected.base !== selected.pool.token0Symbol,
             )}
           />
-          <p className="px-4 pb-4 text-xs leading-relaxed text-faint">
-            Chart sources are shown separately. Oracle/reference prices are not
-            executable pool quotes. Request a fresh quote in the action panel
-            before signing.
-          </p>
           <div className="border-t border-line px-4 py-3 text-xs text-muted">
             {protocol.metrics?.ready
               ? "Indexer up to date"

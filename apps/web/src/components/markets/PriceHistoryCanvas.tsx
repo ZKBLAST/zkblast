@@ -11,7 +11,7 @@ import {
   type ISeriesApi,
   type UTCTimestamp,
 } from "lightweight-charts";
-import { Maximize2 } from "lucide-react";
+import { Info, Maximize2 } from "lucide-react";
 import {
   formatChartPrice,
   type ChartStyle,
@@ -25,12 +25,14 @@ export function PriceHistoryCanvas({
   label,
   volumes,
   volumeUnit,
+  limited = false,
 }: {
   bars: readonly MarketCandle[];
   style: ChartStyle;
   label: string;
   volumes: readonly MarketVolumeBar[];
   volumeUnit: string | null;
+  limited?: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -42,6 +44,7 @@ export function PriceHistoryCanvas({
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const barsRef = useRef(bars);
   barsRef.current = bars;
+  const hasVolume = volumes.length > 0;
   useEffect(() => {
     if (!host.current) return;
     const chart = createChart(host.current, {
@@ -49,7 +52,7 @@ export function PriceHistoryCanvas({
       layout: {
         background: { type: ColorType.Solid, color: "#0a0a12" },
         textColor: "#9a9bab",
-        attributionLogo: false,
+        attributionLogo: true,
       },
       grid: {
         vertLines: { color: "#ffffff08" },
@@ -87,17 +90,19 @@ export function PriceHistoryCanvas({
           });
     chartRef.current = chart;
     seriesRef.current = series;
-    volumeRef.current = chart.addSeries(
-      HistogramSeries,
-      {
-        priceFormat: { type: "volume" },
-        lastValueVisible: false,
-        priceLineVisible: false,
-      },
-      1,
-    );
-    chart.panes()[0]?.setStretchFactor(4);
-    chart.panes()[1]?.setStretchFactor(1);
+    if (hasVolume) {
+      volumeRef.current = chart.addSeries(
+        HistogramSeries,
+        {
+          priceFormat: { type: "volume" },
+          lastValueVisible: false,
+          priceLineVisible: false,
+        },
+        1,
+      );
+      chart.panes()[0]?.setStretchFactor(4);
+      chart.panes()[1]?.setStretchFactor(1);
+    }
     fitted.current = false;
     chart.subscribeCrosshairMove((event) => {
       const time =
@@ -114,7 +119,7 @@ export function PriceHistoryCanvas({
       seriesRef.current = null;
       volumeRef.current = null;
     };
-  }, [style]);
+  }, [style, hasVolume]);
   useEffect(() => {
     const series = seriesRef.current;
     if (!series) return;
@@ -136,25 +141,57 @@ export function PriceHistoryCanvas({
       chartRef.current?.timeScale().fitContent();
       fitted.current = true;
     }
-  }, [bars, volumes, style]);
+  }, [bars, volumes, style, hasVolume]);
   const observation = hover ?? bars.at(-1);
   return (
     <div className="flex min-h-80 flex-1 flex-col">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
         <p aria-live="off">
           {observation
-            ? `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)} · ${observation.observations} observations`
+            ? `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)}`
             : "No observations"}
         </p>
-        <button
-          type="button"
-          onClick={() => chartRef.current?.timeScale().fitContent()}
-          className="flex items-center gap-1 p-2"
-          aria-label="Fit chart to data"
-        >
-          <Maximize2 className="size-3" aria-hidden />
-          Fit
-        </button>
+        <div className="flex items-center gap-2">
+          {hasVolume && <span>Vol {volumeUnit ?? ""}</span>}
+          <details className="relative">
+            <summary
+              aria-label="Chart information"
+              title="Chart information"
+              className="cursor-pointer list-none p-2 [&::-webkit-details-marker]:hidden"
+            >
+              <Info className="size-3.5" aria-hidden />
+            </summary>
+            <div className="absolute right-0 top-full z-20 w-64 border border-line bg-bg p-3 text-xs leading-relaxed shadow-xl">
+              <p>
+                Times in UTC. Oracle/reference prices are not executable quotes.
+              </p>
+              {limited && (
+                <p className="mt-2">
+                  Latest 2,000 observations. Choose a shorter period for more
+                  detail.
+                </p>
+              )}
+              <a
+                href="https://www.tradingview.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 block underline"
+              >
+                TradingView Lightweight Charts™ · Copyright © 2026 TradingView,
+                Inc.
+              </a>
+            </div>
+          </details>
+          <button
+            type="button"
+            onClick={() => chartRef.current?.timeScale().fitContent()}
+            className="flex items-center gap-1 p-2"
+            aria-label="Fit chart to data"
+          >
+            <Maximize2 className="size-3" aria-hidden />
+            Fit
+          </button>
+        </div>
       </div>
       <div
         ref={host}
@@ -162,21 +199,6 @@ export function PriceHistoryCanvas({
         aria-label={label}
         className="relative min-h-72 flex-1"
       />
-      <p className="mt-2 text-[9px] text-faint">
-        {volumes.length
-          ? `Traded volume (${volumeUnit ?? "quote token"}) in the lower pane. `
-          : "Traded volume is not reported for these observations. "}
-        OHLC from recorded observations · drag to pan, scroll to zoom · times in
-        UTC.
-      </p>
-      <a
-        href="https://www.tradingview.com/"
-        target="_blank"
-        rel="noreferrer"
-        className="mt-1 text-[9px] text-faint"
-      >
-        TradingView Lightweight Charts™ · Copyright © 2026 TradingView, Inc.
-      </a>
     </div>
   );
 }

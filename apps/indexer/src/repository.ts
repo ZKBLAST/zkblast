@@ -10,6 +10,10 @@ import {
 } from "./transaction-reconciliation.js";
 
 export interface IndexerRepository {
+  previousCanonicalBlock?(
+    chainId: number,
+    before: bigint,
+  ): Promise<bigint | null>;
   checkpoint(chainId: number): Promise<IndexerCheckpoint | null>;
   canonicalHash(chainId: number, blockNumber: bigint): Promise<string | null>;
   applyBlock(

@@ -5,12 +5,12 @@ import { useMemo, useState } from "react";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { cx } from "@/lib/format";
 import {
+  chartRangeForInterval,
   chartIntervals,
   formatChartPrice,
   marketCandles,
   marketVolumes,
   type ChartInterval,
-  type ChartRange,
   type ChartStyle,
   type PriceSource,
 } from "@/lib/market-chart-data";
@@ -31,8 +31,8 @@ export function MarketPriceChart({
   const [source, setSource] = useState<PriceSource>(
     poolAddress ? "swap" : "reference",
   );
-  const [range, setRange] = useState<ChartRange>("1W");
   const [interval, setInterval] = useState<ChartInterval>("1h");
+  const range = chartRangeForInterval[interval];
   const [style, setStyle] = useState<ChartStyle>("candles");
   const { items, loading, error, refresh } = useMarketPriceHistory(
     marketId,
@@ -78,7 +78,7 @@ export function MarketPriceChart({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="label">Market chart · {range}</p>
+          <p className="label">Market chart</p>
           <p className="mt-2 font-mono text-lg">
             {latest
               ? `${formatChartPrice(latest.close)} ${unit ?? "reported units"}`
@@ -131,40 +131,19 @@ export function MarketPriceChart({
           aria-label="Chart timeframe"
           className="flex flex-wrap gap-1"
         >
-          {(["5m", "15m", "30m", "1H", "1D", "1W", "1M"] as const).map(
-            (value) => (
-              <button
-                key={value}
-                type="button"
-                aria-pressed={range === value}
-                onClick={() => {
-                  setRange(value);
-                  if (["5m", "15m", "30m"].includes(value)) setInterval("1m");
-                }}
-                className={`border px-2 py-2 font-mono text-xs ${range === value ? "border-lime bg-lime text-lime-ink font-bold" : "border-transparent text-muted hover:border-line"}`}
-              >
-                {value}
-              </button>
-            ),
-          )}
+          {(Object.keys(chartIntervals) as ChartInterval[]).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={interval === value}
+              onClick={() => setInterval(value)}
+              className={`border px-2 py-2 font-mono text-xs ${interval === value ? "border-lime bg-lime text-lime-ink font-bold" : "border-transparent text-muted hover:border-line"}`}
+            >
+              {value}
+            </button>
+          ))}
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs text-muted">
-            Interval{" "}
-            <select
-              value={interval}
-              onChange={(event) =>
-                setInterval(event.target.value as ChartInterval)
-              }
-              className="border border-line bg-bg p-2 text-fg"
-            >
-              {Object.keys(chartIntervals).map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </label>
           <label className="sr-only" htmlFor={`${chartKey}-style`}>
             Chart style
           </label>
@@ -215,19 +194,12 @@ export function MarketPriceChart({
             bars={bars}
             volumes={volumes}
             volumeUnit={unit}
+            limited={items.length >= 2000}
             style={style}
             label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
           />
         )}
       </div>
-      <p className="mt-3 text-[10px] leading-relaxed text-faint">
-        {items.length} observations · {bars.length} recorded intervals. Sources
-        retain their own denomination; oracle/reference prices are not
-        executable pool quotes.
-        {items.length >= 2000
-          ? " Showing the latest 2,000 observations; use a shorter period for finer detail."
-          : ""}
-      </p>
     </section>
   );
 }

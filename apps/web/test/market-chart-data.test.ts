@@ -4,6 +4,8 @@ import {
   marketCandles,
   marketVolumes,
   chartRangeHours,
+  chartRangeForInterval,
+  chartIntervals,
 } from "../src/lib/market-chart-data";
 import type { MarketPricePoint } from "../src/types/application";
 
@@ -59,6 +61,13 @@ test("minute windows have their actual duration", () => {
   assert.equal(chartRangeHours["5m"] * 60, 5);
   assert.equal(chartRangeHours["15m"] * 60, 15);
   assert.equal(chartRangeHours["30m"] * 60, 30);
+});
+
+test("one selected candle interval determines the history window automatically", () => {
+  assert.equal(chartIntervals["30m"], 1800);
+  assert.equal(chartRangeForInterval["1m"], "1D");
+  assert.equal(chartRangeForInterval["5m"], "1W");
+  assert.equal(chartRangeForInterval["1h"], "1M");
 });
 
 test("volume aggregates real swap quote amounts and converts per trade when inverted", () => {

@@ -1,10 +1,13 @@
 import postgres from "postgres";
-import { getAddress } from "viem";
+import { getAddress, type Address, type PublicClient } from "viem";
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
 import { validateBlockForPersistence } from "./validation.js";
 import { transactionObservation } from "./transaction-reconciliation.js";
 import { persistPoolSwap } from "./persist-pool-swap.js";
+import { installCheckpointGuard } from "./checkpoint-guard.js";
+import { reconcileUserActivity } from "./reconcile-user-activity.js";
+import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -89,7 +92,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
       );
       for (const event of validatedBlock.events) {
         await transaction.unsafe(
-          `insert into ${this.schema}.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,contract_address=excluded.contract_address,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
+          `insert into ${this.schema}.protocol_events (chain_id,transaction_hash,log_index,block_number,block_hash,contract_address,event_kind,event_name,payload) values ($1,$2,$3,$4,$5,$6,$7,$8,$9::text::jsonb) on conflict (chain_id,transaction_hash,log_index) do update set block_number=excluded.block_number,block_hash=excluded.block_hash,contract_address=excluded.contract_address,event_kind=excluded.event_kind,event_name=excluded.event_name,payload=excluded.payload,canonical=true`,
           [
             event.chainId,
             event.transactionHash.toLowerCase(),
@@ -139,7 +142,15 @@ export class PostgresIndexerRepository implements IndexerRepository {
   async rewind(chainId: number, fromBlock: bigint): Promise<void> {
     await this.sql.begin(async (transaction) => {
       await transaction.unsafe(
+        "select set_config('zkblast.allow_checkpoint_rewind','on',true)",
+      );
+      await transaction.unsafe(
         `update ${this.schema}.swaps set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.trade_history set status='submitted',confirmed_at=null,error_code='CHAIN_REORG'
+        where chain_id=$1 and block_number >= $2 and status='confirmed'`,
         [chainId, fromBlock.toString()],
       );
       await transaction.unsafe(
@@ -180,5 +191,56 @@ export class PostgresIndexerRepository implements IndexerRepository {
           [chainId],
         );
     });
+  }
+
+  close() {
+    return this.sql.end();
+  }
+
+  enableCheckpointGuard() {
+    return installCheckpointGuard(this.sql, this.schema);
+  }
+
+  reconcilePools(
+    client: PublicClient,
+    chainId: number,
+    factory: Address,
+    registry: Address,
+  ) {
+    return syncRegisteredPoolRecords({
+      client,
+      sql: this.sql,
+      schema: this.schema,
+      chainId,
+      factory,
+      registry,
+    });
+  }
+
+  reconcileActivity(
+    client: PublicClient,
+    chainId: number,
+    positionManager: Address,
+    confirmations = 5n,
+  ) {
+    return reconcileUserActivity({
+      client,
+      sql: this.sql,
+      schema: this.schema,
+      chainId,
+      positionManager,
+      confirmations,
+    });
+  }
+
+  async previousCanonicalBlock(
+    chainId: number,
+    before: bigint,
+  ): Promise<bigint | null> {
+    const rows = await this.sql.unsafe<{ block_number: string }[]>(
+      `select block_number::text from ${this.schema}.indexed_blocks where chain_id=$1 and block_number<$2 order by block_number desc limit 1`,
+      [chainId, before.toString()],
+    );
+    return rows[0] ? BigInt(rows[0].block_number) : null;
   }
 }

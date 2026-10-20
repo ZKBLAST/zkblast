@@ -72,7 +72,14 @@ export class IndexerService {
         return this.repository.checkpoint(this.chainId);
       }
       if (cursor === 0n) break;
-      cursor -= 1n;
+      if (this.repository.previousCanonicalBlock) {
+        const previous = await this.repository.previousCanonicalBlock(
+          this.chainId,
+          cursor,
+        );
+        if (previous === null) break;
+        cursor = previous;
+      } else cursor -= 1n;
     }
     await this.repository.rewind(this.chainId, 0n);
     return null;

@@ -2,8 +2,17 @@ import type { MarketPricePoint } from "@/types/application";
 
 export type PriceSource = "swap" | "oracle" | "reference";
 export type ChartRange = "5m" | "15m" | "30m" | "1H" | "1D" | "1W" | "1M";
-export type ChartInterval = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
+export type ChartInterval = "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "1d";
 export type ChartStyle = "line" | "candles";
+export const chartRangeForInterval: Record<ChartInterval, ChartRange> = {
+  "1m": "1D",
+  "5m": "1W",
+  "15m": "1W",
+  "30m": "1W",
+  "1h": "1M",
+  "4h": "1M",
+  "1d": "1M",
+};
 export const chartRangeHours: Record<ChartRange, number> = {
   "5m": 5 / 60,
   "15m": 15 / 60,
@@ -17,6 +26,7 @@ export const chartIntervals: Record<ChartInterval, number> = {
   "1m": 60,
   "5m": 300,
   "15m": 900,
+  "30m": 1800,
   "1h": 3600,
   "4h": 14400,
   "1d": 86400,
