@@ -45,5 +45,31 @@ await build({
   platform: "browser",
   target: "es2022",
   minify: true,
+  plugins: [
+    {
+      name: "scope-generated-witness-array",
+      setup(builder) {
+        builder.onLoad(
+          { filter: /witness_calculator\.js$/ },
+          async ({ path: filename }) => {
+            if (filename !== calculatorPath) return;
+            const source = await readFile(filename, "utf8");
+            // Circom's generated CommonJS calculator assigns an undeclared array.
+            // Browser IIFE bundles run in strict mode; keep it local to the helper.
+            const assignment = /^(\s*)a = flatArray\(input\);$/gmu;
+            if ([...source.matchAll(assignment)].length !== 1)
+              throw new Error("NOTE_CALCULATOR_GENERATOR_CHANGED");
+            return {
+              contents: source.replace(
+                assignment,
+                "$1let a = flatArray(input);",
+              ),
+              loader: "js",
+            };
+          },
+        );
+      },
+    },
+  ],
 });
 console.log("Browser note circuit prepared and matched the frozen v1 vector");

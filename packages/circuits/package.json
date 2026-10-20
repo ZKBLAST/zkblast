@@ -10,6 +10,7 @@
     "benchmark:evm:measure": "node scripts/measure-evm-gas.mjs",
     "benchmark:browser:prepare": "node scripts/prepare-browser-benchmark.mjs",
     "note:browser:prepare": "node scripts/prepare-note-browser.mjs",
+    "note:browser:test": "node --test test/note-browser-bundle.test.mjs",
     "withdraw:browser:prepare": "node scripts/prepare-withdraw-browser.mjs",
     "withdraw:browser:test": "node --test test/withdraw-worker.test.mjs",
     "benchmark:browser:serve": "node scripts/serve-browser-benchmark.mjs",

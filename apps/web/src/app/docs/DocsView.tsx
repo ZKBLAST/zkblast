@@ -8,7 +8,6 @@ import { useApp } from "@/components/shell/AppProvider";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { docs } from "@/data/docs";
 import { cx } from "@/lib/format";
-import { ShieldedRiskNotice } from "@/components/shielded/ShieldedRiskNotice";
 
 const all = docs.flatMap((g) => g.sections);
 
@@ -49,7 +48,6 @@ export function DocsView() {
         }
       />
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
-        <ShieldedRiskNotice config={config} />
       </div>
       <div className="mx-auto grid max-w-[1360px] gap-10 px-4 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <nav

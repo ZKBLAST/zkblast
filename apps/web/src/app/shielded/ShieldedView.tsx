@@ -13,7 +13,6 @@ import { executeShieldedDeposit } from "@/lib/shielded-deposit";
 import type { ShieldedNoteV1 } from "@/lib/notecrypto";
 import { TerminalTabs } from "@/components/trade/TerminalTabs";
 import { useShieldedProver } from "@/hooks/useShieldedProver";
-import { ShieldedRiskNotice } from "@/components/shielded/ShieldedRiskNotice";
 import {
   checkShieldedProverAssets,
   loadShieldedProver,
@@ -127,7 +126,6 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
         <section
           className={`panel ticks border-warn/40 p-5 ${compact ? "" : "lg:col-span-2"}`}
         >
-          <ShieldedRiskNotice config={config} />
           <h2 className="wide text-sm text-warn">What stays public</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             Shielded notes protect note ownership data, not public pool
