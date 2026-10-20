@@ -107,6 +107,7 @@ export function LiveLiquidityPanel({
           setState(next);
           if (transaction) setTransactionHash(transaction);
         },
+        "Add liquidity",
       );
       setTransactionHash(hash);
     } catch (error) {
@@ -137,7 +138,7 @@ export function LiveLiquidityPanel({
           }),
         },
       );
-      await run([prepared.position], prepared.chainId);
+      await run([prepared.position], prepared.chainId, "Remove liquidity");
     } catch (error) {
       setState("failed");
       setNotice(swapErrorMessage(error));
@@ -169,7 +170,7 @@ export function LiveLiquidityPanel({
         );
         return;
       }
-      await run([prepared.claim], prepared.chainId);
+      await run([prepared.claim], prepared.chainId, "Claim fees");
     } catch (error) {
       setState("failed");
       setNotice(swapErrorMessage(error));
@@ -179,6 +180,7 @@ export function LiveLiquidityPanel({
   async function run(
     transactions: readonly PreparedTransaction[],
     chainId: number,
+    action: string,
   ) {
     if (!account || !window.ethereum) return;
     const hash = await executeTransactions(
@@ -190,6 +192,7 @@ export function LiveLiquidityPanel({
         setState(next);
         if (transaction) setTransactionHash(transaction);
       },
+      action,
     );
     setTransactionHash(hash);
   }

@@ -36,13 +36,19 @@ export function MarketPriceChart({
   pairLabel?: string;
   inverted?: boolean;
 }) {
-  const [source, setSource] = useState<PriceSource>("oracle");
+  const [selection, setSelection] = useState<{
+    market: string;
+    source: PriceSource;
+  } | null>(null);
+  const marketKey = `${marketId}:${poolAddress}`;
+  const requestedSource =
+    selection?.market === marketKey ? selection.source : "auto";
   const [interval, setInterval] = useState<ChartInterval>("1h");
   const range = chartRangeForInterval[interval];
   const [style, setStyle] = useState<ChartStyle>("line");
-  const { items, loading, error, refresh } = useMarketPriceHistory(
+  const { items, loading, error, refresh, source } = useMarketPriceHistory(
     marketId,
-    source,
+    requestedSource,
     range,
     poolAddress,
   );
@@ -117,7 +123,7 @@ export function MarketPriceChart({
               key={value}
               type="button"
               aria-pressed={source === value}
-              onClick={() => setSource(value)}
+              onClick={() => setSelection({ market: marketKey, source: value })}
               className={cx(
                 "flex h-9 items-center gap-2 px-3 font-mono text-[10px] uppercase",
                 source === value

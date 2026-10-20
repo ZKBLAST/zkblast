@@ -152,6 +152,7 @@ export function ExternalLiquidityPanel({
           setState(next);
           if (transaction) setTransactionHash(transaction);
         },
+        "Add liquidity",
       );
       setTransactionHash(hash);
       await onConfirmed?.();
@@ -189,7 +190,10 @@ export function ExternalLiquidityPanel({
             onChange={(event) => setSelection(event.target.value)}
           >
             {executable.map(({ market, route }) => (
-              <option key={route.poolIdentifier} value={route.poolIdentifier ?? ""}>
+              <option
+                key={route.poolIdentifier}
+                value={route.poolIdentifier ?? ""}
+              >
                 {market.symbol}/{route.quoteSymbol}
               </option>
             ))}
@@ -216,7 +220,11 @@ export function ExternalLiquidityPanel({
         a 1% safety bound. Two exact approvals and one Position Manager
         transaction will be requested.
       </p>
-      <Button className="mt-5" disabled={busy || !amounts} onClick={() => void addLiquidity()}>
+      <Button
+        className="mt-5"
+        disabled={busy || !amounts}
+        onClick={() => void addLiquidity()}
+      >
         {!address
           ? "Connect wallet"
           : busy

@@ -184,6 +184,7 @@ function PositionItem({
           setState(next);
           if (transaction) setTransactionHash(transaction);
         },
+        "Remove liquidity",
       );
       setTransactionHash(hash);
       await onConfirmed();

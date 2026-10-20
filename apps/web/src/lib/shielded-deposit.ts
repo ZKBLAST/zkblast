@@ -71,9 +71,15 @@ async function submitAndWait(
   provider: EthereumProvider,
   sender: Address,
   prepared: PreparedTransaction,
+  chainId: number,
 ): Promise<Receipt> {
   const hash = await send(provider, sender, prepared);
-  return waitForReceipt(provider, hash) as Promise<Receipt>;
+  return waitForReceipt(provider, hash, 40, {
+    chainId,
+    action: prepared.data.startsWith("0x095ea7b3")
+      ? "Token approval"
+      : "Shielded deposit",
+  }) as Promise<Receipt>;
 }
 
 export async function executeShieldedDeposit(
@@ -110,6 +116,7 @@ export async function executeShieldedDeposit(
           args: [vault, 0n],
         }),
       ),
+      note.chainId,
     );
   }
   if (allowance !== amount) {
@@ -125,6 +132,7 @@ export async function executeShieldedDeposit(
           args: [vault, amount],
         }),
       ),
+      note.chainId,
     );
   }
   onState("depositing");
@@ -139,6 +147,7 @@ export async function executeShieldedDeposit(
         args: [token, amount, commitmentHex(note.commitment)],
       }),
     ),
+    note.chainId,
   );
   const event = receipt.logs?.flatMap((log) => {
     if (log.address.toLowerCase() !== vault.toLowerCase()) return [];

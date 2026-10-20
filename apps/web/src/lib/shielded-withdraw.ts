@@ -216,7 +216,10 @@ export async function executeShieldedWithdrawal(
       },
     ],
   })) as Hex;
-  const receipt = (await waitForReceipt(provider, transactionHash)) as {
+  const receipt = (await waitForReceipt(provider, transactionHash, 40, {
+    chainId: note.chainId,
+    action: "Shielded withdrawal",
+  })) as {
     logs?: readonly { address: Address; data: Hex; topics: readonly Hex[] }[];
   };
   const withdrawn = receipt.logs?.some((log) => {

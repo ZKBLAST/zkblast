@@ -146,6 +146,7 @@ export function CreatePoolPanel({
           setNotice(stage.replaceAll("-", " "));
           if (tx) setHash(tx);
         },
+        `Create ${form.model.toUpperCase()} pool`,
       );
       setHash(receipt);
       setReview(null);

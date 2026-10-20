@@ -226,6 +226,7 @@ export function useProtocolWorkspace(
           setNotice(step.replaceAll("-", " "));
           if (hash) setTransactionHash(hash);
         },
+        mode === "swap" ? "Swap" : "Add liquidity",
       );
       setTransactionHash(hash);
       setQuote(null);

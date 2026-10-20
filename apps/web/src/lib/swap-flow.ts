@@ -1,4 +1,5 @@
 import type { EthereumProvider } from "../types/application";
+import { notifyTransactionSuccess } from "./transaction-success";
 
 export type PreparedTransaction = Readonly<{
   to: string;
@@ -14,14 +15,27 @@ export async function waitForReceipt(
   provider: EthereumProvider,
   hash: string,
   attempts = 40,
+  context?: { chainId: number; action: string },
 ) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const receipt = (await provider.request({
       method: "eth_getTransactionReceipt",
       params: [hash],
-    })) as { transactionHash: string; status: string } | null;
+    })) as {
+      transactionHash: string;
+      status: string;
+      blockNumber?: string;
+      gasUsed?: string;
+    } | null;
     if (receipt) {
       if (receipt.status !== "0x1") throw new Error("TRANSACTION_REVERTED");
+      if (context)
+        notifyTransactionSuccess({
+          hash,
+          ...context,
+          blockNumber: receipt.blockNumber,
+          gasUsed: receipt.gasUsed,
+        });
       return receipt;
     }
     if (attempt + 1 < attempts)
@@ -54,13 +68,16 @@ export async function executeSwap(
     method: "eth_sendTransaction",
     params: [{ ...approval, from: account }],
   })) as string;
-  await waitForReceipt(provider, approvalHash);
+  await waitForReceipt(provider, approvalHash, 40, {
+    chainId,
+    action: "Token approval",
+  });
   onState("swapping");
   const swapHash = (await provider.request({
     method: "eth_sendTransaction",
     params: [{ ...swap, from: account }],
   })) as string;
-  await waitForReceipt(provider, swapHash);
+  await waitForReceipt(provider, swapHash, 40, { chainId, action: "Swap" });
   onState("confirmed", swapHash);
   return swapHash;
 }
@@ -71,6 +88,7 @@ export async function executeTransactions(
   chainId: number,
   transactions: readonly PreparedTransaction[],
   onState: (state: TransactionExecutionState, hash?: string) => void,
+  action = "Contract transaction",
 ) {
   const currentChain = Number.parseInt(
     (await provider.request({ method: "eth_chainId" })) as string,
@@ -90,7 +108,12 @@ export async function executeTransactions(
       method: "eth_sendTransaction",
       params: [{ ...transaction, from: account }],
     })) as string;
-    await waitForReceipt(provider, finalHash);
+    await waitForReceipt(provider, finalHash, 40, {
+      chainId,
+      action: transaction.data.startsWith("0x095ea7b3")
+        ? "Token approval"
+        : action,
+    });
   }
   onState("confirmed", finalHash);
   return finalHash;

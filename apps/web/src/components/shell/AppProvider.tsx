@@ -17,6 +17,7 @@ import { parsePublicConfig } from "@/lib/network-config";
 import { createWalletVerifyPayload } from "@/lib/wallet-auth";
 import type { PublicConfig, Trade, UserProfile } from "@/types/application";
 import { WalletModal } from "./WalletModal";
+import { TransactionSuccessModal } from "./TransactionSuccessModal";
 
 type Toast = Readonly<{
   id: number;
@@ -273,6 +274,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     <AppContext.Provider value={value}>
       {children}
       <WalletModal open={walletOpen} onClose={() => setWalletOpen(false)} />
+      <TransactionSuccessModal config={config} />
       <div
         aria-live="polite"
         className="pointer-events-none fixed inset-x-0 bottom-4 z-[120] flex flex-col items-center gap-2 px-4 sm:inset-x-auto sm:right-6 sm:items-end"
