@@ -30,6 +30,8 @@ export type PublicConfig = Readonly<{
     }>;
   }>[];
   shielded?: Readonly<{
+    launchMode?: "independent-reviewed" | "experimental-single-operator";
+    proverRelease?: Readonly<{ manifestPath: string; manifestSha256: string }>;
     vaultAddress: `0x${string}`;
     stateRegistryAddress: `0x${string}`;
     treeVersion: number;
@@ -74,7 +76,10 @@ export type ProtocolPool = Readonly<{
   token1Decimals: number;
 }>;
 
-export type ProtocolExecutionPool = Omit<ProtocolPool, "feeBps" | "createdBlock"> & {
+export type ProtocolExecutionPool = Omit<
+  ProtocolPool,
+  "feeBps" | "createdBlock"
+> & {
   feeBps: number | null;
   createdBlock: string | null;
 };

@@ -8,3 +8,14 @@ export { loadPublicConfig, loadServerConfig } from "./runtime.js";
 export { loadWebPublicConfig } from "./web-public.js";
 export type { AppEnvironment, PublicConfig, ServerConfig } from "./runtime.js";
 export type { WebPublicConfig } from "./web-public.js";
+export {
+  assertProverNetwork,
+  fetchProverManifest,
+  sha256Hex,
+  validateProverManifest,
+} from "./shielded-prover.js";
+export type {
+  ProverNetwork,
+  ProverRelease,
+  ProverManifest,
+} from "./shielded-prover.js";

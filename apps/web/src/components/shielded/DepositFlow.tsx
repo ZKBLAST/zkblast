@@ -55,7 +55,7 @@ export function DepositFlow({
   onSubmit,
   onCreated,
 }: Props) {
-  const { address, connect, toast } = useApp();
+  const { address, connect, toast, config } = useApp();
   const [assetAddress, setAssetAddress] = useState(assets[0]?.address ?? "");
   const [note, setNote] = useState<ShieldedNoteV1 | null>(null);
   const [passphrase, setPassphrase] = useState("");
@@ -130,6 +130,7 @@ export function DepositFlow({
       await storeEncryptedNotes(window.localStorage, [submitted], passphrase);
       onCreated(submitted);
       setNote(submitted);
+      setBackupSaved(false);
       toast({ kind: "success", title: "Commitment deposit confirmed" });
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "DEPOSIT_FAILED");
@@ -226,6 +227,10 @@ export function DepositFlow({
               <span className="mt-1 block text-muted">
                 I understand that losing both the encrypted backup and its
                 passphrase permanently removes my ability to withdraw.
+                {environment === "mainnet" &&
+                  config?.shielded?.launchMode ===
+                    "experimental-single-operator" &&
+                  " I also accept that this experimental single-operator setup has no independent audit or ceremony assurance and that I may lose the deposited funds."}
               </span>
             </span>
           </label>
@@ -233,11 +238,16 @@ export function DepositFlow({
             size="lg"
             className="w-full"
             loading={busy === "submit"}
-            disabled={!backupSaved || !acknowledged}
+            disabled={!backupSaved || !acknowledged || note.status !== "prepared"}
             onClick={() => void submit()}
           >
-            Approve exact amount and deposit
+            {note.status === "prepared" ? "Approve exact amount and deposit" : "Deposit confirmed"}
           </Button>
+          {note.status === "unspent" && (
+            <p role="status" className="text-sm text-warn">
+              Download the updated encrypted backup now. It includes the confirmed leaf index needed by this withdrawal interface. Keep it before refreshing or closing the page.
+            </p>
+          )}
         </section>
       )}
       {error && (

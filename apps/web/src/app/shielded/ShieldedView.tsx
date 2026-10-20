@@ -12,9 +12,16 @@ import internalTestAssets from "@/data/internal-test-assets.json";
 import { executeShieldedDeposit } from "@/lib/shielded-deposit";
 import type { ShieldedNoteV1 } from "@/lib/notecrypto";
 import { TerminalTabs } from "@/components/trade/TerminalTabs";
+import { useShieldedProver } from "@/hooks/useShieldedProver";
+import { ShieldedBetaNotice } from "@/components/shielded/ShieldedBetaNotice";
+import {
+  checkShieldedProverAssets,
+  loadShieldedProver,
+} from "@/lib/shielded-prover";
 
 export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
   const { address, config } = useApp();
+  const prover = useShieldedProver(config);
   const [notes, setNotes] = useState<readonly ShieldedNoteV1[]>([]);
   const [vaultTab, setVaultTab] = useState("deposit");
   const shielded = config?.shielded;
@@ -67,6 +74,14 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
 
   const submit = async (note: ShieldedNoteV1) => {
     if (!window.ethereum || !address) throw new Error("WALLET_NOT_CONNECTED");
+    if (!prover.ready) throw new Error("SHIELDED_PROVER_NOT_READY");
+    if (
+      note.environment !== config.environment ||
+      note.chainId !== config.chainId ||
+      note.vaultAddress.toLowerCase() !== shielded.vaultAddress.toLowerCase()
+    )
+      throw new Error("NOTE_NETWORK_MISMATCH");
+    await checkShieldedProverAssets(await loadShieldedProver(config));
     return executeShieldedDeposit(
       window.ethereum,
       address as `0x${string}`,
@@ -112,6 +127,7 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
         <section
           className={`panel ticks border-warn/40 p-5 ${compact ? "" : "lg:col-span-2"}`}
         >
+          <ShieldedBetaNotice config={config} />
           <h2 className="wide text-sm text-warn">
             Aggregate LP privacy boundary
           </h2>
@@ -134,22 +150,31 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
               }
             : {})}
         >
-          <DepositFlow
-            environment={config.environment}
-            chainId={config.chainId}
-            vaultAddress={shielded.vaultAddress}
-            treeVersion={shielded.treeVersion}
-            assets={publicAssets}
-            onSubmit={submit}
-            onCreated={(note) =>
-              setNotes((current) => [
-                ...current.filter(
-                  (item) => item.commitment !== note.commitment,
-                ),
-                note,
-              ])
-            }
-          />
+          {!prover.ready && (
+            <p role="status" className="mb-4 text-sm text-muted">
+              {prover.failed
+                ? "Deposits disabled: the withdrawal prover release could not be verified. Backup and withdrawal remain accessible."
+                : "Verifying withdrawal prover assets before enabling deposits…"}
+            </p>
+          )}
+          <fieldset disabled={!prover.ready}>
+            <DepositFlow
+              environment={config.environment}
+              chainId={config.chainId}
+              vaultAddress={shielded.vaultAddress}
+              treeVersion={shielded.treeVersion}
+              assets={publicAssets}
+              onSubmit={submit}
+              onCreated={(note) =>
+                setNotes((current) => [
+                  ...current.filter(
+                    (item) => item.commitment !== note.commitment,
+                  ),
+                  note,
+                ])
+              }
+            />
+          </fieldset>
         </section>
         <section
           className="panel ticks p-6"

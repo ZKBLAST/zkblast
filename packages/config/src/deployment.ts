@@ -121,6 +121,9 @@ export const deploymentManifestSchema = z
         fieldHasher: addressSchema,
         treeVersion: z.number().int().positive(),
         deploymentBlock: z.number().int().nonnegative(),
+        launchMode: z
+          .enum(["independent-reviewed", "experimental-single-operator"])
+          .optional(),
         proverRelease: z
           .object({
             manifestPath: z

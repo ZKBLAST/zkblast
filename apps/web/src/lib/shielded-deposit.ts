@@ -82,6 +82,7 @@ export async function executeShieldedDeposit(
   note: ShieldedNoteV1,
   onState: (state: DepositState) => void,
 ): Promise<ShieldedNoteV1> {
+  if (note.status !== "prepared") throw new Error("NOTE_ALREADY_SUBMITTED");
   const walletChain = (await provider.request({
     method: "eth_chainId",
   })) as string;

@@ -8,6 +8,7 @@ import { useApp } from "@/components/shell/AppProvider";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { docs } from "@/data/docs";
 import { cx } from "@/lib/format";
+import { ShieldedBetaNotice } from "@/components/shielded/ShieldedBetaNotice";
 
 const all = docs.flatMap((g) => g.sections);
 
@@ -47,6 +48,9 @@ export function DocsView() {
           </>
         }
       />
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
+        <ShieldedBetaNotice config={config} />
+      </div>
       <div className="mx-auto grid max-w-[1360px] gap-10 px-4 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <nav
           aria-label="Documentation"
@@ -140,7 +144,7 @@ export function DocsView() {
             <h2 className="display text-[clamp(1.8rem,3.4vw,2.6rem)]">
               Architecture
             </h2>
-            <pre className="mt-5 overflow-x-auto panel p-5 font-mono text-[13px] leading-relaxed text-muted">{`Web app (Next.js)
+            <pre className="mt-5 overflow-x-auto panel p-5 font-mono text-[13px] leading-relaxed text-muted">{`Web app
  ├─ Public pools · DLMM · DAMM · Swap ──► Public AMM router ──► AMM contracts
  ├─ Shielded vault · notes · proof status
  │    └─ Client-side prover ── proof + public inputs ──► Vault / Verifier

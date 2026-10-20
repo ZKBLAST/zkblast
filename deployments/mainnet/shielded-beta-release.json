@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "launchMode": "experimental-single-operator",
+  "independentReview": false,
+  "proverRelease": {
+    "manifestPath": "/zk/mainnet/withdraw-v1-beta-871c729dadd4.json",
+    "manifestSha256": "23ccc1a80adabb311ea743a6eb72838383c42b573761807dd5ddc45bdb21049f"
+  },
+  "setupReportSha256": "89e275b6ab3ada3bfaeeaa605b86da47b58e9b0188ea5c23ee7b7779d0dfda28",
+  "artifacts": {
+    "withdraw.r1cs": "a5baa6ebdcced2246bf04c0c2a1896df90ed334fe98b481eb8de5bca4d9fab7e",
+    "withdraw.wasm": "b463ecc6b058838bdf48e68d4b34e0297ffc5e1cdd3f1a35708806a1d467d4d2",
+    "pot15_phase1.ptau": "7c150310bf9a4b588b9bd44cf7481a7df46c1c12623d8095eb393dcb0c47066d",
+    "pot15_phase2.ptau": "a043d6500a97ffc74c180a1714166b4aac58ea94a18d5aeddd80fc36e5bb9f41",
+    "withdraw_final.zkey": "871c729dadd418b60bcaa6c24e71e6a267540c927b2892bba8631bda959becf8",
+    "verification_key.json": "4e4d0c626c9f31ed2cdded74f1b1449a34f10dee198b7dbf5db43d63c8399f3e",
+    "WithdrawGroth16Verifier.sol": "f800ef4017edd7b7dfcd34db1190a3d7cb8cf3468fb5a735433b8e8ae133569a"
+  },
+  "compiledVerifierSourceSha256": "56df587882cfcbccadbaa4e7a9c87d6e18c23ad707c78c9aa7a26ac824c53f56",
+  "status": "local-candidate-not-deployed",
+  "broadcasts": 0
+}

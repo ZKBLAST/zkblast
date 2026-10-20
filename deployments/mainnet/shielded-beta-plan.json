@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "status": "owner-approved-limits-awaiting-setup-and-simulations",
+  "launchMode": "experimental-single-operator",
+  "independentReview": false,
+  "ownerTrustModelDecision": "Owner requested experimental mainnet UI testing without independent ceremony/review in chat on 2026-10-20",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "upgrader": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+  "upgradeDelaySeconds": 300,
+  "asset": {
+    "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "symbol": "USDG",
+    "decimals": 6,
+    "denominationRaw": "1000000"
+  },
+  "proposedLimits": {
+    "approvalStatus": "owner-approved-in-chat-2026-10-20",
+    "totalGasFeeWei": "1000000000000000",
+    "acceptanceDepositRaw": "1000000",
+    "gasReferenceOnly": "15,000,000 gas at twice observed 20,000,000 wei/gas = 0.0006 ETH; not deployment simulation",
+    "note": "Acceptance USDG is withdrawn back; gas is spent. A fixed denomination does not cap aggregate user deposits."
+  },
+  "deploymentStages": [
+    "Poseidon2FieldHasher (immutable)",
+    "New beta-key-bound withdrawal verifier (immutable/versioned)",
+    "VerifierRegistry implementation",
+    "VerifierRegistry UUPS proxy initialized with Safe/timelock",
+    "ShieldedStateRegistry implementation",
+    "ShieldedStateRegistry UUPS proxy initialized with Safe/timelock",
+    "ZKBlastVault implementation",
+    "ZKBlastVault UUPS proxy initialized with Safe/timelock and new state registry/hasher",
+    "WithdrawalVerifierAdapter (immutable registry references)"
+  ],
+  "configurationOrder": [
+    "Pause vault before allowing assets",
+    "Register exact verifier/circuit/key hashes using Safe",
+    "Authorize vault and withdrawal adapter in state registry",
+    "Configure withdrawal adapter in vault",
+    "Bind namespaced hash-pinned experimental prover release and chain/vault configuration",
+    "Configure USDG denomination only after withdrawal readiness",
+    "Explicit activation and tiny deposit/backup/prove/withdraw acceptance"
+  ],
+  "pending": [
+    "Complete isolated local setup and verify fresh key and mainnet-context proof",
+    "Freeze generated verifier and deployment artifact hashes",
+    "Simulate exact deployment/configuration transactions and enforce cumulative fee cap",
+    "Receive explicit concrete fee/acceptance approval",
+    "Deploy, verify receipts/runtime/source and integrate manifest/API/indexer",
+    "Publish web/API changes only with Railway approval",
+    "Complete signed UI manual testing"
+  ],
+  "excluded": ["Shielded LP activation", "Shielded swap", "Independent audit claims", "Reuse of testnet proving keys", "Railway deployment authorization"],
+  "broadcasts": 0
+}

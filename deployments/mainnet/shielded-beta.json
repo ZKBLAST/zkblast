@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "launchMode": "experimental-single-operator",
+  "independentReview": false,
+  "shielded": {
+    "vault": "0xAAC59EBDE79E4e0eA0824BBE2562036b0fd5748A",
+    "stateRegistry": "0xADDd2A0253E19B60b24C3CB9867c3c6e3F3a8d2E",
+    "fieldHasher": "0x50Fc0F7c3F88Ba205061a45781f74Ca70C4971E9",
+    "treeVersion": 1,
+    "deploymentBlock": 93335107,
+    "launchMode": "experimental-single-operator",
+    "proverRelease": {
+      "manifestPath": "/zk/mainnet/withdraw-v1-beta-871c729dadd4.json",
+      "manifestSha256": "23ccc1a80adabb311ea743a6eb72838383c42b573761807dd5ddc45bdb21049f"
+    },
+    "assets": [
+      {
+        "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+        "symbol": "USDG",
+        "decimals": 6,
+        "denominationRaw": "1000000"
+      }
+    ]
+  },
+  "verifierRegistry": "0x34EB7a8C71B9B3a61972C128dc687a1629c2340a",
+  "verifier": "0x9D7EdC75a7b5BD5F7A73bbC0D517BaF9f9C41daE",
+  "adapter": "0x752Df95b3BB848c0303a3847a6B2f52d972eC644",
+  "circuitHash": "0xc18ed225711cf88a42341b9984a8de5dac25a710b8d2e99dcf572c2532266f61",
+  "verificationKeyHash": "0x8db0ec11c31eb831598d0b8e73062b441d80a52a9c18eec3bb5d07a57bb66a08",
+  "transactions": {
+    "deployPoseidon2FieldHasher": {
+      "hash": "0x5e9b522eb2a55d6a0b2527aa4bc62e54ad3a99768bb5e4a86fc26e726a18f143",
+      "contractAddress": "0x50fc0f7c3f88ba205061a45781f74ca70c4971e9",
+      "blockNumber": 93335055,
+      "blockHash": "0x6ec8185bb06b25229d2be3fb77a30f50b8b938b8234682648397fc747ad44631",
+      "gasUsed": "1409738",
+      "effectiveGasPriceWei": "20184000",
+      "totalFeeWei": "28454151792000",
+      "status": "success"
+    },
+    "deployZKBlastBetaWithdrawVerifier": {
+      "hash": "0x4de4ea1cc21e119dbc618f9e38d988e9ee0d566da5c6b373932e2d8e5bcacf0d",
+      "contractAddress": "0x9d7edc75a7b5bd5f7a73bbc0d517baf9f9c41dae",
+      "blockNumber": 93335061,
+      "blockHash": "0xff43858d198f444991afa76ed9c97f64f07f65b277fe5fdd99e6c747ade49904",
+      "gasUsed": "765255",
+      "effectiveGasPriceWei": "20084000",
+      "totalFeeWei": "15369381420000",
+      "status": "success"
+    },
+    "deployVerifierRegistry": {
+      "hash": "0x15f11e60008f4f5fc6670af74f4b1ebf70fa1bf3264aabec09a9e8804895cbd5",
+      "contractAddress": "0xfdc74ff073d23ece806bbb69b0caf0264bef78ab",
+      "blockNumber": 93335067,
+      "blockHash": "0xf4d0647ade1ef89cddce672e9a6f79f50381b2bd77e476da293135fa78b35746",
+      "gasUsed": "849232",
+      "effectiveGasPriceWei": "20000000",
+      "totalFeeWei": "16984640000000",
+      "status": "success"
+    },
+    "proxyVerifierRegistry": {
+      "hash": "0xf40102e2bf56fd7ab68989b2714ef30af5e1375758422a790d63fc5f0c7adce5",
+      "contractAddress": "0x34eb7a8c71b9b3a61972c128dc687a1629c2340a",
+      "blockNumber": 93335076,
+      "blockHash": "0x31904c20a840839f7bee3e38738aad715363df83c286b781682420a7cb1d9282",
+      "gasUsed": "183088",
+      "effectiveGasPriceWei": "20028000",
+      "totalFeeWei": "3666886464000",
+      "status": "success"
+    },
+    "deployShieldedStateRegistry": {
+      "hash": "0x67c6bc718d9d3028c4215dade9b4e8171b9cddcac27736c77ef509e67bdfdcba",
+      "contractAddress": "0x10546601336330079cbda4207042a53dbc0ff3c4",
+      "blockNumber": 93335083,
+      "blockHash": "0xff17fbfb609c4b5cb219015d5a1a0c59a4ff868f31d3a3bd14ff7e42b4626d74",
+      "gasUsed": "1119020",
+      "effectiveGasPriceWei": "20448000",
+      "totalFeeWei": "22881720960000",
+      "status": "success"
+    },
+    "proxyShieldedStateRegistry": {
+      "hash": "0xf367f1de461a472a06e1a7ea593cec4a4bd3c71c45aa8c0fff27ccce7d542a78",
+      "contractAddress": "0xaddd2a0253e19b60b24c3cb9867c3c6e3f3a8d2e",
+      "blockNumber": 93335090,
+      "blockHash": "0xc5c442ef3095c58dabe295c4097c8c6830db37bf6c3723976e160221fb958c55",
+      "gasUsed": "183073",
+      "effectiveGasPriceWei": "20062000",
+      "totalFeeWei": "3672810526000",
+      "status": "success"
+    },
+    "deployZKBlastVault": {
+      "hash": "0x3958a85724f50975e833794b1374353f11e728142042bb7f0bf7f238b660c63a",
+      "contractAddress": "0x229375fb963b3ebeb8aa46aafd5eab31d497ba61",
+      "blockNumber": 93335100,
+      "blockHash": "0xb74689c13637d754b8c85ba36e283c045965638473416e1441bf4000470ced7e",
+      "gasUsed": "2756137",
+      "effectiveGasPriceWei": "20158000",
+      "totalFeeWei": "55558209646000",
+      "status": "success"
+    },
+    "proxyZKBlastVault": {
+      "hash": "0x771a99c902c52828e14a7b0056368c0fe0aa4ca862868e1387d8cb2165d6065c",
+      "contractAddress": "0xaac59ebde79e4e0ea0824bbe2562036b0fd5748a",
+      "blockNumber": 93335107,
+      "blockHash": "0x94671d55e6bbc9d2b2f688700fde2acce7a2f1a1291820708e9b41d2c0a011a5",
+      "gasUsed": "2532840",
+      "effectiveGasPriceWei": "20016000",
+      "totalFeeWei": "50697325440000",
+      "status": "success"
+    },
+    "pauseBetaVault": {
+      "hash": "0xbb2af60f93c12a2bb1182fdac6c184619fb0da579ab5baf0e1122ab41037d9cc",
+      "contractAddress": null,
+      "blockNumber": 93335119,
+      "blockHash": "0x2d15d65c154a40cb95266f4e63b8f7ca51199b9d575689a241986901b463dcdb",
+      "gasUsed": "73526",
+      "effectiveGasPriceWei": "20182000",
+      "totalFeeWei": "1483901732000",
+      "status": "success"
+    },
+    "deployWithdrawalVerifierAdapter": {
+      "hash": "0x384816a8369ab6318008a06a03a24824b41131bd21ea45fdd0eeb11a238cfbd5",
+      "contractAddress": "0x752df95b3bb848c0303a3847a6b2f52d972ec644",
+      "blockNumber": 93335123,
+      "blockHash": "0xe222e0bca50b2eb0acadb049738b80a0e5b3b7f13b072b86348d07d0099c8566",
+      "gasUsed": "463867",
+      "effectiveGasPriceWei": "20000000",
+      "totalFeeWei": "9277340000000",
+      "status": "success"
+    },
+    "registerBetaVerifier": {
+      "hash": "0x0db4e8be5027dddefd336382e390e0c13aa6f10d8dee5810e8f528d900b5e4c7",
+      "contractAddress": null,
+      "blockNumber": 93335133,
+      "blockHash": "0x7d111a5840fcd2b7129944644697d4a7ee28fa819aa1010e5deddc09512aa904",
+      "gasUsed": "164114",
+      "effectiveGasPriceWei": "20086000",
+      "totalFeeWei": "3296393804000",
+      "status": "success"
+    },
+    "authorizeBetaVault": {
+      "hash": "0x7221b01e207918c699942883fb2077ea03081fae33a5da86302af5e7719726f9",
+      "contractAddress": null,
+      "blockNumber": 93335144,
+      "blockHash": "0x816fd4018f10504ee9aca3b08611e4138ae0d714aad19c471cb650a8955e81a7",
+      "gasUsed": "91627",
+      "effectiveGasPriceWei": "20138000",
+      "totalFeeWei": "1845184526000",
+      "status": "success"
+    },
+    "authorizeBetaAdapter": {
+      "hash": "0x82d37861f4de33f259afa224cf83cf06704cdd4bd505415f20423a6b93a806cc",
+      "contractAddress": null,
+      "blockNumber": 93335152,
+      "blockHash": "0xae0f4b2992ef8f86160fb97de3fe1b95409c217977aabeeca3095a817a82dbed",
+      "gasUsed": "91630",
+      "effectiveGasPriceWei": "20110000",
+      "totalFeeWei": "1842679300000",
+      "status": "success"
+    },
+    "configureBetaAdapter": {
+      "hash": "0xf118f73a414e4a845d862f3b88753721c7eebdfe7b68fb6ac422be1658e34896",
+      "contractAddress": null,
+      "blockNumber": 93335160,
+      "blockHash": "0xd04e17988362413ff6dc7247d87be7a4ccd0d27b218524d2b535d023b3b30f73",
+      "gasUsed": "90983",
+      "effectiveGasPriceWei": "20024000",
+      "totalFeeWei": "1821843592000",
+      "status": "success"
+    },
+    "configureBetaUsdg": {
+      "hash": "0x56ba3618275bc1c1f64a664ac84ec19df52f485139cab51f26c89de08943693a",
+      "contractAddress": null,
+      "blockNumber": 93335168,
+      "blockHash": "0x2646c468f94f31bb5f5bdd4cbaffeace5ff120a8a8d21c53eaeaca22f4eec6a4",
+      "gasUsed": "92335",
+      "effectiveGasPriceWei": "20000000",
+      "totalFeeWei": "1846700000000",
+      "status": "success"
+    },
+    "activateBetaVault": {
+      "hash": "0x0a614220dff49c1333f3204a6e9b81ac10d47efb099cc203f11dd0f8d91c3eb8",
+      "contractAddress": null,
+      "blockNumber": 93335180,
+      "blockHash": "0x68d72add1bcffa61ad8470099a431c107cafa1cd94bd136d1fb49180cf7f0ecb",
+      "gasUsed": "73513",
+      "effectiveGasPriceWei": "20032000",
+      "totalFeeWei": "1472612416000",
+      "status": "success"
+    }
+  },
+  "totals": {
+    "transactionCount": 16,
+    "gasUsed": "10939978",
+    "totalFeeWei": "220171781618000"
+  },
+  "status": "onchain-beta-configured-ui-release-and-acceptance-pending"
+}

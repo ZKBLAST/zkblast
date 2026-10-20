@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "circuitVersion": 1,
+  "publicInputs": 13,
+  "trustModel": "experimental-single-operator",
+  "assets": {
+    "wasm": {
+      "path": "/zk/mainnet/withdraw-v1-beta-871c729dadd4.wasm",
+      "sha256": "b463ecc6b058838bdf48e68d4b34e0297ffc5e1cdd3f1a35708806a1d467d4d2"
+    },
+    "zkey": {
+      "path": "/zk/mainnet/withdraw-v1-beta-871c729dadd4.zkey",
+      "sha256": "871c729dadd418b60bcaa6c24e71e6a267540c927b2892bba8631bda959becf8"
+    },
+    "verificationKey": {
+      "path": "/zk/mainnet/withdraw-v1-beta-871c729dadd4.vkey.json",
+      "sha256": "4e4d0c626c9f31ed2cdded74f1b1449a34f10dee198b7dbf5db43d63c8399f3e"
+    }
+  }
+}

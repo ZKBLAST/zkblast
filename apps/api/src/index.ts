@@ -169,6 +169,12 @@ const app = createApp(
             vaultAddress: manifest.shielded.vault,
             stateRegistryAddress: manifest.shielded.stateRegistry,
             treeVersion: manifest.shielded.treeVersion,
+            ...(manifest.shielded.launchMode
+              ? { launchMode: manifest.shielded.launchMode }
+              : {}),
+            ...(manifest.shielded.proverRelease
+              ? { proverRelease: manifest.shielded.proverRelease }
+              : {}),
             assets: manifest.shielded.assets,
           },
         }

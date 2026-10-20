@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const experimental = process.argv.includes("--experimental-beta");
 const readJson = async (relative) => {
   try {
     return JSON.parse(await readFile(path.join(root, relative), "utf8"));
@@ -22,16 +23,37 @@ const ceremony = await readJson(
   "packages/circuits/target/v1-withdraw/ceremony-transcript.mainnet.json",
 );
 const release = deployment?.shielded?.proverRelease;
+const betaSetup = experimental
+  ? await readJson(
+      "packages/circuits/target/mainnet-beta-withdraw-v1/setup-report.json",
+    )
+  : null;
 
 check(
   "mainnet-network",
   deployment?.environment === "mainnet" && deployment.chainId === 4663,
 );
 check(
-  "mainnet-key-deployable",
-  artifacts?.ceremony?.mainnetKeyDeployable === true,
+  experimental ? "experimental-mainnet-setup" : "mainnet-key-deployable",
+  experimental
+    ? betaSetup?.environment === "mainnet" &&
+        betaSetup.chainId === 4663 &&
+        betaSetup.trustModel === "experimental-single-operator" &&
+        betaSetup.independentReview === false &&
+        betaSetup.verification?.keyVerified === true &&
+        betaSetup.verification?.localMainnetContextProof === true &&
+        betaSetup.artifacts?.["withdraw_final.zkey"] !==
+          artifacts?.ceremony?.provingKeySha256
+    : artifacts?.ceremony?.mainnetKeyDeployable === true,
 );
-check("mainnet-ceremony-transcript", ceremony?.environment === "mainnet");
+check(
+  experimental
+    ? "explicit-experimental-deployment-mode"
+    : "mainnet-ceremony-transcript",
+  experimental
+    ? deployment?.shielded?.launchMode === "experimental-single-operator"
+    : ceremony?.environment === "mainnet",
+);
 check("shielded-contracts-configured", deployment?.shielded);
 check(
   "network-isolated-prover-path",
@@ -61,13 +83,17 @@ console.log(
   JSON.stringify(
     {
       scope: "shielded-mainnet-preflight",
+      trustModel: experimental
+        ? "experimental-single-operator"
+        : "independent-ceremony-required",
       mode: "read-only-no-broadcast",
       passed,
       total: checks.length,
       checks,
       readyForCustody: false,
-      notice:
-        "Technical preflight only. Ceremony review, contract/circuit review, recovery acceptance and explicit launch approval remain separate gates.",
+      notice: experimental
+        ? "Experimental owner-accepted beta only, no independent review/ceremony assurance. This does not certify production safety or signed browser acceptance."
+        : "Technical preflight only. Ceremony review, contract/circuit review, recovery acceptance and explicit launch approval remain separate gates.",
     },
     null,
     2,

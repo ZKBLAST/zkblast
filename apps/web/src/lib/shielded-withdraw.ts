@@ -6,7 +6,12 @@ import {
   type Address,
   type Hex,
 } from "viem";
-import type { EthereumProvider } from "@/types/application";
+import type { EthereumProvider, PublicConfig } from "@/types/application";
+import type { ProverManifest, ProverNetwork } from "@zkblast/config";
+import {
+  getShieldedProverNetwork,
+  loadShieldedProver,
+} from "./shielded-prover";
 import { apiRequest } from "./api-client";
 import { calculateNoteCircuit, commitmentHex } from "./note-circuit";
 import type { ShieldedNoteV1 } from "./notecrypto";
@@ -49,8 +54,12 @@ const field = (address: string): string => BigInt(address).toString();
 
 function prove(
   input: Readonly<Record<string, string | readonly string[]>>,
+  manifest: ProverManifest,
+  network: ProverNetwork,
   onStage: (stage: WithdrawStage) => void,
-): Promise<Readonly<{ proof: Groth16Proof; publicSignals: readonly string[] }>> {
+): Promise<
+  Readonly<{ proof: Groth16Proof; publicSignals: readonly string[] }>
+> {
   const id = crypto.randomUUID();
   const worker = new Worker("/zk/withdraw-worker.js");
   return new Promise((resolve, reject) => {
@@ -70,17 +79,13 @@ function prove(
       worker.terminate();
       reject(new Error("WITHDRAW_PROVER_WORKER_FAILED"));
     };
-    worker.postMessage({ id, input });
+    worker.postMessage({ id, input, manifest, network });
   });
 }
 
 function encodeProof(proof: Groth16Proof): Hex {
   return encodeAbiParameters(
-    [
-      { type: "uint256[2]" },
-      { type: "uint256[2][2]" },
-      { type: "uint256[2]" },
-    ],
+    [{ type: "uint256[2]" }, { type: "uint256[2][2]" }, { type: "uint256[2]" }],
     [
       [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])],
       [
@@ -102,6 +107,15 @@ export async function executeShieldedWithdrawal(
 ): Promise<ShieldedNoteV1> {
   if (note.status !== "unspent" || note.leafIndex === null)
     throw new Error("NOTE_NOT_SPENDABLE");
+  const config = await apiRequest<PublicConfig>(apiUrl, "/v1/config");
+  if (
+    config.chainId !== note.chainId ||
+    config.environment !== note.environment ||
+    config.shielded?.vaultAddress.toLowerCase() !==
+      note.vaultAddress.toLowerCase()
+  )
+    throw new Error("NOTE_NETWORK_MISMATCH");
+  const manifest = await loadShieldedProver(config);
   onStage("syncing-root");
   const path = await apiRequest<MerklePath>(
     apiUrl,
@@ -158,11 +172,15 @@ export async function executeShieldedWithdrawal(
       path_siblings: path.siblings.map((value) => BigInt(value).toString()),
       path_directions: path.directions.map(String),
     },
+    manifest,
+    getShieldedProverNetwork(config),
     onStage,
   );
   if (
     publicSignals.length !== publicInputs.length ||
-    publicSignals.some((value, index) => BigInt(value) !== BigInt(publicInputs[index]))
+    publicSignals.some(
+      (value, index) => BigInt(value) !== BigInt(publicInputs[index]),
+    )
   )
     throw new Error("PROOF_PUBLIC_INPUT_MISMATCH");
   onStage("submitting");
@@ -202,7 +220,8 @@ export async function executeShieldedWithdrawal(
     logs?: readonly { address: Address; data: Hex; topics: readonly Hex[] }[];
   };
   const withdrawn = receipt.logs?.some((log) => {
-    if (log.address.toLowerCase() !== note.vaultAddress.toLowerCase()) return false;
+    if (log.address.toLowerCase() !== note.vaultAddress.toLowerCase())
+      return false;
     try {
       const event = decodeEventLog({
         abi: zkBlastVaultAbi,
@@ -210,8 +229,10 @@ export async function executeShieldedWithdrawal(
         data: log.data,
         topics: [...log.topics] as [Hex, ...Hex[]],
       });
-      return event.args.nullifier.toLowerCase() ===
-        `0x${BigInt(values.nullifier).toString(16).padStart(64, "0")}`;
+      return (
+        event.args.nullifier.toLowerCase() ===
+        `0x${BigInt(values.nullifier).toString(16).padStart(64, "0")}`
+      );
     } catch {
       return false;
     }

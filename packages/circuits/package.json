@@ -11,6 +11,7 @@
     "benchmark:browser:prepare": "node scripts/prepare-browser-benchmark.mjs",
     "note:browser:prepare": "node scripts/prepare-note-browser.mjs",
     "withdraw:browser:prepare": "node scripts/prepare-withdraw-browser.mjs",
+    "withdraw:browser:test": "node --test test/withdraw-worker.test.mjs",
     "benchmark:browser:serve": "node scripts/serve-browser-benchmark.mjs",
     "v1:build": "node scripts/build-v1.mjs",
     "v1:test": "node scripts/validate-v1-vectors.mjs",

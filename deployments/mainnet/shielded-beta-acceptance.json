@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "launchMode": "experimental-single-operator",
+  "independentReview": false,
+  "status": "passed",
+  "vault": "0xAAC59EBDE79E4e0eA0824BBE2562036b0fd5748A",
+  "asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+  "amountRaw": "1000000",
+  "encryptedBackupRestore": true,
+  "localProofVerified": true,
+  "deployedVerifierVerified": true,
+  "depositTransaction": "0xc6472e2fc47c16313262c44c70781ce22d1ae37bd58fd6ad0215874ef1a67238",
+  "withdrawalTransaction": "0xf726f83ada74ac23128bb6ee083a0bf80cf86eaa6474a21f9edeeee3d04b50a0",
+  "transactions": {
+    "deposit": {
+      "hash": "0xc6472e2fc47c16313262c44c70781ce22d1ae37bd58fd6ad0215874ef1a67238",
+      "contractAddress": null,
+      "blockNumber": 93335587,
+      "blockHash": "0x6ac2e8a20e7e9d8caf51126e60e0b22eb69a89964f4230751af8857a31a9eee0",
+      "gasUsed": "1322882",
+      "effectiveGasPriceWei": "20356000",
+      "totalFeeWei": "26928585992000",
+      "status": "success"
+    },
+    "withdrawal": {
+      "hash": "0xf726f83ada74ac23128bb6ee083a0bf80cf86eaa6474a21f9edeeee3d04b50a0",
+      "contractAddress": null,
+      "blockNumber": 93335596,
+      "blockHash": "0xda78a973a5eb5a01b6bd8d646436f79276ae694207fe8cb6dcc1df3ca44d54d6",
+      "gasUsed": "419454",
+      "effectiveGasPriceWei": "20776000",
+      "totalFeeWei": "8714576304000",
+      "status": "success"
+    }
+  },
+  "deployerBalanceBeforeRaw": "2141413",
+  "deployerBalanceAfterRaw": "2141413",
+  "totalDeploymentConfigurationAcceptanceGasFeeWei": "256974927722000",
+  "browserSignedAcceptance": false,
+  "railwayRelease": false
+}
