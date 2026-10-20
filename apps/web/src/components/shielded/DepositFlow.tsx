@@ -1,6 +1,6 @@
 "use client";
 import { shieldedSetupAcknowledgement } from "@/lib/shielded-risk-copy";
-import { AlertTriangle, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
@@ -213,7 +213,7 @@ export function DepositFlow({
               ? "Download backup again"
               : "Download encrypted backup"}
           </Button>
-          <label className="flex items-start gap-3 border border-warn/40 bg-warn/[0.05] p-4 text-sm">
+          <label className="flex items-start gap-3 text-sm text-muted">
             <input
               type="checkbox"
               className="mt-1"
@@ -221,20 +221,23 @@ export function DepositFlow({
               onChange={(event) => setAcknowledged(event.target.checked)}
             />
             <span>
-              <strong className="flex items-center gap-2 text-warn">
-                <AlertTriangle className="size-4" />
-                Irreversible-loss warning
-              </strong>
-              <span className="mt-1 block text-muted">
-                I understand that losing both the encrypted backup and its
-                passphrase permanently removes my ability to withdraw.
-                {environment === "mainnet" &&
-                  config?.shielded?.launchMode ===
-                    "experimental-single-operator" &&
-                  shieldedSetupAcknowledgement}
-              </span>
+              I have saved my encrypted backup and understand the backup and
+              setup risks.
             </span>
           </label>
+          <details className="text-sm text-muted">
+            <summary className="cursor-pointer py-2 text-xs hover:text-ink">
+              Backup and setup details
+            </summary>
+            <p className="pt-2 leading-relaxed">
+              I understand that losing both the encrypted backup and its
+              passphrase permanently removes my ability to withdraw.
+              {environment === "mainnet" &&
+                config?.shielded?.launchMode ===
+                  "experimental-single-operator" &&
+                shieldedSetupAcknowledgement}
+            </p>
+          </details>
           <Button
             size="lg"
             className="w-full"
