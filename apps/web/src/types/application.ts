@@ -164,6 +164,7 @@ export type ExternalMarket = Readonly<{
 }>;
 
 export type MarketPricePoint = Readonly<{
+  priceUnit?: string | null;
   source: "swap" | "oracle" | "reference";
   observedAt: string;
   price: string;

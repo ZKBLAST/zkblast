@@ -74,7 +74,10 @@ export class ViemChainReader implements ChainReader {
           contractAddress: log.address,
           kind,
           eventName: decoded.eventName,
-          payload: serializeArgs(decoded.args),
+          payload: {
+            ...serializeArgs(decoded.args),
+            blockTimestamp: block.timestamp.toString(),
+          },
         });
       } catch {
         /* Unknown logs are outside the protocol surface. */

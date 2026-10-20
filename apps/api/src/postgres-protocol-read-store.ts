@@ -65,7 +65,7 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
 
   async indexerStatus() {
     const rows = await this.sql.unsafe(
-      `select last_processed_block, finalized_block, updated_at from ${this.schema}.ingestion_checkpoints order by updated_at desc limit 1`,
+      `select last_processed_block, finalized_block, updated_at from ${this.schema}.ingestion_checkpoints where consumer='protocol' order by updated_at desc limit 1`,
     );
     const row = rows[0] as
       | {

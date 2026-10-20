@@ -13,7 +13,7 @@ import { executeShieldedDeposit } from "@/lib/shielded-deposit";
 import type { ShieldedNoteV1 } from "@/lib/notecrypto";
 import { TerminalTabs } from "@/components/trade/TerminalTabs";
 import { useShieldedProver } from "@/hooks/useShieldedProver";
-import { ShieldedBetaNotice } from "@/components/shielded/ShieldedBetaNotice";
+import { ShieldedRiskNotice } from "@/components/shielded/ShieldedRiskNotice";
 import {
   checkShieldedProverAssets,
   loadShieldedProver,
@@ -127,16 +127,14 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
         <section
           className={`panel ticks border-warn/40 p-5 ${compact ? "" : "lg:col-span-2"}`}
         >
-          <ShieldedBetaNotice config={config} />
-          <h2 className="wide text-sm text-warn">
-            Aggregate LP privacy boundary
-          </h2>
+          <ShieldedRiskNotice config={config} />
+          <h2 className="wide text-sm text-warn">What stays public</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
-            Shielded notes hide note ownership data, not AMM activity. Any
-            future vault-managed LP position will expose its pool, assets,
-            reserves, manager shares, investment and redemption amounts, blocks,
-            and timing. The LP manager remains undeployed pending independent
-            review and does not currently hold user funds.
+            Shielded notes protect note ownership data, not public pool
+            activity. Deposit amounts, withdrawal recipients and transaction
+            timing remain visible onchain. Public swaps and liquidity positions
+            are not shielded. This interface supports shielded deposits and
+            withdrawals.
           </p>
         </section>
         <section

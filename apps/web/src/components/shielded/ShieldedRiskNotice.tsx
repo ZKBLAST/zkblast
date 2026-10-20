@@ -1,6 +1,7 @@
 import type { PublicConfig } from "@/types/application";
+import { shieldedSetupNotice } from "@/lib/shielded-risk-copy";
 
-export function ShieldedBetaNotice({
+export function ShieldedRiskNotice({
   config,
 }: {
   config?: PublicConfig | null;
@@ -15,10 +16,8 @@ export function ShieldedBetaNotice({
       role="alert"
       className="mb-4 border border-warn/40 p-4 text-sm text-warn"
     >
-      Experimental mainnet beta. The proving setup was run by one operator and
-      has no independent audit or ceremony assurance. Funds may be lost. Use
-      only small amounts you can afford to lose. A fixed deposit denomination
-      does not cap total deposits.
+      <strong className="mb-1 block">Before you deposit</strong>
+      {shieldedSetupNotice}
     </p>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { shieldedSetupAcknowledgement } from "@/lib/shielded-risk-copy";
 import { AlertTriangle, Download } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "@/components/shell/AppProvider";
@@ -230,7 +231,7 @@ export function DepositFlow({
                 {environment === "mainnet" &&
                   config?.shielded?.launchMode ===
                     "experimental-single-operator" &&
-                  " I also accept that this experimental single-operator setup has no independent audit or ceremony assurance and that I may lose the deposited funds."}
+                  shieldedSetupAcknowledgement}
               </span>
             </span>
           </label>

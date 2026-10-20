@@ -1,19 +1,20 @@
 "use client";
 
-import { Activity, Database, Radio } from "lucide-react";
+import { Activity, Database, Radio, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
-
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { cx } from "@/lib/format";
 import {
-  type PriceSource,
+  chartIntervals,
+  formatChartPrice,
+  marketCandles,
+  type ChartInterval,
   type ChartRange,
-  useMarketPriceHistory,
-} from "@/lib/use-market-price-history";
-
-const width = 800;
-const height = 220;
-const padding = 16;
+  type ChartStyle,
+  type PriceSource,
+} from "@/lib/market-chart-data";
+import { useMarketPriceHistory } from "@/lib/use-market-price-history";
+import { PriceHistoryCanvas } from "./PriceHistoryCanvas";
 
 export function MarketPriceChart({
   marketId,
@@ -26,43 +27,69 @@ export function MarketPriceChart({
   pairLabel?: string;
   inverted?: boolean;
 }) {
-  const [source, setSource] = useState<PriceSource>("swap");
+  const [source, setSource] = useState<PriceSource>(
+    poolAddress ? "swap" : "reference",
+  );
   const [range, setRange] = useState<ChartRange>("1W");
+  const [interval, setInterval] = useState<ChartInterval>("1h");
+  const [style, setStyle] = useState<ChartStyle>("candles");
   const { items, loading, error, refresh } = useMarketPriceHistory(
     marketId,
     source,
     range,
     poolAddress,
   );
-  const observations = useMemo(
+  const bars = useMemo(
     () =>
-      items.map((item) => ({
-        ...item,
-        price:
-          source === "swap" && poolAddress && inverted
-            ? String(1 / Number(item.price))
-            : item.price,
-      })),
-    [items, source, poolAddress, inverted],
+      marketCandles(
+        items,
+        interval,
+        source === "swap" && Boolean(poolAddress) && inverted,
+      ),
+    [items, interval, source, poolAddress, inverted],
   );
-  const points = useMemo(() => chartPoints(observations), [observations]);
-  const latest = observations.at(-1);
-
+  const unit =
+    source === "swap" && poolAddress
+      ? (pairLabel?.split("/")[1] ?? "quote token")
+      : (items.find((item) => item.priceUnit)?.priceUnit ?? null);
+  const latest = bars.at(-1);
+  const observedAt = items
+    .map((item) => Date.parse(item.observedAt))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b)
+    .at(-1);
+  const available =
+    source === "swap" ? Boolean(poolAddress) : Boolean(marketId);
+  const chartKey = `${marketId}:${poolAddress}:${source}:${range}:${interval}`;
   return (
     <section
-      className="flex min-h-[24rem] flex-1 flex-col p-4"
+      className="flex min-h-[30rem] flex-1 flex-col p-4"
       aria-label="Market chart"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-faint">
-            Market chart · {range}
+          <p className="label">Market chart · {range}</p>
+          <p className="mt-2 font-mono text-lg">
+            {latest
+              ? `${formatChartPrice(latest.close)} ${unit ?? "reported units"}`
+              : "—"}
           </p>
-          <p className="mt-1 text-xs text-muted">
-            Swap observations and verified oracle reports remain separate.
+          <p className="mt-1 text-[10px] text-muted">
+            {source === "swap"
+              ? "Executed ZKBLAST pool trades"
+              : source === "oracle"
+                ? "Validated oracle reports"
+                : "External market reference"}
+            {observedAt
+              ? ` · Last observation ${new Date(observedAt).toLocaleString()}`
+              : ""}
           </p>
         </div>
-        <div className="panel-inset flex p-1" role="tablist">
+        <div
+          className="panel-inset flex flex-wrap p-1"
+          role="group"
+          aria-label="Chart data source"
+        >
           {(
             [
               ["swap", "Swap", Activity],
@@ -73,131 +100,113 @@ export function MarketPriceChart({
             <button
               key={value}
               type="button"
-              role="tab"
-              aria-selected={source === value}
+              aria-pressed={source === value}
               onClick={() => setSource(value)}
               className={cx(
-                "flex h-9 cursor-pointer items-center gap-2 px-3 font-mono text-[10px] uppercase tracking-[0.1em]",
+                "flex h-9 items-center gap-2 px-3 font-mono text-[10px] uppercase",
                 source === value
                   ? "bg-lime text-lime-ink"
                   : "text-muted hover:text-fg",
               )}
             >
-              <Icon className="size-3.5" aria-hidden="true" />
+              <Icon className="size-3.5" aria-hidden />
               {label}
             </button>
           ))}
         </div>
       </div>
-      <p className="mt-3 font-mono text-xs text-muted">
-        {source === "swap" && poolAddress
-          ? `Executed pool prices · ${pairLabel ?? "token1 per token0"}`
-          : `${source === "oracle" ? "Verified oracle reports" : "Provider reference prices"} · USD denomination`}
-        {latest
-          ? ` · Latest ${Number(latest.price).toLocaleString("en-US", { maximumSignificantDigits: 8 })} · ${new Date(latest.observedAt).toLocaleString()}`
-          : ""}
-      </p>
-      <div
-        className="mt-3 flex items-center gap-1"
-        role="group"
-        aria-label="Chart timeframe"
-      >
-        {(["1H", "1D", "1W"] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={range === value}
-            onClick={() => setRange(value)}
-            className={`h-8 cursor-pointer px-3 font-mono text-xs ${range === value ? "bg-raised text-lime" : "text-muted"}`}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-y border-line py-2">
+        <div role="group" aria-label="Chart timeframe" className="flex gap-1">
+          {(["1H", "1D", "1W", "1M"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={range === value}
+              onClick={() => setRange(value)}
+              className={`p-2 font-mono text-xs ${range === value ? "bg-raised text-lime" : "text-muted"}`}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-muted">
+            Interval{" "}
+            <select
+              value={interval}
+              onChange={(event) =>
+                setInterval(event.target.value as ChartInterval)
+              }
+              className="border border-line bg-bg p-2 text-fg"
+            >
+              {Object.keys(chartIntervals).map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="sr-only" htmlFor={`${chartKey}-style`}>
+            Chart style
+          </label>
+          <select
+            id={`${chartKey}-style`}
+            value={style}
+            onChange={(event) => setStyle(event.target.value as ChartStyle)}
+            className="border border-line bg-bg p-2 text-xs"
           >
-            {value}
+            <option value="candles">Candles</option>
+            <option value="line">Line</option>
+          </select>
+          <button
+            type="button"
+            aria-label="Refresh chart"
+            disabled={loading}
+            onClick={() => void refresh()}
+            className="p-2"
+          >
+            <RefreshCw
+              className={`size-3.5 ${loading ? "animate-spin" : ""}`}
+              aria-hidden
+            />
           </button>
-        ))}
+        </div>
       </div>
-      <div className="mt-4 flex min-h-64 flex-1 flex-col justify-center">
+      <div className="mt-3 flex min-h-80 flex-1 flex-col">
         <RealDataState
           loading={loading}
           error={error}
           empty={false}
           onRetry={refresh}
         />
-        {!loading && !error && !points.length && (
-          <p className="border border-line px-4 py-8 text-sm leading-relaxed text-muted">
-            {marketId || (source === "swap" && poolAddress)
-              ? `No ${source} prices in this timeframe. Try another source or timeframe.`
-              : "No validated feed is linked to this asset for the selected source."}
+        {!loading && !error && !bars.length && (
+          <p className="my-auto border border-line p-5 text-sm text-muted">
+            {!available
+              ? source === "swap"
+                ? "Select a market with a validated ZKBLAST pool to view its executed trades."
+                : "No market feed is linked to this asset."
+              : source === "oracle"
+                ? "No validated oracle reports in this period. Some assets do not have an independent oracle feed."
+                : `No recorded ${source} observations in this period. Try a wider timeframe or another source.`}
           </p>
         )}
-        {!!points.length && (
-          <svg
-            viewBox={`0 0 ${width} ${height}`}
-            role="img"
-            aria-label={`${source} price history`}
-            className="min-h-64 w-full flex-1 overflow-visible"
-            preserveAspectRatio="none"
-          >
-            <path
-              d={`M ${padding} ${height - padding} H ${width - padding}`}
-              className="stroke-line"
-              fill="none"
-            />
-            <polyline
-              points={points}
-              fill="none"
-              className="stroke-lime"
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-            />
-            {points.trim().split(" ").length === 1 && (
-              <circle
-                cx={points.trim().split(",")[0]}
-                cy={points.trim().split(",")[1]}
-                r="3"
-                className="fill-lime"
-              />
-            )}
-          </svg>
+        {bars.length > 0 && (
+          <PriceHistoryCanvas
+            key={chartKey}
+            bars={bars}
+            style={style}
+            label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
+          />
         )}
       </div>
+      <p className="mt-3 text-[10px] leading-relaxed text-faint">
+        {items.length} observations · {bars.length} recorded intervals. Sources
+        retain their own denomination; oracle/reference prices are not
+        executable pool quotes.
+        {items.length >= 2000
+          ? " Showing the latest 2,000 observations; use a shorter period for finer detail."
+          : ""}
+      </p>
     </section>
   );
-}
-
-function chartPoints(
-  items: readonly Readonly<{ observedAt: string; price: string }>[],
-) {
-  const valid = items
-    .map((item) => ({
-      time: Date.parse(item.observedAt),
-      price: Number(item.price),
-    }))
-    .filter(
-      (item) =>
-        Number.isFinite(item.time) &&
-        Number.isFinite(item.price) &&
-        item.price > 0,
-    );
-  if (!valid.length) return "";
-  const minTime = Math.min(...valid.map((item) => item.time));
-  const maxTime = Math.max(...valid.map((item) => item.time));
-  const minPrice = Math.min(...valid.map((item) => item.price));
-  const maxPrice = Math.max(...valid.map((item) => item.price));
-  return valid
-    .map((item, index) => {
-      const x =
-        maxTime === minTime
-          ? width / 2
-          : padding +
-            ((item.time - minTime) / (maxTime - minTime)) *
-              (width - padding * 2);
-      const y =
-        maxPrice === minPrice
-          ? height / 2
-          : height -
-            padding -
-            ((item.price - minPrice) / (maxPrice - minPrice)) *
-              (height - padding * 2);
-      return `${index ? " " : ""}${x.toFixed(2)},${y.toFixed(2)}`;
-    })
-    .join("");
 }

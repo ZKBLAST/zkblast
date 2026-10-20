@@ -47,6 +47,7 @@ const rowSchema = z.object({
 });
 
 const pricePointSchema = z.object({
+  priceUnit: z.string().nullable(),
   source: z.enum(["swap", "oracle", "reference"]),
   observedAt: z.coerce.date(),
   price: z.string(),
@@ -130,12 +131,14 @@ export class ExternalMarketService {
   ) {
     const rows = await this.#sql.unsafe(
       `select * from (select distinct on ("observedAt") * from (
-        select source,observed_at as "observedAt",price::text,volume::text,
-          block_number::text as "blockNumber",transaction_hash as "transactionHash",0 as priority
-        from ${this.schema}.external_market_price_points
-        where market_id=$1 and source=$2 and observed_at >= $3 and observed_at <= $4
+        select p.source,p.observed_at as "observedAt",p.price::text,p.volume::text,
+          p.block_number::text as "blockNumber",p.transaction_hash as "transactionHash",0 as priority,
+          case when m.source='robinhood_stock_token' or p.source='oracle' then 'USD'
+            else coalesce(m.metadata->>'chartReferenceUnit',m.metadata->>'sourceQuoteSymbol') end as "priceUnit"
+        from ${this.schema}.external_market_price_points p join ${this.schema}.external_markets m on m.id=p.market_id
+        where p.market_id=$1 and p.source=$2 and p.observed_at >= $3 and p.observed_at <= $4
         union all
-        select 'reference',observed_at,((bid+ask)/2)::text,null::text,null::text,null::text,1
+        select 'reference',observed_at,((bid+ask)/2)::text,null::text,null::text,null::text,1,'USD'
         from ${this.schema}.external_market_quotes
         where $2='reference' and market_id=$1 and currency='USD' and bid>0 and ask>=bid
           and observed_at >= $3 and observed_at <= $4

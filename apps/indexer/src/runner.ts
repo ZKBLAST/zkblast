@@ -8,6 +8,7 @@ import { z } from "zod";
 import { IndexerService } from "./indexer-service.js";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 import { ViemChainReader } from "./viem-chain-reader.js";
+import { marketChartSynchronizer } from "./market-chart-sync.js";
 
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -88,6 +89,18 @@ async function synchronize(): Promise<void> {
 }
 
 await synchronize();
+const charts = marketChartSynchronizer(
+  config,
+  getAddress(manifest.integration.poolRegistry),
+);
+void charts
+  .synchronize()
+  .catch(() => console.error("Chart source sync unavailable"));
+setInterval(() => {
+  void charts
+    .synchronize()
+    .catch(() => console.error("Chart source sync unavailable"));
+}, charts.intervalMs);
 setInterval(() => {
   void synchronize();
 }, runner.INDEXER_POLL_INTERVAL_MS);

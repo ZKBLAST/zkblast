@@ -4,6 +4,7 @@ import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
 import { validateBlockForPersistence } from "./validation.js";
 import { transactionObservation } from "./transaction-reconciliation.js";
+import { persistPoolSwap } from "./persist-pool-swap.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -102,6 +103,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
           ],
         );
         const observation = transactionObservation(event);
+        await persistPoolSwap(transaction, this.schema, event);
         if (observation)
           await transaction.unsafe(
             `insert into ${this.schema}.transactions
@@ -136,6 +138,10 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   async rewind(chainId: number, fromBlock: bigint): Promise<void> {
     await this.sql.begin(async (transaction) => {
+      await transaction.unsafe(
+        `update ${this.schema}.swaps set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
       await transaction.unsafe(
         `delete from ${this.schema}.transactions
          where chain_id=$1 and block_number >= $2

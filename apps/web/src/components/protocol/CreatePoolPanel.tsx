@@ -6,6 +6,10 @@ import { useRef, useState } from "react";
 import { CheckCircle2, ExternalLink, ShieldAlert } from "lucide-react";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
+import { PoolTokenSelect } from "./PoolTokenSelect";
+import { poolCreationTokens } from "@/lib/pool-creation-tokens";
+import { useProtocolData } from "@/lib/use-protocol-data";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import {
@@ -44,6 +48,13 @@ export function CreatePoolPanel({
   onConfirmed: () => void;
 }) {
   const { address, config, connect } = useApp();
+  const protocol = useProtocolData();
+  const markets = useExternalMarkets();
+  const tokenOptions = poolCreationTokens(
+    protocol.pools,
+    markets.items,
+    config?.chainId,
+  );
   const [form, setForm] = useState({
     model: "dlmm" as "damm" | "dlmm",
     tokenA: "",
@@ -80,6 +91,13 @@ export function CreatePoolPanel({
     onBusyChange(true);
     setNotice("");
     try {
+      if (
+        [form.tokenA, form.tokenB].some(
+          (value) =>
+            !tokenOptions.some((item) => item.address === value.toLowerCase()),
+        )
+      )
+        throw new Error("Select both token contracts on the current network.");
       if (!create) {
         const feePips = Number(parseTokenAmount(form.feePercent, 4));
         if (!Number.isInteger(feePips) || feePips < 1 || feePips >= 1000000)
@@ -165,17 +183,17 @@ export function CreatePoolPanel({
           </select>
         </label>
         {(["tokenA", "tokenB"] as const).map((key) => (
-          <label key={key} className="block text-sm">
-            Token {key === "tokenA" ? "A" : "B"} contract
-            <input
-              className={control}
-              spellCheck={false}
-              autoComplete="off"
-              value={form[key]}
-              placeholder="0x…"
-              onChange={(e) => update(key, e.target.value)}
-            />
-          </label>
+          <PoolTokenSelect
+            key={key}
+            label={`Token ${key === "tokenA" ? "A" : "B"}`}
+            value={form[key]}
+            exclude={form[key === "tokenA" ? "tokenB" : "tokenA"]}
+            options={tokenOptions}
+            loading={protocol.loading || markets.loading}
+            error={protocol.error ?? markets.error}
+            disabled={busy}
+            onChange={(value) => update(key, value)}
+          />
         ))}
         <label className="block text-sm">
           Pool fee (%)
