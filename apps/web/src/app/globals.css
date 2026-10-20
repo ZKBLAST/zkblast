@@ -179,6 +179,11 @@ body::before {
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
 }
+.content-shimmer {
+  background: linear-gradient(110deg, #171824 20%, #292b3b 40%, #171824 60%);
+  background-size: 220% 100%;
+  animation: logo-shimmer 1.6s linear infinite;
+}
 .logo-shimmer {
   background: linear-gradient(110deg, #e5e7eb 18%, #ffffff 36%, #d1d5db 54%);
   background-size: 220% 100%;

@@ -155,6 +155,43 @@ test("applies a one-percent withdrawal bound from live pool accounting", async (
   assert.equal(result.minimumAmount1, "990");
 });
 
+test("DLMM removal and full close use the position bin instead of nonexistent DAMM getters", async () => {
+  const service = new LiquidityService(
+    {
+      readContract: async (request) => {
+        if (request.functionName === "positions")
+          return [owner, pool, 1, -7951, 100n];
+        assert.equal(request.functionName, "binState");
+        assert.deepEqual(request.args, [-7951]);
+        return [1000n, 2000n, 100n, 1000000000000000000n];
+      },
+    },
+    addresses,
+    4663,
+    async () => true,
+  );
+  for (const shares of ["50", "100"]) {
+    const result = await service.prepareDecrease({
+      owner,
+      positionId: "3",
+      shares,
+      minimumAmount0: "0",
+      minimumAmount1: "0",
+      recipient: owner,
+      deadline: "2000000000",
+    });
+    assert.equal(result.minimumAmount0, shares === "50" ? "495" : "990");
+    assert.equal(result.minimumAmount1, shares === "50" ? "990" : "1980");
+    const call = decodeFunctionData({
+      abi: positionManagerAbi,
+      data: result.position.data as Hex,
+    });
+    assert.equal(call.functionName, "decreasePosition");
+    assert.equal(call.args?.[0], 3n);
+    assert.equal(call.args?.[1], BigInt(shares));
+  }
+});
+
 test("lists only live positions owned by the requested wallet", async () => {
   const other = address("10");
   const service = new LiquidityService(

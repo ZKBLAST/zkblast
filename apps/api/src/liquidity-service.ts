@@ -224,21 +224,33 @@ export class LiquidityService {
       const position = await this.ownedPosition(positionId, input.owner);
       const shares = this.positive(input.shares);
       if (shares > position[4]) throw new Error("INSUFFICIENT_POSITION_SHARES");
-      const poolAbi = position[2] === 0 ? dammPoolAbi : dlmmPoolAbi;
-      const [reserve0Value, reserve1Value, totalSharesValue] =
-        await Promise.all(
-          ["reserve0", "reserve1", "totalShares"].map((functionName) =>
-            this.client.readContract({
+      // DLMM liquidity belongs to the position's bin, not global DAMM reserves.
+      const accounting =
+        position[2] === 1
+          ? await this.client.readContract({
               address: position[1],
-              abi: poolAbi,
-              functionName,
-            }),
-          ),
-        );
+              abi: dlmmPoolAbi,
+              functionName: "binState",
+              args: [position[3]],
+            })
+          : await Promise.all(
+              ["reserve0", "reserve1", "totalShares"].map((functionName) =>
+                this.client.readContract({
+                  address: position[1],
+                  abi: dammPoolAbi,
+                  functionName,
+                }),
+              ),
+            );
+      if (!Array.isArray(accounting))
+        throw new Error("INVALID_POOL_ACCOUNTING");
+      const [reserve0Value, reserve1Value, totalSharesValue] = accounting as unknown[];
       if (
         typeof reserve0Value !== "bigint" ||
         typeof reserve1Value !== "bigint" ||
         typeof totalSharesValue !== "bigint" ||
+        reserve0Value < 0n ||
+        reserve1Value < 0n ||
         totalSharesValue <= 0n
       )
         throw new Error("INVALID_POOL_ACCOUNTING");

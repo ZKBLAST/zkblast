@@ -45,7 +45,7 @@ function LogoImage({ url, label, className = "" }: Props) {
 
   return (
     <span
-      className={`${className} grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white`}
+      className={`${className} relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white`}
       title={label}
       aria-label={label}
       aria-busy={status === "loading"}

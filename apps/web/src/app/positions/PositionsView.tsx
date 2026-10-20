@@ -195,7 +195,7 @@ function PositionItem({
       });
     } catch (error) {
       setState("failed");
-      setNotice(swapErrorMessage(error));
+      setNotice(swapErrorMessage(error, "Liquidity removal"));
     }
   }
 

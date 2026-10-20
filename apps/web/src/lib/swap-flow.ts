@@ -119,7 +119,7 @@ export async function executeTransactions(
   return finalHash;
 }
 
-export function swapErrorMessage(error: unknown): string {
+export function swapErrorMessage(error: unknown, operation = "Swap"): string {
   const messages: string[] = [];
   const visited = new Set<unknown>();
   function collect(value: unknown, depth = 0) {
@@ -141,5 +141,5 @@ export function swapErrorMessage(error: unknown): string {
     return "Transaction is pending or replaced. Check the explorer, then retry status.";
   if (/revert/iu.test(message))
     return "Transaction reverted. Refresh the quote before retrying.";
-  return "Swap could not be completed. Refresh the quote and try again.";
+  return `${operation} could not be completed. ${operation === "Swap" ? "Refresh the quote" : "Refresh the position"} and try again.`;
 }
