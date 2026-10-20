@@ -13,11 +13,11 @@ export function TokenSelect({ open, onClose, onPick, exclude }: { open: boolean;
   const list = useMemo(() => tokens.filter((t) => (t.symbol + t.name).toLowerCase().includes(q.trim().toLowerCase())), [q]);
   return (
     <Modal open={open} onClose={onClose} title="Select a token">
-      <label className="relative block">
+      <label className="search-field relative block">
         <span className="sr-only">Search tokens</span>
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" aria-hidden />
         <input data-autofocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or symbol…" autoComplete="off" spellCheck={false}
-          className="h-12 w-full rounded-sm border border-line bg-bg pl-10 pr-3 text-[16px] outline-none transition-colors placeholder:text-faint focus:border-lime/70" />
+          className="h-12 w-full rounded-sm border border-line bg-bg pl-10 pr-3 text-[16px] outline-none transition-colors placeholder:text-faint focus:border-line-strong" />
       </label>
       <div className="mt-3 flex flex-wrap gap-2">
         {["ETH", "USDC", "WBTC", "USDT"].map((s) => (

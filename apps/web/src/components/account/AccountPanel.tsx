@@ -86,7 +86,7 @@ export function AccountPanel({
       {showHistory && (
         <div>
           <h2 className="wide text-sm">Recent trade history</h2>
-          <div className="mt-4 overflow-x-auto">
+          <div className="mt-4 min-w-0 max-w-full overflow-x-auto overscroll-x-contain" role="region" aria-label="Scrollable trade history" tabIndex={0} data-lenis-prevent>
             <table className="w-full min-w-[520px] text-left text-sm">
               <thead className="border-y border-line font-mono text-[11px] uppercase text-faint">
                 <tr>

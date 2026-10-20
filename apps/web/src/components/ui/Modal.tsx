@@ -42,7 +42,7 @@ export function Modal({ open, onClose, title, children, width = "max-w-md", dism
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-6" style={{ overscrollBehavior: "contain" }}>
+        <div className="fixed inset-0 z-[100] flex items-end justify-center p-2 sm:items-center sm:p-6" style={{ overscrollBehavior: "contain" }}>
           <motion.div
             className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.12 } }}

@@ -85,7 +85,7 @@ function Terminal() {
           <div className="flex min-h-20 flex-wrap items-center gap-3 border-b border-line px-4 py-3">
             {selected && <InstrumentLogo instrument={selected} />}
             <div className="min-w-0 flex-1">
-              <h2 className="font-mono text-lg">
+              <h2 className="break-words font-mono text-lg [overflow-wrap:anywhere]">
                 {selected
                   ? `${selected.base}/${selected.quote}`
                   : "Select a market"}

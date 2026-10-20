@@ -6,7 +6,7 @@ import { cx } from "@/lib/format";
 export function Segmented<T extends string>({ value, onChange, options, label, size = "md" }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[]; label: string; size?: "sm" | "md" }) {
   const id = useId();
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-sm border border-line bg-bg p-0.5">
+    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full flex-wrap gap-1 rounded-sm border border-line bg-bg p-0.5">
       {options.map((o) => {
         const on = o.value === value;
         return (

@@ -21,7 +21,7 @@ export function AnalyticsView() {
         title="Analytics"
         lead={`Validated ${config?.environment ?? "network"} market coverage and indexer health. Invented TVL, APR, volume, and synthetic protocol values are not displayed.`}
         aside={
-          <dl className="grid grid-cols-3 gap-6">
+          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <Stat label="Markets listed" value={markets.items.length} />
             <Stat label="Active routes" value={active.length} />
             <Stat label="Lag blocks" value={protocol.metrics?.lag ?? "—"} />

@@ -62,7 +62,7 @@ export function ExternalMarkets() {
           </p>
         </div>
         <div
-          className="panel-inset flex p-1"
+          className="panel-inset flex max-w-full flex-wrap p-1"
           role="tablist"
           aria-label="External market source"
         >
@@ -94,7 +94,7 @@ export function ExternalMarkets() {
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <div
-          className="panel-inset flex p-1"
+          className="panel-inset flex max-w-full flex-wrap p-1"
           role="tablist"
           aria-label={`${environment} availability`}
         >

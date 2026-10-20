@@ -14,6 +14,8 @@ import {
   type UTCTimestamp,
 } from "lightweight-charts";
 import { Info, Maximize2 } from "lucide-react";
+import { ChartTooltip } from "./ChartTooltip";
+import { chartTooltipLeft } from "@/lib/chart-tooltip";
 import {
   formatChartPrice,
   type ChartStyle,
@@ -44,6 +46,7 @@ export function PriceHistoryCanvas({
   const fitted = useRef(false);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const [hover, setHover] = useState<MarketCandle | null>(null);
+  const [tooltipLeft, setTooltipLeft] = useState(8);
   const barsRef = useRef(bars);
   barsRef.current = bars;
   const hasVolume = volumes.length > 0;
@@ -80,7 +83,7 @@ export function PriceHistoryCanvas({
         timeVisible: true,
         secondsVisible: false,
       },
-      handleScroll: true,
+      handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
       handleScale: true,
     });
     const priceFormat = {
@@ -132,7 +135,18 @@ export function PriceHistoryCanvas({
     fitted.current = false;
     chart.subscribeCrosshairMove((event) => {
       const time =
-        typeof event.time === "number" && event.point ? event.time : null;
+        typeof event.time === "number" &&
+        event.point &&
+        event.point.x >= 0 &&
+        event.point.y >= 0 &&
+        event.point.x <= (host.current?.clientWidth ?? 0) &&
+        event.point.y <= (host.current?.clientHeight ?? 0)
+          ? event.time
+          : null;
+      if (time !== null && event.point)
+        setTooltipLeft(
+          chartTooltipLeft(event.point.x, host.current?.clientWidth ?? 0),
+        );
       setHover(
         time === null
           ? null
@@ -174,7 +188,10 @@ export function PriceHistoryCanvas({
   return (
     <div className="flex min-h-80 flex-1 flex-col">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
-        <p aria-live="off">
+        <p
+          aria-live="off"
+          className="min-w-0 break-words [overflow-wrap:anywhere]"
+        >
           {observation
             ? style === "line"
               ? `${formatChartPrice(observation.close)} ${volumeUnit ?? ""}`
@@ -229,11 +246,25 @@ export function PriceHistoryCanvas({
         </div>
       </div>
       <div
-        ref={host}
-        role="img"
-        aria-label={label}
-        className="relative min-h-72 flex-1"
-      />
+        className="relative min-h-72 min-w-0 flex-1"
+        onPointerLeave={() => setHover(null)}
+      >
+        <div
+          ref={host}
+          role="img"
+          aria-label={label}
+          className="absolute inset-0"
+        />
+        {hover && (
+          <ChartTooltip
+            bar={hover}
+            style={style}
+            unit={volumeUnit}
+            volume={volumes.find((item) => item.time === hover.time)?.value}
+            left={tooltipLeft}
+          />
+        )}
+      </div>
     </div>
   );
 }

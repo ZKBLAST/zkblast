@@ -24,7 +24,7 @@ export function TerminalTabs({
       ref={list}
       role="tablist"
       aria-label={label}
-      className="flex overflow-x-auto border-b border-line"
+      className="flex min-w-0 max-w-full overflow-x-auto overscroll-x-contain border-b border-line"
     >
       {items.map((item, index) => (
         <button

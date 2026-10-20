@@ -150,7 +150,7 @@ export function DepositFlow({
     <div className="space-y-6">
       <div>
         <p className="text-sm text-faint">Governance-approved denomination</p>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {assets.map((item) => (
             <button
               key={item.address}
@@ -159,7 +159,7 @@ export function DepositFlow({
                 setNote(null);
                 setBackupSaved(false);
               }}
-              className={`cursor-pointer border p-4 text-left ${assetAddress === item.address ? "border-lime bg-lime/[0.06]" : "border-line"}`}
+              className={`min-w-0 cursor-pointer border p-4 text-left ${assetAddress === item.address ? "border-lime bg-lime/[0.06]" : "border-line"}`}
             >
               <span className="num text-xl">
                 {formatAmount(item)} {item.symbol}

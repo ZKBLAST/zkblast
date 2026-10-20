@@ -85,7 +85,7 @@ export function MarketBrowser({
             <Plus className="size-4" aria-hidden />
           </button>
         </div>
-        <label className="m-3 flex items-center gap-2 border border-line px-3">
+        <label className="search-field m-3 flex items-center gap-2 border border-line px-3">
           <Search className="size-4 text-faint" aria-hidden />
           <input
             aria-label="Search markets"

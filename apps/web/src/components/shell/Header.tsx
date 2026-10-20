@@ -58,7 +58,7 @@ export function Header() {
             aria-label="ZKBLAST home"
             className="flex items-center border-r border-line px-4 sm:px-6 lg:w-[220px]"
           >
-            <Logo />
+            <Logo compact />
           </Link>
 
           <nav
@@ -102,7 +102,7 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 border-l border-line px-3 sm:px-4 lg:ml-0">
+          <div className="ml-auto flex min-w-0 items-center gap-1 border-l border-line px-2 sm:gap-2 sm:px-4 lg:ml-0">
             <span
               className="hidden h-9 items-center gap-2 border border-line px-2.5 font-mono text-[11px] uppercase tracking-wide text-muted xl:inline-flex"
               title="Network status"

@@ -105,7 +105,7 @@ export function PoolTokenSelect({
       )}
       {open && (
         <div className="absolute left-0 right-0 top-full z-30 mt-1 border border-line bg-bg p-2 shadow-xl">
-          <label className="flex items-center gap-2 border border-line px-2 transition-colors focus-within:border-line-strong focus-within:bg-raised">
+          <label className="search-field flex items-center gap-2 border border-line px-2 transition-colors focus-within:border-line-strong focus-within:bg-raised">
             <Search className="size-4 shrink-0 text-muted" aria-hidden />
             <input
               ref={search}
@@ -113,7 +113,7 @@ export function PoolTokenSelect({
               onChange={(event) => setQuery(event.target.value)}
               aria-label={`Search ${label}`}
               placeholder="Search name, symbol or address"
-              className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0"
+              className="token-search h-10 min-w-0 flex-1 bg-transparent text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0"
             />
           </label>
           {error && (

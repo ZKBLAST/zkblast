@@ -54,6 +54,13 @@
 }
 
 html { background: var(--color-bg); }
+main { min-width: 0; }
+fieldset { min-inline-size: 0; }
+img, svg, canvas { max-width: 100%; }
+.panel, .panel-inset { min-width: 0; }
+@media (max-width: 639px) {
+  input, select, textarea { font-size: 16px; }
+}
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
@@ -105,6 +112,9 @@ body::before {
   outline: 1px solid var(--color-lime);
   outline-offset: 2px;
 }
+.token-search:focus-visible { outline: none; }
+.search-field:focus-within { border-color: var(--color-line-strong); background-color: var(--color-raised); }
+.search-field input:focus, .search-field input:focus-visible { outline: none; box-shadow: none; }
 
 /* Panel: hairline frame, faint indigo fill, light caught on the inner edge. */
 .panel {
