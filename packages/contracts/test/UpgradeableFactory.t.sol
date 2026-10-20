@@ -88,6 +88,30 @@ contract UpgradeableFactoryTest {
         require(DlmmPool(pool).binStepBps() == 25, "bin step");
     }
 
+    function testCreatesDlmmPoolAtExplicitInitialBin() external {
+        int24 initialActiveBin = -7_740;
+        PoolKey memory key = PoolKeyLib.normalize(TOKEN_A, TOKEN_B, PoolModel.DLMM, 1_000, 25);
+        address predicted = factory.predictDlmmPoolAddress(key, address(this), initialActiveBin);
+        address pool = factory.createDlmmPool(TOKEN_B, TOKEN_A, 1_000, 25, initialActiveBin);
+
+        require(pool == predicted, "explicit create2 prediction");
+        require(DlmmPool(pool).activeBin() == initialActiveBin, "initial active bin");
+        require(DlmmPool(pool).token0() == key.token0, "normalized token0");
+        require(DlmmPool(pool).token1() == key.token1, "normalized token1");
+    }
+
+    function testRejectsDuplicateDlmmAcrossCreationPaths() external {
+        factory.createDlmmPool(TOKEN_A, TOKEN_B, 1_000, 25, -100);
+        (bool success,) = address(factory)
+            .call(
+                abi.encodeCall(
+                    PoolFactory.createPool,
+                    (TOKEN_A, TOKEN_B, PoolModel.DLMM, uint24(1_000), uint16(25))
+                )
+            );
+        require(!success, "duplicate DLMM accepted");
+    }
+
     function testRejectsDuplicatePool() external {
         factory.createPool(TOKEN_A, TOKEN_B, PoolModel.DAMM, 3_000, 0);
         (bool success,) = address(factory)

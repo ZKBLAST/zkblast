@@ -9,6 +9,7 @@ import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge } from "@/components/ui/Badges";
 import { PageHeader, Stat } from "@/components/ui/PageHeader";
 import { useExternalMarkets } from "@/lib/use-external-markets";
+import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspace";
 
 export function PoolsView() {
   const { config } = useApp();
@@ -29,6 +30,7 @@ export function PoolsView() {
         }
       />
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6">
+        <ProtocolPoolWorkspace mode="liquidity" />
         <RealDataState
           loading={data.loading}
           error={data.error}

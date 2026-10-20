@@ -472,6 +472,45 @@ export const poolFactoryAbi = [
   },
   {
     type: "function",
+    name: "createDlmmPool",
+    inputs: [
+      {
+        name: "tokenA",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "tokenB",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "feePips",
+        type: "uint24",
+        internalType: "uint24",
+      },
+      {
+        name: "binStepBps",
+        type: "uint16",
+        internalType: "uint16",
+      },
+      {
+        name: "initialActiveBin",
+        type: "int24",
+        internalType: "int24",
+      },
+    ],
+    outputs: [
+      {
+        name: "pool",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "createPool",
     inputs: [
       {
@@ -555,6 +594,62 @@ export const poolFactoryAbi = [
     ],
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "predictDlmmPoolAddress",
+    inputs: [
+      {
+        name: "key",
+        type: "tuple",
+        internalType: "struct PoolKey",
+        components: [
+          {
+            name: "token0",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "token1",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "model",
+            type: "uint8",
+            internalType: "enum PoolModel",
+          },
+          {
+            name: "feePips",
+            type: "uint24",
+            internalType: "uint24",
+          },
+          {
+            name: "binStepBps",
+            type: "uint16",
+            internalType: "uint16",
+          },
+        ],
+      },
+      {
+        name: "administrator",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "initialActiveBin",
+        type: "int24",
+        internalType: "int24",
+      },
+    ],
+    outputs: [
+      {
+        name: "predicted",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -673,6 +768,25 @@ export const poolFactoryAbi = [
     ],
     outputs: [],
     stateMutability: "payable",
+  },
+  {
+    type: "event",
+    name: "DlmmPoolInitialized",
+    inputs: [
+      {
+        name: "pool",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "initialActiveBin",
+        type: "int24",
+        indexed: false,
+        internalType: "int24",
+      },
+    ],
+    anonymous: false,
   },
   {
     type: "event",
@@ -5528,6 +5642,45 @@ export const erc20Abi = [
         name: "",
         type: "uint256",
         internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "decimals",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "name",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "symbol",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
       },
     ],
     stateMutability: "view",

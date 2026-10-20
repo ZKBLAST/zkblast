@@ -95,7 +95,6 @@ export function LiveLiquidityPanel({
             amount1: parseTokenAmount(amount1, pool.token1Decimals).toString(),
             minimumShares: "0",
             deadline: String(Math.floor(Date.now() / 1000) + 1_200),
-            ...(pool.model === "dlmm" ? { binId: 0 } : {}),
           }),
         },
       );

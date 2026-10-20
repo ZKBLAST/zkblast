@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "environment": "testnet",
+  "chainId": 46630,
+  "generatedAt": "2026-10-20T06:22:26.606Z",
+  "tokens": [
+    {
+      "address": "0x7943e237c7F95DA44E0301572D358911207852Fa",
+      "symbol": "WETH",
+      "name": "WETH",
+      "decimals": 18
+    },
+    {
+      "address": "0x7E955252E15c84f5768B83c41a71F9eba181802F",
+      "symbol": "USDG",
+      "name": "Global Dollar",
+      "decimals": 6
+    }
+  ],
+  "pool": {
+    "address": "0x0d996C5ACD383a951b5361e11C37F522d15aB839",
+    "model": "dlmm",
+    "factory": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "feePips": 3000,
+    "feeBps": 30,
+    "binStepBps": 25,
+    "initialActiveBin": -7950,
+    "activeBin": -7951,
+    "createdBlock": 139230795,
+    "liquidityStatus": "funded",
+    "binStates": [
+      {
+        "binId": -7951,
+        "state": [
+          "24940202850012",
+          "36002",
+          "977394495",
+          "2388275071"
+        ]
+      },
+      {
+        "binId": -7950,
+        "state": [
+          "40059797149988",
+          "0",
+          "978611260",
+          "2394245759"
+        ]
+      },
+      {
+        "binId": -7949,
+        "state": [
+          "19800002057502",
+          "47524",
+          "970031106",
+          "2400231373"
+        ]
+      }
+    ]
+  },
+  "positionIds": [
+    "2",
+    "3",
+    "4"
+  ],
+  "owner": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+  "reference": {
+    "observedAt": "2026-10-20T06:22:13.190Z",
+    "maximumAgeSeconds": 900,
+    "maximumDivergenceBps": 100,
+    "divergenceBps": 4,
+    "wethPriceUsdg": "2393.854878740078889648",
+    "sources": [
+      {
+        "provider": "CoinGecko",
+        "ethUsd": "2393.26",
+        "usdgUsd": "1",
+        "ethUpdatedAt": 1792477316,
+        "usdgUpdatedAt": 1792477301
+      },
+      {
+        "provider": "Coinbase",
+        "ethUsd": "2394.67",
+        "usdgUsd": "1.0000919804306414"
+      }
+    ]
+  },
+  "acceptance": {
+    "add": true,
+    "increase": true,
+    "crossBinSwap": true,
+    "decrease": true
+  },
+  "transactions": {
+    "deployImplementation": {
+      "hash": "0x43d6a68e646457e5e689d7cc9151aa29e94ae434c5ae2f728b6146dcf6930498",
+      "blockNumber": 139230776,
+      "blockHash": "0x997059299eb25fbd0881e3ee1592d103596d875e4eba040b1b41cf0f9b98fe6f",
+      "gasUsed": "4895273",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "48952730000000",
+      "status": "success"
+    },
+    "upgradeFactory": {
+      "hash": "0x8efad440ca490a3d8acd85d53262077242d7ff403483051fea3465f155e014cb",
+      "blockNumber": 139230783,
+      "blockHash": "0x3b0f759fc1ed497fe9feeff72feb501ecbc6f722f8730f9970d81d0a6340ac6c",
+      "gasUsed": "37325",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "373250000000",
+      "status": "success"
+    },
+    "createPool": {
+      "hash": "0x8b07ebfe3150e6794fbc508608c0d8d1f4e139e8b1f47bc36944d135b27ff01c",
+      "blockNumber": 139230795,
+      "blockHash": "0x272865e3d88e89afba15f5bab796b681313286786bc026d5f3fd3a6b5bdd53ea",
+      "gasUsed": "1784754",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "17847540000000",
+      "status": "success"
+    },
+    "wrapWeth": {
+      "hash": "0x5180792a32157c85e3578759f1c01eb1ce5f57c3641233edbd6c4948700a61ed",
+      "blockNumber": 139230804,
+      "blockHash": "0x9d27b67b8391ebc7f521b5cdeb8c983075d513a0d22604755908dac2a8226d87",
+      "gasUsed": "57647",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "576470000000",
+      "status": "success"
+    },
+    "approveWethPositions": {
+      "hash": "0xf37daefb2878dee74c01f463319b9a39ce71e0d34af815c5ae49ed9fa462d4ca",
+      "blockNumber": 139230810,
+      "blockHash": "0x4f4f0d39c192fbc675246a215043517befb9182a451c8fca5a8c77020bc6e18a",
+      "gasUsed": "53401",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "534010000000",
+      "status": "success"
+    },
+    "approveUsdgPositions": {
+      "hash": "0x5d449678f553b2d74963391a95eb4b90b6b4f809462aeea32e7f5148d0c163ef",
+      "blockNumber": 139230817,
+      "blockHash": "0x6d656c64c13c80a8f44a76a3cfd68ee0bc342bad8d17d8f8e3eafadfa6ab53cb",
+      "gasUsed": "57976",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "579760000000",
+      "status": "success"
+    },
+    "position:-7951": {
+      "hash": "0x5cfb9778aa1630e492b3219f2f18d1aa76ec91c87489d4af4c383876886dfadb",
+      "blockNumber": 139230823,
+      "blockHash": "0xb8d0b7569080a2747fad10367dcab6cbdfaba54a83ef9f89b7a343315e6fcc2b",
+      "gasUsed": "412078",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "4120780000000",
+      "status": "success"
+    },
+    "position:-7950": {
+      "hash": "0x41378e7eb4cf1980addca186160ac2e7ae28ba82ca22a0648266f4080cf5ca61",
+      "blockNumber": 139230832,
+      "blockHash": "0xb21e4b48cc7376b0514f7e833450297be19f6e09cb938e41088d2a137fdf1527",
+      "gasUsed": "357735",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "3577350000000",
+      "status": "success"
+    },
+    "position:-7949": {
+      "hash": "0x058627246985f25e44b4713c2f3cf448402e21d2ca1f81b558943c29941cec6b",
+      "blockNumber": 139230836,
+      "blockHash": "0xc4bc3569b63589c07355b10ad3f173da1c6025b3ce1135cf543a0ae8f1115de4",
+      "gasUsed": "357748",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "3577480000000",
+      "status": "success"
+    },
+    "increasePosition": {
+      "hash": "0xcbfb2268b15e15b405ca5e79161db1a3ab310f6599dbe2740738f506f155f0a6",
+      "blockNumber": 139230844,
+      "blockHash": "0x3e6358c9282c0d036f654718021795a070af15c9ba292c1f6aceaaca09766b97",
+      "gasUsed": "231082",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "2310820000000",
+      "status": "success"
+    },
+    "approveWethSwap": {
+      "hash": "0xf662ea4252d0555a07a755fe7ef544d29f188340c4ef1435c1a31bbf59293099",
+      "blockNumber": 139230849,
+      "blockHash": "0xe84b706253f7120cf95ec51ec11f36543c4806eba7f4126e2806f7df479fbdf8",
+      "gasUsed": "53413",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "534130000000",
+      "status": "success"
+    },
+    "swapCrossBin": {
+      "hash": "0x090048266d80ab59a83ae1573bb2d5e2c2c34c28ce913501f2c251c73654f553",
+      "blockNumber": 139230858,
+      "blockHash": "0x4cf1c00fe4c201a41282d35a71fa279403e42cfc1eed3aa23ba6f8d3b79f936a",
+      "gasUsed": "183287",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "1832870000000",
+      "status": "success"
+    },
+    "decreasePosition": {
+      "hash": "0x311546e454f69da4d300ec4af81a4a30059441ec41ce8cba279ac620d1215451",
+      "blockNumber": 139230869,
+      "blockHash": "0x6ce4d675fd0628388f093164cda57ca9977e44569c0cb4689e433dd63103636c",
+      "gasUsed": "122118",
+      "effectiveGasPriceWei": "10000000",
+      "totalFeeWei": "1221180000000",
+      "status": "success"
+    }
+  }
+}

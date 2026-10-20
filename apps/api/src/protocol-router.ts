@@ -41,7 +41,7 @@ const createLiquiditySchema = z
     amount1: integerString,
     minimumShares: integerString,
     deadline: integerString,
-    binId: z.number().int().min(-8_388_608).max(8_388_607).optional(),
+    binId: z.number().int().min(-10_000).max(10_000).optional(),
   })
   .strict();
 const positionOwnerSchema = z.object({
@@ -131,6 +131,15 @@ export function createProtocolRouter(
       }
     });
   if (liquidityService) {
+    router.get("/bins/:pool", async (request, response, next) => {
+      try {
+        response.json(
+          await liquidityService.dlmmBins(request.params.pool ?? ""),
+        );
+      } catch (error) {
+        next(error);
+      }
+    });
     router.post("/liquidity/prepare", async (request, response, next) => {
       try {
         response.json(

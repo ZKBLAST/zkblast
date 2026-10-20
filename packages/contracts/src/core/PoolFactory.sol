@@ -15,6 +15,7 @@ contract PoolFactory is ProtocolAccess, UUPSUpgradeable {
     PoolRegistry public registry;
 
     event PoolCreated(bytes32 indexed poolId, address indexed pool, PoolKey key);
+    event DlmmPoolInitialized(address indexed pool, int24 initialActiveBin);
 
     constructor() {
         _disableInitializers();
@@ -42,13 +43,23 @@ contract PoolFactory is ProtocolAccess, UUPSUpgradeable {
             revert InvalidConfiguration();
         }
         PoolKey memory key = PoolKeyLib.normalize(tokenA, tokenB, model, feePips, binStepBps);
-        bytes32 poolId = PoolKeyLib.id(key);
-        if (registry.poolById(poolId) != address(0)) revert PoolAlreadyExists();
-        pool = model == PoolModel.DAMM
-            ? address(new DammPool{ salt: poolId }(key, msg.sender))
-            : address(new DlmmPool{ salt: poolId }(key, msg.sender, 0));
-        registry.registerPool(poolId, pool, key);
-        emit PoolCreated(poolId, pool, key);
+        pool = _createPool(key, 0);
+    }
+
+    function createDlmmPool(
+        address tokenA,
+        address tokenB,
+        uint24 feePips,
+        uint16 binStepBps,
+        int24 initialActiveBin
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (address pool) {
+        if (feePips == 0 || feePips >= 1_000_000) {
+            revert InvalidConfiguration();
+        }
+        if (binStepBps == 0 || binStepBps > 1_000) revert InvalidConfiguration();
+        PoolKey memory key =
+            PoolKeyLib.normalize(tokenA, tokenB, PoolModel.DLMM, feePips, binStepBps);
+        pool = _createPool(key, initialActiveBin);
     }
 
     function predictPoolAddress(PoolKey calldata key, address administrator)
@@ -73,6 +84,43 @@ contract PoolFactory is ProtocolAccess, UUPSUpgradeable {
                 )
             )
         );
+    }
+
+    function predictDlmmPoolAddress(
+        PoolKey calldata key,
+        address administrator,
+        int24 initialActiveBin
+    ) external view returns (address predicted) {
+        if (key.model != PoolModel.DLMM || key.binStepBps == 0 || key.binStepBps > 1_000) {
+            revert InvalidConfiguration();
+        }
+        bytes32 salt = PoolKeyLib.id(key);
+        bytes32 initCodeHash = keccak256(
+            abi.encodePacked(
+                type(DlmmPool).creationCode, abi.encode(key, administrator, initialActiveBin)
+            )
+        );
+        predicted = address(
+            uint160(
+                uint256(
+                    keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, initCodeHash))
+                )
+            )
+        );
+    }
+
+    function _createPool(PoolKey memory key, int24 initialActiveBin)
+        private
+        returns (address pool)
+    {
+        bytes32 poolId = PoolKeyLib.id(key);
+        if (registry.poolById(poolId) != address(0)) revert PoolAlreadyExists();
+        pool = key.model == PoolModel.DAMM
+            ? address(new DammPool{ salt: poolId }(key, msg.sender))
+            : address(new DlmmPool{ salt: poolId }(key, msg.sender, initialActiveBin));
+        registry.registerPool(poolId, pool, key);
+        emit PoolCreated(poolId, pool, key);
+        if (key.model == PoolModel.DLMM) emit DlmmPoolInitialized(pool, initialActiveBin);
     }
 
     function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) { }

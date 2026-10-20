@@ -6,6 +6,13 @@
   "scripts": {
     "build": "forge build",
     "test": "forge test",
+    "test:dlmm-bin": "node --experimental-strip-types --test test/dlmm-bin-math.test.ts",
+    "test:dlmm": "node --experimental-strip-types --test test/dlmm-*.test.ts",
+    "plan:dlmm-upgrade": "node --import tsx scripts/prepare-dlmm-upgrade.ts",
+    "rehearse:dlmm-upgrade": "node --import tsx scripts/prepare-dlmm-upgrade.ts --rehearse",
+    "execute:dlmm-upgrade": "node --import tsx scripts/execute-dlmm-upgrade.ts",
+    "rehearse:dlmm-executor": "node --import tsx scripts/rehearse-dlmm-executor.ts",
+    "activate:testnet-dlmm": "node --import tsx scripts/activate-testnet-dlmm.ts",
     "lint": "solhint 'src/**/*.sol'",
     "typecheck": "tsc --noEmit",
     "check:artifacts": "node --experimental-strip-types scripts/check-deployment-artifacts.ts",

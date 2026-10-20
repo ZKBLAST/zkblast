@@ -45,6 +45,10 @@ async function synchronize(): Promise<void> {
   if (syncing) return;
   syncing = true;
   try {
+    const pools = await repository.registeredPoolAddresses(config.CHAIN_ID);
+    for (const pool of pools) {
+      if (!addresses.includes(pool)) addresses.push(pool);
+    }
     const checkpoint = await service.sync(
       BigInt(
         manifest.shielded

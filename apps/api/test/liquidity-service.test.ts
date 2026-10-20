@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { Address } from "viem";
+import {
+  decodeFunctionData,
+  encodeFunctionData,
+  type Abi,
+  type Address,
+  type Hex,
+} from "viem";
+import { positionManagerAbi } from "@zkblast/abi";
 import { LiquidityService } from "../src/liquidity-service.js";
 
 const address = (suffix: string) => `0x${suffix.padStart(40, "0")}` as Address;
@@ -15,6 +22,64 @@ const pool = address("6");
 const token0 = address("7");
 const token1 = address("8");
 const owner = address("9");
+
+test("DLMM creation defaults to the live negative active bin rather than parity", async () => {
+  const service = new LiquidityService(
+    {
+      readContract: async (request) => {
+        if (request.functionName === "token0") return token0;
+        if (request.functionName === "token1") return token1;
+        if (request.functionName === "activeBin") return -7951;
+        throw new Error("UNEXPECTED_READ");
+      },
+    },
+    addresses,
+    46630,
+    async () => true,
+  );
+  const prepared = await service.prepareCreate({
+    model: "dlmm",
+    pool,
+    token0,
+    token1,
+    amount0: "100",
+    amount1: "200",
+    minimumShares: "1",
+    deadline: "2000000000",
+  });
+  const call = decodeFunctionData({
+    abi: positionManagerAbi,
+    data: prepared.position.data as Hex,
+  });
+  assert.equal(call.functionName, "createDlmmPosition");
+  assert.equal(call.args?.[1], -7951);
+});
+
+test("DLMM creation rejects a bin outside the contract price bounds", async () => {
+  const service = new LiquidityService(
+    {
+      readContract: async (request) =>
+        request.functionName === "token0" ? token0 : token1,
+    },
+    addresses,
+    46630,
+    async () => true,
+  );
+  await assert.rejects(
+    service.prepareCreate({
+      model: "dlmm",
+      pool,
+      token0,
+      token1,
+      amount0: "100",
+      amount1: "200",
+      minimumShares: "1",
+      deadline: "2000000000",
+      binId: -10001,
+    }),
+    /INVALID_BIN/u,
+  );
+});
 
 test("prepares two approvals and a DAMM position call only for matching pool tokens", async () => {
   const service = new LiquidityService(
@@ -102,6 +167,16 @@ test("lists only live positions owned by the requested wallet", async () => {
             : [other, pool, 0, 0, 25n];
         if (request.functionName === "token0") return token0;
         if (request.functionName === "token1") return token1;
+        if (
+          request.functionName === "symbol" ||
+          request.functionName === "decimals"
+        )
+          assert.doesNotThrow(() =>
+            encodeFunctionData({
+              abi: request.abi as Abi,
+              functionName: String(request.functionName),
+            }),
+          );
         if (request.functionName === "symbol")
           return request.address === token0 ? "AMD" : "USDG";
         if (request.functionName === "decimals")

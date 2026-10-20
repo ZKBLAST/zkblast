@@ -57,6 +57,21 @@ export class LiquidityService {
       const token0 = getAddress(input.token0);
       const token1 = getAddress(input.token1);
       await this.assertPoolTokens(pool, input.model, token0, token1);
+      let binId = input.binId;
+      if (input.model === "dlmm") {
+        if (binId === undefined) {
+          const active = await this.client.readContract({
+            address: pool,
+            abi: dlmmPoolAbi,
+            functionName: "activeBin",
+          });
+          if (typeof active !== "number" || !Number.isInteger(active))
+            throw new Error("INVALID_ACTIVE_BIN");
+          binId = active;
+        }
+        if (!Number.isInteger(binId) || binId < -10_000 || binId > 10_000)
+          throw new Error("INVALID_BIN");
+      }
       const base = {
         manager: this.addresses.positionManager,
         pool,
@@ -68,9 +83,10 @@ export class LiquidityService {
       const position =
         input.model === "damm"
           ? buildCreateDammPosition(base)
-          : buildCreateDlmmPosition({ ...base, binId: input.binId ?? 0 });
+          : buildCreateDlmmPosition({ ...base, binId: binId! });
       return {
         chainId: this.chainId,
+        ...(input.model === "dlmm" ? { binId } : {}),
         approvals: [
           encodeTransaction(
             buildApproval(token0, this.addresses.positionManager, amount0),
@@ -80,6 +96,70 @@ export class LiquidityService {
           ),
         ],
         position: encodeTransaction(position),
+      };
+    });
+  }
+
+  async dlmmBins(poolInput: string) {
+    return this.normalize(async () => {
+      const pool = getAddress(poolInput);
+      if (!(await this.isRegisteredPool(pool)))
+        throw new Error("UNREGISTERED_POOL");
+      const model = await this.client.readContract({
+        address: pool,
+        abi: dlmmPoolAbi,
+        functionName: "model",
+      });
+      if (Number(model) !== 1) throw new Error("INVALID_POOL_MODEL");
+      const active = await this.client.readContract({
+        address: pool,
+        abi: dlmmPoolAbi,
+        functionName: "activeBin",
+      });
+      if (
+        typeof active !== "number" ||
+        !Number.isInteger(active) ||
+        active < -10_000 ||
+        active > 10_000
+      )
+        throw new Error("INVALID_ACTIVE_BIN");
+      const step = await this.client.readContract({
+        address: pool,
+        abi: dlmmPoolAbi,
+        functionName: "binStepBps",
+      });
+      const start = Math.max(-10_000, active - 8);
+      const end = Math.min(10_000, active + 8);
+      const bins = await Promise.all(
+        Array.from({ length: end - start + 1 }, async (_, index) => {
+          const binId = start + index;
+          const state = await this.client.readContract({
+            address: pool,
+            abi: dlmmPoolAbi,
+            functionName: "binState",
+            args: [binId],
+          });
+          if (
+            !Array.isArray(state) ||
+            state.length !== 4 ||
+            state.some((value) => typeof value !== "bigint" || value < 0n)
+          )
+            throw new Error("INVALID_BIN_STATE");
+          return {
+            binId,
+            reserve0: String(state[0]),
+            reserve1: String(state[1]),
+            totalShares: String(state[2]),
+            priceX18: String(state[3]),
+          };
+        }),
+      );
+      return {
+        chainId: this.chainId,
+        pool,
+        activeBin: active,
+        binStepBps: Number(step),
+        bins,
       };
     });
   }
@@ -157,9 +237,9 @@ export class LiquidityService {
       )
         throw new Error("INVALID_POOL_ACCOUNTING");
       const safeMinimum0 =
-        ((shares * reserve0Value) / totalSharesValue) * 99n / 100n;
+        (((shares * reserve0Value) / totalSharesValue) * 99n) / 100n;
       const safeMinimum1 =
-        ((shares * reserve1Value) / totalSharesValue) * 99n / 100n;
+        (((shares * reserve1Value) / totalSharesValue) * 99n) / 100n;
       const requestedMinimum0 = this.unsigned(input.minimumAmount0);
       const requestedMinimum1 = this.unsigned(input.minimumAmount1);
       return {
@@ -177,12 +257,8 @@ export class LiquidityService {
             this.addresses.positionManager,
             positionId,
             shares,
-            requestedMinimum0 > safeMinimum0
-              ? requestedMinimum0
-              : safeMinimum0,
-            requestedMinimum1 > safeMinimum1
-              ? requestedMinimum1
-              : safeMinimum1,
+            requestedMinimum0 > safeMinimum0 ? requestedMinimum0 : safeMinimum0,
+            requestedMinimum1 > safeMinimum1 ? requestedMinimum1 : safeMinimum1,
             getAddress(input.recipient),
             this.positive(input.deadline),
           ),

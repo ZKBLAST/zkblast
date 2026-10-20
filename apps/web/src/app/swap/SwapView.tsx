@@ -5,6 +5,7 @@ import { ExternalLink } from "lucide-react";
 import { useApp } from "@/components/shell/AppProvider";
 import { ExternalMarketSwapCard } from "@/components/swap/ExternalMarketSwapCard";
 import { Button } from "@/components/ui/Button";
+import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspace";
 
 export function SwapView() {
   const { address, config, connect, trades } = useApp();
@@ -61,6 +62,7 @@ export function SwapView() {
       <aside>
         <div className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
           <ExternalMarketSwapCard />
+          <ProtocolPoolWorkspace mode="swap" />
         </div>
       </aside>
     </div>

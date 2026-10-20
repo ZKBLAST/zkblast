@@ -23,7 +23,15 @@ const protocol = await loadDeploymentManifestFile(
   { environment: "testnet", chainId: config.CHAIN_ID },
 );
 const market = JSON.parse(
-  await readFile(path.resolve(root, "deployments/testnet/market.json"), "utf8"),
+  await readFile(
+    path.resolve(
+      root,
+      process.argv.includes("--dlmm")
+        ? "deployments/testnet/dlmm-market.json"
+        : "deployments/testnet/market.json",
+    ),
+    "utf8",
+  ),
 ) as {
   chainId: number;
   pool: { address: string };
@@ -86,12 +94,16 @@ try {
     await reader.block(BigInt(blocks.at(-1) ?? 0)),
     config.CHAIN_ID,
   );
+  const consumer = process.argv.includes("--dlmm")
+    ? "dlmm-acceptance"
+    : "market-acceptance";
   await sql.unsafe(
-    `insert into zkblast_testnet.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ('market-acceptance',$1,$2,$3,$2) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
+    `insert into zkblast_testnet.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ($4,$1,$2,$3,$2) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
     [
       config.CHAIN_ID,
       lastBlock.number.toString(),
       lastBlock.hash.toLowerCase(),
+      consumer,
     ],
   );
   console.log(

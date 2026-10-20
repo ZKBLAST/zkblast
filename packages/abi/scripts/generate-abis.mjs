@@ -21,7 +21,7 @@ const contracts = [
   ["zkBlastVaultAbi", "ZKBlastVault"],
   ["shieldedStateRegistryAbi", "ShieldedStateRegistry"],
   ["shieldedLPManagerAbi", "ShieldedLPManager"],
-  ["erc20Abi", "IERC20Minimal"],
+  ["erc20Abi", "IERC20Metadata"],
 ];
 
 const sections = await Promise.all(

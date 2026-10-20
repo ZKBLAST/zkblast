@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { getAddress } from "viem";
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
 import { validateBlockForPersistence } from "./validation.js";
@@ -40,6 +41,14 @@ export class PostgresIndexerRepository implements IndexerRepository {
           finalizedBlock: BigInt(row.finalized_block),
         }
       : null;
+  }
+
+  async registeredPoolAddresses(chainId: number) {
+    const rows = await this.sql.unsafe<{ address: string }[]>(
+      `select address from ${this.schema}.pools where chain_id=$1 and status <> 'retired'`,
+      [chainId],
+    );
+    return rows.map((row) => getAddress(row.address));
   }
 
   async canonicalHash(
