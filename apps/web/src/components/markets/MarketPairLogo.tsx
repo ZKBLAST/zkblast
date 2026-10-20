@@ -34,6 +34,7 @@ export function marketDisplayQuoteSymbol(market: MarketPairSource) {
 
 export function MarketPairLogo({ market }: { market: ExternalMarket }) {
   const quote = preferredMarketPair(market);
+  const quoteSymbol = (quote?.quoteSymbol ?? market.quoteSymbol).toUpperCase();
 
   return (
     <span
@@ -47,11 +48,9 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
       />
       <AssetLogo
         url={
+          KNOWN_ASSET_LOGOS[quoteSymbol] ??
           quote?.logoUrl ??
           market.quoteLogoUrl ??
-          KNOWN_ASSET_LOGOS[
-            (quote?.quoteSymbol ?? market.quoteSymbol).toUpperCase()
-          ] ??
           null
         }
         label={quote?.quoteSymbol ?? market.quoteSymbol}
@@ -62,9 +61,9 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
 }
 
 const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
-  USDG: "https://mintcdn.com/paxos-0ac97319/ykAU2vouTvwgGjtD/images/usdg.png?fit=max&auto=format&n=ykAU2vouTvwgGjtD&q=85&s=3a2dfa481556c8322f0271baedb00afe",
-  WETH: "https://images.cryptorank.io/coins/weth1701090834118.png",
-  ETH: "https://metamask.io/_next/image?url=https%3A%2F%2Fpolymarket-upload.s3.us-east-2.amazonaws.com%2FETH%2Bfullsize.jpg&w=640&q=75",
+  USDG: "/api/asset-logo/USDG",
+  WETH: "/api/asset-logo/WETH",
+  ETH: "/api/asset-logo/ETH",
 };
 
 export function ProtocolPairLogo({
@@ -88,12 +87,12 @@ export function ProtocolPairLogo({
       aria-label={`${base}/${quote}`}
     >
       <AssetLogo
-        url={market?.logoUrl ?? KNOWN_ASSET_LOGOS[base.toUpperCase()] ?? null}
+        url={KNOWN_ASSET_LOGOS[base.toUpperCase()] ?? market?.logoUrl ?? null}
         label={base}
         className="absolute left-0 top-0 z-10"
       />
       <AssetLogo
-        url={pair?.logoUrl ?? KNOWN_ASSET_LOGOS[quote.toUpperCase()] ?? null}
+        url={KNOWN_ASSET_LOGOS[quote.toUpperCase()] ?? pair?.logoUrl ?? null}
         label={quote}
         className="absolute left-5 top-1"
       />
@@ -112,9 +111,11 @@ function AssetLogo({
 }) {
   const [failed, setFailed] = useState(false);
   const [square, setSquare] = useState(false);
+  const [loading, setLoading] = useState(Boolean(url));
   useEffect(() => {
     setFailed(false);
     setSquare(false);
+    setLoading(Boolean(url));
   }, [url]);
 
   return (
@@ -123,21 +124,26 @@ function AssetLogo({
       title={label}
     >
       {url && !failed ? (
-        <img
-          src={url}
-          alt=""
-          className={
-            square
-              ? "size-full scale-[1.08] object-cover"
-              : "size-full object-contain p-1"
-          }
-          referrerPolicy="no-referrer"
-          onLoad={(event) => {
-            const image = event.currentTarget;
-            setSquare(isNearlySquare(image.naturalWidth, image.naturalHeight));
-          }}
-          onError={() => setFailed(true)}
-        />
+        <>
+          {loading && (
+            <span className="logo-shimmer absolute inset-0 rounded-full" aria-hidden="true" />
+          )}
+          <img
+            src={url}
+            alt=""
+            className={`${square ? "size-full scale-[1.08] object-cover" : "size-full object-contain p-1"} transition-opacity duration-200 ${loading ? "opacity-0" : "opacity-100"}`}
+            referrerPolicy="no-referrer"
+            onLoad={(event) => {
+              const image = event.currentTarget;
+              setSquare(isNearlySquare(image.naturalWidth, image.naturalHeight));
+              setLoading(false);
+            }}
+            onError={() => {
+              setLoading(false);
+              setFailed(true);
+            }}
+          />
+        </>
       ) : (
         <CircleDashed className="size-4 text-black" aria-hidden="true" />
       )}

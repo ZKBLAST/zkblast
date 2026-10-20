@@ -175,6 +175,16 @@ body::before {
   background-size: 48px 48px;
 }
 
+@keyframes logo-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+.logo-shimmer {
+  background: linear-gradient(110deg, #e5e7eb 18%, #ffffff 36%, #d1d5db 54%);
+  background-size: 220% 100%;
+  animation: logo-shimmer 1.15s linear infinite;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }

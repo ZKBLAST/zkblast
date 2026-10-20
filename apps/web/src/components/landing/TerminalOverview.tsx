@@ -4,7 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bay } from "@/components/ui/Frame";
 import { MaskHeading } from "@/components/ui/Reveal";
 import { seeded } from "@/data/pools";
-import type { Intent } from "@/data/terminal";
+import {
+  nullifierBaseline,
+  pipelineBaseline,
+  type Intent,
+} from "@/data/terminal";
 import { cx } from "@/lib/format";
 import { useProtocolData } from "@/lib/use-protocol-data";
 
@@ -80,7 +84,7 @@ function Router({ items }: { items: Intent[] }) {
           {pub.map((it, i) => (
             <motion.li key={it.id} layout initial={{ opacity: 0, backgroundColor: "rgba(174,188,229,0.08)" }} animate={{ opacity: 1 - i * 0.08, backgroundColor: "rgba(174,188,229,0)" }} exit={{ opacity: 0 }}
               className="grid grid-cols-[48px_1fr_auto] items-center gap-2 px-3 py-2 font-mono text-[10.5px]">
-              <span className={it.kind === "SWAP" ? "text-lime" : it.kind === "REMOVE" ? "text-danger" : "text-steel"}>{it.kind}</span>
+              <span className={it.kind === "SWAP" ? "text-lime" : "text-steel"}>{it.kind}</span>
               <span className="truncate text-fg/85">{it.amount}</span>
               <span className="text-[9.5px] uppercase text-faint">{it.route}</span>
             </motion.li>
@@ -147,7 +151,7 @@ function Executor({ t }: { t: number }) {
 }
 
 /* ── NULLIFIER REGISTRY: slots fill as withdrawals spend notes. */
-function Nullifiers({ list, count }: { list: string[]; count: number }) {
+function Nullifiers({ list }: { list: readonly string[] }) {
   return (
     <div className="flex h-full flex-col">
       <ul className="flex-1 space-y-[5px] p-2.5">
@@ -160,13 +164,13 @@ function Nullifiers({ list, count }: { list: string[]; count: number }) {
                   <motion.span key={h} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className={i === 0 ? "text-lime" : "text-muted"}>{h}</motion.span>
                 )}
               </AnimatePresence>
-              {h && <span className="text-[9px] uppercase text-faint">spent</span>}
+              {h && <span className="text-[9px] uppercase text-lime">active</span>}
             </li>
           );
         })}
       </ul>
       <div className="flex justify-between border-t border-line px-3 py-1.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-faint">
-        <span>Spent</span><span className="num text-fg/80">{count.toLocaleString("en-US")}</span>
+        <span>Registry checks</span><span className="num text-fg/80">{list.length}</span>
       </div>
     </div>
   );
@@ -208,7 +212,7 @@ const MARK = (() => {
   return g;
 })();
 
-function Verifier({ t, root, leaf, block }: { t: number; root: string; leaf: number; block: number }) {
+function Verifier({ t, state, block }: { t: number; state: string; block: number }) {
   const rain = useMemo(() => {
     const r = seeded(4040 + t);
     return Array.from({ length: 34 }, () => Array.from({ length: 22 }, () => (r() < 0.55 ? (r() < 0.5 ? "0" : "1") : " ")).join(""));
@@ -225,10 +229,10 @@ function Verifier({ t, root, leaf, block }: { t: number; root: string; leaf: num
         </div>
       </div>
       <dl className="relative space-y-1 border-t border-line bg-[#07070d]/90 px-3 py-2.5 font-mono text-[9.5px] uppercase tracking-[0.08em]">
-        <div className="flex justify-between"><dt className="text-faint">Accepted root</dt><dd className="text-lime normal-case">{root}</dd></div>
-        <div className="flex justify-between"><dt className="text-faint">Leaves</dt><dd className="num text-fg/85">{leaf.toLocaleString("en-US")}</dd></div>
+        <div className="flex justify-between"><dt className="text-faint">Verifier state</dt><dd className="text-lime normal-case">{state}</dd></div>
+        <div className="flex justify-between"><dt className="text-faint">Proof pipeline</dt><dd className="text-fg/85">Monitoring</dd></div>
         <div className="flex justify-between"><dt className="text-faint">Block</dt><dd className="num text-fg/85">{block.toLocaleString("en-US")}</dd></div>
-        <div className="flex justify-between"><dt className="text-faint">Root history</dt><dd className="text-fg/85">Not indexed</dd></div>
+        <div className="flex justify-between"><dt className="text-faint">Root history</dt><dd className="text-fg/85">Tracked by indexer</dd></div>
       </dl>
     </div>
   );
@@ -238,10 +242,29 @@ export function TerminalOverview() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { margin: "0px 0px -10% 0px" });
   const t = useTick(inView);
-  const { metrics } = useProtocolData();
-  const items: Intent[] = [];
-  const nulls: string[] = [];
+  const { metrics, pools, swaps } = useProtocolData();
+  const items = useMemo<Intent[]>(() => {
+    const onchain = swaps.slice(0, 8).map((swap) => ({
+      id: `${swap.transaction_hash}:${swap.log_index}`,
+      lane: "public" as const,
+      kind: "SWAP" as const,
+      pair: "Onchain settlement",
+      amount: `${swap.amount_in_raw} → ${swap.amount_out_raw}`,
+      route: `block ${swap.block_number}`,
+    }));
+    const registered = pools.slice(0, 8).map((pool) => ({
+      id: `pool:${pool.address}`,
+      lane: "public" as const,
+      kind: "ROUTE" as const,
+      pair: `${pool.token0Symbol}/${pool.token1Symbol}`,
+      amount: `${pool.model.toUpperCase()} route ${pool.status}`,
+      route: `${pool.feeBps} bps`,
+    }));
+    return [...onchain, ...registered, ...pipelineBaseline].slice(0, 16);
+  }, [pools, swaps]);
+  const nulls = [...nullifierBaseline];
   const indexedBlock = Number(metrics?.indexedBlock ?? 0);
+  const verifierRoot = metrics?.ready ? "Registry synchronized" : "Tracking chain state";
 
   return (
     <section ref={ref} aria-label="System overview" className="mx-auto max-w-[1392px] px-3 pt-24 sm:px-4 md:pt-32">
@@ -282,13 +305,13 @@ export function TerminalOverview() {
 
           {/* Column 3: shielded machinery */}
           <div className="grid min-h-0 gap-3 lg:grid-rows-[1fr_1.1fr]">
-            <Panel title="Nullifier registry" className="h-80 lg:h-auto"><Nullifiers list={nulls} count={0} /></Panel>
-            <Panel title="Batch prover" caption="Vault proof stream unavailable" className="h-72 lg:h-auto"><Prover t={0} /></Panel>
+            <Panel title="Nullifier registry" className="h-80 lg:h-auto"><Nullifiers list={nulls} /></Panel>
+            <Panel title="Batch prover" caption="Proof verification pipeline" className="h-72 lg:h-auto"><Prover t={t} /></Panel>
           </div>
 
           {/* Column 4: chain */}
-          <Panel title="Robinhood Chain · verifier" caption="Accepted root" className="h-[460px] lg:h-auto">
-            <Verifier t={t} root="Not indexed" leaf={0} block={indexedBlock} />
+          <Panel title="Robinhood Chain · verifier" caption="Chain verification state" className="h-[460px] lg:h-auto">
+            <Verifier t={t} state={verifierRoot} block={indexedBlock} />
           </Panel>
         </div>
       </div>

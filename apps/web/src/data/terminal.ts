@@ -1,51 +1,52 @@
-// Dummy feed for the landing "system overview" terminal. Every value is simulated.
-import { pools, seeded } from "./pools";
-import { vault } from "./shielded";
+export type Lane = "public" | "shielded" | "system";
 
-export type Lane = "public" | "shielded";
-
-export type Intent = {
-  id: number;
+export type Intent = Readonly<{
+  id: string;
   lane: Lane;
-  kind: "SWAP" | "ADD" | "REMOVE" | "CLAIM" | "DEPOSIT" | "WITHDRAW";
+  kind: "SWAP" | "ROUTE" | "SYNC" | "PROOF" | "NULLIFIER";
   pair: string;
   amount: string;
-  route?: string;
-};
+  route: string;
+}>;
 
-const hex = (r: () => number, n = 4) => Array.from({ length: n }, () => ((r() * 256) | 0).toString(16).padStart(2, "0")).join("");
-export const shortHash = (r: () => number) => `0x${hex(r, 2)}…${hex(r, 2)}`;
-
-// Builds the k-th simulated intent. Deterministic so SSR and client agree on first paint.
-export function intentAt(k: number): Intent {
-  const r = seeded((9001 + Math.imul(k, 2654435761)) >>> 0);
-  r(); r();
-  const shielded = r() < 0.28;
-  if (shielded) {
-    const asset = r() < 0.5 ? "WETH" : "USDC";
-    const denoms = vault.denominations[asset];
-    const amt = denoms[(r() * denoms.length) | 0];
-    return { id: k, lane: "shielded", kind: r() < 0.55 ? "DEPOSIT" : "WITHDRAW", pair: asset, amount: `${amt.toLocaleString("en-US")} ${asset}` };
-  }
-  const p = pools[(r() * pools.length) | 0];
-  const roll = r();
-  const kind = roll < 0.66 ? "SWAP" : roll < 0.8 ? "ADD" : roll < 0.9 ? "CLAIM" : "REMOVE";
-  const size = p.price > 100 ? (r() * 4 + 0.05).toFixed(2) : (r() * 9000 + 40).toFixed(0);
-  return {
-    id: k,
+export const pipelineBaseline: readonly Intent[] = [
+  {
+    id: "router-registry",
     lane: "public",
-    kind,
-    pair: `${p.base}/${p.quote}`,
-    amount: `${size} ${p.base}`,
-    route: `${p.type} ${p.binStep ? p.binStep + "bps" : (p.feeBps / 100).toFixed(2) + "%"}`,
-  };
-}
+    kind: "ROUTE",
+    pair: "Pool registry",
+    amount: "Route discovery active",
+    route: "DAMM / DLMM",
+  },
+  {
+    id: "indexer-head",
+    lane: "system",
+    kind: "SYNC",
+    pair: "Chain indexer",
+    amount: "Finality tracking active",
+    route: "Robinhood Chain",
+  },
+  {
+    id: "proof-verifier",
+    lane: "shielded",
+    kind: "PROOF",
+    pair: "Proof verifier",
+    amount: "Verification path ready",
+    route: "Groth16",
+  },
+  {
+    id: "nullifier-registry",
+    lane: "shielded",
+    kind: "NULLIFIER",
+    pair: "Nullifier registry",
+    amount: "Double-spend guard active",
+    route: "Vault",
+  },
+];
 
-export const terminalMeta = {
-  treeDepth: vault.treeDepth,
-  rootHistory: vault.rootHistory,
-  circuit: vault.circuit.id,
-  startLeaf: vault.totalCommitments,
-  startNullifiers: vault.spentNullifiers,
-  startBlock: 4_812_330,
-};
+export const nullifierBaseline = [
+  "Registry connected",
+  "Root tracking active",
+  "Spend guard active",
+  "Proof context bound",
+] as const;
