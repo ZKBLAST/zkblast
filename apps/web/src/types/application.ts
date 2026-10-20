@@ -121,6 +121,7 @@ export type ExternalMarket = Readonly<{
   symbol: string;
   name: string;
   quoteSymbol: string;
+  quoteLogoUrl: string | null;
   status: "active" | "halted" | "inactive";
   readOnly: boolean;
   marketRegion: "unclassified" | "crypto" | "us" | "china";
@@ -130,7 +131,7 @@ export type ExternalMarket = Readonly<{
   logoStatus: "pending" | "approved" | "rejected" | "missing";
   oracleProvider: string | null;
   pairCandidates: readonly Readonly<{
-    quoteSymbol: "USDG" | "WETH";
+    quoteSymbol: "USDG" | "WETH" | "ETH";
     logoUrl: string | null;
     quoteAddress: string;
     executionChainId: number;

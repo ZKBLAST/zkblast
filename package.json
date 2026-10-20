@@ -75,6 +75,8 @@
     "markets:sync:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run sync:external-markets",
     "markets:sync:stocks:testnet": "dotenv -e .env.testnet -- env MARKET_SYNC_SCOPE=stocks pnpm --filter @zkblast/indexer run sync:external-markets",
     "markets:sync:pons:testnet": "dotenv -e .env.testnet -- env MARKET_SYNC_SCOPE=pons pnpm --filter @zkblast/indexer run sync:external-markets",
+    "markets:validate:pons-trending:mainnet": "dotenv -e .env.mainnet -- node scripts/import-mainnet-pons-trending.mjs",
+    "markets:import:pons-trending:mainnet": "dotenv -e .env.mainnet -- env CONFIRM_MAINNET_PONS_TRENDING=IMPORT_ZKBLAST_MAINNET_PONS_TRENDING node scripts/import-mainnet-pons-trending.mjs",
     "markets:sync:swaps:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run sync:external-market-swaps",
     "markets:sync:oracles:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run sync:external-market-oracles",
     "markets:sync:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run sync:external-markets",

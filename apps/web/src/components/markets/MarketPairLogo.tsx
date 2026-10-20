@@ -14,7 +14,7 @@ export function isNearlySquare(width: number, height: number) {
 type MarketPairSource = Readonly<{
   quoteSymbol: string;
   pairCandidates: readonly Readonly<{
-    quoteSymbol: "USDG" | "WETH";
+    quoteSymbol: "USDG" | "WETH" | "ETH";
     logoUrl: string | null;
     routeStatus: "planned" | "observed" | "validated" | "disabled";
   }>[];
@@ -46,7 +46,14 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
         className="absolute left-0 top-0 z-10"
       />
       <AssetLogo
-        url={quote?.logoUrl ?? null}
+        url={
+          quote?.logoUrl ??
+          market.quoteLogoUrl ??
+          KNOWN_ASSET_LOGOS[
+            (quote?.quoteSymbol ?? market.quoteSymbol).toUpperCase()
+          ] ??
+          null
+        }
         label={quote?.quoteSymbol ?? market.quoteSymbol}
         className="absolute left-5 top-1"
       />
@@ -57,7 +64,7 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
 const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
   USDG: "https://mintcdn.com/paxos-0ac97319/ykAU2vouTvwgGjtD/images/usdg.png?fit=max&auto=format&n=ykAU2vouTvwgGjtD&q=85&s=3a2dfa481556c8322f0271baedb00afe",
   WETH: "https://images.cryptorank.io/coins/weth1701090834118.png",
-  ETH: "https://pbs.twimg.com/media/HM8jiM9WAAAGui1?format=webp&name=large",
+  ETH: "https://metamask.io/_next/image?url=https%3A%2F%2Fpolymarket-upload.s3.us-east-2.amazonaws.com%2FETH%2Bfullsize.jpg&w=640&q=75",
 };
 
 export function ProtocolPairLogo({
