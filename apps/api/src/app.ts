@@ -214,6 +214,13 @@ export function createApp(
     _next,
   ) => {
     void _next;
+    const unknownError: unknown = error;
+    const internalCode =
+      unknownError &&
+      typeof unknownError === "object" &&
+      "code" in unknownError
+        ? String(unknownError.code)
+        : "UNCLASSIFIED";
     const invalidRequest =
       error instanceof SyntaxError || error instanceof z.ZodError;
     const authenticationFailure =
@@ -226,13 +233,29 @@ export function createApp(
       ].includes(error.message);
     const usernameConflict =
       error instanceof Error && error.message === "USERNAME_TAKEN";
+    const databaseCapacity =
+      error instanceof Error && error.message.includes("EMAXCONNSESSION");
     const status = invalidRequest
       ? 400
       : authenticationFailure
         ? 401
         : usernameConflict
           ? 409
-          : 500;
+          : databaseCapacity
+            ? 503
+            : 500;
+    if (status === 500) {
+      console.error(
+        JSON.stringify({
+          event: "request_error",
+          code: internalCode,
+          category:
+            internalCode === "XX000" || internalCode === "EMAXCONNSESSION"
+              ? "database_capacity"
+              : "internal",
+        }),
+      );
+    }
     response.status(status).json({
       error: {
         code: invalidRequest
@@ -241,7 +264,9 @@ export function createApp(
             ? "AUTHENTICATION_FAILED"
             : usernameConflict
               ? "USERNAME_TAKEN"
-              : "INTERNAL_ERROR",
+              : databaseCapacity
+                ? "TEMPORARILY_UNAVAILABLE"
+                : "INTERNAL_ERROR",
       },
     });
   };

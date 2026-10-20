@@ -65,7 +65,11 @@ export class ExternalMarketService {
   ) {
     if (!/^zkblast_(testnet|mainnet)$/u.test(schema))
       throw new Error("Invalid schema");
-    this.#sql = postgres(databaseUrl, { max: 3, prepare: true });
+    this.#sql = postgres(databaseUrl, {
+      max: 1,
+      prepare: false,
+      idle_timeout: 10,
+    });
   }
 
   async list(

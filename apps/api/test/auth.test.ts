@@ -107,3 +107,37 @@ void test("wallet signature creates a secure server session", async () => {
 void test("compact EIP-2098 wallet signature creates a session", async () => {
   await verifyLogin(account, true);
 });
+
+void test("database session exhaustion returns a retryable sanitized error", async () => {
+  const store: AuthStore = {
+    async createChallenge() {
+      throw new Error("(EMAXCONNSESSION) max clients reached in session mode");
+    },
+    async consumeChallenge() {
+      throw new Error("not reached");
+    },
+  };
+  const authService = new AuthService(store, {
+    chainId: 46_630,
+    domain: "127.0.0.1:3000",
+    origin: "http://127.0.0.1:3000",
+  });
+  const app = createApp(
+    {
+      environment: "testnet",
+      chainId: 46_630,
+      chainName: "Test Chain",
+      explorerUrl: "https://explorer.example",
+      webOrigin: "http://127.0.0.1:3000",
+    },
+    { authService },
+  );
+
+  const response = await request(app)
+    .post("/v1/auth/challenge")
+    .send({ walletAddress: account.address });
+  assert.equal(response.status, 503);
+  assert.deepEqual(response.body, {
+    error: { code: "TEMPORARILY_UNAVAILABLE" },
+  });
+});

@@ -10,7 +10,11 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
   constructor(databaseUrl: string, schema: string) {
     if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
     this.schema = schema;
-    this.sql = postgres(databaseUrl, { max: 4, prepare: true });
+    this.sql = postgres(databaseUrl, {
+      max: 1,
+      prepare: false,
+      idle_timeout: 10,
+    });
   }
 
   pools(query: PageQuery) {

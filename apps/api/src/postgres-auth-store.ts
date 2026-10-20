@@ -82,11 +82,11 @@ export class PostgresAuthStore
       throw new Error("INVALID_DATABASE_SCHEMA");
     }
     this.sql = postgres(databaseUrl, {
-      max: 5,
+      max: 1,
       prepare: false,
       ssl: "require",
       connect_timeout: 15,
-      idle_timeout: 20,
+      idle_timeout: 10,
     });
   }
 
