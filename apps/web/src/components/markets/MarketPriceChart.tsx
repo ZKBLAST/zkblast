@@ -1,8 +1,16 @@
 "use client";
 
-import { Activity, Database, Radio, RefreshCw } from "lucide-react";
+import {
+  Activity,
+  ChartCandlestick,
+  ChartLine,
+  Database,
+  Radio,
+  RefreshCw,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { RealDataState } from "@/components/protocol/real-data-state";
+import { SelectMenu } from "@/components/ui/SelectMenu";
 import { cx } from "@/lib/format";
 import {
   chartRangeForInterval,
@@ -28,12 +36,10 @@ export function MarketPriceChart({
   pairLabel?: string;
   inverted?: boolean;
 }) {
-  const [source, setSource] = useState<PriceSource>(
-    poolAddress ? "swap" : "reference",
-  );
+  const [source, setSource] = useState<PriceSource>("oracle");
   const [interval, setInterval] = useState<ChartInterval>("1h");
   const range = chartRangeForInterval[interval];
-  const [style, setStyle] = useState<ChartStyle>("candles");
+  const [style, setStyle] = useState<ChartStyle>("line");
   const { items, loading, error, refresh } = useMarketPriceHistory(
     marketId,
     source,
@@ -144,18 +150,15 @@ export function MarketPriceChart({
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <label className="sr-only" htmlFor={`${chartKey}-style`}>
-            Chart style
-          </label>
-          <select
-            id={`${chartKey}-style`}
+          <SelectMenu<ChartStyle>
+            label="Chart style"
             value={style}
-            onChange={(event) => setStyle(event.target.value as ChartStyle)}
-            className="border border-line bg-bg p-2 text-xs"
-          >
-            <option value="candles">Candles</option>
-            <option value="line">Line</option>
-          </select>
+            onChange={setStyle}
+            options={[
+              { value: "line", label: "Line", icon: ChartLine },
+              { value: "candles", label: "Candles", icon: ChartCandlestick },
+            ]}
+          />
           <button
             type="button"
             aria-label="Refresh chart"

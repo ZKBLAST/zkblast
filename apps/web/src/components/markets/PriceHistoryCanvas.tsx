@@ -5,7 +5,9 @@ import {
   CandlestickSeries,
   ColorType,
   createChart,
-  LineSeries,
+  AreaSeries,
+  LineStyle,
+  LineType,
   HistogramSeries,
   type IChartApi,
   type ISeriesApi,
@@ -37,7 +39,7 @@ export function PriceHistoryCanvas({
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<
-    ISeriesApi<"Line"> | ISeriesApi<"Candlestick"> | null
+    ISeriesApi<"Area"> | ISeriesApi<"Candlestick"> | null
   >(null);
   const fitted = useRef(false);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
@@ -55,10 +57,24 @@ export function PriceHistoryCanvas({
         attributionLogo: true,
       },
       grid: {
-        vertLines: { color: "#ffffff08" },
-        horzLines: { color: "#ffffff08" },
+        vertLines: { color: "#ffffff08", visible: style === "candles" },
+        horzLines: {
+          color: style === "line" ? "#1d1e2e" : "#ffffff08",
+          style: style === "line" ? LineStyle.Dashed : LineStyle.Solid,
+        },
       },
-      rightPriceScale: { borderColor: "#252635" },
+      rightPriceScale: {
+        borderColor: "#252635",
+        visible: style === "candles",
+        scaleMargins:
+          style === "line"
+            ? { top: 0.05, bottom: 0.05 }
+            : { top: 0.2, bottom: 0.1 },
+      },
+      crosshair: {
+        vertLine: { color: "#a3a8c0", style: LineStyle.Solid, width: 1 },
+        horzLine: { visible: style === "candles" },
+      },
       timeScale: {
         borderColor: "#252635",
         timeVisible: true,
@@ -82,10 +98,20 @@ export function PriceHistoryCanvas({
             borderVisible: false,
             priceFormat,
           })
-        : chart.addSeries(LineSeries, {
-            color: "#dfe2ed",
+        : chart.addSeries(AreaSeries, {
+            lineColor: "#dfe3ee",
+            topColor: "rgba(223,227,238,0.22)",
+            bottomColor: "rgba(223,227,238,0)",
             lineWidth: 2,
+            lineType: LineType.Curved,
             pointMarkersVisible: true,
+            pointMarkersRadius: 3,
+            crosshairMarkerRadius: 5,
+            crosshairMarkerBorderWidth: 2,
+            crosshairMarkerBorderColor: "#0c0c15",
+            crosshairMarkerBackgroundColor: "#dfe3ee",
+            priceLineVisible: false,
+            lastValueVisible: false,
             priceFormat,
           });
     chartRef.current = chart;
@@ -130,13 +156,15 @@ export function PriceHistoryCanvas({
       (series as ISeriesApi<"Candlestick">).setData(
         bars.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
       );
-    else
-      (series as ISeriesApi<"Line">).setData(
+    else {
+      const area = series as ISeriesApi<"Area">;
+      area.setData(
         bars.map((bar) => ({
           time: bar.time as UTCTimestamp,
           value: bar.close,
         })),
       );
+    }
     if (!fitted.current && bars.length) {
       chartRef.current?.timeScale().fitContent();
       fitted.current = true;
@@ -148,7 +176,9 @@ export function PriceHistoryCanvas({
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
         <p aria-live="off">
           {observation
-            ? `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)}`
+            ? style === "line"
+              ? `${formatChartPrice(observation.close)} ${volumeUnit ?? ""}`
+              : `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)}`
             : "No observations"}
         </p>
         <div className="flex items-center gap-2">
@@ -165,6 +195,11 @@ export function PriceHistoryCanvas({
               <p>
                 Times in UTC. Oracle/reference prices are not executable quotes.
               </p>
+              {style === "line" && (
+                <p className="mt-2">
+                  Curves are visual; dots mark recorded interval closes.
+                </p>
+              )}
               {limited && (
                 <p className="mt-2">
                   Latest 2,000 observations. Choose a shorter period for more
