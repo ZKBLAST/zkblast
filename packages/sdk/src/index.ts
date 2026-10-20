@@ -14,4 +14,5 @@ export * from "./calls.js";
 export * from "./deployments.js";
 export * from "./errors.js";
 export * from "./quotes.js";
+export * from "./pool-creation.js";
 export * from "./shielded-batch-poc.js";

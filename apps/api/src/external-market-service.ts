@@ -129,11 +129,18 @@ export class ExternalMarketService {
     }>,
   ) {
     const rows = await this.#sql.unsafe(
-      `select source,observed_at as "observedAt",price::text,volume::text,
-        block_number::text as "blockNumber",transaction_hash as "transactionHash"
-       from ${this.schema}.external_market_price_points
-       where market_id=$1 and source=$2 and observed_at >= $3 and observed_at <= $4
-       order by observed_at asc limit $5`,
+      `select * from (select distinct on ("observedAt") * from (
+        select source,observed_at as "observedAt",price::text,volume::text,
+          block_number::text as "blockNumber",transaction_hash as "transactionHash",0 as priority
+        from ${this.schema}.external_market_price_points
+        where market_id=$1 and source=$2 and observed_at >= $3 and observed_at <= $4
+        union all
+        select 'reference',observed_at,((bid+ask)/2)::text,null::text,null::text,null::text,1
+        from ${this.schema}.external_market_quotes
+        where $2='reference' and market_id=$1 and currency='USD' and bid>0 and ask>=bid
+          and observed_at >= $3 and observed_at <= $4
+       ) observations order by "observedAt" desc,priority asc limit $5) recent
+       order by "observedAt" asc`,
       [marketId, input.source, input.from, input.to, input.limit],
     );
     return rows.map((row) => {

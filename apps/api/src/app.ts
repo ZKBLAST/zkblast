@@ -17,6 +17,8 @@ import type { ShieldedService } from "./shielded-service.js";
 import { createExternalMarketRouter } from "./external-market-router.js";
 import type { ExternalMarketService } from "./external-market-service.js";
 import type { TradeReceiptService } from "./trade-receipt-service.js";
+import type { PoolCreationService } from "./pool-creation-service.js";
+import { createPoolCreationRouter } from "./pool-creation-router.js";
 
 export type ApiPublicConfig = Readonly<{
   environment: "testnet" | "mainnet";
@@ -38,6 +40,8 @@ export type ApiPublicConfig = Readonly<{
     }>;
   }>[];
   shielded?: Readonly<{
+    launchMode?: "independent-reviewed" | "experimental-single-operator";
+    proverRelease?: Readonly<{ manifestPath: string; manifestSha256: string }>;
     vaultAddress: string;
     stateRegistryAddress: string;
     treeVersion: number;
@@ -77,6 +81,17 @@ const publicConfigResponseSchema = z
       .optional(),
     shielded: z
       .object({
+        launchMode: z
+          .enum(["independent-reviewed", "experimental-single-operator"])
+          .optional(),
+        proverRelease: z
+          .object({
+            manifestPath: z
+              .string()
+              .regex(/^\/zk\/(?:testnet|mainnet)\/[a-zA-Z0-9_-]+\.json$/u),
+            manifestSha256: z.string().regex(/^[a-f0-9]{64}$/u),
+          })
+          .optional(),
         vaultAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
         stateRegistryAddress: z.string().regex(/^0x[\da-f]{40}$/iu),
         treeVersion: z.number().int().positive(),
@@ -114,6 +129,7 @@ export function createApp(
     shieldedService?: ShieldedService;
     externalMarketService?: ExternalMarketService;
     tradeReceiptService?: TradeReceiptService;
+    poolCreationService?: PoolCreationService;
   }> = {},
 ) {
   const app = express();
@@ -193,6 +209,7 @@ export function createApp(
   if (dependencies.shieldedService) {
     app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
   }
+  if (dependencies.poolCreationService) app.use("/v1/protocol/pool-creation", createPoolCreationRouter(dependencies.poolCreationService));
   if (dependencies.externalMarketService) {
     app.use(
       "/v1/markets",
@@ -216,9 +233,7 @@ export function createApp(
     void _next;
     const unknownError: unknown = error;
     const internalCode =
-      unknownError &&
-      typeof unknownError === "object" &&
-      "code" in unknownError
+      unknownError && typeof unknownError === "object" && "code" in unknownError
         ? String(unknownError.code)
         : "UNCLASSIFIED";
     const invalidRequest =

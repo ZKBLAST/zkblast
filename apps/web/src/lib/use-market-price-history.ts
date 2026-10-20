@@ -14,9 +14,11 @@ export function useMarketPriceHistory(
   marketId: string | null,
   source: PriceSource,
   range: ChartRange = "1W",
+  poolAddress: string | null = null,
 ) {
+  const available = source === "swap" ? Boolean(poolAddress || marketId) : Boolean(marketId);
   const requestId = useRef(0);
-  const key = `${marketId}:${source}:${range}`;
+  const key = `${marketId}:${poolAddress}:${source}:${range}`;
   const [snapshot, setSnapshot] = useState<{
     key: string;
     items: readonly MarketPricePoint[];
@@ -25,7 +27,7 @@ export function useMarketPriceHistory(
   }>({ key, items: [], loading: Boolean(marketId), error: null });
   const refresh = useCallback(async () => {
     const current = ++requestId.current;
-    if (!marketId) {
+    if (!available) {
       setSnapshot({ key, items: [], loading: false, error: null });
       return;
     }
@@ -41,7 +43,9 @@ export function useMarketPriceHistory(
     try {
       const response = await apiRequest<{ items: MarketPricePoint[] }>(
         webPublicConfig.apiUrl,
-        `/v1/markets/${marketId}/chart?${query.toString()}`,
+        source === "swap" && poolAddress
+          ? `/v1/protocol/pools/${encodeURIComponent(poolAddress)}/chart?${query.toString()}`
+          : `/v1/markets/${marketId}/chart?${query.toString()}`,
       );
       if (current === requestId.current)
         setSnapshot({
@@ -60,7 +64,7 @@ export function useMarketPriceHistory(
             reason instanceof Error ? reason.message : "CHART_DATA_UNAVAILABLE",
         });
     }
-  }, [marketId, source, range, key]);
+  }, [marketId, poolAddress, available, source, range, key]);
   useEffect(() => {
     void refresh();
     return () => {
@@ -70,6 +74,6 @@ export function useMarketPriceHistory(
   const visible =
     snapshot.key === key
       ? snapshot
-      : { items: [], loading: Boolean(marketId), error: null };
+      : { items: [], loading: available, error: null };
   return { ...visible, refresh };
 }

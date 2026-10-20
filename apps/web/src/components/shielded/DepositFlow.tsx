@@ -238,14 +238,20 @@ export function DepositFlow({
             size="lg"
             className="w-full"
             loading={busy === "submit"}
-            disabled={!backupSaved || !acknowledged || note.status !== "prepared"}
+            disabled={
+              !backupSaved || !acknowledged || note.status !== "prepared"
+            }
             onClick={() => void submit()}
           >
-            {note.status === "prepared" ? "Approve exact amount and deposit" : "Deposit confirmed"}
+            {note.status === "prepared"
+              ? "Approve exact amount and deposit"
+              : "Deposit confirmed"}
           </Button>
           {note.status === "unspent" && (
             <p role="status" className="text-sm text-warn">
-              Download the updated encrypted backup now. It includes the confirmed leaf index needed by this withdrawal interface. Keep it before refreshing or closing the page.
+              Download the updated encrypted backup now. It includes the
+              confirmed leaf index needed by this withdrawal interface. Keep it
+              before refreshing or closing the page.
             </p>
           )}
         </section>

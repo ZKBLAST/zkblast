@@ -3,8 +3,10 @@ export type PageQuery = Readonly<{
   cursor?: string | undefined;
   owner?: string | undefined;
 }>;
+export type PoolChartQuery = Readonly<{ from: Date; to: Date; limit: number }>;
 
 export interface ProtocolReadStore {
+  priceHistory?(pool: string, query: PoolChartQuery): Promise<readonly unknown[]>;
   pools(query: PageQuery): Promise<readonly unknown[]>;
   swaps(query: PageQuery): Promise<readonly unknown[]>;
   positions(query: PageQuery): Promise<readonly unknown[]>;
@@ -24,6 +26,10 @@ export class ProtocolService {
 
   pools(query: PageQuery) {
     return this.store.pools(query);
+  }
+  priceHistory(pool: string, query: PoolChartQuery) {
+    if (!this.store.priceHistory) throw new Error("POOL_CHART_NOT_AVAILABLE");
+    return this.store.priceHistory(pool.toLowerCase(), query);
   }
   swaps(query: PageQuery) {
     return this.store.swaps(query);

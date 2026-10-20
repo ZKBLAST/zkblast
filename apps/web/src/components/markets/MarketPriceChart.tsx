@@ -15,18 +15,25 @@ const width = 800;
 const height = 220;
 const padding = 16;
 
-export function MarketPriceChart({ marketId }: { marketId: string | null }) {
+export function MarketPriceChart({ marketId, poolAddress = null, pairLabel, inverted = false }: {
+  marketId: string | null; poolAddress?: string | null; pairLabel?: string; inverted?: boolean;
+}) {
   const [source, setSource] = useState<PriceSource>("swap");
   const [range, setRange] = useState<ChartRange>("1W");
   const { items, loading, error, refresh } = useMarketPriceHistory(
     marketId,
     source,
     range,
+    poolAddress,
   );
-  const points = useMemo(() => chartPoints(items), [items]);
+  const observations = useMemo(() => items.map((item) => ({ ...item,
+    price: source === "swap" && poolAddress && inverted ? String(1 / Number(item.price)) : item.price,
+  })), [items, source, poolAddress, inverted]);
+  const points = useMemo(() => chartPoints(observations), [observations]);
+  const latest = observations.at(-1);
 
   return (
-    <section className="border-t border-line p-4" aria-label="Market chart">
+    <section className="flex min-h-[24rem] flex-1 flex-col p-4" aria-label="Market chart">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-faint">
@@ -63,6 +70,10 @@ export function MarketPriceChart({ marketId }: { marketId: string | null }) {
           ))}
         </div>
       </div>
+      <p className="mt-3 font-mono text-xs text-muted">
+        {source === "swap" && poolAddress ? `Executed pool prices · ${pairLabel ?? "token1 per token0"}` : `${source === "oracle" ? "Verified oracle reports" : "Provider reference prices"} · USD denomination`}
+        {latest ? ` · Latest ${Number(latest.price).toLocaleString("en-US", { maximumSignificantDigits: 8 })} · ${new Date(latest.observedAt).toLocaleString()}` : ""}
+      </p>
       <div
         className="mt-3 flex items-center gap-1"
         role="group"
@@ -80,7 +91,7 @@ export function MarketPriceChart({ marketId }: { marketId: string | null }) {
           </button>
         ))}
       </div>
-      <div className="mt-4 min-h-56">
+      <div className="mt-4 flex min-h-64 flex-1 flex-col justify-center">
         <RealDataState
           loading={loading}
           error={error}
@@ -89,9 +100,9 @@ export function MarketPriceChart({ marketId }: { marketId: string | null }) {
         />
         {!loading && !error && !points.length && (
           <p className="border border-line px-4 py-8 text-sm leading-relaxed text-muted">
-            {marketId
+            {marketId || (source === "swap" && poolAddress)
               ? `No ${source} prices in this timeframe. Try another source or timeframe.`
-              : "Price history is not linked to this pair yet."}
+              : "No validated feed is linked to this asset for the selected source."}
           </p>
         )}
         {!!points.length && (
@@ -99,7 +110,7 @@ export function MarketPriceChart({ marketId }: { marketId: string | null }) {
             viewBox={`0 0 ${width} ${height}`}
             role="img"
             aria-label={`${source} price history`}
-            className="h-56 w-full overflow-visible"
+            className="min-h-64 w-full flex-1 overflow-visible"
             preserveAspectRatio="none"
           >
             <path

@@ -37,8 +37,21 @@ const note: ShieldedNoteV1 = {
 
 test("a previously submitted note cannot trigger another approval or deposit", async () => {
   let requests = 0;
-  const provider: EthereumProvider = { request: async () => { requests++; return null; } };
-  await assert.rejects(executeShieldedDeposit(provider, sender, { ...note, status: "unspent" }, () => undefined), /NOTE_ALREADY_SUBMITTED/u);
+  const provider: EthereumProvider = {
+    request: async () => {
+      requests++;
+      return null;
+    },
+  };
+  await assert.rejects(
+    executeShieldedDeposit(
+      provider,
+      sender,
+      { ...note, status: "unspent" },
+      () => undefined,
+    ),
+    /NOTE_ALREADY_SUBMITTED/u,
+  );
   assert.equal(requests, 0);
 });
 

@@ -19,6 +19,7 @@ import { OperationsService } from "./operations-service.js";
 import { ShieldedService } from "./shielded-service.js";
 import { ExternalMarketService } from "./external-market-service.js";
 import { TradeReceiptService } from "./trade-receipt-service.js";
+import { PoolCreationService } from "./pool-creation-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -89,6 +90,7 @@ const swapService = new SwapService(
       args: [pool],
     }),
 );
+const poolCreationService = new PoolCreationService(chainClient, protocolAddresses.poolFactory, protocolAddresses.poolRegistry, serverConfig.CHAIN_ID);
 const tradeReceiptService = new TradeReceiptService(
   chainClient,
   externalMarketService,
@@ -190,6 +192,7 @@ const app = createApp(
     tradeReceiptService,
     ...(operationsService ? { operationsService } : {}),
     ...(shieldedService ? { shieldedService } : {}),
+    poolCreationService,
   },
 );
 

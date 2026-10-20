@@ -71,6 +71,41 @@ test("unknown route returns a sanitized error", async () => {
   assert.deepEqual(response.body, { error: { code: "NOT_FOUND" } });
 });
 
+test("public config retains beta trust and pinned prover metadata without internal fields", async () => {
+  const shielded = {
+    launchMode: "experimental-single-operator" as const,
+    proverRelease: {
+      manifestPath: "/zk/mainnet/withdraw-v1-beta-fixture.json",
+      manifestSha256: "a".repeat(64),
+    },
+    vaultAddress: "0x1111111111111111111111111111111111111111",
+    stateRegistryAddress: "0x2222222222222222222222222222222222222222",
+    treeVersion: 1,
+    assets: [
+      {
+        address: "0x3333333333333333333333333333333333333333",
+        symbol: "USDG",
+        decimals: 6,
+        denominationRaw: "1000000",
+      },
+    ],
+  };
+  const mainnet = createApp({
+    environment: "mainnet",
+    chainId: 4663,
+    chainName: "Mainnet fixture",
+    explorerUrl: "https://explorer.example",
+    webOrigin: "https://web.example",
+    operationsToken: "not-a-real-token",
+    shielded,
+  });
+  const response = await request(mainnet).get("/v1/config");
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body.shielded, shielded);
+  assert.equal(response.body.operationsToken, undefined);
+  assert.equal(response.body.webOrigin, undefined);
+});
+
 test("external markets expose provenance and remain non-executable", async () => {
   const externalMarketService = {
     list: async () => [

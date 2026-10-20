@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import type { PageQuery, ProtocolReadStore } from "./protocol-service.js";
+import type { PageQuery, PoolChartQuery, ProtocolReadStore } from "./protocol-service.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -28,6 +28,23 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
       `select chain_id, transaction_hash, log_index, amount_in_raw::text, amount_out_raw::text, fee_raw::text, block_number, block_timestamp from ${this.schema}.swaps where canonical and ($1::text is null or transaction_hash < $1) order by block_number desc, log_index desc limit $2`,
       [query.cursor ?? null, query.limit],
     );
+  }
+  async priceHistory(pool: string, query: PoolChartQuery) {
+    const rows = await this.sql.unsafe(
+      `select * from (
+        select 'swap' as source, s.block_timestamp as "observedAt",
+        ((case when s.token_in_id=p.token_x_id then s.amount_out_raw/s.amount_in_raw
+          else s.amount_in_raw/s.amount_out_raw end) * power(10::numeric,x.decimals-y.decimals))::text as price,
+        null::text as volume, s.block_number::text as "blockNumber",s.transaction_hash as "transactionHash"
+        from ${this.schema}.swaps s join ${this.schema}.pools p on p.id=s.pool_id
+        join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id
+        where p.address=$1 and s.canonical and s.amount_in_raw>0 and s.amount_out_raw>0
+        and s.block_timestamp >= $2 and s.block_timestamp <= $3
+        order by s.block_timestamp desc,s.block_number desc,s.log_index desc limit $4
+      ) observations order by "observedAt" asc,"blockNumber"::numeric asc`,
+      [pool, query.from, query.to, query.limit],
+    );
+    return rows.map((row) => ({ ...row, observedAt: new Date(row.observedAt).toISOString() }));
   }
   positions(query: PageQuery) {
     return this.sql.unsafe(

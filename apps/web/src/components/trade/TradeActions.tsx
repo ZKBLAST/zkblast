@@ -5,6 +5,7 @@ import { ShieldedView } from "@/app/shielded/ShieldedView";
 import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspace";
 import type { TradeInstrument, TradeMode } from "@/lib/trade-instruments";
 import { TerminalTabs } from "./TerminalTabs";
+import { CreatePoolPanel } from "@/components/protocol/CreatePoolPanel";
 
 const actions = [
   { value: "swap", label: "Swap", icon: ArrowLeftRight },
@@ -30,17 +31,20 @@ export function TradeActions({
   const publicMode = mode === "liquidity" ? "liquidity" : "swap";
   return (
     <aside
-      className="min-w-0 border-t border-line xl:border-l xl:border-t-0"
+      className="min-h-0 min-w-0 border-t border-line xl:overflow-y-auto xl:border-l xl:border-t-0"
       aria-label="Trade actions"
     >
       <TerminalTabs
         prefix="action"
         label="Action"
         items={actions}
-        value={mode}
+        value={mode === "create" ? "liquidity" : mode}
         disabled={busy}
         onChange={onModeChange}
       />
+      {(mode === "liquidity" || mode === "create") && <TerminalTabs prefix="liquidity" label="Liquidity tools" value={mode} disabled={busy} onChange={onModeChange}
+        items={[{ value: "liquidity", label: "Add liquidity" }, { value: "create", label: "Create pool" }]} />}
+      {mode === "create" && <div role="tabpanel" id="action-panel-liquidity" aria-labelledby="action-tab-liquidity"><CreatePoolPanel onBusyChange={onBusyChange} onConfirmed={onConfirmed} /></div>}
       {(["swap", "liquidity"] as const).map((value) => (
         <div
           key={value}

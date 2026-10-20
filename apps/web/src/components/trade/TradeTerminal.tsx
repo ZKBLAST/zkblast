@@ -67,7 +67,7 @@ function Terminal() {
             : "Loading network…"}
         </p>
       </div>
-      <div className="panel ticks grid min-w-0 xl:grid-cols-[240px_minmax(0,1fr)_360px]">
+      <div className="panel ticks grid min-w-0 xl:h-[max(42rem,calc(100dvh-var(--header-h)-6rem))] xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         <MarketBrowser
           items={instruments}
           selected={selected?.id}
@@ -78,7 +78,7 @@ function Terminal() {
           onRetry={() => void refresh()}
         />
         <section
-          className="min-w-0 bg-[#0a0a12]/60"
+          className="flex min-h-0 min-w-0 flex-col bg-[#0a0a12]/60 xl:overflow-y-auto"
           aria-label="Selected market chart"
         >
           <div className="flex min-h-20 flex-wrap items-center gap-3 border-b border-line px-4 py-3">
@@ -99,6 +99,9 @@ function Terminal() {
           <MarketPriceChart
             key={`${selected?.market?.id ?? "no-market"}:${revision}`}
             marketId={selected?.market?.id ?? null}
+            poolAddress={selected?.pool?.address ?? null}
+            pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
+            inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
           />
           <p className="px-4 pb-4 text-xs leading-relaxed text-faint">
             Chart sources are shown separately. Oracle/reference prices are not

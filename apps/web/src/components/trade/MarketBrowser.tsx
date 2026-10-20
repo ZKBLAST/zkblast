@@ -50,7 +50,7 @@ export function MarketBrowser({
   );
   return (
     <aside
-      className="min-w-0 border-b border-line bg-[#0a0a12]/80 xl:border-b-0 xl:border-r"
+      className="flex min-h-0 min-w-0 flex-col border-b border-line bg-[#0a0a12]/80 xl:border-b-0 xl:border-r"
       aria-label="Markets"
     >
       <button
@@ -66,7 +66,7 @@ export function MarketBrowser({
           <ChevronDown className="size-4" />
         )}
       </button>
-      <div className={`${expanded ? "block" : "hidden"} xl:block`}>
+      <div className={`${expanded ? "flex" : "hidden"} min-h-0 flex-1 flex-col xl:flex`}>
         <div className="flex h-12 items-center justify-between border-b border-line px-4">
           <h2 className="label">Markets</h2>
           <span className="text-xs text-faint">{items.length}</span>
@@ -81,7 +81,7 @@ export function MarketBrowser({
             className="h-10 w-full min-w-0 bg-transparent text-sm outline-none"
           />
         </label>
-        <div className="max-h-[28rem] overflow-y-auto p-2 xl:max-h-[min(32rem,calc(100dvh-28rem))]">
+        <div className="max-h-[28rem] min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 xl:max-h-none" tabIndex={0} aria-label="Scrollable market list">
           {loading && !items.length ? (
             <p className="p-3 text-sm text-muted" role="status">
               Loading markets…
