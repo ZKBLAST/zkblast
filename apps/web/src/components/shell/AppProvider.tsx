@@ -75,13 +75,20 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   const refreshAccount = useCallback(async () => {
     try {
-      const [nextProfile, history] = await Promise.all([
-        apiRequest<UserProfile>(apiUrl, "/v1/me"),
-        apiRequest<{ items: Trade[] }>(apiUrl, "/v1/me/trades?limit=25"),
-      ]);
-      setProfile(nextProfile);
-      setTrades(history.items);
-      setStatus("Authenticated session active");
+      const session = await apiRequest<{
+        authenticated: boolean;
+        profile?: UserProfile;
+        trades?: { items: Trade[] };
+      }>("", "/auth-session");
+      if (session.authenticated && session.profile && session.trades) {
+        setProfile(session.profile);
+        setTrades(session.trades.items);
+        setStatus("Authenticated session active");
+      } else {
+        setProfile(null);
+        setTrades([]);
+        setStatus("Connect a wallet to sign in");
+      }
     } catch {
       setProfile(null);
       setTrades([]);

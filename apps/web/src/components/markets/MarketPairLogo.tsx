@@ -61,9 +61,9 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
 }
 
 const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
-  USDG: "/api/asset-logo/USDG",
-  WETH: "/api/asset-logo/WETH",
-  ETH: "/api/asset-logo/ETH",
+  USDG: "/asset-logo/USDG",
+  WETH: "/asset-logo/WETH",
+  ETH: "/asset-logo/ETH",
 };
 
 export function ProtocolPairLogo({
