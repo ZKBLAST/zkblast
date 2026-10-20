@@ -15,6 +15,46 @@ const transaction: PreparedTransaction = {
   value: "0x0",
 };
 
+test("wallet preview timeouts are recognized in nested provider errors without suggesting a resend", () => {
+  const message = swapErrorMessage({
+    data: {
+      originalError: {
+        message:
+          "imageFail to create HTTPConnectionPool(host='api.rabbybase.blockchain', port=80): Read timed out",
+      },
+    },
+  });
+  assert.match(message, /wallet.*preview.*timed out/iu);
+  assert.match(message, /status is not confirmed/iu);
+  assert.match(message, /Do not bypass/iu);
+  assert.doesNotMatch(message, /api\.rabbybase/iu);
+});
+
+test("a wallet submission error is never automatically retried", async () => {
+  let sends = 0;
+  const provider: EthereumProvider = {
+    request: async ({ method }) => {
+      if (method === "eth_chainId") return "0xb626";
+      if (method === "eth_sendTransaction") {
+        sends++;
+        throw new Error("HTTPConnectionPool read timed out");
+      }
+      return null;
+    },
+  };
+  await assert.rejects(
+    executeSwap(
+      provider,
+      "0xaccount",
+      46630,
+      transaction,
+      transaction,
+      () => {},
+    ),
+  );
+  assert.equal(sends, 1);
+});
+
 test("wrong network switches before approval and swap", async () => {
   const calls: string[] = [];
   let sendCount = 0;

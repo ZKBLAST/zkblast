@@ -97,7 +97,21 @@ export async function executeTransactions(
 }
 
 export function swapErrorMessage(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
+  const messages: string[] = [];
+  const visited = new Set<unknown>();
+  function collect(value: unknown, depth = 0) {
+    if (!value || depth > 4 || visited.has(value)) return;
+    visited.add(value);
+    if (typeof value === "string") messages.push(value);
+    if (typeof value !== "object") return;
+    for (const key of ["message", "cause", "data", "originalError", "error"])
+      if (key in value)
+        collect((value as Record<string, unknown>)[key], depth + 1);
+  }
+  collect(error);
+  const message = messages.join(" ");
+  if (/rabbybase\.blockchain|HTTPConnectionPool/iu.test(message))
+    return "The wallet's transaction preview service timed out. Check the wallet activity and explorer before retrying; the submission status is not confirmed. Do not bypass wallet security warnings.";
   if (/rejected|denied/iu.test(message))
     return "Signature rejected. No transaction was submitted.";
   if (/pending|replaced/iu.test(message))

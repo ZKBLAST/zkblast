@@ -8,6 +8,7 @@ import {
   chartIntervals,
   formatChartPrice,
   marketCandles,
+  marketVolumes,
   type ChartInterval,
   type ChartRange,
   type ChartStyle,
@@ -42,6 +43,15 @@ export function MarketPriceChart({
   const bars = useMemo(
     () =>
       marketCandles(
+        items,
+        interval,
+        source === "swap" && Boolean(poolAddress) && inverted,
+      ),
+    [items, interval, source, poolAddress, inverted],
+  );
+  const volumes = useMemo(
+    () =>
+      marketVolumes(
         items,
         interval,
         source === "swap" && Boolean(poolAddress) && inverted,
@@ -105,7 +115,7 @@ export function MarketPriceChart({
               className={cx(
                 "flex h-9 items-center gap-2 px-3 font-mono text-[10px] uppercase",
                 source === value
-                  ? "bg-lime text-lime-ink"
+                  ? "bg-lime text-lime-ink ring-1 ring-lime font-bold shadow-[0_0_12px_#dfe2ed33]"
                   : "text-muted hover:text-fg",
               )}
             >
@@ -116,18 +126,27 @@ export function MarketPriceChart({
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-y border-line py-2">
-        <div role="group" aria-label="Chart timeframe" className="flex gap-1">
-          {(["1H", "1D", "1W", "1M"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={range === value}
-              onClick={() => setRange(value)}
-              className={`p-2 font-mono text-xs ${range === value ? "bg-raised text-lime" : "text-muted"}`}
-            >
-              {value}
-            </button>
-          ))}
+        <div
+          role="group"
+          aria-label="Chart timeframe"
+          className="flex flex-wrap gap-1"
+        >
+          {(["5m", "15m", "30m", "1H", "1D", "1W", "1M"] as const).map(
+            (value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={range === value}
+                onClick={() => {
+                  setRange(value);
+                  if (["5m", "15m", "30m"].includes(value)) setInterval("1m");
+                }}
+                className={`border px-2 py-2 font-mono text-xs ${range === value ? "border-lime bg-lime text-lime-ink font-bold" : "border-transparent text-muted hover:border-line"}`}
+              >
+                {value}
+              </button>
+            ),
+          )}
         </div>
         <div className="flex items-center gap-2">
           <label className="text-xs text-muted">
@@ -194,6 +213,8 @@ export function MarketPriceChart({
           <PriceHistoryCanvas
             key={chartKey}
             bars={bars}
+            volumes={volumes}
+            volumeUnit={unit}
             style={style}
             label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
           />

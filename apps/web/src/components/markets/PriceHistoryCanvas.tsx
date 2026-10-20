@@ -6,6 +6,7 @@ import {
   ColorType,
   createChart,
   LineSeries,
+  HistogramSeries,
   type IChartApi,
   type ISeriesApi,
   type UTCTimestamp,
@@ -15,16 +16,21 @@ import {
   formatChartPrice,
   type ChartStyle,
   type MarketCandle,
+  type MarketVolumeBar,
 } from "@/lib/market-chart-data";
 
 export function PriceHistoryCanvas({
   bars,
   style,
   label,
+  volumes,
+  volumeUnit,
 }: {
   bars: readonly MarketCandle[];
   style: ChartStyle;
   label: string;
+  volumes: readonly MarketVolumeBar[];
+  volumeUnit: string | null;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -32,6 +38,7 @@ export function PriceHistoryCanvas({
     ISeriesApi<"Line"> | ISeriesApi<"Candlestick"> | null
   >(null);
   const fitted = useRef(false);
+  const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const barsRef = useRef(bars);
   barsRef.current = bars;
@@ -42,7 +49,7 @@ export function PriceHistoryCanvas({
       layout: {
         background: { type: ColorType.Solid, color: "#0a0a12" },
         textColor: "#9a9bab",
-        attributionLogo: true,
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "#ffffff08" },
@@ -80,6 +87,17 @@ export function PriceHistoryCanvas({
           });
     chartRef.current = chart;
     seriesRef.current = series;
+    volumeRef.current = chart.addSeries(
+      HistogramSeries,
+      {
+        priceFormat: { type: "volume" },
+        lastValueVisible: false,
+        priceLineVisible: false,
+      },
+      1,
+    );
+    chart.panes()[0]?.setStretchFactor(4);
+    chart.panes()[1]?.setStretchFactor(1);
     fitted.current = false;
     chart.subscribeCrosshairMove((event) => {
       const time =
@@ -94,11 +112,15 @@ export function PriceHistoryCanvas({
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
+      volumeRef.current = null;
     };
   }, [style]);
   useEffect(() => {
     const series = seriesRef.current;
     if (!series) return;
+    volumeRef.current?.setData(
+      volumes.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
+    );
     if (style === "candles")
       (series as ISeriesApi<"Candlestick">).setData(
         bars.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
@@ -114,7 +136,7 @@ export function PriceHistoryCanvas({
       chartRef.current?.timeScale().fitContent();
       fitted.current = true;
     }
-  }, [bars, style]);
+  }, [bars, volumes, style]);
   const observation = hover ?? bars.at(-1);
   return (
     <div className="flex min-h-80 flex-1 flex-col">
@@ -141,6 +163,9 @@ export function PriceHistoryCanvas({
         className="relative min-h-72 flex-1"
       />
       <p className="mt-2 text-[9px] text-faint">
+        {volumes.length
+          ? `Traded volume (${volumeUnit ?? "quote token"}) in the lower pane. `
+          : "Traded volume is not reported for these observations. "}
         OHLC from recorded observations · drag to pan, scroll to zoom · times in
         UTC.
       </p>

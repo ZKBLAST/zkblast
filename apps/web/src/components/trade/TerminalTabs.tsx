@@ -60,7 +60,7 @@ export function TerminalTabs({
               list.current?.querySelectorAll<HTMLButtonElement>("button");
             buttons?.[next]?.focus();
           }}
-          className={`flex h-12 flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 font-mono text-xs disabled:cursor-wait ${value === item.value ? "bg-raised text-lime" : "text-muted hover:text-fg"}`}
+          className={`flex h-12 flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 border-b-2 px-3 font-mono text-xs disabled:cursor-wait ${value === item.value ? "border-lime bg-lime/15 font-bold text-lime shadow-[inset_0_-2px_0_var(--color-lime)]" : "border-transparent text-muted hover:bg-raised hover:text-fg"}`}
         >
           {item.icon && <item.icon className="size-3.5" aria-hidden />}
           {item.label}

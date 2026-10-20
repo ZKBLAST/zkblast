@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { marketCandles } from "../src/lib/market-chart-data";
+import {
+  marketCandles,
+  marketVolumes,
+  chartRangeHours,
+} from "../src/lib/market-chart-data";
 import type { MarketPricePoint } from "../src/types/application";
 
 const point = (time: number, price: string): MarketPricePoint => ({
@@ -49,4 +53,29 @@ test("invalid prices and dates are excluded without creating a placeholder candl
     ),
     [],
   );
+});
+
+test("minute windows have their actual duration", () => {
+  assert.equal(chartRangeHours["5m"] * 60, 5);
+  assert.equal(chartRangeHours["15m"] * 60, 15);
+  assert.equal(chartRangeHours["30m"] * 60, 30);
+});
+
+test("volume aggregates real swap quote amounts and converts per trade when inverted", () => {
+  const trades = [
+    { ...point(10, "2"), volume: "6" },
+    { ...point(20, "4"), volume: "8" },
+  ];
+  assert.equal(marketVolumes(trades, "1m")[0]?.value, 14);
+  assert.equal(marketVolumes(trades, "1m", true)[0]?.value, 5);
+  assert.deepEqual(
+    marketVolumes([{ ...trades[0]!, source: "oracle" }], "1m"),
+    [],
+  );
+  assert.deepEqual(
+    marketVolumes([{ ...trades[0]!, source: "reference" }], "1m"),
+    [],
+  );
+  assert.deepEqual(marketVolumes([{ ...trades[0]!, volume: "-1" }], "1m"), []);
+  assert.deepEqual(marketVolumes([point(10, "2")], "1m"), []);
 });

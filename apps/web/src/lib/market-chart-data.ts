@@ -1,10 +1,13 @@
 import type { MarketPricePoint } from "@/types/application";
 
 export type PriceSource = "swap" | "oracle" | "reference";
-export type ChartRange = "1H" | "1D" | "1W" | "1M";
+export type ChartRange = "5m" | "15m" | "30m" | "1H" | "1D" | "1W" | "1M";
 export type ChartInterval = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 export type ChartStyle = "line" | "candles";
 export const chartRangeHours: Record<ChartRange, number> = {
+  "5m": 5 / 60,
+  "15m": 15 / 60,
+  "30m": 0.5,
   "1H": 1,
   "1D": 24,
   "1W": 168,
@@ -26,6 +29,47 @@ export type MarketCandle = {
   close: number;
   observations: number;
 };
+
+export type MarketVolumeBar = { time: number; value: number; color: string };
+
+/** Quote-token traded volume only; oracle reports and rolling daily totals are not bar volume. */
+export function marketVolumes(
+  items: readonly MarketPricePoint[],
+  interval: ChartInterval,
+  inverted = false,
+): MarketVolumeBar[] {
+  const totals = new Map<number, number>();
+  for (const item of items) {
+    if (item.source !== "swap" || item.volume === null) continue;
+    const timestamp = Date.parse(item.observedAt) / 1000;
+    const raw = Number(item.volume);
+    const price = Number(item.price);
+    const volume = inverted ? raw / price : raw;
+    if (
+      !Number.isFinite(timestamp) ||
+      timestamp <= 0 ||
+      !Number.isFinite(price) ||
+      price <= 0 ||
+      !Number.isFinite(raw) ||
+      raw < 0 ||
+      !Number.isFinite(volume) ||
+      volume < 0
+    )
+      continue;
+    const time =
+      Math.floor(timestamp / chartIntervals[interval]) *
+      chartIntervals[interval];
+    const sum = (totals.get(time) ?? 0) + volume;
+    if (Number.isFinite(sum)) totals.set(time, sum);
+  }
+  return marketCandles(items, interval, inverted)
+    .filter((bar) => totals.has(bar.time))
+    .map((bar) => ({
+      time: bar.time,
+      value: totals.get(bar.time)!,
+      color: bar.close >= bar.open ? "#56d9ad99" : "#f07b8799",
+    }));
+}
 
 /** Aggregate only recorded observations; no gap filling or invented opening prices. */
 export function marketCandles(

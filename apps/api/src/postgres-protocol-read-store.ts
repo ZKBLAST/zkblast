@@ -40,7 +40,9 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
         select 'swap' as source, s.block_timestamp as "observedAt",
         ((case when s.token_in_id=p.token_x_id then s.amount_out_raw/s.amount_in_raw
           else s.amount_in_raw/s.amount_out_raw end) * power(10::numeric,x.decimals-y.decimals))::text as price,
-        null::text as volume, s.block_number::text as "blockNumber",s.transaction_hash as "transactionHash"
+        ((case when s.token_in_id=p.token_y_id then s.amount_in_raw else s.amount_out_raw end)
+          / power(10::numeric,y.decimals))::text as volume,
+        y.symbol as "priceUnit", s.block_number::text as "blockNumber",s.transaction_hash as "transactionHash"
         from ${this.schema}.swaps s join ${this.schema}.pools p on p.id=s.pool_id
         join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id
         where p.address=$1 and s.canonical and s.amount_in_raw>0 and s.amount_out_raw>0
