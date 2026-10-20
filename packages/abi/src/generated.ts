@@ -597,6 +597,19 @@ export const poolFactoryAbi = [
   },
   {
     type: "function",
+    name: "permissionlessCreation",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
     name: "predictDlmmPoolAddress",
     inputs: [
       {

@@ -77,7 +77,15 @@ export class PoolCreationService {
         decimals: z.number().int().min(0).max(36).parse(decimals),
       };
     };
-    const [asset0, asset1, authorized] = await Promise.all([
+    // Missing capability on older deployments does not imply public access.
+    const permissionless = await this.client
+      .readContract({
+        address: this.factory,
+        abi: poolFactoryAbi,
+        functionName: "permissionlessCreation",
+      })
+      .catch(() => false);
+    const [asset0, asset1, admin] = await Promise.all([
       metadata(token0),
       metadata(token1),
       this.client.readContract({
@@ -87,6 +95,7 @@ export class PoolCreationService {
         args: [zeroHash, wallet],
       }),
     ]);
+    const authorized = permissionless === true || admin === true;
     const initial =
       input.model === "dlmm"
         ? initialBinForPrice(
@@ -168,6 +177,7 @@ export class PoolCreationService {
         : null,
       existingPool: existing === zeroAddress ? null : existing,
       authorized: Boolean(authorized),
+      creationAccess: permissionless === true ? "permissionless" : "governance",
       simulationPassed,
       permissionNotice: authorized
         ? null

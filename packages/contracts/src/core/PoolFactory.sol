@@ -30,13 +30,18 @@ contract PoolFactory is ProtocolAccess, UUPSUpgradeable {
         registry = registry_;
     }
 
+    /// @notice Creation is public; governance and upgrade roles remain restricted.
+    function permissionlessCreation() external pure returns (bool) {
+        return true;
+    }
+
     function createPool(
         address tokenA,
         address tokenB,
         PoolModel model,
         uint24 feePips,
         uint16 binStepBps
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (address pool) {
+    ) external returns (address pool) {
         if (feePips == 0 || feePips >= 1_000_000) revert InvalidConfiguration();
         if (model == PoolModel.DAMM && binStepBps != 0) revert InvalidConfiguration();
         if (model == PoolModel.DLMM && (binStepBps == 0 || binStepBps > 1_000)) {
@@ -52,7 +57,7 @@ contract PoolFactory is ProtocolAccess, UUPSUpgradeable {
         uint24 feePips,
         uint16 binStepBps,
         int24 initialActiveBin
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (address pool) {
+    ) external returns (address pool) {
         if (feePips == 0 || feePips >= 1_000_000) {
             revert InvalidConfiguration();
         }

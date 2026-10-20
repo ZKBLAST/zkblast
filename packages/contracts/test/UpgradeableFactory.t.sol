@@ -15,6 +15,24 @@ contract PoolRegistryV2 is PoolRegistry {
 }
 
 contract UnauthorizedCaller {
+    function attempt(address target, bytes calldata data) external returns (bool success) {
+        (success,) = target.call(data);
+    }
+
+    function create(PoolFactory factory, address a, address b, PoolModel model)
+        external
+        returns (address)
+    {
+        return factory.createPool(a, b, model, 3_000, model == PoolModel.DLMM ? 25 : 0);
+    }
+
+    function createDlmm(PoolFactory factory, address a, address b, int24 bin)
+        external
+        returns (address)
+    {
+        return factory.createDlmmPool(a, b, 3_000, 25, bin);
+    }
+
     function upgrade(address proxy, address implementation) external returns (bool success) {
         require(proxy != address(0), "zero proxy");
         (success,) = proxy.call(
@@ -138,5 +156,121 @@ contract UpgradeableFactoryTest {
         UnauthorizedCaller caller = new UnauthorizedCaller();
         PoolRegistryV2 nextImplementation = new PoolRegistryV2();
         require(!caller.upgrade(address(registry), address(nextImplementation)), "upgrade allowed");
+    }
+
+    function testPermissionlessDammAndDlmmCreationWithoutAdminRole() external {
+        UnauthorizedCaller caller = new UnauthorizedCaller();
+        require(factory.permissionlessCreation(), "missing capability");
+        require(!factory.hasRole(factory.DEFAULT_ADMIN_ROLE(), address(caller)), "unexpected role");
+        address damm = caller.create(factory, TOKEN_A, TOKEN_B, PoolModel.DAMM);
+        address dlmm = caller.create(factory, TOKEN_A, TOKEN_B, PoolModel.DLMM);
+        require(DammPool(damm).administrator() == address(caller), "damm administrator");
+        require(DlmmPool(dlmm).administrator() == address(caller), "dlmm administrator");
+        require(registry.isRegisteredPool(damm) && registry.isRegisteredPool(dlmm), "registration");
+        require(!factory.hasRole(factory.DEFAULT_ADMIN_ROLE(), address(caller)), "role escalation");
+    }
+
+    function testPermissionlessExplicitDlmmBin() external {
+        UnauthorizedCaller caller = new UnauthorizedCaller();
+        address pool = caller.createDlmm(factory, TOKEN_B, TOKEN_A, -500);
+        require(DlmmPool(pool).activeBin() == -500, "initial bin");
+        require(DlmmPool(pool).administrator() == address(caller), "administrator");
+    }
+
+    function testPublicCreationStillRejectsInvalidParametersAndDuplicates() external {
+        UnauthorizedCaller caller = new UnauthorizedCaller();
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeCall(
+                    PoolFactory.createPool, (TOKEN_A, TOKEN_B, PoolModel.DAMM, uint24(0), uint16(0))
+                )
+            ),
+            "zero fee accepted"
+        );
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeCall(
+                    PoolFactory.createPool,
+                    (TOKEN_A, TOKEN_B, PoolModel.DAMM, uint24(3_000), uint16(25))
+                )
+            ),
+            "damm bin step accepted"
+        );
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeCall(
+                    PoolFactory.createDlmmPool,
+                    (TOKEN_A, TOKEN_B, uint24(3_000), uint16(0), int24(0))
+                )
+            ),
+            "zero dlmm step accepted"
+        );
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeCall(
+                    PoolFactory.createDlmmPool,
+                    (TOKEN_A, TOKEN_B, uint24(3_000), uint16(25), int24(10_001))
+                )
+            ),
+            "invalid initial bin accepted"
+        );
+        caller.create(factory, TOKEN_A, TOKEN_B, PoolModel.DAMM);
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeCall(
+                    PoolFactory.createPool,
+                    (TOKEN_B, TOKEN_A, PoolModel.DAMM, uint24(3_000), uint16(0))
+                )
+            ),
+            "duplicate accepted"
+        );
+    }
+
+    function testFactoryUpgradePreservesRegistryRolesAndExistingPools() external {
+        address pool = factory.createPool(TOKEN_A, TOKEN_B, PoolModel.DAMM, 3_000, 0);
+        address proxy = address(factory);
+        factory.upgradeToAndCall(address(new PoolFactory()), bytes(""));
+        require(address(factory) == proxy, "factory proxy changed");
+        require(address(factory.registry()) == address(registry), "registry changed");
+        require(factory.hasRole(factory.UPGRADER_ROLE(), address(this)), "upgrader changed");
+        require(registry.isRegisteredPool(pool), "existing pool lost");
+        UnauthorizedCaller caller = new UnauthorizedCaller();
+        address dlmm = caller.createDlmm(factory, TOKEN_A, TOKEN_B, -100);
+        require(registry.isRegisteredPool(dlmm), "public creation after upgrade failed");
+    }
+
+    function testPublicCreatorCannotUpgradeFactoryOrGrantRolesOrRegisterDirectly() external {
+        UnauthorizedCaller caller = new UnauthorizedCaller();
+        PoolFactory implementation = new PoolFactory();
+        require(
+            !caller.upgrade(address(factory), address(implementation)), "factory upgrade allowed"
+        );
+        require(
+            !caller.attempt(
+                address(factory),
+                abi.encodeWithSignature(
+                    "setRole(bytes32,address,bool)",
+                    factory.DEFAULT_ADMIN_ROLE(),
+                    address(caller),
+                    true
+                )
+            ),
+            "role grant allowed"
+        );
+        PoolKey memory key = PoolKeyLib.normalize(TOKEN_A, TOKEN_B, PoolModel.DAMM, 3_000, 0);
+        require(
+            !caller.attempt(
+                address(registry),
+                abi.encodeCall(
+                    PoolRegistry.registerPool, (PoolKeyLib.id(key), address(caller), key)
+                )
+            ),
+            "direct registration allowed"
+        );
     }
 }

@@ -4,7 +4,7 @@
   "environment": "mainnet",
   "chainId": 4663,
   "chainName": "Robinhood Chain",
-  "generatedAt": "2026-10-20T09:10:35.508Z",
+  "generatedAt": "2026-10-20T10:17:44.290Z",
   "deploymentBlock": 92691497,
   "deploymentBlockHash": "0xfb57d8f4d4028dcbee33278a25f00ac39b3254b92d299d08e2eded3f9f8379d8",
   "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
@@ -66,12 +66,12 @@
       "contractName": "PoolFactory",
       "proxyKind": "uups",
       "proxyAddress": "0x202A08e43bb7C93a2f88dd225c80E8622b626aBd",
-      "implementationAddress": "0x94d340C329dCf495E7e87a0c35b72b8BF3fe8165",
+      "implementationAddress": "0xcA86777F013215e7d08b39F7c4108bc2403a6074",
       "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
       "governanceAddress": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
       "upgraderAddress": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
-      "artifactBytecodeHash": "0xf134f38f942a27f2a1b303c837b246b578d19935e5156a822359d23e7b6a7e12",
-      "deployedRuntimeBytecodeHash": "0xebc8021b72ef6edc34a6e9b7f8d288bd93b727fa18531229bc050d6cadef2dc5",
+      "artifactBytecodeHash": "0x7003bf54a6aeb1481d1b0fc40846b8905d5920802d471288e01447967b9b4806",
+      "deployedRuntimeBytecodeHash": "0x77bd35bb290fafe20be6058ee31bff720341343a9e25c7adcdb4130691f768ef",
       "initializerCalldataHash": "0x0d17687c0cdd050a1561d313de8465b6fa48261c452c537dc36528a6bb282a33",
       "initializerArguments": [
         "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
@@ -125,6 +125,66 @@
             "totalFeeWei": "1929882966000",
             "status": "success"
           }
+        },
+        {
+          "previousImplementationAddress": "0x94d340C329dCf495E7e87a0c35b72b8BF3fe8165",
+          "newImplementationAddress": "0xcA86777F013215e7d08b39F7c4108bc2403a6074",
+          "implementationDeployment": {
+            "hash": "0xc6c9cd7ec2d5094f6b73bab3bda22d4191c43e83af56a53276ca24e1f74ebb86",
+            "contractAddress": "0xca86777f013215e7d08b39f7c4108bc2403a6074",
+            "blockNumber": 93372604,
+            "blockHash": "0xf9143e5ff67ddeb4543bd60333831cecdfc19824cd01c956ddf00e39e0ee6532",
+            "gasUsed": "4876065",
+            "effectiveGasPriceWei": "20000000",
+            "totalFeeWei": "97521300000000",
+            "status": "success"
+          },
+          "proxyUpgrade": {
+            "hash": "0xa341cb8c4e7bccd72a83e2ee1a13c2bfec5fbb7dfb34752756a73fd61803f820",
+            "contractAddress": null,
+            "blockNumber": 93375756,
+            "blockHash": "0x8af1d09ffd190dfc0b7e17768245f525205253f1bba55f92b2afdbaf042833cf",
+            "gasUsed": "96289",
+            "effectiveGasPriceWei": "20152000",
+            "totalFeeWei": "1940415928000",
+            "status": "success"
+          },
+          "planHash": "0xbd1108bb2eba6cd2fc8371361390016e73f421b1d8764f242c604e1d9e0e1d54",
+          "operationId": "0xcb8d6cda7adcb603b10b28528901a196634bb27a4aba48844f6b658d2cf29734",
+          "delaySeconds": 300,
+          "receipts": [
+            {
+              "hash": "0xc6c9cd7ec2d5094f6b73bab3bda22d4191c43e83af56a53276ca24e1f74ebb86",
+              "contractAddress": "0xca86777f013215e7d08b39f7c4108bc2403a6074",
+              "blockNumber": 93372604,
+              "blockHash": "0xf9143e5ff67ddeb4543bd60333831cecdfc19824cd01c956ddf00e39e0ee6532",
+              "gasUsed": "4876065",
+              "effectiveGasPriceWei": "20000000",
+              "totalFeeWei": "97521300000000",
+              "status": "success"
+            },
+            {
+              "hash": "0xbacab1565fdc55fb679ea21881b5d51c91e80174c505322fe3a30f28c1dad96e",
+              "contractAddress": null,
+              "blockNumber": 93372618,
+              "blockHash": "0x68b3a16ab4730a50680429eb39117289a7e6dc6b414f6dcb9d9b5f7bd1dd366d",
+              "gasUsed": "96567",
+              "effectiveGasPriceWei": "20040000",
+              "totalFeeWei": "1935202680000",
+              "status": "success"
+            },
+            {
+              "hash": "0xa341cb8c4e7bccd72a83e2ee1a13c2bfec5fbb7dfb34752756a73fd61803f820",
+              "contractAddress": null,
+              "blockNumber": 93375756,
+              "blockHash": "0x8af1d09ffd190dfc0b7e17768245f525205253f1bba55f92b2afdbaf042833cf",
+              "gasUsed": "96289",
+              "effectiveGasPriceWei": "20152000",
+              "totalFeeWei": "1940415928000",
+              "status": "success"
+            }
+          ],
+          "permissionlessCreation": true
         }
       ],
       "compiler": {
@@ -629,9 +689,9 @@
     "factory": "0x202A08e43bb7C93a2f88dd225c80E8622b626aBd"
   },
   "totals": {
-    "transactionCount": 28,
-    "gasUsed": "26027766",
-    "totalFeeWei": "526294717098000"
+    "transactionCount": 31,
+    "gasUsed": "31096687",
+    "totalFeeWei": "627691635706000"
   },
   "integration": {
     "poolRegistry": "0x64Eb3AA5BfeBeF34cc596b63c90c7665F75c72d1",

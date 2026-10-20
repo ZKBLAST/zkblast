@@ -26,6 +26,7 @@ type PreparedPool = {
   initialBin: number | null;
   representedPrice: string | null;
   authorized: boolean;
+  creationAccess: "permissionless" | "governance";
   simulationPassed: boolean;
   existingPool: string | null;
   permissionNotice: string | null;
@@ -244,6 +245,15 @@ export function CreatePoolPanel({
             </p>
           )}
           <p className="break-all">Factory: {prepared.factory}</p>
+          <p>
+            Creation:{" "}
+            {prepared.creationAccess === "permissionless"
+              ? "Open to every wallet"
+              : "Governance only on this deployment"}
+            . The creating wallet administers the new pool and can pause it or
+            configure its protocol fee share. Pool creation is not token
+            verification or endorsement.
+          </p>
           {prepared.existingPool && (
             <p className="break-all text-warn">
               This pool already exists: {prepared.existingPool}. Add liquidity

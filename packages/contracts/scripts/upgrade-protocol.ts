@@ -64,6 +64,14 @@ const deployment = manifest.contracts?.[contractName];
 if (!deployment?.proxyAddress || !deployment?.implementationAddress) {
   throw new Error(`${contractName} deployment is missing`);
 }
+if (
+  getAddress(deployment.upgraderAddress) !==
+  getAddress(manifest.upgraderAddress)
+) {
+  throw new Error(
+    "Factory upgrader migrated; use the bounded timelock executor instead of direct-wallet upgrade",
+  );
+}
 
 const deployer = privateKeyToAccount(key("DEPLOYER_PRIVATE_KEY"));
 const upgrader = privateKeyToAccount(key("UPGRADER_PRIVATE_KEY"));
