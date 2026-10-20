@@ -48,7 +48,7 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
           null
         }
         label={quote?.quoteSymbol ?? market.quoteSymbol}
-        className="absolute left-5 top-1"
+        className="absolute left-5 top-0"
       />
     </span>
   );
@@ -88,7 +88,7 @@ export function ProtocolPairLogo({
       <AssetLogo
         url={KNOWN_ASSET_LOGOS[quote.toUpperCase()] ?? pair?.logoUrl ?? null}
         label={quote}
-        className="absolute left-5 top-1"
+        className="absolute left-5 top-0"
       />
     </span>
   );

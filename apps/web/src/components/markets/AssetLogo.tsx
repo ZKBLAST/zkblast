@@ -45,40 +45,42 @@ function LogoImage({ url, label, className = "" }: Props) {
 
   return (
     <span
-      className={`${className} relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white`}
+      className={`${className} grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white`}
       title={label}
       aria-label={label}
       aria-busy={status === "loading"}
     >
-      {url && status !== "failed" ? (
-        <>
-          {status === "loading" && (
-            <span
-              className="logo-shimmer absolute inset-0 rounded-full"
-              aria-hidden="true"
+      <span className="relative grid size-full place-items-center overflow-hidden rounded-full">
+        {url && status !== "failed" ? (
+          <>
+            {status === "loading" && (
+              <span
+                className="logo-shimmer absolute inset-0 rounded-full"
+                aria-hidden="true"
+              />
+            )}
+            <img
+              ref={imageRef}
+              src={url}
+              alt=""
+              referrerPolicy="no-referrer"
+              className={`${square ? "size-full scale-[1.08] object-cover" : "size-full object-contain p-1"} transition-opacity duration-200 ${status === "ready" ? "opacity-100" : "opacity-0"}`}
+              onLoad={(event) => {
+                setSquare(
+                  isNearlySquare(
+                    event.currentTarget.naturalWidth,
+                    event.currentTarget.naturalHeight,
+                  ),
+                );
+                setStatus("ready");
+              }}
+              onError={() => setStatus("failed")}
             />
-          )}
-          <img
-            ref={imageRef}
-            src={url}
-            alt=""
-            referrerPolicy="no-referrer"
-            className={`${square ? "size-full scale-[1.08] object-cover" : "size-full object-contain p-1"} transition-opacity duration-200 ${status === "ready" ? "opacity-100" : "opacity-0"}`}
-            onLoad={(event) => {
-              setSquare(
-                isNearlySquare(
-                  event.currentTarget.naturalWidth,
-                  event.currentTarget.naturalHeight,
-                ),
-              );
-              setStatus("ready");
-            }}
-            onError={() => setStatus("failed")}
-          />
-        </>
-      ) : (
-        <CircleDashed className="size-4 text-black" aria-hidden="true" />
-      )}
+          </>
+        ) : (
+          <CircleDashed className="size-4 text-black" aria-hidden="true" />
+        )}
+      </span>
     </span>
   );
 }
