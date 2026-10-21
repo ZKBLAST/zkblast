@@ -16,6 +16,17 @@
     "benchmark:browser:serve": "node scripts/serve-browser-benchmark.mjs",
     "v1:build": "node scripts/build-v1.mjs",
     "v1:test": "node scripts/validate-v1-vectors.mjs",
+    "v2:accounting:test": "node --test test/v2-conservation.test.mjs",
+    "v2:spend:test": "node --test test/v2-spend.test.mjs",
+    "v2:action:test": "node --test test/v2-action.test.mjs",
+    "v2:build": "node scripts/prepare-v2-testnet.mjs build",
+    "v2:setup": "node scripts/prepare-v2-testnet.mjs setup",
+    "v2:prove": "node scripts/prove-v2-testnet.mjs",
+    "v2:browser:prepare": "esbuild browser/private-v2-worker.js --bundle --platform=browser --format=iife --outfile=../../apps/web/public/zk/private-v2-worker.js --minify",
+    "v2:browser:test": "node --test test/private-v2-prover.test.mjs",
+    "v2:note:browser:prepare": "node scripts/prepare-v2-note-browser.mjs",
+    "v2:note:browser:test": "node --test test/private-v2-note-worker.test.mjs",
+    "v2:browser:real:test": "node --test test/private-v2-prover-real.test.mjs",
     "v1:ceremony": "node scripts/ceremony-v1.mjs"
   },
   "devDependencies": {

@@ -15,8 +15,14 @@ export class PostgresIndexerRepository implements IndexerRepository {
   private readonly sql;
   private readonly schema: string;
 
-  constructor(databaseUrl: string, schema: string) {
+  constructor(
+    databaseUrl: string,
+    schema: string,
+    private readonly consumer = "protocol",
+  ) {
     if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!/^(protocol|shielded-v2-[a-f0-9]{40})$/u.test(consumer))
+      throw new Error("INVALID_INDEXER_CONSUMER");
     this.schema = schema;
     this.sql = postgres(databaseUrl, {
       max: 1,
@@ -27,8 +33,8 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   async checkpoint(chainId: number): Promise<IndexerCheckpoint | null> {
     const rows = await this.sql.unsafe(
-      `select last_processed_block, last_processed_hash, finalized_block from ${this.schema}.ingestion_checkpoints where consumer = 'protocol' and chain_id = $1`,
-      [chainId],
+      `select last_processed_block, last_processed_hash, finalized_block from ${this.schema}.ingestion_checkpoints where consumer = $2 and chain_id = $1`,
+      [chainId, this.consumer],
     );
     const row = rows[0] as
       | {
@@ -128,18 +134,21 @@ export class PostgresIndexerRepository implements IndexerRepository {
           );
       }
       await transaction.unsafe(
-        `insert into ${this.schema}.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ('protocol',$1,$2,$3,$4) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
+        `insert into ${this.schema}.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ($5,$1,$2,$3,$4) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
         [
           checkpoint.chainId,
           checkpoint.blockNumber.toString(),
           checkpoint.blockHash.toLowerCase(),
           checkpoint.finalizedBlock.toString(),
+          this.consumer,
         ],
       );
     });
   }
 
   async rewind(chainId: number, fromBlock: bigint): Promise<void> {
+    if (this.consumer !== "protocol")
+      throw new Error("ISOLATED_CONSUMER_REORG_REQUIRES_REVIEW");
     await this.sql.begin(async (transaction) => {
       await transaction.unsafe(
         "select set_config('zkblast.allow_checkpoint_rewind','on',true)",

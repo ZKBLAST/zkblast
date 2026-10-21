@@ -152,6 +152,14 @@ const shieldedService = manifest.shielded
       deploymentBlock: BigInt(manifest.shielded.deploymentBlock),
     })
   : undefined;
+const shieldedV2Service = manifest.shieldedV2
+  ? new ShieldedService(chainClient, {
+      schemaVersion: 2,
+      vault: getAddress(manifest.shieldedV2.vault),
+      fieldHasher: getAddress(manifest.shieldedV2.fieldHasher),
+      deploymentBlock: BigInt(manifest.shieldedV2.deploymentBlock),
+    })
+  : undefined;
 const app = createApp(
   {
     environment: serverConfig.APP_ENV,
@@ -159,6 +167,7 @@ const app = createApp(
     chainName: serverConfig.CHAIN_NAME,
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
+    ...(manifest.shieldedV2 ? { shieldedV2: manifest.shieldedV2 } : {}),
     operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
     contracts: Object.values(manifest.contracts)
       .map((contract) => ({
@@ -197,6 +206,7 @@ const app = createApp(
     tradeReceiptService,
     ...(operationsService ? { operationsService } : {}),
     ...(shieldedService ? { shieldedService } : {}),
+    ...(shieldedV2Service ? { shieldedV2Service } : {}),
     poolCreationService,
   },
 );

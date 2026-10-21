@@ -1,10 +1,5 @@
-import { zkBlastVaultAbi } from "@zkblast/abi";
-import {
-  getAddress,
-  type Address,
-  type Hex,
-  type PublicClient,
-} from "viem";
+import { privateVaultV2Abi, zkBlastVaultAbi } from "@zkblast/abi";
+import { getAddress, type Address, type Hex, type PublicClient } from "viem";
 
 const DEPTH = 32;
 const EMPTY_LEAF = `0x${"0".repeat(63)}1` as Hex;
@@ -23,13 +18,17 @@ const hasherAbi = [
 ] as const;
 
 type Config = Readonly<{
+  schemaVersion?: 1 | 2;
   vault: Address;
   fieldHasher: Address;
   deploymentBlock: bigint;
 }>;
 
 export class ShieldedService {
-  private readonly pathCache = new Map<string, Awaited<ReturnType<ShieldedService["buildPath"]>>>();
+  private readonly pathCache = new Map<
+    string,
+    Awaited<ReturnType<ShieldedService["buildPath"]>>
+  >();
 
   constructor(
     private readonly client: PublicClient,
@@ -37,20 +36,45 @@ export class ShieldedService {
   ) {}
 
   async path(commitment: Hex) {
-    const [head, onchainRoot] = await Promise.all([
-      this.client.getBlockNumber(),
-      this.client.readContract({
-        address: this.config.vault,
-        abi: zkBlastVaultAbi,
-        functionName: "root",
-      }),
-    ]);
+    const head = await this.client.getBlockNumber();
+    const onchainRoot =
+      this.config.schemaVersion === 2
+        ? await this.client.readContract({
+            address: this.config.vault,
+            abi: privateVaultV2Abi,
+            functionName: "currentRoot",
+            blockNumber: head,
+          })
+        : await this.client.readContract({
+            address: this.config.vault,
+            abi: zkBlastVaultAbi,
+            functionName: "root",
+            blockNumber: head,
+          });
     const cacheKey = `${onchainRoot.toLowerCase()}:${commitment.toLowerCase()}`;
     const cached = this.pathCache.get(cacheKey);
     if (cached) return { ...cached, syncedBlock: head.toString() };
     const result = await this.buildPath(commitment, head, onchainRoot);
     this.pathCache.set(cacheKey, result);
     return result;
+  }
+
+  async intent(id: Hex) {
+    if (this.config.schemaVersion !== 2)
+      throw new Error("V2_INTENT_SERVICE_UNAVAILABLE");
+    const blockNumber = await this.client.getBlockNumber();
+    const status = await this.client.readContract({
+      address: this.config.vault,
+      abi: privateVaultV2Abi,
+      functionName: "intentStatus",
+      args: [id],
+      blockNumber,
+    });
+    const label = (["unsubmitted", "pending", "settled", "refunded"] as const)[
+      status
+    ];
+    if (!label) throw new Error("INVALID_V2_INTENT_STATE");
+    return { id, status: label, syncedBlock: String(blockNumber) };
   }
 
   private async buildPath(commitment: Hex, head: bigint, onchainRoot: Hex) {
@@ -78,7 +102,8 @@ export class ShieldedService {
       directions.push(isRight ? 1 : 0);
       const pairs = Array.from(
         { length: Math.ceil(nodes.length / 2) },
-        (_, pair) => [nodes[pair * 2] ?? zero, nodes[pair * 2 + 1] ?? zero] as const,
+        (_, pair) =>
+          [nodes[pair * 2] ?? zero, nodes[pair * 2 + 1] ?? zero] as const,
       );
       const [nextZero, ...nextNodes] = await Promise.all([
         this.hash(level, zero, zero),
@@ -102,9 +127,15 @@ export class ShieldedService {
   }
 
   private async commitmentLogs(head: bigint) {
-    const event = zkBlastVaultAbi.find(
-      (item) => item.type === "event" && item.name === "CommitmentDeposited",
-    );
+    const event =
+      this.config.schemaVersion === 2
+        ? privateVaultV2Abi.find(
+            (item) => item.type === "event" && item.name === "NoteInserted",
+          )
+        : zkBlastVaultAbi.find(
+            (item) =>
+              item.type === "event" && item.name === "CommitmentDeposited",
+          );
     if (!event) throw new Error("COMMITMENT_EVENT_ABI_MISSING");
     const logs = [];
     const chunk = 2_000n;

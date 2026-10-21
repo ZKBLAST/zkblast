@@ -10,6 +10,7 @@ import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 import { ViemChainReader } from "./viem-chain-reader.js";
 import { marketChartSynchronizer } from "./market-chart-sync.js";
 import { fastCatchup } from "./fast-catchup.js";
+import { privateV2Synchronizer } from "./private-v2-sync.js";
 
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -36,6 +37,7 @@ const manifest = await loadDeploymentManifestFile(
 );
 const addresses = [
   ...Object.values(manifest.integration),
+  ...(manifest.shieldedV2 ? [manifest.shieldedV2.vault] : []),
   ...(manifest.shielded
     ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
     : []),
@@ -55,6 +57,20 @@ const service = new IndexerService(
   repository,
 );
 await repository.enableCheckpointGuard();
+const privateV2 = manifest.shieldedV2
+  ? privateV2Synchronizer({
+      client,
+      databaseUrl: runner.SUPABASE_DIRECT_DATABASE_URL,
+      schema: config.SUPABASE_SCHEMA,
+      chainId: config.CHAIN_ID,
+      registry: getAddress(manifest.integration.poolRegistry),
+      vault: getAddress(manifest.shieldedV2.vault),
+      deploymentBlock: manifest.shieldedV2.deploymentBlock,
+      confirmations: BigInt(runner.INDEXER_CONFIRMATIONS),
+      chunkSize: runner.INDEXER_CATCHUP_CHUNK_SIZE,
+      maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,
+    })
+  : undefined;
 let syncing = false;
 let lastActivitySync = 0;
 
@@ -62,14 +78,17 @@ async function synchronize(): Promise<void> {
   if (syncing) return;
   syncing = true;
   try {
+    await privateV2?.synchronize();
     const pools = await repository.registeredPoolAddresses(config.CHAIN_ID);
     for (const pool of pools) {
       if (!addresses.includes(pool)) addresses.push(pool);
     }
     const startBlock = BigInt(
-      manifest.shielded
-        ? Math.min(manifest.deploymentBlock, manifest.shielded.deploymentBlock)
-        : manifest.deploymentBlock,
+      Math.min(
+        manifest.deploymentBlock,
+        manifest.shielded?.deploymentBlock ?? manifest.deploymentBlock,
+        manifest.shieldedV2?.deploymentBlock ?? manifest.deploymentBlock,
+      ),
     );
     try {
       await fastCatchup({

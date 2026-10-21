@@ -1,0 +1,426 @@
+{
+  "PrivateVaultV2": {
+    "storage": [
+      {
+        "astId": 8470,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_status",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 4308,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_intents",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_struct(Intent)4303_storage)"
+      },
+      {
+        "astId": 4312,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "nullifierIntent",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_bytes32)"
+      },
+      {
+        "astId": 8253,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 8255,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "3",
+        "type": "t_bool"
+      },
+      {
+        "astId": 405,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 5807,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "treeVersion",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 5810,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "fieldHasher",
+        "offset": 8,
+        "slot": "5",
+        "type": "t_contract(IFieldHasher)3047"
+      },
+      {
+        "astId": 5813,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "actionVerifier",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_contract(IPrivateActionVerifierV2)5475"
+      },
+      {
+        "astId": 5816,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "fundVerifier",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_contract(IPrivateFundVerifierV2)5487"
+      },
+      {
+        "astId": 5819,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "poolRegistry",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_contract(PoolRegistry)2880"
+      },
+      {
+        "astId": 5821,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "depositsPaused",
+        "offset": 20,
+        "slot": "8",
+        "type": "t_bool"
+      },
+      {
+        "astId": 5823,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "actionsPaused",
+        "offset": 21,
+        "slot": "8",
+        "type": "t_bool"
+      },
+      {
+        "astId": 5825,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "withdrawalsPaused",
+        "offset": 22,
+        "slot": "8",
+        "type": "t_bool"
+      },
+      {
+        "astId": 5828,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_tree",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_struct(Tree)4007_storage"
+      },
+      {
+        "astId": 5832,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_rootHistory",
+        "offset": 0,
+        "slot": "75",
+        "type": "t_array(t_bytes32)256_storage"
+      },
+      {
+        "astId": 5836,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_rootReferences",
+        "offset": 0,
+        "slot": "331",
+        "type": "t_mapping(t_bytes32,t_uint256)"
+      },
+      {
+        "astId": 5838,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "_rootCursor",
+        "offset": 0,
+        "slot": "332",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 5842,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "assetEnabled",
+        "offset": 0,
+        "slot": "333",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 5846,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "liabilityRaw",
+        "offset": 0,
+        "slot": "334",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 5850,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "shareLiability",
+        "offset": 0,
+        "slot": "335",
+        "type": "t_mapping(t_bytes32,t_uint256)"
+      },
+      {
+        "astId": 5854,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "commitmentInserted",
+        "offset": 0,
+        "slot": "336",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 5858,
+        "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+        "label": "withdrawalSpent",
+        "offset": 0,
+        "slot": "337",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)256_storage": {
+        "encoding": "inplace",
+        "label": "bytes32[256]",
+        "numberOfBytes": "8192",
+        "base": "t_bytes32"
+      },
+      "t_array(t_bytes32)32_storage": {
+        "encoding": "inplace",
+        "label": "bytes32[32]",
+        "numberOfBytes": "1024",
+        "base": "t_bytes32"
+      },
+      "t_array(t_bytes32)3_storage": {
+        "encoding": "inplace",
+        "label": "bytes32[3]",
+        "numberOfBytes": "96",
+        "base": "t_bytes32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IFieldHasher)3047": {
+        "encoding": "inplace",
+        "label": "contract IFieldHasher",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IPrivateActionVerifierV2)5475": {
+        "encoding": "inplace",
+        "label": "contract IPrivateActionVerifierV2",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IPrivateFundVerifierV2)5487": {
+        "encoding": "inplace",
+        "label": "contract IPrivateFundVerifierV2",
+        "numberOfBytes": "20"
+      },
+      "t_contract(PoolRegistry)2880": {
+        "encoding": "inplace",
+        "label": "contract PoolRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_enum(Status)4279": {
+        "encoding": "inplace",
+        "label": "enum IntentLifecycleV2.Status",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(Intent)4303_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct IntentLifecycleV2.Intent)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Intent)4303_storage"
+      },
+      "t_mapping(t_bytes32,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_struct(Intent)4303_storage": {
+        "encoding": "inplace",
+        "label": "struct IntentLifecycleV2.Intent",
+        "numberOfBytes": "384",
+        "members": [
+          {
+            "astId": 4299,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "status",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_enum(Status)4279"
+          },
+          {
+            "astId": 4302,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "reservation",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_struct(Reservation)4296_storage"
+          }
+        ]
+      },
+      "t_struct(Reservation)4296_storage": {
+        "encoding": "inplace",
+        "label": "struct IntentLifecycleV2.Reservation",
+        "numberOfBytes": "352",
+        "members": [
+          {
+            "astId": 4281,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "statementHash",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 4283,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "deadline",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 4287,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "nullifiers",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_bytes32)3_storage"
+          },
+          {
+            "astId": 4291,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "settlementCommitments",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_array(t_bytes32)3_storage"
+          },
+          {
+            "astId": 4295,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "refundCommitments",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_array(t_bytes32)3_storage"
+          }
+        ]
+      },
+      "t_struct(Tree)4007_storage": {
+        "encoding": "inplace",
+        "label": "struct IncrementalCommitmentTree.Tree",
+        "numberOfBytes": "2112",
+        "members": [
+          {
+            "astId": 3996,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "zeroes",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_bytes32)32_storage"
+          },
+          {
+            "astId": 4000,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "filledSubtrees",
+            "offset": 0,
+            "slot": "32",
+            "type": "t_array(t_bytes32)32_storage"
+          },
+          {
+            "astId": 4002,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "root",
+            "offset": 0,
+            "slot": "64",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 4004,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "nextLeafIndex",
+            "offset": 0,
+            "slot": "65",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 4006,
+            "contract": "src/privacy/v2/PrivateVaultV2.sol:PrivateVaultV2",
+            "label": "initialized",
+            "offset": 8,
+            "slot": "65",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  }
+}

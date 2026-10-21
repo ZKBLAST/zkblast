@@ -16,3 +16,8 @@ export * from "./errors.js";
 export * from "./quotes.js";
 export * from "./pool-creation.js";
 export * from "./shielded-batch-poc.js";
+export * from "./shielded-v2-terms.js";
+export * from "./shielded-v2-accounting.js";
+export * from "./shielded-v2-note.js";
+export * from "./shielded-v2-statement.js";
+export * from "./shielded-v2-funds.js";

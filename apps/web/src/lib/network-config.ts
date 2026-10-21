@@ -1,4 +1,5 @@
 import type { PublicConfig } from "@/types/application";
+import { privateVaultV2ConfigSchema } from "@zkblast/config";
 
 const expectedChainIds = { testnet: 46_630, mainnet: 4_663 } as const;
 
@@ -10,6 +11,16 @@ export function parsePublicConfig(value: unknown): PublicConfig {
     throw new Error("INVALID_NETWORK_ENVIRONMENT");
   if (config.chainId !== expectedChainIds[config.environment])
     throw new Error("NETWORK_ENVIRONMENT_MISMATCH");
+  if (config.shieldedV2 !== undefined) {
+    const v2 = privateVaultV2ConfigSchema.parse(config.shieldedV2);
+    const v1 = (config.shielded as { vaultAddress?: string } | undefined)
+      ?.vaultAddress;
+    if (
+      config.environment !== "testnet" ||
+      v2.vault.toLowerCase() === v1?.toLowerCase()
+    )
+      throw new Error("V2_VAULT_NOT_ISOLATED");
+  }
   if (typeof config.chainName !== "string" || config.chainName.length === 0)
     throw new Error("INVALID_NETWORK_NAME");
   if (typeof config.explorerUrl !== "string")

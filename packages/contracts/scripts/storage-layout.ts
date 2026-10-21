@@ -22,14 +22,21 @@ type StorageLayout = Readonly<{
 type Snapshot = Readonly<Record<string, StorageLayout>>;
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const baselinePath = path.join(root, "storage-layout", "baseline.json");
-const contracts = [
-  "PoolRegistry",
-  "PoolFactory",
-  "SwapRouter",
-  "PositionManager",
-  "ZKBlastVault",
-] as const;
+const v2 = process.argv.includes("--v2");
+const baselinePath = path.join(
+  root,
+  "storage-layout",
+  v2 ? "baseline-v2.json" : "baseline.json",
+);
+const contracts = v2
+  ? ["PrivateVaultV2"]
+  : ([
+      "PoolRegistry",
+      "PoolFactory",
+      "SwapRouter",
+      "PositionManager",
+      "ZKBlastVault",
+    ] as const);
 
 async function currentSnapshot(): Promise<Snapshot> {
   return Object.fromEntries(

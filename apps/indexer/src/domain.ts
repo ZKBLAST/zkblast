@@ -7,6 +7,7 @@ export type ProtocolEventKind =
   | "liquidity"
   | "fee"
   | "commitment"
+  | "private_intent"
   | "root"
   | "receipt";
 export type IndexedEvent = Readonly<{

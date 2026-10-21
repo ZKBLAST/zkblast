@@ -3,6 +3,10 @@ import express, { type ErrorRequestHandler } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { z } from "zod";
+import {
+  privateVaultV2ConfigSchema,
+  type PrivateVaultV2Config,
+} from "@zkblast/config";
 import { createAuthRouter } from "./auth-router.js";
 import type { AuthService } from "./auth-service.js";
 import { createIdentityRouter } from "./identity-router.js";
@@ -21,6 +25,7 @@ import type { PoolCreationService } from "./pool-creation-service.js";
 import { createPoolCreationRouter } from "./pool-creation-router.js";
 
 export type ApiPublicConfig = Readonly<{
+  shieldedV2?: PrivateVaultV2Config;
   environment: "testnet" | "mainnet";
   chainId: number;
   chainName: string;
@@ -56,6 +61,7 @@ export type ApiPublicConfig = Readonly<{
 
 const publicConfigResponseSchema = z
   .object({
+    shieldedV2: privateVaultV2ConfigSchema.optional(),
     environment: z.enum(["testnet", "mainnet"]),
     chainId: z.number().int().positive(),
     chainName: z.string().min(1),
@@ -107,6 +113,18 @@ const publicConfigResponseSchema = z
       .optional(),
   })
   .superRefine((value, context) => {
+    if (
+      value.shieldedV2 &&
+      (value.environment !== "testnet" ||
+        value.shieldedV2.vault.toLowerCase() ===
+          value.shielded?.vaultAddress.toLowerCase())
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["shieldedV2"],
+        message: "Private v2 requires an isolated testnet vault",
+      });
+    }
     const expected = value.environment === "testnet" ? 46_630 : 4_663;
     if (value.chainId !== expected) {
       context.addIssue({
@@ -127,6 +145,7 @@ export function createApp(
     liquidityService?: LiquidityService;
     operationsService?: OperationsService;
     shieldedService?: ShieldedService;
+    shieldedV2Service?: ShieldedService;
     externalMarketService?: ExternalMarketService;
     tradeReceiptService?: TradeReceiptService;
     poolCreationService?: PoolCreationService;
@@ -178,6 +197,7 @@ export function createApp(
       explorerUrl: config.explorerUrl,
       contracts: config.contracts,
       shielded: config.shielded,
+      shieldedV2: config.shieldedV2,
     });
     response.json(body);
   });
@@ -208,6 +228,12 @@ export function createApp(
   }
   if (dependencies.shieldedService) {
     app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
+  }
+  if (dependencies.shieldedV2Service) {
+    app.use(
+      "/v1/shielded-v2",
+      createShieldedRouter(dependencies.shieldedV2Service, true),
+    );
   }
   if (dependencies.poolCreationService)
     app.use(

@@ -1,0 +1,387 @@
+"use client";
+
+import { useState } from "react";
+import type { Address, Hex } from "viem";
+import type { PrivateProverReleaseV2 } from "@zkblast/config";
+import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
+import type {
+  PrivateJournalV2,
+  PrivateIntentV2,
+} from "@/lib/private-v2-journal";
+import type { ProtocolExecutionPool } from "@/types/application";
+import { useApp } from "@/components/shell/AppProvider";
+import { Button } from "@/components/ui/Button";
+import { TerminalTabs } from "@/components/trade/TerminalTabs";
+import { preparePrivateActionV2 } from "@/lib/private-v2-plan";
+import {
+  executePrivateIntentV2,
+  privateIntentStateV2,
+  assertNoteUnreservedV2,
+  assertPrivateIntentNotesV2,
+} from "@/lib/private-v2-recovery";
+import { decodeActionStatementV2 } from "@/lib/private-v2-intent";
+
+const inputClass =
+  "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
+type Operation = "reserve" | "settle" | "refund";
+
+export function PrivateActionsV2Panel({
+  scope,
+  manifest,
+  journal,
+  pool,
+  busy,
+  backupSaved,
+  save,
+  run,
+  onStage,
+  onSubmitted,
+}: {
+  scope: NoteScopeV2;
+  manifest: PrivateProverReleaseV2;
+  journal: PrivateJournalV2;
+  pool: ProtocolExecutionPool | null;
+  busy: boolean;
+  backupSaved: boolean;
+  save: (next: PrivateJournalV2) => Promise<PrivateJournalV2>;
+  run: (work: () => Promise<void>) => Promise<void>;
+  onStage: (stage: string) => void;
+  onSubmitted: (
+    hash: Hex,
+    operation: Operation,
+    commitment: string,
+  ) => Promise<void>;
+}) {
+  const { address, config } = useApp();
+  const [action, setAction] = useState("swap");
+  const [selection0, setSelection0] = useState("");
+  const [selection1, setSelection1] = useState("");
+  const [bin, setBin] = useState("0");
+  const [states, setStates] = useState<Record<string, string>>({});
+  const available = journal.notes.filter(
+    (note) =>
+      !journal.intents.some(
+        (intent) =>
+          !journal.archivedIntents.includes(intent.id) &&
+          intent.inputs.includes(note.commitment),
+      ),
+  );
+  const tokenNotes = available.filter(
+    (note) =>
+      note.resource.kind === "token" &&
+      pool &&
+      [
+        pool.token0Address.toLowerCase(),
+        pool.token1Address.toLowerCase(),
+      ].includes(note.resource.address.toLowerCase()),
+  );
+  const lpNotes = available.filter(
+    (note) =>
+      note.resource.kind === "lp" &&
+      pool &&
+      note.resource.address.toLowerCase() === pool.address.toLowerCase() &&
+      note.resource.model === pool.model,
+  );
+  const optionLabel = (note: StoredNoteV2) => {
+    const symbol =
+      note.resource.kind === "lp"
+        ? `LP shares · bin ${note.resource.binId}`
+        : note.resource.address.toLowerCase() ===
+            pool?.token0Address.toLowerCase()
+          ? pool.token0Symbol
+          : pool?.token1Symbol;
+    return `${symbol} · ${note.amount} raw units · ${note.commitment.slice(0, 8)}…`;
+  };
+  const prepare = () =>
+    run(async () => {
+      if (!window.ethereum || !address || !pool)
+        throw new Error("SELECT_MARKET_AND_CONNECT_WALLET");
+      if (!["swap", "add", "remove"].includes(action))
+        throw new Error("INVALID_V2_ACTION");
+      const selected =
+        action === "add" ? [selection0, selection1] : [selection0];
+      const inputNotes = selected.map((commitment) =>
+        available.find((note) => note.commitment === commitment),
+      );
+      if (
+        inputNotes.some((note) => !note) ||
+        new Set(selected).size !== selected.length
+      )
+        throw new Error("SELECT_VALID_PRIVATE_NOTES");
+      if (
+        pool.model === "dlmm" &&
+        action !== "swap" &&
+        !/^-?(0|[1-9][0-9]{0,7})$/u.test(bin)
+      )
+        throw new Error("INVALID_V2_BIN");
+      const prepared = await preparePrivateActionV2({
+        scope,
+        manifest,
+        pool,
+        action: action as "swap" | "add" | "remove",
+        binId: pool.model === "damm" || action === "swap" ? 0 : Number(bin),
+        inputNotes: inputNotes as StoredNoteV2[],
+        provider: window.ethereum,
+        account: address as Address,
+        quoter: config?.contracts?.find(
+          (contract) => contract.name === "PoolQuoter",
+        )?.address,
+        onStage,
+      });
+      await save({
+        ...journal,
+        notes: [...journal.notes, ...prepared.notes],
+        intents: [...journal.intents, prepared.intent],
+      });
+      setSelection0("");
+      setSelection1("");
+      onStage(
+        "Action proof and recovery notes saved. Download the encrypted journal before reserving.",
+      );
+    });
+  const refresh = (intent: PrivateIntentV2) =>
+    run(async () => {
+      if (!window.ethereum) throw new Error("CONNECT_WALLET");
+      const state = await privateIntentStateV2(
+        window.ethereum,
+        scope,
+        intent.id as Hex,
+      );
+      setStates((current) => ({ ...current, [intent.id]: state }));
+    });
+  const execute = (intent: PrivateIntentV2, operation: Operation) =>
+    run(async () => {
+      if (!window.ethereum || !address) throw new Error("CONNECT_WALLET");
+      if (operation === "reserve" && !backupSaved)
+        throw new Error("DOWNLOAD_ENCRYPTED_JOURNAL_FIRST");
+      onStage(`Confirm private ${operation} in your wallet`);
+      const hash = await executePrivateIntentV2({
+        notes: journal.notes,
+        manifest,
+        operation,
+        intent,
+        scope,
+        provider: window.ethereum,
+        account: address as Address,
+        onSubmitted: (hash) => onSubmitted(hash, operation, intent.inputs[0]),
+      });
+      setStates((current) => ({
+        ...current,
+        [intent.id]:
+          operation === "reserve"
+            ? "pending"
+            : operation === "settle"
+              ? "settled"
+              : "refunded",
+      }));
+      onStage(`Confirmed: ${hash}`);
+    });
+  const archive = (intent: PrivateIntentV2) =>
+    run(async () => {
+      if (!window.ethereum) throw new Error("CONNECT_WALLET");
+      await assertPrivateIntentNotesV2(intent, journal.notes, manifest, scope);
+      if (
+        (await privateIntentStateV2(
+          window.ethereum,
+          scope,
+          intent.id as Hex,
+        )) !== "unsubmitted"
+      )
+        throw new Error("V2_ONLY_UNSUBMITTED_DRAFTS_CAN_BE_ARCHIVED");
+      for (const commitment of intent.inputs) {
+        const note = journal.notes.find(
+          (candidate) => candidate.commitment === commitment,
+        );
+        if (!note) throw new Error("V2_INPUT_NOTE_MISSING");
+        await assertNoteUnreservedV2(window.ethereum, note, manifest);
+      }
+      await save({
+        ...journal,
+        archivedIntents: [...new Set([...journal.archivedIntents, intent.id])],
+      });
+      onStage(
+        "Unsubmitted draft archived without deleting its recovery notes. Chain spend locks always apply.",
+      );
+    });
+  return (
+    <div className="grid min-w-0 gap-4">
+      <TerminalTabs
+        prefix="private-action-v2"
+        label="Private action"
+        value={action}
+        disabled={busy}
+        onChange={(value) => {
+          setAction(value);
+          setSelection0("");
+          setSelection1("");
+        }}
+        items={[
+          { value: "swap", label: "Swap" },
+          { value: "add", label: "Add LP" },
+          { value: "remove", label: "Remove LP" },
+        ]}
+      />
+      <p className="text-xs leading-relaxed text-muted">
+        Uses whole selected notes. Outputs are fixed by the proof; a changed
+        pool can require an expiry refund. No relayer fee is charged by this
+        interface.
+      </p>
+      {pool?.model === "dlmm" && action === "add" && (
+        <label className="grid gap-2">
+          DLMM bin ID
+          <input
+            className={inputClass}
+            inputMode="numeric"
+            value={bin}
+            onChange={(event) => setBin(event.target.value)}
+            disabled={busy}
+          />
+        </label>
+      )}
+      <label className="grid gap-2">
+        {action === "remove" ? "Private LP note" : "Input note"}
+        <select
+          className={inputClass}
+          value={selection0}
+          onChange={(event) => {
+            setSelection0(event.target.value);
+            const note = journal.notes.find(
+              (candidate) => candidate.commitment === event.target.value,
+            );
+            if (action === "remove" && note?.resource.kind === "lp")
+              setBin(note.resource.binId ?? "0");
+          }}
+          disabled={busy}
+        >
+          <option value="">Select a note</option>
+          {(action === "remove" ? lpNotes : tokenNotes).map((note) => (
+            <option key={note.commitment} value={note.commitment}>
+              {optionLabel(note)}
+            </option>
+          ))}
+        </select>
+      </label>
+      {action === "add" && (
+        <label className="grid gap-2">
+          Second token note
+          <select
+            className={inputClass}
+            value={selection1}
+            onChange={(event) => setSelection1(event.target.value)}
+            disabled={busy}
+          >
+            <option value="">Select the other token</option>
+            {tokenNotes
+              .filter((note) => note.commitment !== selection0)
+              .map((note) => (
+                <option key={note.commitment} value={note.commitment}>
+                  {optionLabel(note)}
+                </option>
+              ))}
+          </select>
+        </label>
+      )}
+      <Button
+        onClick={() => void prepare()}
+        disabled={
+          busy ||
+          !pool ||
+          !address ||
+          !selection0 ||
+          (action === "add" && !selection1)
+        }
+      >
+        Prepare private action
+      </Button>
+      <div className="grid gap-4 border-t border-line pt-4">
+        <h4>Intent recovery</h4>
+        {!journal.intents.length && (
+          <p className="text-xs text-muted">
+            Prepared actions will appear here and remain in encrypted backups.
+          </p>
+        )}
+        {journal.intents.map((intent, index) => {
+          if (!intent.reservationProof)
+            return (
+              <p key={intent.id} className="text-xs text-muted">
+                Intent {index + 1}: no executable reservation proof saved.
+              </p>
+            );
+          const decoded = decodeActionStatementV2(intent.statement, scope);
+          return (
+            <section
+              key={intent.id}
+              className="grid min-w-0 gap-3 border border-line p-3"
+            >
+              <div className="flex flex-wrap justify-between gap-2">
+                <span>
+                  {intent.action} · intent {index + 1}
+                </span>
+                <span className="text-muted">
+                  {states[intent.id] ?? "Check chain status"}
+                </span>
+              </div>
+              <p className="break-all font-mono text-[10px] text-muted">
+                {intent.id}
+              </p>
+              <p className="text-xs text-muted">
+                Deadline:{" "}
+                {new Date(
+                  Number(decoded.terms.deadline) * 1000,
+                ).toLocaleString()}
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={busy}
+                onClick={() => void refresh(intent)}
+              >
+                Refresh onchain status
+              </Button>
+              {states[intent.id] === "unsubmitted" &&
+                !journal.archivedIntents.includes(intent.id) && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() => void archive(intent)}
+                  >
+                    Archive unsubmitted draft
+                  </Button>
+                )}
+              <div className="grid gap-2 sm:grid-cols-3">
+                <Button
+                  size="sm"
+                  disabled={
+                    busy ||
+                    !backupSaved ||
+                    journal.archivedIntents.includes(intent.id) ||
+                    states[intent.id] !== "unsubmitted"
+                  }
+                  onClick={() => void execute(intent, "reserve")}
+                >
+                  Reserve
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={busy || states[intent.id] !== "pending"}
+                  onClick={() => void execute(intent, "settle")}
+                >
+                  Settle
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={busy || states[intent.id] !== "pending"}
+                  onClick={() => void execute(intent, "refund")}
+                >
+                  Expiry refund
+                </Button>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

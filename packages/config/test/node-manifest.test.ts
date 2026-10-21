@@ -9,6 +9,40 @@ const testnetManifest = fileURLToPath(
   new URL("../../../deployments/testnet/manifest.json", import.meta.url),
 );
 
+test("v2 vault configuration is optional, testnet-only and distinct from v1", async () => {
+  const manifest = await loadDeploymentManifestFile(testnetManifest);
+  const shieldedV2 = {
+    vault: "0x0000000000000000000000000000000000001000",
+    fieldHasher: "0x0000000000000000000000000000000000002000",
+    treeVersion: 2,
+    deploymentBlock: 100,
+  };
+  assert.equal(
+    parseDeploymentManifest({ ...manifest, shieldedV2 }).shieldedV2
+      ?.treeVersion,
+    2,
+  );
+  assert.throws(
+    () =>
+      parseDeploymentManifest({
+        ...manifest,
+        shieldedV2,
+        environment: "mainnet",
+        chainId: 4663,
+        shielded: undefined,
+      }),
+    /isolated testnet/u,
+  );
+  assert.throws(
+    () =>
+      parseDeploymentManifest({
+        ...manifest,
+        shieldedV2: { ...shieldedV2, vault: manifest.shielded!.vault },
+      }),
+    /isolated testnet/u,
+  );
+});
+
 test("loads the schema-valid manifest for the exact runtime", async () => {
   const manifest = await loadDeploymentManifestFile(testnetManifest, {
     environment: "testnet",
@@ -66,6 +100,7 @@ test("core-only mainnet configuration remains valid without shielded custody", a
     environment: "mainnet",
     chainId: 4663,
     shielded: undefined,
+    shieldedV2: undefined,
   });
   assert.equal(parsed.shielded, undefined);
 });

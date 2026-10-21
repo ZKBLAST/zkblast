@@ -1,4 +1,5 @@
 export {
+  privateVaultV2Abi,
   dammPoolAbi,
   dlmmPoolAbi,
   erc20Abi,
@@ -13,6 +14,7 @@ export {
 } from "./generated.js";
 
 import {
+  privateVaultV2Abi,
   dammPoolAbi,
   dlmmPoolAbi,
   erc20Abi,
@@ -27,6 +29,7 @@ import {
 } from "./generated.js";
 
 export const protocolAbis = {
+  PrivateVaultV2: privateVaultV2Abi,
   PoolRegistry: poolRegistryAbi,
   PoolFactory: poolFactoryAbi,
   DammPool: dammPoolAbi,

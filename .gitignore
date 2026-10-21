@@ -41,6 +41,7 @@ supabase/.temp/
 *.sqlite3
 
 packages/contracts/cache/
+packages/contracts/test/generated-v2-local/
 packages/contracts/out/
 packages/contracts/broadcast/
 packages/contracts/lib/

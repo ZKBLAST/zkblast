@@ -16,6 +16,10 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   DlmmPoolInitialized: "pool",
   ProtocolFeesCollected: "fee",
   CommitmentDeposited: "commitment",
+  NoteInserted: "commitment",
+  IntentReserved: "private_intent",
+  IntentSettled: "private_intent",
+  IntentRefunded: "private_intent",
   RootRegistered: "root",
   TransactionReceipt: "receipt",
 };

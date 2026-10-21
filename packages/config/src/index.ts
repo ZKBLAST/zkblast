@@ -19,3 +19,15 @@ export type {
   ProverRelease,
   ProverManifest,
 } from "./shielded-prover.js";
+export {
+  fetchPrivateProverV2,
+  sealPrivateProverV2,
+  privateProverManifestV2Schema,
+  privateProverReleaseRefV2Schema,
+  privateVaultV2ConfigSchema,
+} from "./private-prover-v2.js";
+export type {
+  PrivateProverReleaseV2,
+  PrivateProverReleaseRefV2,
+  PrivateVaultV2Config,
+} from "./private-prover-v2.js";

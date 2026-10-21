@@ -806,5 +806,15 @@
         "denominationRaw": "1000000"
       }
     ]
+  },
+  "shieldedV2": {
+    "vault": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+    "fieldHasher": "0x0417D16c327807A671bC246E75b9BF5b53ea7659",
+    "treeVersion": 2,
+    "deploymentBlock": 139845792,
+    "proverRelease": {
+      "manifestPath": "/zk/testnet/v2/manifest.json",
+      "manifestSha256": "a6c5b63cd2438921a8363b78836f3dc5ae5b658a2580d3ad48d01660f5065c05"
+    }
   }
 }

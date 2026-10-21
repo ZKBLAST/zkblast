@@ -21,6 +21,7 @@ const contracts = [
   ["zkBlastVaultAbi", "ZKBlastVault"],
   ["shieldedStateRegistryAbi", "ShieldedStateRegistry"],
   ["shieldedLPManagerAbi", "ShieldedLPManager"],
+  ["privateVaultV2Abi", "PrivateVaultV2"],
   ["erc20Abi", "IERC20Metadata"],
 ];
 

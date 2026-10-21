@@ -5,6 +5,10 @@ import postgres from "postgres";
 
 const environment = process.env.APP_ENV;
 const mode = process.argv[2];
+const onlyMigration = process.argv[3];
+if (onlyMigration && !/^\d{12}_[a-z0-9_]+\.sql$/u.test(onlyMigration)) {
+  throw new Error("Invalid explicit migration filename");
+}
 
 if (environment !== "testnet" && environment !== "mainnet") {
   throw new Error("APP_ENV must be testnet or mainnet");
@@ -118,11 +122,14 @@ async function applyMigrations() {
   const filenames = (await readdir(directory))
     .filter((filename) => filename.endsWith(".sql"))
     .sort();
+  if (onlyMigration && !filenames.includes(onlyMigration))
+    throw new Error("Migration not found");
 
   await sql`select pg_advisory_lock(hashtext(${`zkblast:${environment}:migrations`}))`;
   try {
     await ensureMigrationLedger();
     for (const filename of filenames) {
+      if (onlyMigration && filename !== onlyMigration) continue;
       const migration = await readFile(`${directory}/${filename}`, "utf8");
       const checksum = createHash("sha256").update(migration).digest("hex");
       const [existing] = await sql.unsafe(

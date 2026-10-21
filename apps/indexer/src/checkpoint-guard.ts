@@ -11,7 +11,7 @@ export async function installCheckpointGuard(
     await tx.unsafe(`create or replace function ${schema}.guard_protocol_checkpoint()
       returns trigger language plpgsql security invoker set search_path='' as $$
       begin
-        if new.consumer='protocol' and coalesce(current_setting('zkblast.allow_checkpoint_rewind',true),'') <> 'on'
+        if (new.consumer='protocol' or new.consumer like 'shielded-v2-%') and coalesce(current_setting('zkblast.allow_checkpoint_rewind',true),'') <> 'on'
           and (new.last_processed_block < old.last_processed_block
             or (new.last_processed_block=old.last_processed_block and new.last_processed_hash<>old.last_processed_hash)) then
           raise exception 'STALE_INDEXER_CHECKPOINT' using errcode='40001';

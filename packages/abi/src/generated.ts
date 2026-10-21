@@ -5591,6 +5591,1216 @@ export const shieldedLPManagerAbi = [
   },
 ] as const;
 
+export const privateVaultV2Abi = [
+  {
+    type: "constructor",
+    inputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "DEFAULT_ADMIN_ROLE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "FACTORY_ROLE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "MAX_INTENT_LIFETIME",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "UPGRADER_ROLE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "actionVerifier",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IPrivateActionVerifierV2",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "actionsPaused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "assetEnabled",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "enabled",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "commitmentInserted",
+    inputs: [
+      {
+        name: "commitment",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "inserted",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "currentRoot",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "deposit",
+    inputs: [
+      {
+        name: "proof",
+        type: "bytes",
+        internalType: "bytes",
+      },
+      {
+        name: "p",
+        type: "uint256[11]",
+        internalType: "uint256[11]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "depositsPaused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "fieldHasher",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IFieldHasher",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "fundVerifier",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IPrivateFundVerifierV2",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "hasRole",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "initialize",
+    inputs: [
+      {
+        name: "admin",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "upgrader",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "registry",
+        type: "address",
+        internalType: "contract PoolRegistry",
+      },
+      {
+        name: "hasher",
+        type: "address",
+        internalType: "contract IFieldHasher",
+      },
+      {
+        name: "actionVerifier_",
+        type: "address",
+        internalType: "contract IPrivateActionVerifierV2",
+      },
+      {
+        name: "fundVerifier_",
+        type: "address",
+        internalType: "contract IPrivateFundVerifierV2",
+      },
+      {
+        name: "treeVersion_",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "intentStatus",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "enum IntentLifecycleV2.Status",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "isKnownRoot",
+    inputs: [
+      {
+        name: "root",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "liabilityRaw",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "liability",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "nextLeafIndex",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "nullifierIntent",
+    inputs: [
+      {
+        name: "nullifier",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "poolRegistry",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract PoolRegistry",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "proxiableUUID",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "refund",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "reservation",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        internalType: "struct IntentLifecycleV2.Reservation",
+        components: [
+          {
+            name: "statementHash",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          {
+            name: "deadline",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "nullifiers",
+            type: "bytes32[3]",
+            internalType: "bytes32[3]",
+          },
+          {
+            name: "settlementCommitments",
+            type: "bytes32[3]",
+            internalType: "bytes32[3]",
+          },
+          {
+            name: "refundCommitments",
+            type: "bytes32[3]",
+            internalType: "bytes32[3]",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "reserve",
+    inputs: [
+      {
+        name: "terms",
+        type: "tuple",
+        internalType: "struct SettlementTermsV2.Terms",
+        components: [
+          {
+            name: "chainId",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "settlement",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "action",
+            type: "uint8",
+            internalType: "uint8",
+          },
+          {
+            name: "pool",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "model",
+            type: "uint8",
+            internalType: "uint8",
+          },
+          {
+            name: "binId",
+            type: "int24",
+            internalType: "int24",
+          },
+          {
+            name: "asset0",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "asset1",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "amount0",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "amount1",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "shares",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "minimum0",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "minimum1",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "minimumShares",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "maximumFee0",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "maximumFee1",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "feeRecipient",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "deadline",
+            type: "uint64",
+            internalType: "uint64",
+          },
+          {
+            name: "refundCommitment",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          {
+            name: "outputCommitment0",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          {
+            name: "outputCommitment1",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+        ],
+      },
+      {
+        name: "inputs",
+        type: "uint256[32]",
+        internalType: "uint256[32]",
+      },
+      {
+        name: "maximumBinCrossings",
+        type: "uint16",
+        internalType: "uint16",
+      },
+      {
+        name: "proof",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setAssetEnabled",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "enabled",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setPaused",
+    inputs: [
+      {
+        name: "deposits",
+        type: "bool",
+        internalType: "bool",
+      },
+      {
+        name: "actions",
+        type: "bool",
+        internalType: "bool",
+      },
+      {
+        name: "withdrawals",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setRole",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "enabled",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "settle",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "statement",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "settleBatch",
+    inputs: [
+      {
+        name: "intentIds",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
+      },
+      {
+        name: "statements",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "shareLiability",
+    inputs: [
+      {
+        name: "resource",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "liability",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "shareResource",
+    inputs: [
+      {
+        name: "pool",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "model",
+        type: "uint8",
+        internalType: "uint8",
+      },
+      {
+        name: "bin",
+        type: "int24",
+        internalType: "int24",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "treeVersion",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint64",
+        internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "upgradeToAndCall",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "withdraw",
+    inputs: [
+      {
+        name: "proof",
+        type: "bytes",
+        internalType: "bytes",
+      },
+      {
+        name: "p",
+        type: "uint256[11]",
+        internalType: "uint256[11]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "withdrawalSpent",
+    inputs: [
+      {
+        name: "nullifier",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "spent",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "withdrawalsPaused",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "event",
+    name: "AssetEnabled",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "enabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Deposited",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "commitment",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "IntentRefunded",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "IntentReserved",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "deadline",
+        type: "uint64",
+        indexed: false,
+        internalType: "uint64",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "IntentSettled",
+    inputs: [
+      {
+        name: "intentId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NoteInserted",
+    inputs: [
+      {
+        name: "commitment",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "leafIndex",
+        type: "uint32",
+        indexed: false,
+        internalType: "uint32",
+      },
+      {
+        name: "root",
+        type: "bytes32",
+        indexed: false,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "PauseUpdated",
+    inputs: [
+      {
+        name: "deposits",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+      {
+        name: "actions",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+      {
+        name: "withdrawals",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RoleUpdated",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "account",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "enabled",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Upgraded",
+    inputs: [
+      {
+        name: "implementation",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Withdrawn",
+    inputs: [
+      {
+        name: "asset",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "recipient",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "nullifier",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "error",
+    name: "ActualDeltaMismatch",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "AlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "AssetUnavailable",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "Insolvent",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "IntentExpired",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidAccount",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidCommitment",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidConfiguration",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidExecutionBounds",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidExecutionContext",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidFundContext",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidFundProof",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidImplementation",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidIntentState",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidProof",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidProofContext",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidReservation",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidTerms",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "NotInitializing",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "NoteUnavailable",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "NullifierUnavailable",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "OnlyProxy",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "Paused",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PoolIdentityMismatch",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ReentrantCall",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "RefundNotAvailable",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "StatementMismatch",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TreeAlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TreeFull",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TreeNotInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "Unauthorized",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "UnregisteredPool",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnsupportedProxiableUUID",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnsupportedTokenBehavior",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UpgradeCallFailed",
+    inputs: [
+      {
+        name: "reason",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+  },
+] as const;
+
 export const erc20Abi = [
   {
     type: "function",

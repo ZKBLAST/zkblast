@@ -1,0 +1,494 @@
+"use client";
+
+import { useEffect, useId, useState } from "react";
+import { Download, Upload } from "lucide-react";
+import {
+  fetchPrivateProverV2,
+  type PrivateProverReleaseV2,
+} from "@zkblast/config";
+import { parseUnits, type Address } from "viem";
+import { useApp } from "@/components/shell/AppProvider";
+import { Button } from "@/components/ui/Button";
+import { TerminalTabs } from "@/components/trade/TerminalTabs";
+import type { ProtocolExecutionPool } from "@/types/application";
+import { download } from "@/lib/notecrypto";
+import {
+  encryptPrivatePayloadV2,
+  type NoteScopeV2,
+  type StoredNoteV2,
+} from "@/lib/notecrypto-v2";
+import {
+  decryptJournalV2,
+  emptyJournalV2,
+  journalStorageKeyV2,
+  persistJournalV2,
+  type PrivateJournalV2,
+} from "@/lib/private-v2-journal";
+import {
+  calculatePrivateNoteV2,
+  createPrivateNoteV2,
+} from "@/lib/private-v2-notes";
+import { fundPrivateNoteV2 } from "@/lib/private-v2-funding";
+import { assertNoteUnreservedV2 } from "@/lib/private-v2-recovery";
+import { PrivateActionsV2Panel } from "./PrivateActionsV2Panel";
+
+const inputClass =
+  "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
+
+export function PrivateVaultV2Panel({
+  pool,
+  onBusyChange,
+}: {
+  pool: ProtocolExecutionPool | null;
+  onBusyChange: (busy: boolean) => void;
+}) {
+  const { config } = useApp();
+  const v2 = config?.shieldedV2;
+  if (!config || config.environment !== "testnet" || !v2?.proverRelease)
+    return (
+      <p className="p-5 text-sm leading-relaxed text-muted" role="status">
+        Private trading v2 is waiting for its isolated testnet vault and
+        verified prover release. Your existing USDG notes remain available in
+        the vault tab.
+      </p>
+    );
+  const scope: NoteScopeV2 = {
+    environment: config.environment,
+    chainId: String(config.chainId),
+    settlement: v2.vault as Address,
+    treeVersion: String(v2.treeVersion),
+  };
+  return (
+    <PrivateVaultV2Session
+      key={`${scope.chainId}:${scope.settlement}:${scope.treeVersion}:${v2.proverRelease.manifestSha256}`}
+      scope={scope}
+      reference={v2.proverRelease}
+      pool={pool}
+      onBusyChange={onBusyChange}
+    />
+  );
+}
+
+function PrivateVaultV2Session({
+  scope,
+  reference,
+  pool,
+  onBusyChange,
+}: {
+  scope: NoteScopeV2;
+  reference: { manifestPath: string; manifestSha256: string };
+  pool: ProtocolExecutionPool | null;
+  onBusyChange: (busy: boolean) => void;
+}) {
+  const { address, config } = useApp();
+  const [manifest, setManifest] = useState<PrivateProverReleaseV2 | null>(null);
+  const [journal, setJournal] = useState<PrivateJournalV2 | null>(null);
+  const [passphrase, setPassphrase] = useState("");
+  const [tab, setTab] = useState("deposit");
+  const [assetIndex, setAssetIndex] = useState("0");
+  const [amount, setAmount] = useState("");
+  const [selectedNote, setSelectedNote] = useState("");
+  const [backupSaved, setBackupSaved] = useState(false);
+  const [backupDownloaded, setBackupDownloaded] = useState(false);
+  const [lastSubmittedHash, setLastSubmittedHash] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+  const id = useId();
+  useEffect(() => {
+    let active = true;
+    void fetchPrivateProverV2(scope, reference)
+      .then((release) => {
+        if (active) setManifest(release);
+      })
+      .catch(() => {
+        if (active)
+          setStatus(
+            "Unable to validate the testnet prover release. No transaction is enabled.",
+          );
+      });
+    return () => {
+      active = false;
+    };
+    // Scope and reference are immutable for this keyed session.
+  }, []);
+
+  const run = async (work: () => Promise<void>) => {
+    setBusy(true);
+    onBusyChange(true);
+    setStatus("");
+    try {
+      await work();
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? error.message : "PRIVATE_V2_OPERATION_FAILED",
+      );
+    } finally {
+      setBusy(false);
+      onBusyChange(false);
+    }
+  };
+  const verify = async (note: StoredNoteV2) => {
+    if (!manifest) throw new Error("V2_PROVER_NOT_READY");
+    return (
+      (await calculatePrivateNoteV2(note, manifest)).commitment ===
+      note.commitment
+    );
+  };
+  const save = async (next: PrivateJournalV2) => {
+    if (!navigator.locks) throw new Error("V2_BROWSER_LOCKS_REQUIRED");
+    const merged = await persistJournalV2(next, passphrase, scope, {
+      storage: localStorage,
+      verify,
+      lock: async <T,>(name: string, work: () => Promise<T>): Promise<T> => {
+        let result!: T;
+        await navigator.locks.request(name, async () => {
+          result = await work();
+        });
+        return result;
+      },
+    });
+    setJournal(merged);
+    setBackupDownloaded(false);
+    setBackupSaved(false);
+    return merged;
+  };
+  const unlock = () =>
+    run(async () => {
+      if (!manifest) throw new Error("V2_PROVER_NOT_READY");
+      if (passphrase.length < 12)
+        throw new Error("Use a passphrase of at least 12 characters.");
+      const serialized = localStorage.getItem(journalStorageKeyV2(scope));
+      const next = serialized
+        ? await decryptJournalV2(serialized, passphrase, scope, verify)
+        : emptyJournalV2();
+      setJournal(next);
+      setStatus("Private journal unlocked in this browser.");
+    });
+  const assets = pool
+    ? [
+        {
+          address: pool.token0Address as Address,
+          symbol: pool.token0Symbol,
+          decimals: pool.token0Decimals,
+        },
+        {
+          address: pool.token1Address as Address,
+          symbol: pool.token1Symbol,
+          decimals: pool.token1Decimals,
+        },
+      ]
+    : [];
+  const prepare = () =>
+    run(async () => {
+      const asset = assets[Number(assetIndex)];
+      if (!journal || !manifest || !asset)
+        throw new Error("SELECT_A_MARKET_AND_UNLOCK_JOURNAL");
+      if (
+        !/^\d+(?:\.\d+)?$/u.test(amount) ||
+        (amount.split(".")[1]?.length ?? 0) > asset.decimals
+      )
+        throw new Error("INVALID_TOKEN_AMOUNT");
+      const note = await createPrivateNoteV2(
+        scope,
+        { kind: "token", address: asset.address },
+        String(parseUnits(amount, asset.decimals)),
+        "input",
+        manifest,
+      );
+      await save({ ...journal, notes: [...journal.notes, note] });
+      setSelectedNote(note.commitment);
+      setStatus(
+        "Note saved locally. Download its encrypted journal before depositing.",
+      );
+    });
+  const exportBackup = () =>
+    run(async () => {
+      if (!journal) return;
+      download(
+        `zkblast-private-v2-${scope.chainId}-journal.json`,
+        await encryptPrivatePayloadV2(journal, passphrase, scope, "journal"),
+      );
+      setBackupDownloaded(true);
+      setBackupSaved(false);
+      setStatus(
+        "Encrypted journal downloaded. Keep the file and passphrase separately.",
+      );
+    });
+  const restore = (file: File) =>
+    run(async () => {
+      if (file.size > 2_000_000) throw new Error("V2_BACKUP_TOO_LARGE");
+      const restored = await decryptJournalV2(
+        await file.text(),
+        passphrase,
+        scope,
+        verify,
+      );
+      await save(restored);
+      setStatus("Validated journal merged. No existing notes were removed.");
+    });
+  const submit = () =>
+    run(async () => {
+      const note = journal?.notes.find(
+        (candidate) => candidate.commitment === selectedNote,
+      );
+      if (!journal || !manifest || !note || !address || !window.ethereum)
+        throw new Error("CONNECT_WALLET_AND_SELECT_NOTE");
+      if (!backupSaved) throw new Error("DOWNLOAD_ENCRYPTED_JOURNAL_FIRST");
+      await assertNoteUnreservedV2(window.ethereum, note, manifest);
+      const operation = tab === "withdraw" ? "withdraw" : "deposit";
+      if (
+        operation === "deposit" &&
+        journal.transactions.some(
+          (transaction) =>
+            transaction.operation === "deposit" &&
+            transaction.commitment === note.commitment,
+        )
+      )
+        throw new Error("V2_DEPOSIT_ALREADY_SUBMITTED_CHECK_EXPLORER");
+      const hash = await fundPrivateNoteV2({
+        operation,
+        note,
+        manifest,
+        account: address as Address,
+        provider: window.ethereum,
+        onStage: setStatus,
+        onSubmitted: async (hash) => {
+          setLastSubmittedHash(hash);
+          setStatus(`Submitted: ${hash}`);
+          await save({
+            ...journal,
+            transactions: [
+              ...journal.transactions,
+              { hash, operation, commitment: note.commitment },
+            ],
+          });
+        },
+      });
+      setStatus(`Confirmed: ${hash}`);
+    });
+  return (
+    <div className="grid min-w-0 gap-5 p-4 text-sm">
+      <div>
+        <h3 className="text-base">Private vault v2</h3>
+        <p className="mt-2 text-xs leading-relaxed text-muted">
+          Testnet · separate notes and recovery journal. Existing USDG vault
+          notes are not imported or changed.
+        </p>
+      </div>
+      {!journal ? (
+        <div className="grid gap-3">
+          <label htmlFor={`${id}-unlock`}>Journal passphrase</label>
+          <input
+            id={`${id}-unlock`}
+            type="password"
+            autoComplete="new-password"
+            className={inputClass}
+            value={passphrase}
+            onChange={(event) => setPassphrase(event.target.value)}
+            disabled={busy}
+          />
+          <Button onClick={() => void unlock()} disabled={busy || !manifest}>
+            Unlock / create journal
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+            <span>
+              {journal.notes.length} notes · {journal.intents.length} intents
+            </span>
+            <button
+              type="button"
+              className="underline underline-offset-4"
+              disabled={busy}
+              onClick={() => {
+                setJournal(null);
+                setPassphrase("");
+                setSelectedNote("");
+                setBackupSaved(false);
+                setStatus("");
+              }}
+            >
+              Lock journal
+            </button>
+          </div>
+          <TerminalTabs
+            prefix={`${id}-v2`}
+            label="Private vault tools"
+            items={[
+              { value: "deposit", label: "Deposit" },
+              { value: "actions", label: "Swap / LP" },
+              { value: "backup", label: "Backup" },
+              { value: "withdraw", label: "Withdraw" },
+            ]}
+            value={tab}
+            onChange={setTab}
+            disabled={busy}
+          />
+          {tab === "deposit" && (
+            <div className="grid gap-3">
+              <label htmlFor={`${id}-asset`}>Token from selected market</label>
+              <select
+                id={`${id}-asset`}
+                className={inputClass}
+                value={assetIndex}
+                onChange={(event) => setAssetIndex(event.target.value)}
+                disabled={busy}
+              >
+                {assets.map((asset, index) => (
+                  <option key={asset.address} value={index}>
+                    {asset.symbol}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor={`${id}-amount`}>Amount</label>
+              <input
+                id={`${id}-amount`}
+                className={inputClass}
+                inputMode="decimal"
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
+                disabled={busy}
+              />
+              <Button
+                onClick={() => void prepare()}
+                disabled={busy || !assets.length}
+              >
+                Prepare encrypted note
+              </Button>
+            </div>
+          )}
+          {tab === "actions" && manifest && (
+            <PrivateActionsV2Panel
+              scope={scope}
+              manifest={manifest}
+              journal={journal}
+              pool={pool}
+              busy={busy}
+              backupSaved={backupSaved}
+              save={save}
+              run={run}
+              onStage={setStatus}
+              onSubmitted={async (hash, operation, commitment) => {
+                setLastSubmittedHash(hash);
+                await save({
+                  ...journal,
+                  transactions: [
+                    ...journal.transactions,
+                    { hash, operation, commitment },
+                  ],
+                });
+              }}
+            />
+          )}
+          {(tab === "deposit" || tab === "withdraw") && (
+            <div className="grid gap-3">
+              <label htmlFor={`${id}-note`}>Token note</label>
+              <select
+                id={`${id}-note`}
+                className={inputClass}
+                value={selectedNote}
+                onChange={(event) => setSelectedNote(event.target.value)}
+                disabled={busy}
+              >
+                <option value="">Select a note</option>
+                {journal.notes
+                  .filter((note) => note.resource.kind === "token")
+                  .map((note, index) => (
+                    <option key={note.commitment} value={note.commitment}>
+                      Note {index + 1} · {note.amount} raw units · {note.role}
+                    </option>
+                  ))}
+              </select>
+              <Button
+                onClick={() => void submit()}
+                disabled={busy || !selectedNote || !backupSaved || !address}
+              >
+                {tab === "withdraw"
+                  ? "Prove and withdraw"
+                  : "Prove and deposit"}
+              </Button>
+            </div>
+          )}
+          <div className="grid gap-4 border-t border-line pt-5">
+            <Button onClick={() => void exportBackup()} disabled={busy}>
+              <Download className="size-4" aria-hidden /> Download encrypted
+              journal
+            </Button>
+            <label className="flex items-start gap-3 text-xs leading-relaxed text-muted">
+              <input
+                type="checkbox"
+                className="mt-0.5 shrink-0"
+                checked={backupSaved}
+                disabled={busy || !backupDownloaded}
+                onChange={(event) => setBackupSaved(event.target.checked)}
+              />
+              <span>
+                I saved the encrypted journal and can recover its passphrase.
+              </span>
+            </label>
+            {tab === "backup" && (
+              <label className="grid gap-3 border border-line p-4">
+                <span className="flex items-center gap-2">
+                  <Upload className="size-4" aria-hidden /> Restore and merge
+                  journal
+                </span>
+                <span className="text-xs leading-relaxed text-muted">
+                  Every note is checked locally against this network, vault and
+                  tree.
+                </span>
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  disabled={busy}
+                  className="min-w-0 max-w-full text-xs"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) void restore(file);
+                  }}
+                />
+              </label>
+            )}
+          </div>
+          {journal.transactions.length > 0 && (
+            <details className="min-w-0 text-xs">
+              <summary>Submitted transactions</summary>
+              <ul className="mt-3 grid gap-3">
+                {journal.transactions.map((transaction) => (
+                  <li key={transaction.hash} className="break-all">
+                    <a
+                      href={`${config?.explorerUrl}/tx/${transaction.hash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    >
+                      {transaction.operation}: {transaction.hash}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </>
+      )}
+      {lastSubmittedHash && (
+        <a
+          className="break-all text-xs underline"
+          target="_blank"
+          rel="noreferrer"
+          href={`${config?.explorerUrl}/tx/${lastSubmittedHash}`}
+        >
+          Last submitted transaction: {lastSubmittedHash}
+        </a>
+      )}
+      <p
+        role="status"
+        aria-live="polite"
+        className="break-words text-xs leading-relaxed text-muted"
+      >
+        {busy ? status || "Working locally…" : status}
+      </p>
+    </div>
+  );
+}
