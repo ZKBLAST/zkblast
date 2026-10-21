@@ -1,4 +1,5 @@
 import { privateVaultV2Abi } from "@zkblast/abi";
+import { isPrivateV2Network } from "@zkblast/config";
 import {
   shieldedTermsHashV2,
   shieldedTermsLimbsV2,
@@ -78,7 +79,7 @@ export function encodeActionStatementV2(
     crossings,
   ]);
   decodeActionStatementV2(encoded, {
-    environment: "testnet",
+    environment: terms.chainId === 4663n ? "mainnet" : "testnet",
     chainId: String(terms.chainId),
     settlement: terms.settlement,
     treeVersion: String(inputs[3]),
@@ -123,7 +124,7 @@ export function decodeActionStatementV2(statement: Hex, scope: NoteScopeV2) {
   validateShieldedTermsV2(sdkTerms);
   const limbs = shieldedTermsLimbsV2(shieldedTermsHashV2(sdkTerms));
   if (
-    scope.environment !== "testnet" ||
+    !isPrivateV2Network(scope.environment, scope.chainId) ||
     inputs[0] !== 2n ||
     inputs[1] !== BigInt(scope.chainId) ||
     terms.chainId !== inputs[1] ||

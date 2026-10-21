@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { z } from "zod";
 import {
   privateVaultV2ConfigSchema,
+  privateV2ConfigIssue,
   type PrivateVaultV2Config,
 } from "@zkblast/config";
 import { createAuthRouter } from "./auth-router.js";
@@ -115,14 +116,22 @@ const publicConfigResponseSchema = z
   .superRefine((value, context) => {
     if (
       value.shieldedV2 &&
-      (value.environment !== "testnet" ||
-        value.shieldedV2.vault.toLowerCase() ===
-          value.shielded?.vaultAddress.toLowerCase())
+      privateV2ConfigIssue(
+        value.environment,
+        value.chainId,
+        value.shieldedV2,
+        value.shielded?.vaultAddress,
+      )
     ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["shieldedV2"],
-        message: "Private v2 requires an isolated testnet vault",
+        message: privateV2ConfigIssue(
+          value.environment,
+          value.chainId,
+          value.shieldedV2,
+          value.shielded?.vaultAddress,
+        )!,
       });
     }
     const expected = value.environment === "testnet" ? 46_630 : 4_663;

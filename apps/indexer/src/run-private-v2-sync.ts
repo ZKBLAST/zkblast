@@ -1,5 +1,5 @@
 import path from "node:path";
-import { loadServerConfig } from "@zkblast/config";
+import { loadServerConfig, isPrivateV2Network } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { createPublicClient, http, getAddress } from "viem";
 import { privateV2Synchronizer } from "./private-v2-sync.js";
@@ -8,19 +8,18 @@ import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 async function main() {
   const config = loadServerConfig(process.env);
   if (
-    config.APP_ENV !== "testnet" ||
-    config.CHAIN_ID !== 46630 ||
-    config.SUPABASE_SCHEMA !== "zkblast_testnet" ||
+    !isPrivateV2Network(config.APP_ENV, config.CHAIN_ID) ||
+    config.SUPABASE_SCHEMA !== `zkblast_${config.APP_ENV}` ||
     !process.env.SUPABASE_DIRECT_DATABASE_URL
   )
-    throw new Error("V2_TESTNET_REQUIRED");
+    throw new Error("V2_NETWORK_SCHEMA_REQUIRED");
   const manifest = await loadDeploymentManifestFile(
     path.resolve(
       import.meta.dirname,
       "../../..",
       config.DEPLOYMENT_MANIFEST_PATH,
     ),
-    { environment: "testnet", chainId: 46630 },
+    { environment: config.APP_ENV, chainId: config.CHAIN_ID },
   );
   if (!manifest.shieldedV2) throw new Error("V2_MANIFEST_REQUIRED");
   const guard = new PostgresIndexerRepository(
@@ -42,6 +41,8 @@ async function main() {
     registry: getAddress(manifest.integration.poolRegistry),
     vault: getAddress(manifest.shieldedV2.vault),
     deploymentBlock: manifest.shieldedV2.deploymentBlock,
+    deployment: manifest.shieldedV2,
+    legacyVault: manifest.shielded?.vault,
     confirmations: 5n,
     chunkSize: 2000n,
     maximumBlocks: 100000n,

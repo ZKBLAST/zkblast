@@ -8,8 +8,26 @@ import { parseDeploymentManifest } from "../src/deployment.js";
 const testnetManifest = fileURLToPath(
   new URL("../../../deployments/testnet/manifest.json", import.meta.url),
 );
+const mainnetManifest = fileURLToPath(
+  new URL("../../../deployments/mainnet/manifest.json", import.meta.url),
+);
 
-test("v2 vault configuration is optional, testnet-only and distinct from v1", async () => {
+test("loads verified mainnet v2 policy and keeps PONS fail-closed", async () => {
+  const manifest = await loadDeploymentManifestFile(mainnetManifest, {
+    environment: "mainnet",
+    chainId: 4663,
+  });
+  assert.equal(manifest.shieldedV2?.vault, "0x81d7EaA9B144e58D6Ce0e0e7e04876d5aeDe8cb4");
+  assert.equal(manifest.shieldedV2?.verifiedDeployment?.chainId, 4663);
+  assert.equal(
+    manifest.shieldedV2?.assets?.find((asset) => asset.symbol === "PONS")
+      ?.enabled,
+    false,
+  );
+  assert.equal(manifest.shielded?.vault, "0xAAC59EBDE79E4e0eA0824BBE2562036b0fd5748A");
+});
+
+test("v2 vault configuration is optional, network-bound and distinct from v1", async () => {
   const manifest = await loadDeploymentManifestFile(testnetManifest);
   const shieldedV2 = {
     vault: "0x0000000000000000000000000000000000001000",
@@ -31,7 +49,7 @@ test("v2 vault configuration is optional, testnet-only and distinct from v1", as
         chainId: 4663,
         shielded: undefined,
       }),
-    /isolated testnet/u,
+    /VERIFIED_DEPLOYMENT/u,
   );
   assert.throws(
     () =>
@@ -39,7 +57,7 @@ test("v2 vault configuration is optional, testnet-only and distinct from v1", as
         ...manifest,
         shieldedV2: { ...shieldedV2, vault: manifest.shielded!.vault },
       }),
-    /isolated testnet/u,
+    /NOT_ISOLATED/u,
   );
 });
 

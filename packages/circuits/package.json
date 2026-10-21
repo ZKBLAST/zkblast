@@ -21,6 +21,8 @@
     "v2:action:test": "node --test test/v2-action.test.mjs",
     "v2:build": "node scripts/prepare-v2-testnet.mjs build",
     "v2:setup": "node scripts/prepare-v2-testnet.mjs setup",
+    "v2:mainnet:candidate": "node scripts/prepare-v2-mainnet-candidate.mjs",
+    "v2:mainnet:check": "node scripts/check-v2-mainnet-candidate.mjs",
     "v2:prove": "node scripts/prove-v2-testnet.mjs",
     "v2:browser:prepare": "esbuild browser/private-v2-worker.js --bundle --platform=browser --format=iife --outfile=../../apps/web/public/zk/private-v2-worker.js --minify",
     "v2:browser:test": "node --test test/private-v2-prover.test.mjs",

@@ -1,0 +1,35 @@
+{
+  "environment": "mainnet",
+  "chainId": 4663,
+  "generatedAt": "2026-10-21T06:18:00.000Z",
+  "snapshotBlock": 94061649,
+  "vault": "0x81d7EaA9B144e58D6Ce0e0e7e04876d5aeDe8cb4",
+  "asset": {
+    "address": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+    "symbol": "PONS",
+    "decimals": 18,
+    "enabledAtSnapshot": false
+  },
+  "governance": {
+    "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "safeNonce": 30,
+    "approver": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+    "approverNonce": 336,
+    "executor": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+    "executorNonce": 830,
+    "safeTransactionHash": "0x9d7cbd2a2191ae00863ce3ec3bf12d9b6c3471cde4fb71a41696078065ab468e"
+  },
+  "gas": {
+    "observedGasPriceWei": "20040000",
+    "approveEstimate": "53698",
+    "approveGasBudget": "65980",
+    "executeGasBudget": "110269",
+    "proposedMaxGasPriceWei": "40028000",
+    "proposedTotalFeeCapWei": "7054894972000",
+    "proposedTotalFeeCapEth": "0.000007054894972"
+  },
+  "scope": "Two transactions only: owner approveHash plus Safe execTransaction for setAssetEnabled(PONS,true)",
+  "broadcastAllowed": false,
+  "liveTransactionsBroadcast": 0,
+  "railwayDeployed": false
+}

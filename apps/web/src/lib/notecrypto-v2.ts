@@ -1,3 +1,4 @@
+import { isPrivateV2Network } from "@zkblast/config";
 import {
   assertCanonicalFieldV2,
   shieldedNoteWitnessV2,
@@ -51,7 +52,7 @@ function integer(value: unknown): bigint {
 function scopeKey(scope: NoteScopeV2): string {
   if (
     !scope ||
-    !["testnet", "mainnet"].includes(scope.environment) ||
+    !isPrivateV2Network(scope.environment, scope.chainId) ||
     !address.test(scope.settlement) ||
     BigInt(scope.settlement) === 0n ||
     integer(scope.chainId) <= 0n ||

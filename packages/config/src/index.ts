@@ -25,6 +25,8 @@ export {
   privateProverManifestV2Schema,
   privateProverReleaseRefV2Schema,
   privateVaultV2ConfigSchema,
+  isPrivateV2Network,
+  privateV2ConfigIssue,
 } from "./private-prover-v2.js";
 export type {
   PrivateProverReleaseV2,

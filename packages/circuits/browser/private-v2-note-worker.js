@@ -4,7 +4,14 @@ self.onmessage = async ({ data }) => {
   const { id, input, asset } = data;
   try {
     if (
-      !/^\/zk\/testnet\/v2\/[a-zA-Z0-9_-]+\.wasm$/u.test(asset?.path) ||
+      !/^\/zk\/(testnet|mainnet)\/v2\/[a-zA-Z0-9_-]+\.wasm$/u.test(
+        asset?.path,
+      ) ||
+      !(
+        (input?.chain_id === "46630" &&
+          asset.path.startsWith("/zk/testnet/v2/")) ||
+        (input?.chain_id === "4663" && asset.path.startsWith("/zk/mainnet/v2/"))
+      ) ||
       !/^[a-f0-9]{64}$/u.test(asset?.sha256)
     )
       throw new Error("INVALID_ASSET");

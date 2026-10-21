@@ -44,10 +44,10 @@ export function PrivateVaultV2Panel({
 }) {
   const { config } = useApp();
   const v2 = config?.shieldedV2;
-  if (!config || config.environment !== "testnet" || !v2?.proverRelease)
+  if (!config || !v2?.proverRelease)
     return (
       <p className="p-5 text-sm leading-relaxed text-muted" role="status">
-        Private trading v2 is waiting for its isolated testnet vault and
+        Private trading v2 is waiting for its isolated network vault and
         verified prover release. Your existing USDG notes remain available in
         the vault tab.
       </p>
@@ -103,7 +103,7 @@ function PrivateVaultV2Session({
       .catch(() => {
         if (active)
           setStatus(
-            "Unable to validate the testnet prover release. No transaction is enabled.",
+            "Unable to validate the network prover release. No transaction is enabled.",
           );
       });
     return () => {
@@ -164,7 +164,14 @@ function PrivateVaultV2Session({
       setJournal(next);
       setStatus("Private journal unlocked in this browser.");
     });
-  const assets = pool
+  const assetPolicy = config?.shieldedV2?.assets;
+  const configuredAssets = new Map(
+    (assetPolicy ?? []).map((asset) => [
+      asset.address.toLowerCase(),
+      asset,
+    ]),
+  );
+  const poolAssets = pool
     ? [
         {
           address: pool.token0Address as Address,
@@ -178,8 +185,16 @@ function PrivateVaultV2Session({
         },
       ]
     : [];
+  const assets = assetPolicy
+    ? poolAssets.filter(
+        (asset) => configuredAssets.get(asset.address.toLowerCase())?.enabled,
+      )
+    : poolAssets;
+  const unsupportedPool = pool !== null && assets.length !== poolAssets.length;
   const prepare = () =>
     run(async () => {
+      if (unsupportedPool)
+        throw new Error("This market is not enabled for private v2 yet.");
       const asset = assets[Number(assetIndex)];
       if (!journal || !manifest || !asset)
         throw new Error("SELECT_A_MARKET_AND_UNLOCK_JOURNAL");
@@ -271,8 +286,9 @@ function PrivateVaultV2Session({
       <div>
         <h3 className="text-base">Private vault v2</h3>
         <p className="mt-2 text-xs leading-relaxed text-muted">
-          Testnet · separate notes and recovery journal. Existing USDG vault
-          notes are not imported or changed.
+          {scope.environment === "mainnet" ? "Mainnet" : "Testnet"} · separate
+          notes and recovery journal. Existing USDG vault notes are not imported
+          or changed.
         </p>
       </div>
       {!journal ? (

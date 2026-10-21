@@ -32,6 +32,49 @@ const manifest = {
 const serialized = JSON.stringify(manifest);
 const fetcher: typeof fetch = async () => new Response(serialized);
 
+test("mainnet prover is hash-pinned and rejects testnet paths or candidate trust metadata", async () => {
+  const mainnet = JSON.parse(
+    JSON.stringify(manifest)
+      .replaceAll("testnet", "mainnet")
+      .replaceAll("46630", "4663"),
+  );
+  const sealed = await sealPrivateProverV2(
+    mainnet,
+    "/zk/mainnet/v2/release.json",
+  );
+  const scope = { ...mainnet, environment: "mainnet" as const };
+  assert.equal(
+    (
+      await fetchPrivateProverV2(
+        scope,
+        sealed.reference,
+        async () => new Response(sealed.serialized),
+      )
+    ).environment,
+    "mainnet",
+  );
+  await assert.rejects(
+    fetchPrivateProverV2(scope, {
+      ...sealed.reference,
+      manifestPath: "/zk/testnet/v2/release.json",
+    }),
+    /NETWORK/u,
+  );
+  await assert.rejects(
+    sealPrivateProverV2(
+      { ...mainnet, noteCalculator: asset("note.wasm") },
+      "/zk/mainnet/v2/release.json",
+    ),
+    /NETWORK/u,
+  );
+  await assert.rejects(
+    sealPrivateProverV2(
+      { ...mainnet, trustModel: "single-operator-mainnet-candidate" },
+      "/zk/mainnet/v2/release.json",
+    ),
+  );
+});
+
 test("sealing produces a self-consistent release reference without activating it", async () => {
   const sealed = await sealPrivateProverV2(
     manifest,
@@ -72,7 +115,7 @@ test("v2 manifest is hash-pinned, deployment-bound and same-origin only", async 
       reference,
       fetcher,
     ),
-    /TESTNET_ONLY/u,
+    /NETWORK/u,
   );
   await assert.rejects(
     fetchPrivateProverV2({ ...scope, treeVersion: "3" }, reference, fetcher),

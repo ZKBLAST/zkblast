@@ -34,3 +34,7 @@ export async function loadDeploymentManifestFile(
 
   return parseDeploymentManifest(input, runtime);
 }
+export {
+  verifyPrivateV2Deployment,
+  type PrivateV2RpcRequest,
+} from "./private-v2-deployment.js";

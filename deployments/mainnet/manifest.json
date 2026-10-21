@@ -719,5 +719,90 @@
         "denominationRaw": "1000000"
       }
     ]
+  },
+  "shieldedV2": {
+    "vault": "0x81d7EaA9B144e58D6Ce0e0e7e04876d5aeDe8cb4",
+    "fieldHasher": "0x667865C5feA20f823359dC0dc43D43b3f9728Ca6",
+    "treeVersion": 2,
+    "deploymentBlock": 94057275,
+    "proverRelease": {
+      "manifestPath": "/zk/mainnet/v2/manifest.json",
+      "manifestSha256": "10a56435ee56fdeb024a4262f14a377f49dd361e4d316ecc4c430f61c8d9d77b"
+    },
+    "verifiedDeployment": {
+      "chainId": 4663,
+      "transactionHash": "0xa192405b5585d6f33b7263bc1b053caa5ada4516192e68eacb9ac640890fed99",
+      "verifiedBlock": 94058115,
+      "implementation": "0x31e8C70Ed55954dB8bB63E6eC276F370c90c5A9C",
+      "proxyRuntimeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+      "implementationRuntimeHash": "0xed1fa30d15ee4d39fff1338c7e8e1dcf6cd757c1f903ce9d9b9946a47cadc826",
+      "fieldHasherRuntimeHash": "0x361a88d1021977213be35000f291fbee0daca16c5f76f5b6a1a1c5b774e675b0",
+      "actionAdapterRuntimeHash": "0xf76f152593607fbbca43e5d9b5334738a33e919f720152b88cea6d90764694cd",
+      "fundAdapterRuntimeHash": "0x32917fb45eb251422f7bf98afc7839dfe6a7f0aaa1c839981f6c159566eb4999",
+      "actionGroth16RuntimeHash": "0xe3b36d5e7d8b8aa87539850799bcde915c36ec8954c1415ad2b31e20c7a143d9",
+      "fundGroth16RuntimeHash": "0x7067ffcdb1f5e4b006906f7f9ca984af2ef006dac1eb19d2f86714a62c210c61"
+    },
+    "assets": [
+      {
+        "address": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+        "symbol": "WETH",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+        "symbol": "USDG",
+        "decimals": 6,
+        "enabled": true
+      },
+      {
+        "address": "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC",
+        "symbol": "AMD",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
+        "symbol": "AMZN",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8",
+        "symbol": "NFLX",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+        "symbol": "PLTR",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+        "symbol": "TSLA",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+        "symbol": "MSFT",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+        "symbol": "META",
+        "decimals": 18,
+        "enabled": true
+      },
+      {
+        "address": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+        "symbol": "PONS",
+        "decimals": 18,
+        "enabled": false
+      }
+    ]
   }
 }

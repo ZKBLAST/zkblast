@@ -4,6 +4,7 @@ import {
   type ShieldedTermsV2,
 } from "@zkblast/sdk";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
+import { isPrivateV2Network } from "@zkblast/config";
 import { encodeAbiParameters, keccak256, type Address } from "viem";
 import type {
   EthereumProvider,
@@ -62,7 +63,7 @@ export async function preparePrivateActionV2(
   } = args;
   await assertPrivateWalletV2(provider, account, scope.chainId);
   if (
-    scope.environment !== "testnet" ||
+    !isPrivateV2Network(scope.environment, scope.chainId) ||
     pool.chainId !== Number(scope.chainId) ||
     !Number.isInteger(binId) ||
     binId < -8388608 ||

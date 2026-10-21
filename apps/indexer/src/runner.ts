@@ -66,6 +66,8 @@ const privateV2 = manifest.shieldedV2
       registry: getAddress(manifest.integration.poolRegistry),
       vault: getAddress(manifest.shieldedV2.vault),
       deploymentBlock: manifest.shieldedV2.deploymentBlock,
+      deployment: manifest.shieldedV2,
+      legacyVault: manifest.shielded?.vault,
       confirmations: BigInt(runner.INDEXER_CONFIRMATIONS),
       chunkSize: runner.INDEXER_CATCHUP_CHUNK_SIZE,
       maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,

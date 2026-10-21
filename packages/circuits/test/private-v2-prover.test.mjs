@@ -66,6 +66,27 @@ test("v2 worker accepts verified exact public statement", async () => {
   );
 });
 
+test("mainnet worker requires mainnet context and rejects cross-network asset paths", async () => {
+  const { request, dependencies } = fixture();
+  request.scope.environment = "mainnet";
+  request.scope.chainId = "4663";
+  request.manifest.environment = "mainnet";
+  request.manifest.chainId = "4663";
+  request.input.chain_id = "4663";
+  request.expectedPublicInputs[2] = "4663";
+  for (const asset of Object.values(request.manifest.assets))
+    asset.path = asset.path.replace("testnet", "mainnet");
+  assert.equal(
+    (await provePrivateV2(request, dependencies)).publicSignals[2],
+    "4663",
+  );
+  request.manifest.assets.zkey.path = "/zk/testnet/v2/fund.zkey";
+  await assert.rejects(
+    provePrivateV2(request, dependencies),
+    /INVALID_V2_PROVER_ASSET/u,
+  );
+});
+
 test("v2 worker rejects wrong scope, asset hash, key arity, altered statement and invalid proof", async () => {
   for (const mutate of [
     (r) => {

@@ -1,5 +1,8 @@
 import type { PublicConfig } from "@/types/application";
-import { privateVaultV2ConfigSchema } from "@zkblast/config";
+import {
+  privateVaultV2ConfigSchema,
+  privateV2ConfigIssue,
+} from "@zkblast/config";
 
 const expectedChainIds = { testnet: 46_630, mainnet: 4_663 } as const;
 
@@ -16,8 +19,7 @@ export function parsePublicConfig(value: unknown): PublicConfig {
     const v1 = (config.shielded as { vaultAddress?: string } | undefined)
       ?.vaultAddress;
     if (
-      config.environment !== "testnet" ||
-      v2.vault.toLowerCase() === v1?.toLowerCase()
+      privateV2ConfigIssue(config.environment, config.chainId as number, v2, v1)
     )
       throw new Error("V2_VAULT_NOT_ISOLATED");
   }

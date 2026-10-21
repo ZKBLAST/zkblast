@@ -5,6 +5,7 @@ import { privateVaultV2Abi } from "@zkblast/abi";
 import {
   privateActionPublicInputsV2,
   shieldedTermsHashV2,
+  shieldedTermsLimbsV2,
   type ShieldedTermsV2,
 } from "@zkblast/sdk";
 import {
@@ -32,6 +33,26 @@ const scope: NoteScopeV2 = {
   settlement: vault,
   treeVersion: "2",
 };
+
+test("mainnet private statements preserve chain/vault binding and cannot restore as testnet", () => {
+  const mainnetTerms = { ...terms, chainId: 4663n };
+  const mainnetSignals: [...typeof signals] = [...signals];
+  const limbs = shieldedTermsLimbsV2(shieldedTermsHashV2(mainnetTerms));
+  mainnetSignals[1] = 4663n;
+  mainnetSignals[6] = BigInt(limbs.terms_low);
+  mainnetSignals[7] = BigInt(limbs.terms_high);
+  const statement = encodeActionStatementV2(mainnetTerms, mainnetSignals, 32);
+  const mainnetScope: NoteScopeV2 = {
+    ...scope,
+    environment: "mainnet",
+    chainId: "4663",
+  };
+  assert.equal(
+    decodeActionStatementV2(statement, mainnetScope).sdkTerms.chainId,
+    4663n,
+  );
+  assert.throws(() => decodeActionStatementV2(statement, scope), /BINDING/u);
+});
 const terms: ShieldedTermsV2 = {
   chainId: 46630n,
   settlement: vault,

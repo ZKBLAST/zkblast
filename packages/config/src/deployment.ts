@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { privateVaultV2ConfigSchema } from "./private-prover-v2.js";
+import {
+  privateVaultV2ConfigSchema,
+  privateV2ConfigIssue,
+} from "./private-prover-v2.js";
 
 const addressSchema = z
   .string()
@@ -148,14 +151,22 @@ export const deploymentManifestSchema = z
   .superRefine((manifest, context) => {
     if (
       manifest.shieldedV2 &&
-      (manifest.environment !== "testnet" ||
-        manifest.shieldedV2.vault.toLowerCase() ===
-          manifest.shielded?.vault.toLowerCase())
+      privateV2ConfigIssue(
+        manifest.environment,
+        manifest.chainId,
+        manifest.shieldedV2,
+        manifest.shielded?.vault,
+      )
     ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["shieldedV2"],
-        message: "Private v2 requires an isolated testnet vault",
+        message: privateV2ConfigIssue(
+          manifest.environment,
+          manifest.chainId,
+          manifest.shieldedV2,
+          manifest.shielded?.vault,
+        )!,
       });
     }
     if (

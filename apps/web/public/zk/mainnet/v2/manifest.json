@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 2,
+  "environment": "mainnet",
+  "chainId": "4663",
+  "settlement": "0x81d7EaA9B144e58D6Ce0e0e7e04876d5aeDe8cb4",
+  "treeVersion": "2",
+  "trustModel": "single-operator-mainnet",
+  "noteCalculator": {
+    "path": "/zk/mainnet/v2/note.wasm",
+    "sha256": "377fc2cbf3dbfa485ff66363a2e35fcb7f6fdf0515a86147775f7fa5ca154e56"
+  },
+  "action": {
+    "kind": "action",
+    "publicInputs": 32,
+    "assets": {
+      "wasm": {
+        "path": "/zk/mainnet/v2/action.wasm",
+        "sha256": "897a0131f7cc0e0247d7dc8cef9e5d6166e320133572361bb24466a4f6f3debc"
+      },
+      "zkey": {
+        "path": "/zk/mainnet/v2/action.zkey",
+        "sha256": "8528100a331bc3b072f43a83c85fbc68d14d7f2e8bc8df5f68c16c3018127a6f"
+      },
+      "verificationKey": {
+        "path": "/zk/mainnet/v2/action-vkey.json",
+        "sha256": "79b902ac8609d7331060c359ab47cb621de5d9f0bc092440e89298d734ac6b3c"
+      }
+    }
+  },
+  "fund": {
+    "kind": "fund",
+    "publicInputs": 11,
+    "assets": {
+      "wasm": {
+        "path": "/zk/mainnet/v2/fund.wasm",
+        "sha256": "1a5c6d9ac70f704a9e05890bd18483fa60536c041299ba5fb4f2876521af27eb"
+      },
+      "zkey": {
+        "path": "/zk/mainnet/v2/fund.zkey",
+        "sha256": "82143a25ae1d47b992bd04a8b005d4226597a93da5a5600dbc2146df6f943df3"
+      },
+      "verificationKey": {
+        "path": "/zk/mainnet/v2/fund-vkey.json",
+        "sha256": "715d12436349130a62a49d59d3157afa29c6f9dd70a5b2ab727f59d31564fcc3"
+      }
+    }
+  }
+}

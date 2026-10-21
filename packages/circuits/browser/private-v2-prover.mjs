@@ -12,7 +12,10 @@ export async function provePrivateV2(
   if (
     !count ||
     !scope ||
-    scope.environment !== "testnet" ||
+    !(
+      (scope.environment === "testnet" && scope.chainId === "46630") ||
+      (scope.environment === "mainnet" && scope.chainId === "4663")
+    ) ||
     !/^[1-9][0-9]*$/u.test(scope.chainId) ||
     !/^0x[0-9a-fA-F]{40}$/u.test(scope.settlement) ||
     BigInt(scope.settlement) === 0n ||
@@ -51,7 +54,8 @@ export async function provePrivateV2(
     if (
       !asset ||
       !digestPattern.test(asset.sha256) ||
-      !/^\/zk\/testnet\/v2\/[a-zA-Z0-9_.-]+$/u.test(asset.path)
+      !/^\/zk\/(testnet|mainnet)\/v2\/[a-zA-Z0-9_.-]+$/u.test(asset.path) ||
+      !asset.path.startsWith(`/zk/${scope.environment}/v2/`)
     )
       throw new Error("INVALID_V2_PROVER_ASSET");
     const data = await fetchAsset(asset.path);

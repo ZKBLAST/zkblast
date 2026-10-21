@@ -65,6 +65,69 @@ test("public config excludes internal connection details", async () => {
   });
 });
 
+test("mainnet v2 public config exposes only network-bound deployment metadata", async () => {
+  const hash = `0x${"a".repeat(64)}`;
+  const v2 = {
+    vault: "0x1111111111111111111111111111111111111111",
+    fieldHasher: "0x2222222222222222222222222222222222222222",
+    treeVersion: 2,
+    deploymentBlock: 100,
+    proverRelease: {
+      manifestPath: "/zk/mainnet/v2/release.json",
+      manifestSha256: "a".repeat(64),
+    },
+    verifiedDeployment: {
+      chainId: 4663 as const,
+      transactionHash: hash,
+      verifiedBlock: 105,
+      implementation: "0x3333333333333333333333333333333333333333",
+      proxyRuntimeHash: hash,
+      implementationRuntimeHash: hash,
+      fieldHasherRuntimeHash: hash,
+      actionAdapterRuntimeHash: hash,
+      fundAdapterRuntimeHash: hash,
+      actionGroth16RuntimeHash: hash,
+      fundGroth16RuntimeHash: hash,
+    },
+  };
+  const config = {
+    environment: "mainnet" as const,
+    chainId: 4663,
+    chainName: "Mainnet",
+    explorerUrl: "https://explorer.example",
+    webOrigin: "http://localhost:3000",
+    contracts: [],
+    shieldedV2: v2,
+  };
+  const response = await request(createApp(config)).get("/v1/config");
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body.shieldedV2, v2);
+  assert.deepEqual(
+    Object.keys(response.body).sort(),
+    [
+      "chainId",
+      "chainName",
+      "contracts",
+      "environment",
+      "explorerUrl",
+      "shieldedV2",
+    ].sort(),
+  );
+  const wrong = await request(
+    createApp({
+      ...config,
+      shieldedV2: {
+        ...v2,
+        proverRelease: {
+          ...v2.proverRelease,
+          manifestPath: "/zk/testnet/v2/release.json",
+        },
+      },
+    }),
+  ).get("/v1/config");
+  assert.notEqual(wrong.status, 200);
+});
+
 test("unknown route returns a sanitized error", async () => {
   const response = await request(app).get("/does-not-exist");
   assert.equal(response.status, 404);

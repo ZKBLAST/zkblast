@@ -1,11 +1,15 @@
 import { poolRegistryAbi } from "@zkblast/abi";
 import { loadServerConfig } from "@zkblast/config";
-import { loadDeploymentManifestFile } from "@zkblast/config/node";
+import {
+  loadDeploymentManifestFile,
+  verifyPrivateV2Deployment,
+  type PrivateV2RpcRequest,
+} from "@zkblast/config/node";
 import { resolveProtocolAddresses } from "@zkblast/sdk";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createPublicClient, getAddress, http } from "viem";
+import { createPublicClient, getAddress, http, keccak256 } from "viem";
 import { z } from "zod";
 import { createApp } from "./app.js";
 import { AuthService } from "./auth-service.js";
@@ -152,6 +156,16 @@ const shieldedService = manifest.shielded
       deploymentBlock: BigInt(manifest.shielded.deploymentBlock),
     })
   : undefined;
+await verifyPrivateV2Deployment(
+  {
+    environment: serverConfig.APP_ENV,
+    chainId: serverConfig.CHAIN_ID,
+    config: manifest.shieldedV2,
+    legacyVault: manifest.shielded?.vault,
+  },
+  chainClient.request as PrivateV2RpcRequest,
+  keccak256,
+);
 const shieldedV2Service = manifest.shieldedV2
   ? new ShieldedService(chainClient, {
       schemaVersion: 2,
