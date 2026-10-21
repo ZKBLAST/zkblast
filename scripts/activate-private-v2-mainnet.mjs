@@ -36,7 +36,7 @@ await mkdir(destination, { recursive: true });
 for (const asset of assets) await copyFile(path.join(stage, "public", asset.path), path.join(destination, path.basename(asset.path)));
 await writeFile(path.join(destination, "manifest.json"), releaseBytes);
 
-const pons = { address: "0x39dBED3a2bd333467115dE45665cC57F813C4571", symbol: "PONS", decimals: 18, enabled: false };
+const pons = { address: "0x39dBED3a2bd333467115dE45665cC57F813C4571", symbol: "PONS", decimals: 18, enabled: true };
 const shieldedV2 = {
   vault: report.contracts.PrivateVaultV2Proxy,
   fieldHasher: report.contracts.Poseidon2FieldHasherV2,
@@ -53,4 +53,4 @@ const { shieldedV2: _prior, ...baseline } = JSON.parse(original.toString());
 if (JSON.stringify(unchanged) !== JSON.stringify(baseline)) throw new Error("V1_MANIFEST_CHANGED");
 await writeFile(`${manifestPath}.tmp`, `${JSON.stringify(manifest, null, 2)}\n`);
 await rename(`${manifestPath}.tmp`, manifestPath);
-console.log(JSON.stringify({ installedPublicAssets: assets.length, proverRelease, enabledAssets: report.assets.map((asset) => asset.symbol), pendingAssets: ["PONS"], v1ManifestFieldsUnchanged: true, railwayDeployed: false }, null, 2));
+console.log(JSON.stringify({ installedPublicAssets: assets.length, proverRelease, enabledAssets: [...report.assets.map((asset) => asset.symbol), "PONS"], pendingAssets: [], v1ManifestFieldsUnchanged: true, railwayDeployed: false }, null, 2));

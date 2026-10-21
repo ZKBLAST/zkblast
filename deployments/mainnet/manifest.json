@@ -801,7 +801,7 @@
         "address": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
         "symbol": "PONS",
         "decimals": 18,
-        "enabled": false
+        "enabled": true
       }
     ]
   }

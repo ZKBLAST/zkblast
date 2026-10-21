@@ -29,7 +29,32 @@
     "proposedTotalFeeCapEth": "0.000007054894972"
   },
   "scope": "Two transactions only: owner approveHash plus Safe execTransaction for setAssetEnabled(PONS,true)",
-  "broadcastAllowed": false,
-  "liveTransactionsBroadcast": 0,
+  "broadcastAllowed": true,
+  "liveTransactionsBroadcast": 2,
+  "complete": true,
+  "actualTotalFeeWei": "2840444260000",
+  "actualTotalFeeEth": "0.00000284044426",
+  "transactions": [
+    {
+      "name": "safe-approve-enable-PONS",
+      "hash": "0xd2bc1c49b07555c0850e80f00ed41921183a9502157084dd72f3c7e0abe1ca5f",
+      "blockNumber": 94062993,
+      "blockHash": "0x4f67a9b4e9cca25ea4a172c89baaf9d1f7489c985b6448b0b153a22bdab71798",
+      "gasUsed": "52870",
+      "effectiveGasPriceWei": "20008000",
+      "feeWei": "1057822960000",
+      "status": "success"
+    },
+    {
+      "name": "safe-exec-enable-PONS",
+      "hash": "0x44a61d42e9ed71060d6df8afafd4ec8210763eee79140f9513dea74dfaaa9870",
+      "blockNumber": 94063021,
+      "blockHash": "0x973359b2f56dbb576415f3b5726ae9b607203e72090a48e59de38860a0c1a66f",
+      "gasUsed": "88450",
+      "effectiveGasPriceWei": "20154000",
+      "feeWei": "1782621300000",
+      "status": "success"
+    }
+  ],
   "railwayDeployed": false
 }

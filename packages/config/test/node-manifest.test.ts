@@ -12,7 +12,7 @@ const mainnetManifest = fileURLToPath(
   new URL("../../../deployments/mainnet/manifest.json", import.meta.url),
 );
 
-test("loads verified mainnet v2 policy and keeps PONS fail-closed", async () => {
+test("loads verified mainnet v2 policy with governed PONS enablement", async () => {
   const manifest = await loadDeploymentManifestFile(mainnetManifest, {
     environment: "mainnet",
     chainId: 4663,
@@ -22,7 +22,7 @@ test("loads verified mainnet v2 policy and keeps PONS fail-closed", async () => 
   assert.equal(
     manifest.shieldedV2?.assets?.find((asset) => asset.symbol === "PONS")
       ?.enabled,
-    false,
+    true,
   );
   assert.equal(manifest.shielded?.vault, "0xAAC59EBDE79E4e0eA0824BBE2562036b0fd5748A");
 });
