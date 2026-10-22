@@ -13,13 +13,12 @@ COPY apps/keeper/ ./apps/keeper/
 COPY scripts/ ./scripts/
 COPY deployments/ ./deployments/
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Ensure all dependencies including devDependencies (tsup, typescript) are installed for building
+ENV NODE_ENV=development
+RUN pnpm install --frozen-lockfile --prod=false
 
 # Build shared packages and backend applications
-RUN pnpm --filter @zkblast/config build \
-    && pnpm --filter @zkblast/database build \
-    && pnpm --filter @zkblast/abi build \
+RUN pnpm --filter @zkblast/database build \
     && pnpm --filter @zkblast/observability build \
     && pnpm --filter @zkblast/sdk build \
     && pnpm --filter @zkblast/api build \
@@ -28,6 +27,7 @@ RUN pnpm --filter @zkblast/config build \
 
 ENV NODE_ENV=production
 ENV API_PORT=3001
+ENV PORT=3001
 ENV HOST=0.0.0.0
 
 EXPOSE 3001
