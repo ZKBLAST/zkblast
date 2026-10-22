@@ -1,0 +1,12 @@
+node_modules
+.next
+.open-next
+.worker-next
+.wrangler
+dist
+coverage
+.git
+.env*
+apps/web/.next
+apps/web/.open-next
+apps/web/public/zk

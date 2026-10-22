@@ -228,7 +228,6 @@ const app = createApp(
 const listenHost =
   process.env.HOST ??
   (process.env.RAILWAY_ENVIRONMENT ||
-  process.env.RENDER ||
   process.env.NODE_ENV === "production"
     ? "0.0.0.0"
     : "127.0.0.1");
