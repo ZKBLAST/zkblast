@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "zkblast-web",
+  "name": "zkblast",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-12-30",
   "compatibility_flags": [
@@ -19,5 +19,9 @@
       "pattern": "www.zkblast.tech/*",
       "zone_name": "zkblast.tech"
     }
-  ]
+  ],
+  "vars": {
+    "API_URL": "https://api.zkblast.tech",
+    "NEXT_PUBLIC_API_URL": "https://api.zkblast.tech"
+  }
 }
