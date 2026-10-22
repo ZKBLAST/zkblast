@@ -2,6 +2,9 @@ node_modules/
 .pnpm-store/
 .turbo/
 .next/
+.open-next/
+.worker-next/
+.wrangler/
 dist/
 build/
 out/

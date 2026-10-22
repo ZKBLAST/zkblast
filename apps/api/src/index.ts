@@ -225,7 +225,13 @@ const app = createApp(
   },
 );
 
-const listenHost = process.env.RAILWAY_ENVIRONMENT ? "0.0.0.0" : "127.0.0.1";
+const listenHost =
+  process.env.HOST ??
+  (process.env.RAILWAY_ENVIRONMENT ||
+  process.env.RENDER ||
+  process.env.NODE_ENV === "production"
+    ? "0.0.0.0"
+    : "127.0.0.1");
 
 app.listen(serviceConfig.API_PORT, listenHost, () => {
   console.log(
