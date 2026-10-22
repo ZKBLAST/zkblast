@@ -10,7 +10,7 @@
     "pnpm": ">=9.0.0"
   },
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter=!@zkblast/contracts",
     "dev": "turbo run dev",
     "dev:testnet": "dotenv -e .env.testnet -- turbo run dev",
     "dev:mainnet": "dotenv -e .env.mainnet -- turbo run dev",
