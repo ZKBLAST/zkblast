@@ -18,9 +18,10 @@ export function ShieldedExecutionPanel({
 }) {
   const { config } = useApp();
   const [tab, setTab] = useState("vault");
+  const privateV2Available = Boolean(config?.shieldedV2?.proverRelease);
   return (
     <>
-      {config?.environment === "testnet" && (
+      {privateV2Available && (
         <TerminalTabs
           prefix="shielded-version"
           label="Shielded protocol"
@@ -33,14 +34,14 @@ export function ShieldedExecutionPanel({
           disabled={busy}
         />
       )}
-      <div hidden={config?.environment === "testnet" && tab !== "vault"}>
+      <div hidden={privateV2Available && tab !== "vault"}>
         <p className="border-b border-line p-4 text-xs leading-relaxed text-muted">
           Deposit and withdraw supported assets. Save your note backup before
           depositing.
         </p>
         <ShieldedView compact />
       </div>
-      {config?.environment === "testnet" && (
+      {privateV2Available && (
         <div hidden={tab !== "v2"}>
           <PrivateVaultV2Panel pool={pool} onBusyChange={onBusyChange} />
         </div>

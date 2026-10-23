@@ -2,7 +2,7 @@ import { z } from "zod";
 import { sha256Hex } from "./shielded-prover.js";
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/u);
-const asset = z
+const assetPart = z
   .object({
     path: z
       .string()
@@ -10,6 +10,11 @@ const asset = z
         /^\/zk\/(testnet|mainnet)\/v2\/[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)+$/u,
       ),
     sha256: digest,
+  })
+  .strict();
+const asset = assetPart
+  .extend({
+    parts: z.array(assetPart).min(2).max(16).optional(),
   })
   .strict();
 const bundle = z
@@ -60,9 +65,17 @@ export const privateProverManifestV2Schema = z
     if (
       !isPrivateV2Network(release.environment, release.chainId) ||
       release.trustModel !== `single-operator-${release.environment}` ||
-      assets.some(
-        (asset) => !asset.path.startsWith(`/zk/${release.environment}/v2/`),
-      )
+      assets.some((asset) => {
+        const paths = [
+          asset.path,
+          ...(asset.parts?.map((part) => part.path) ?? []),
+        ];
+        return (
+          paths.some(
+            (path) => !path.startsWith(`/zk/${release.environment}/v2/`),
+          ) || new Set(paths).size !== paths.length
+        );
+      })
     )
       context.addIssue({
         code: z.ZodIssueCode.custom,

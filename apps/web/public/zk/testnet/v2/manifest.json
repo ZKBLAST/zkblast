@@ -19,7 +19,21 @@
       },
       "zkey": {
         "path": "/zk/testnet/v2/action.zkey",
-        "sha256": "6c4b202e0086a4f8cfdd71de5e15f46d921ffb40e6d2443abd014d49c0d9eaa0"
+        "sha256": "6c4b202e0086a4f8cfdd71de5e15f46d921ffb40e6d2443abd014d49c0d9eaa0",
+        "parts": [
+          {
+            "path": "/zk/testnet/v2/action.zkey.part0",
+            "sha256": "f2309c0aafc493aa4c58d22388d8f80179e2637c1150d60d38b1ebffe290efa0"
+          },
+          {
+            "path": "/zk/testnet/v2/action.zkey.part1",
+            "sha256": "203a3ec47b0888e15f758beb3ea091efdf282a20bddf28a98fb59c5aa538a31c"
+          },
+          {
+            "path": "/zk/testnet/v2/action.zkey.part2",
+            "sha256": "536cee5a651445e25a4ddc2aaa3cafee0a8bd81bcd26861c8fe2d912b84b4cd9"
+          }
+        ]
       },
       "verificationKey": {
         "path": "/zk/testnet/v2/action-vkey.json",

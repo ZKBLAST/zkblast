@@ -19,7 +19,21 @@
       },
       "zkey": {
         "path": "/zk/mainnet/v2/action.zkey",
-        "sha256": "8528100a331bc3b072f43a83c85fbc68d14d7f2e8bc8df5f68c16c3018127a6f"
+        "sha256": "8528100a331bc3b072f43a83c85fbc68d14d7f2e8bc8df5f68c16c3018127a6f",
+        "parts": [
+          {
+            "path": "/zk/mainnet/v2/action.zkey.part0",
+            "sha256": "6b709a0120ed43b64aeb9ae6eca152e0cee2adfb1f3d722e41d24023f4763081"
+          },
+          {
+            "path": "/zk/mainnet/v2/action.zkey.part1",
+            "sha256": "203a3ec47b0888e15f758beb3ea091efdf282a20bddf28a98fb59c5aa538a31c"
+          },
+          {
+            "path": "/zk/mainnet/v2/action.zkey.part2",
+            "sha256": "6bb7e2e03a8422f5d231969d738dcedf3855677630cd181d4d78cd0f37a03d70"
+          }
+        ]
       },
       "verificationKey": {
         "path": "/zk/mainnet/v2/action-vkey.json",

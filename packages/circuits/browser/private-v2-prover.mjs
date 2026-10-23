@@ -58,10 +58,38 @@ export async function provePrivateV2(
       !asset.path.startsWith(`/zk/${scope.environment}/v2/`)
     )
       throw new Error("INVALID_V2_PROVER_ASSET");
-    const data = await fetchAsset(asset.path);
+    const parts = asset.parts ?? [];
+    if (
+      !Array.isArray(parts) ||
+      parts.length > 16 ||
+      parts.some(
+        (part) =>
+          !part ||
+          !digestPattern.test(part.sha256) ||
+          !/^\/zk\/(testnet|mainnet)\/v2\/[a-zA-Z0-9_.-]+$/u.test(part.path) ||
+          !part.path.startsWith(`/zk/${scope.environment}/v2/`),
+      )
+    )
+      throw new Error("INVALID_V2_PROVER_ASSET");
+    const buffers = await Promise.all(
+      (parts.length ? parts : [asset]).map(async (part) => {
+        const data = await fetchAsset(part.path);
+        if ((await sha256(data)) !== part.sha256)
+          throw new Error("V2_PROVER_ASSET_HASH_MISMATCH");
+        return new Uint8Array(data);
+      }),
+    );
+    const data = parts.length
+      ? buffers.reduce((combined, part) => {
+          const next = new Uint8Array(combined.length + part.length);
+          next.set(combined);
+          next.set(part, combined.length);
+          return next;
+        }, new Uint8Array())
+      : buffers[0];
     if ((await sha256(data)) !== asset.sha256)
       throw new Error("V2_PROVER_ASSET_HASH_MISMATCH");
-    return new Uint8Array(data);
+    return data;
   };
   const [wasm, zkey, verificationKey] = await Promise.all(
     ["wasm", "zkey", "verificationKey"].map((name) =>

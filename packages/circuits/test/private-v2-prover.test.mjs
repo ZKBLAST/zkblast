@@ -66,6 +66,43 @@ test("v2 worker accepts verified exact public statement", async () => {
   );
 });
 
+test("v2 worker verifies and joins declared same-network asset parts", async () => {
+  const { request, dependencies } = fixture();
+  request.manifest.assets.zkey.parts = [
+    {
+      path: "/zk/testnet/v2/fund.zkey.part0",
+      sha256: "a".repeat(64),
+    },
+    {
+      path: "/zk/testnet/v2/fund.zkey.part1",
+      sha256: "a".repeat(64),
+    },
+  ];
+  dependencies.fetchAsset = async (path) =>
+    new TextEncoder().encode(
+      path.endsWith("part0")
+        ? "left"
+        : path.endsWith("part1")
+          ? "right"
+          : JSON.stringify({
+              protocol: "groth16",
+              curve: "bn128",
+              nPublic: 11,
+            }),
+    ).buffer;
+  dependencies.groth16.fullProve = async (_input, _wasm, zkey) => {
+    assert.equal(new TextDecoder().decode(zkey), "leftright");
+    return { proof: {}, publicSignals: request.expectedPublicInputs };
+  };
+  await provePrivateV2(request, dependencies);
+
+  request.manifest.assets.zkey.parts[1].path = "/zk/mainnet/v2/fund.zkey.part1";
+  await assert.rejects(
+    provePrivateV2(request, dependencies),
+    /INVALID_V2_PROVER_ASSET/u,
+  );
+});
+
 test("mainnet worker requires mainnet context and rejects cross-network asset paths", async () => {
   const { request, dependencies } = fixture();
   request.scope.environment = "mainnet";

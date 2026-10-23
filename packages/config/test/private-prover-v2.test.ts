@@ -90,6 +90,24 @@ test("sealing produces a self-consistent release reference without activating it
   );
 });
 
+test("chunked prover assets are explicit, unique and network scoped", async () => {
+  const chunked = JSON.parse(JSON.stringify(manifest));
+  chunked.action.assets.zkey.parts = [
+    asset("action.zkey.part0"),
+    asset("action.zkey.part1"),
+  ];
+  assert.equal(
+    (await sealPrivateProverV2(chunked, "/zk/testnet/v2/chunked-release.json"))
+      .manifest.action.assets.zkey.parts.length,
+    2,
+  );
+  chunked.action.assets.zkey.parts[1].path = "/zk/mainnet/v2/action.zkey.part1";
+  await assert.rejects(
+    sealPrivateProverV2(chunked, "/zk/testnet/v2/chunked-release.json"),
+    /NETWORK/u,
+  );
+});
+
 test("v2 manifest is hash-pinned, deployment-bound and same-origin only", async () => {
   const reference = {
     manifestPath: "/zk/testnet/v2/release.json",

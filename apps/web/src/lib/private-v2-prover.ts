@@ -1,6 +1,10 @@
 import type { NoteScopeV2 } from "./notecrypto-v2";
 
-type Asset = Readonly<{ path: string; sha256: string }>;
+type Asset = Readonly<{
+  path: string;
+  sha256: string;
+  parts?: readonly Readonly<{ path: string; sha256: string }>[];
+}>;
 export type PrivateProverManifestV2 = NoteScopeV2 &
   Readonly<{
     schemaVersion: 2;

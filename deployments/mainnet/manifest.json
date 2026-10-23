@@ -727,7 +727,7 @@
     "deploymentBlock": 94057275,
     "proverRelease": {
       "manifestPath": "/zk/mainnet/v2/manifest.json",
-      "manifestSha256": "10a56435ee56fdeb024a4262f14a377f49dd361e4d316ecc4c430f61c8d9d77b"
+      "manifestSha256": "c1ff9776fba2cdfc9b37b6af8c9349bff5a3ee85ecf29169e295c50e51a1a857"
     },
     "verifiedDeployment": {
       "chainId": 4663,
