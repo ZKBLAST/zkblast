@@ -9,7 +9,6 @@ import {
 import { parseUnits, type Address } from "viem";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
-import { TerminalTabs } from "@/components/trade/TerminalTabs";
 import type { ProtocolExecutionPool } from "@/types/application";
 import { download } from "@/lib/notecrypto";
 import {
@@ -30,10 +29,14 @@ import {
 } from "@/lib/private-v2-notes";
 import { fundPrivateNoteV2 } from "@/lib/private-v2-funding";
 import { assertNoteUnreservedV2 } from "@/lib/private-v2-recovery";
-import { PrivateActionsV2Panel } from "./PrivateActionsV2Panel";
+import {
+  PrivateActionsV2Panel,
+  type PrivateActionV2,
+} from "./PrivateActionsV2Panel";
 
 const inputClass =
   "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
+type PrivateFlow = "deposit" | PrivateActionV2 | "withdraw";
 
 export function PrivateVaultV2Panel({
   pool,
@@ -84,7 +87,7 @@ function PrivateVaultV2Session({
   const [manifest, setManifest] = useState<PrivateProverReleaseV2 | null>(null);
   const [journal, setJournal] = useState<PrivateJournalV2 | null>(null);
   const [passphrase, setPassphrase] = useState("");
-  const [tab, setTab] = useState("deposit");
+  const [flow, setFlow] = useState<PrivateFlow>("deposit");
   const [assetIndex, setAssetIndex] = useState("0");
   const [amount, setAmount] = useState("");
   const [selectedNote, setSelectedNote] = useState("");
@@ -250,7 +253,7 @@ function PrivateVaultV2Session({
         throw new Error("CONNECT_WALLET_AND_SELECT_NOTE");
       if (!backupSaved) throw new Error("DOWNLOAD_ENCRYPTED_JOURNAL_FIRST");
       await assertNoteUnreservedV2(window.ethereum, note, manifest);
-      const operation = tab === "withdraw" ? "withdraw" : "deposit";
+      const operation = flow === "withdraw" ? "withdraw" : "deposit";
       if (
         operation === "deposit" &&
         journal.transactions.some(
@@ -328,20 +331,76 @@ function PrivateVaultV2Session({
               Lock journal
             </button>
           </div>
-          <TerminalTabs
-            prefix={`${id}-v2`}
-            label="Private vault tools"
-            items={[
-              { value: "deposit", label: "Deposit" },
-              { value: "actions", label: "Swap / LP" },
-              { value: "backup", label: "Backup" },
-              { value: "withdraw", label: "Withdraw" },
-            ]}
-            value={tab}
-            onChange={setTab}
-            disabled={busy}
-          />
-          {tab === "deposit" && (
+          <label className="grid gap-2">
+            <span className="text-xs uppercase tracking-[0.14em] text-muted">
+              I want to
+            </span>
+            <select
+              className={inputClass}
+              value={flow}
+              disabled={busy}
+              onChange={(event) => {
+                setFlow(event.target.value as PrivateFlow);
+                setSelectedNote("");
+                setStatus("");
+              }}
+            >
+              <option value="deposit">Deposit privately</option>
+              <option value="swap">Swap privately</option>
+              <option value="add">Add private liquidity</option>
+              <option value="remove">Remove private liquidity</option>
+              <option value="withdraw">Withdraw to wallet</option>
+            </select>
+          </label>
+          <section className="grid gap-3 border border-line bg-panel/40 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h4 className="text-sm">Recovery checkpoint</h4>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  Save after preparing a note or transaction. You stay on this
+                  screen while continuing.
+                </p>
+              </div>
+              {backupSaved && (
+                <span className="shrink-0 text-xs text-foreground">Saved</span>
+              )}
+            </div>
+            <Button onClick={() => void exportBackup()} disabled={busy}>
+              <Download className="size-4" aria-hidden /> Save encrypted recovery
+            </Button>
+            <label className="flex items-start gap-3 text-xs leading-relaxed text-muted">
+              <input
+                type="checkbox"
+                className="mt-0.5 shrink-0"
+                checked={backupSaved}
+                disabled={busy || !backupDownloaded}
+                onChange={(event) => setBackupSaved(event.target.checked)}
+              />
+              <span>I saved the file and can recover its passphrase.</span>
+            </label>
+            <details className="text-xs">
+              <summary className="cursor-pointer text-muted">
+                Restore an existing recovery file
+              </summary>
+              <label className="mt-3 grid gap-3 border-t border-line pt-3">
+                <span className="flex items-center gap-2">
+                  <Upload className="size-4" aria-hidden /> Choose encrypted file
+                </span>
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  disabled={busy}
+                  className="min-w-0 max-w-full text-xs"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) void restore(file);
+                  }}
+                />
+              </label>
+            </details>
+          </section>
+          {flow === "deposit" && (
             <div className="grid gap-3">
               <label htmlFor={`${id}-asset`}>Token from selected market</label>
               <select
@@ -370,16 +429,17 @@ function PrivateVaultV2Session({
                 onClick={() => void prepare()}
                 disabled={busy || !assets.length}
               >
-                Prepare encrypted note
+                1. Prepare private deposit
               </Button>
             </div>
           )}
-          {tab === "actions" && manifest && (
+          {["swap", "add", "remove"].includes(flow) && manifest && (
             <PrivateActionsV2Panel
               scope={scope}
               manifest={manifest}
               journal={journal}
               pool={pool}
+              action={flow as PrivateActionV2}
               busy={busy}
               backupSaved={backupSaved}
               save={save}
@@ -397,7 +457,7 @@ function PrivateVaultV2Session({
               }}
             />
           )}
-          {(tab === "deposit" || tab === "withdraw") && (
+          {(flow === "deposit" || flow === "withdraw") && (
             <div className="grid gap-3">
               <label htmlFor={`${id}-note`}>Token note</label>
               <select
@@ -420,53 +480,12 @@ function PrivateVaultV2Session({
                 onClick={() => void submit()}
                 disabled={busy || !selectedNote || !backupSaved || !address}
               >
-                {tab === "withdraw"
+                {flow === "withdraw"
                   ? "Prove and withdraw"
-                  : "Prove and deposit"}
+                  : "2. Prove and deposit"}
               </Button>
             </div>
           )}
-          <div className="grid gap-4 border-t border-line pt-5">
-            <Button onClick={() => void exportBackup()} disabled={busy}>
-              <Download className="size-4" aria-hidden /> Download encrypted
-              journal
-            </Button>
-            <label className="flex items-start gap-3 text-xs leading-relaxed text-muted">
-              <input
-                type="checkbox"
-                className="mt-0.5 shrink-0"
-                checked={backupSaved}
-                disabled={busy || !backupDownloaded}
-                onChange={(event) => setBackupSaved(event.target.checked)}
-              />
-              <span>
-                I saved the encrypted journal and can recover its passphrase.
-              </span>
-            </label>
-            {tab === "backup" && (
-              <label className="grid gap-3 border border-line p-4">
-                <span className="flex items-center gap-2">
-                  <Upload className="size-4" aria-hidden /> Restore and merge
-                  journal
-                </span>
-                <span className="text-xs leading-relaxed text-muted">
-                  Every note is checked locally against this network, vault and
-                  tree.
-                </span>
-                <input
-                  type="file"
-                  accept="application/json,.json"
-                  disabled={busy}
-                  className="min-w-0 max-w-full text-xs"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    event.target.value = "";
-                    if (file) void restore(file);
-                  }}
-                />
-              </label>
-            )}
-          </div>
           {journal.transactions.length > 0 && (
             <details className="min-w-0 text-xs">
               <summary>Submitted transactions</summary>

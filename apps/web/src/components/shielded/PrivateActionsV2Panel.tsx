@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Address, Hex } from "viem";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
 import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
@@ -11,7 +11,6 @@ import type {
 import type { ProtocolExecutionPool } from "@/types/application";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
-import { TerminalTabs } from "@/components/trade/TerminalTabs";
 import { preparePrivateActionV2 } from "@/lib/private-v2-plan";
 import {
   executePrivateIntentV2,
@@ -24,12 +23,14 @@ import { decodeActionStatementV2 } from "@/lib/private-v2-intent";
 const inputClass =
   "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
 type Operation = "reserve" | "settle" | "refund";
+export type PrivateActionV2 = "swap" | "add" | "remove";
 
 export function PrivateActionsV2Panel({
   scope,
   manifest,
   journal,
   pool,
+  action,
   busy,
   backupSaved,
   save,
@@ -41,6 +42,7 @@ export function PrivateActionsV2Panel({
   manifest: PrivateProverReleaseV2;
   journal: PrivateJournalV2;
   pool: ProtocolExecutionPool | null;
+  action: PrivateActionV2;
   busy: boolean;
   backupSaved: boolean;
   save: (next: PrivateJournalV2) => Promise<PrivateJournalV2>;
@@ -53,11 +55,14 @@ export function PrivateActionsV2Panel({
   ) => Promise<void>;
 }) {
   const { address, config } = useApp();
-  const [action, setAction] = useState("swap");
   const [selection0, setSelection0] = useState("");
   const [selection1, setSelection1] = useState("");
   const [bin, setBin] = useState("0");
   const [states, setStates] = useState<Record<string, string>>({});
+  useEffect(() => {
+    setSelection0("");
+    setSelection1("");
+  }, [action]);
   const available = journal.notes.filter(
     (note) =>
       !journal.intents.some(
@@ -96,8 +101,6 @@ export function PrivateActionsV2Panel({
     run(async () => {
       if (!window.ethereum || !address || !pool)
         throw new Error("SELECT_MARKET_AND_CONNECT_WALLET");
-      if (!["swap", "add", "remove"].includes(action))
-        throw new Error("INVALID_V2_ACTION");
       const selected =
         action === "add" ? [selection0, selection1] : [selection0];
       const inputNotes = selected.map((commitment) =>
@@ -118,7 +121,7 @@ export function PrivateActionsV2Panel({
         scope,
         manifest,
         pool,
-        action: action as "swap" | "add" | "remove",
+        action,
         binId: pool.model === "damm" || action === "swap" ? 0 : Number(bin),
         inputNotes: inputNotes as StoredNoteV2[],
         provider: window.ethereum,
@@ -205,26 +208,9 @@ export function PrivateActionsV2Panel({
     });
   return (
     <div className="grid min-w-0 gap-4">
-      <TerminalTabs
-        prefix="private-action-v2"
-        label="Private action"
-        value={action}
-        disabled={busy}
-        onChange={(value) => {
-          setAction(value);
-          setSelection0("");
-          setSelection1("");
-        }}
-        items={[
-          { value: "swap", label: "Swap" },
-          { value: "add", label: "Add LP" },
-          { value: "remove", label: "Remove LP" },
-        ]}
-      />
       <p className="text-xs leading-relaxed text-muted">
-        Uses whole selected notes. Outputs are fixed by the proof; a changed
-        pool can require an expiry refund. No relayer fee is charged by this
-        interface.
+        Select the private note to use. The proof fixes the output before your
+        wallet submits the transaction.
       </p>
       {pool?.model === "dlmm" && action === "add" && (
         <label className="grid gap-2">
@@ -291,13 +277,19 @@ export function PrivateActionsV2Panel({
           (action === "add" && !selection1)
         }
       >
-        Prepare private action
+        Prepare{" "}
+        {action === "swap"
+          ? "swap"
+          : action === "add"
+            ? "liquidity"
+            : "removal"}
       </Button>
       <div className="grid gap-4 border-t border-line pt-4">
-        <h4>Intent recovery</h4>
+        <h4>Prepared transactions</h4>
         {!journal.intents.length && (
           <p className="text-xs text-muted">
-            Prepared actions will appear here and remain in encrypted backups.
+            Your prepared transaction will appear here. Save the encrypted
+            recovery file before submitting it.
           </p>
         )}
         {journal.intents.map((intent, index) => {
@@ -318,7 +310,7 @@ export function PrivateActionsV2Panel({
                   {intent.action} · intent {index + 1}
                 </span>
                 <span className="text-muted">
-                  {states[intent.id] ?? "Check chain status"}
+                  {states[intent.id] ?? "Ready to check"}
                 </span>
               </div>
               <p className="break-all font-mono text-[10px] text-muted">
@@ -336,7 +328,7 @@ export function PrivateActionsV2Panel({
                 disabled={busy}
                 onClick={() => void refresh(intent)}
               >
-                Refresh onchain status
+                Check status
               </Button>
               {states[intent.id] === "unsubmitted" &&
                 !journal.archivedIntents.includes(intent.id) && (
@@ -360,14 +352,14 @@ export function PrivateActionsV2Panel({
                   }
                   onClick={() => void execute(intent, "reserve")}
                 >
-                  Reserve
+                  1. Submit
                 </Button>
                 <Button
                   size="sm"
                   disabled={busy || states[intent.id] !== "pending"}
                   onClick={() => void execute(intent, "settle")}
                 >
-                  Settle
+                  2. Complete
                 </Button>
                 <Button
                   size="sm"
@@ -375,7 +367,7 @@ export function PrivateActionsV2Panel({
                   disabled={busy || states[intent.id] !== "pending"}
                   onClick={() => void execute(intent, "refund")}
                 >
-                  Expiry refund
+                  Recover expired
                 </Button>
               </div>
             </section>
