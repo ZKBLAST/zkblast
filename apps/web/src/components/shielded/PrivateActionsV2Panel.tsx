@@ -139,7 +139,7 @@ export function PrivateActionsV2Panel({
       setSelection0("");
       setSelection1("");
       onStage(
-        "Action proof and recovery notes saved. Download the encrypted journal before reserving.",
+        "Private transaction prepared. Save recovery once, then continue to your wallet.",
       );
     });
   const refresh = (intent: PrivateIntentV2) =>

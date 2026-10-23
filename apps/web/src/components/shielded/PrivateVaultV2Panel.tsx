@@ -95,7 +95,6 @@ function PrivateVaultV2Session({
   const [amount, setAmount] = useState("");
   const [selectedNote, setSelectedNote] = useState("");
   const [backupSaved, setBackupSaved] = useState(false);
-  const [backupDownloaded, setBackupDownloaded] = useState(false);
   const [lastSubmittedHash, setLastSubmittedHash] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -150,7 +149,10 @@ function PrivateVaultV2Session({
       note.commitment
     );
   };
-  const save = async (next: PrivateJournalV2) => {
+  const save = async (
+    next: PrivateJournalV2,
+    recoveryChanged = true,
+  ) => {
     if (!navigator.locks) throw new Error("V2_BROWSER_LOCKS_REQUIRED");
     const merged = await persistJournalV2(next, passphrase, scope, {
       storage: localStorage,
@@ -165,8 +167,7 @@ function PrivateVaultV2Session({
     });
     setJournal(merged);
     setSavedJournalFound(true);
-    setBackupDownloaded(false);
-    setBackupSaved(false);
+    if (recoveryChanged) setBackupSaved(false);
     return merged;
   };
   const unlock = () =>
@@ -214,6 +215,9 @@ function PrivateVaultV2Session({
       )
     : poolAssets;
   const unsupportedPool = pool !== null && assets.length !== poolAssets.length;
+  const recoveryPrepared = Boolean(
+    journal && (journal.notes.length > 0 || journal.intents.length > 0),
+  );
   const prepare = () =>
     run(async () => {
       if (unsupportedPool)
@@ -236,7 +240,7 @@ function PrivateVaultV2Session({
       await save({ ...journal, notes: [...journal.notes, note] });
       setSelectedNote(note.commitment);
       setStatus(
-        "Note saved locally. Download its encrypted journal before depositing.",
+        "Deposit prepared. Save recovery once, then continue to your wallet.",
       );
     });
   const exportBackup = () =>
@@ -246,10 +250,9 @@ function PrivateVaultV2Session({
         `zkblast-private-v2-${scope.chainId}-journal.json`,
         await encryptPrivatePayloadV2(journal, passphrase, scope, "journal"),
       );
-      setBackupDownloaded(true);
-      setBackupSaved(false);
+      setBackupSaved(true);
       setStatus(
-        "Encrypted journal downloaded. Keep the file and passphrase separately.",
+        "Recovery saved. You can continue to the wallet step.",
       );
     });
   const restore = (file: File) =>
@@ -293,13 +296,16 @@ function PrivateVaultV2Session({
         onSubmitted: async (hash) => {
           setLastSubmittedHash(hash);
           setStatus(`Submitted: ${hash}`);
-          await save({
-            ...journal,
-            transactions: [
-              ...journal.transactions,
-              { hash, operation, commitment: note.commitment },
-            ],
-          });
+          await save(
+            {
+              ...journal,
+              transactions: [
+                ...journal.transactions,
+                { hash, operation, commitment: note.commitment },
+              ],
+            },
+            false,
+          );
         },
       });
       setStatus(`Confirmed: ${hash}`);
@@ -395,27 +401,23 @@ function PrivateVaultV2Session({
               <div>
                 <h4 className="text-sm">Recovery checkpoint</h4>
                 <p className="mt-1 text-xs leading-relaxed text-muted">
-                  Save after preparing a note or transaction. You stay on this
-                  screen while continuing.
+                  Prepare first, then save once before submitting to your
+                  wallet.
                 </p>
               </div>
               {backupSaved && (
                 <span className="shrink-0 text-xs text-foreground">Saved</span>
               )}
             </div>
-            <Button onClick={() => void exportBackup()} disabled={busy}>
-              <Download className="size-4" aria-hidden /> Save encrypted recovery
+            <Button
+              onClick={() => void exportBackup()}
+              disabled={busy || backupSaved || !recoveryPrepared}
+            >
+              <Download className="size-4" aria-hidden />
+              {backupSaved
+                ? "Recovery up to date"
+                : "Save recovery & continue"}
             </Button>
-            <label className="flex items-start gap-3 text-xs leading-relaxed text-muted">
-              <input
-                type="checkbox"
-                className="mt-0.5 shrink-0"
-                checked={backupSaved}
-                disabled={busy || !backupDownloaded}
-                onChange={(event) => setBackupSaved(event.target.checked)}
-              />
-              <span>I saved the file and can recover its passphrase.</span>
-            </label>
             <details className="text-xs">
               <summary className="cursor-pointer text-muted">
                 Restore an existing recovery file
@@ -485,13 +487,16 @@ function PrivateVaultV2Session({
               onStage={setStatus}
               onSubmitted={async (hash, operation, commitment) => {
                 setLastSubmittedHash(hash);
-                await save({
-                  ...journal,
-                  transactions: [
-                    ...journal.transactions,
-                    { hash, operation, commitment },
-                  ],
-                });
+                await save(
+                  {
+                    ...journal,
+                    transactions: [
+                      ...journal.transactions,
+                      { hash, operation, commitment },
+                    ],
+                  },
+                  false,
+                );
               }}
             />
           )}
