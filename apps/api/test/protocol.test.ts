@@ -13,6 +13,7 @@ import type { OperationsService } from "../src/operations-service.js";
 const store: ProtocolReadStore = {
   pools: async () => [{ address: "0xpool", kind: "damm" }],
   swaps: async () => [{ transactionHash: "0xtx" }],
+  activity: async () => [{ eventName: "LiquidityAdded" }],
   positions: async () => [{ positionId: "1" }],
   indexerStatus: async () => ({
     indexedBlock: 95n,
@@ -38,6 +39,12 @@ test("read API exposes protocol pages behind the common rate limiter", async () 
   assert.equal(response.status, 200);
   assert.equal(response.body.items[0].kind, "damm");
   assert.ok(response.headers["ratelimit-policy"]);
+});
+
+test("read API exposes validated activity beyond swaps", async () => {
+  const response = await request(app).get("/v1/protocol/activity?limit=10");
+  assert.equal(response.status, 200);
+  assert.equal(response.body.items[0].eventName, "LiquidityAdded");
 });
 
 test("readiness and metrics report RPC lag without secrets", async () => {

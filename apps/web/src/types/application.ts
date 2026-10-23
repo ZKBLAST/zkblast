@@ -98,6 +98,25 @@ export type ProtocolSwap = Readonly<{
   block_timestamp: string;
 }>;
 
+export type ProtocolActivity = Readonly<{
+  chainId: number;
+  transactionHash: string;
+  logIndex: number;
+  blockNumber: string;
+  contractAddress: string;
+  kind:
+    | "pool"
+    | "swap"
+    | "position"
+    | "liquidity"
+    | "fee"
+    | "commitment"
+    | "private_intent"
+    | "root";
+  eventName: string;
+  payload: Readonly<Record<string, string | number | boolean | null>>;
+}>;
+
 export type ProtocolPosition = Readonly<{
   onchainPositionId: string;
   liquidityRaw: string;

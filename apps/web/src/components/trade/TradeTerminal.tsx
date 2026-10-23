@@ -140,7 +140,7 @@ function Terminal() {
           onChange={(value) => update("panel", value)}
           items={[
             { value: "positions", label: "Positions" },
-            { value: "history", label: "Trade history" },
+            { value: "history", label: "History" },
             { value: "activity", label: "Network activity" },
           ]}
         />

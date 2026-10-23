@@ -5,9 +5,76 @@ import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
 import { AccountPanel } from "@/components/account/AccountPanel";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import type { ProtocolActivity } from "@/types/application";
+
+const activityLabels: Readonly<Record<string, string>> = {
+  PoolCreated: "Pool created",
+  PoolRegistered: "Pool registered",
+  Swap: "Swap",
+  SwapRouted: "Routed swap",
+  PositionCreated: "Position opened",
+  PositionIncreased: "Liquidity added",
+  PositionDecreased: "Liquidity removed",
+  PositionTransferred: "Position transferred",
+  LiquidityAdded: "Liquidity added",
+  LiquidityRemoved: "Liquidity removed",
+  BinLiquidityAdded: "DLMM liquidity added",
+  BinLiquidityRemoved: "DLMM liquidity removed",
+  ProtocolFeesCollected: "Fees claimed",
+  CommitmentDeposited: "Shielded deposit",
+  Deposited: "Private deposit",
+  Withdrawn: "Private withdrawal",
+  NoteWithdrawn: "Shielded withdrawal",
+  NoteInserted: "Private note created",
+  AggregateLiquidityInvested: "Shielded liquidity added",
+  AggregateLiquidityDivested: "Shielded liquidity removed",
+  AggregatePositionIncreased: "Shielded LP increased",
+  AggregatePositionDecreased: "Shielded LP decreased",
+  EmergencyExit: "Shielded LP recovered",
+  IntentReserved: "Private transaction submitted",
+  IntentSettled: "Private transaction completed",
+  IntentRefunded: "Private transaction recovered",
+};
+
+function activityLabel(event: ProtocolActivity) {
+  return activityLabels[event.eventName] ?? event.eventName;
+}
+
+function ActivityRows({ items }: { items: readonly ProtocolActivity[] }) {
+  const { config } = useApp();
+  return (
+    <ul className="divide-y divide-line">
+      {items.map((event) => (
+        <li
+          key={`${event.transactionHash}:${event.logIndex}`}
+          className="flex flex-wrap items-center justify-between gap-3 py-3 text-xs"
+        >
+          <span className="flex flex-wrap items-center gap-2">
+            <span>{activityLabel(event)}</span>
+            <span className="rounded-xs border border-line px-1.5 py-0.5 font-mono text-[10px] uppercase text-muted">
+              {event.kind.replaceAll("_", " ")}
+            </span>
+            <span className="text-faint">Block {event.blockNumber}</span>
+          </span>
+          {config && (
+            <a
+              className="inline-flex items-center gap-1 text-lime"
+              target="_blank"
+              rel="noreferrer"
+              href={`${config.explorerUrl.replace(/\/$/u, "")}/tx/${event.transactionHash}`}
+            >
+              Receipt <ExternalLink className="size-3" />
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function TradeHistory() {
   const { address, trades, config, connect } = useApp();
+  const { accountActivity, loading } = useProtocolData(address);
   if (!address)
     return (
       <div className="p-5 text-sm text-muted">
@@ -24,12 +91,11 @@ export function TradeHistory() {
         <div className="mt-3"><AccountPanel showHistory={false} /></div>
       </details>
       <p className="mb-3 text-xs text-faint">
-        Verified receipts saved to this account. Market activity is listed
-        separately.
+        Wallet activity validated from receipts and indexed protocol events.
       </p>
-      {!trades.length ? (
+      {!trades.length && !accountActivity.length && !loading ? (
         <p className="py-4 text-sm text-muted">
-          No saved trades for this wallet yet.
+          No indexed activity for this wallet yet.
         </p>
       ) : null}
       <ul className="divide-y divide-line">
@@ -57,45 +123,29 @@ export function TradeHistory() {
           </li>
         ))}
       </ul>
+      {accountActivity.length ? (
+        <div className={trades.length ? "mt-4 border-t border-line pt-2" : ""}>
+          <ActivityRows items={accountActivity} />
+        </div>
+      ) : null}
     </div>
   );
 }
 
 export function MarketActivity() {
-  const { swaps, metrics } = useProtocolData();
-  const { config } = useApp();
-  const events = swaps;
+  const { activity, metrics, loading } = useProtocolData();
   return (
     <div className="p-4">
       <p className="mb-3 text-xs text-faint">
-        Network-wide swaps.{" "}
+        Network-wide pool, swap, liquidity, fee and Shielded events. {" "}
         {metrics?.ready
           ? "Indexer is up to date."
           : "Indexer is catching up; recent receipts may not appear yet."}
       </p>
-      {!events.length ? (
-        <p className="py-4 text-sm text-muted">No indexed swaps yet.</p>
+      {!activity.length && !loading ? (
+        <p className="py-4 text-sm text-muted">No indexed activity yet.</p>
       ) : null}
-      <ul className="divide-y divide-line">
-        {events.map((event) => (
-          <li
-            key={`${event.transaction_hash}:${event.log_index}`}
-            className="flex flex-wrap justify-between gap-3 py-3 text-xs"
-          >
-            <span>Swap · block {event.block_number}</span>
-            {config && (
-              <a
-                className="inline-flex items-center gap-1 text-lime"
-                target="_blank"
-                rel="noreferrer"
-                href={`${config.explorerUrl.replace(/\/$/u, "")}/tx/${event.transaction_hash}`}
-              >
-                Receipt <ExternalLink className="size-3" />
-              </a>
-            )}
-          </li>
-        ))}
-      </ul>
+      <ActivityRows items={activity} />
     </div>
   );
 }

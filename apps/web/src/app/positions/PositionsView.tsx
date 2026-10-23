@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AccountPanel } from "@/components/account/AccountPanel";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { ShieldedPositionsPanel } from "@/components/shielded/ShieldedPositionsPanel";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { useApp } from "@/components/shell/AppProvider";
 import { LaneBadge, TypeTag } from "@/components/ui/Badges";
@@ -46,6 +47,7 @@ export function PositionsView({
         <div
           className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}
         >
+          <ShieldedPositionsPanel />
           <div className="panel flex items-start gap-4 p-8">
             <Layers className="size-5 text-muted" />
             <div>
@@ -86,6 +88,7 @@ export function PositionsView({
       )}
       <div className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}>
         {!compact && <AccountPanel />}
+        <ShieldedPositionsPanel />
         <RealDataState
           loading={data.loading}
           error={data.error}

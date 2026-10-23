@@ -12,6 +12,7 @@ export interface ProtocolReadStore {
   ): Promise<readonly unknown[]>;
   pools(query: PageQuery): Promise<readonly unknown[]>;
   swaps(query: PageQuery): Promise<readonly unknown[]>;
+  activity(query: PageQuery): Promise<readonly unknown[]>;
   positions(query: PageQuery): Promise<readonly unknown[]>;
   indexerStatus(): Promise<Readonly<{
     indexedBlock: bigint;
@@ -36,6 +37,9 @@ export class ProtocolService {
   }
   swaps(query: PageQuery) {
     return this.store.swaps(query);
+  }
+  activity(query: PageQuery) {
+    return this.store.activity(query);
   }
   positions(query: PageQuery) {
     return this.store.positions(query);

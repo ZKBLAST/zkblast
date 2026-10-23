@@ -128,6 +128,15 @@ export function createProtocolRouter(
       next(error);
     }
   });
+  router.get("/activity", async (request, response, next) => {
+    try {
+      response.json({
+        items: await service.activity(querySchema.parse(request.query)),
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
   router.get("/positions", async (request, response, next) => {
     try {
       const query = querySchema.parse(request.query);

@@ -34,6 +34,12 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
       [query.cursor ?? null, query.limit],
     );
   }
+  activity(query: PageQuery) {
+    return this.sql.unsafe(
+      `select chain_id as "chainId",transaction_hash as "transactionHash",log_index as "logIndex",block_number::text as "blockNumber",contract_address as "contractAddress",event_kind as kind,event_name as "eventName",payload from ${this.schema}.protocol_events where canonical and event_kind <> 'receipt' and ($1::text is null or transaction_hash < $1) and ($2::text is null or lower(payload->>'transactionSender')=$2) order by block_number desc,log_index desc limit $3`,
+      [query.cursor ?? null, query.owner ?? null, query.limit],
+    );
+  }
   async priceHistory(pool: string, query: PoolChartQuery) {
     const rows = await this.sql.unsafe(
       `select * from (

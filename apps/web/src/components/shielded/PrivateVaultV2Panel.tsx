@@ -29,6 +29,7 @@ import {
 } from "@/lib/private-v2-notes";
 import { fundPrivateNoteV2 } from "@/lib/private-v2-funding";
 import { assertNoteUnreservedV2 } from "@/lib/private-v2-recovery";
+import { publishPrivateV2SessionSummary } from "@/lib/private-v2-session-summary";
 import {
   PrivateActionsV2Panel,
   type PrivateActionV2,
@@ -114,6 +115,10 @@ function PrivateVaultV2Session({
     };
     // Scope and reference are immutable for this keyed session.
   }, []);
+  useEffect(() => {
+    publishPrivateV2SessionSummary(journal);
+    return () => publishPrivateV2SessionSummary(null);
+  }, [journal]);
 
   const run = async (work: () => Promise<void>) => {
     setBusy(true);

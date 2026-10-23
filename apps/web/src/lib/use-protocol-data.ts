@@ -13,6 +13,7 @@ import { apiRequest } from "@/lib/api-client";
 import internalTestAssets from "@/data/internal-test-assets.json";
 import type {
   IndexerMetrics,
+  ProtocolActivity,
   ProtocolPool,
   ProtocolPosition,
   ProtocolSwap,
@@ -21,6 +22,8 @@ import type {
 export type ProtocolData = Readonly<{
   pools: readonly ProtocolPool[];
   swaps: readonly ProtocolSwap[];
+  activity: readonly ProtocolActivity[];
+  accountActivity: readonly ProtocolActivity[];
   positions: readonly ProtocolPosition[];
   metrics: IndexerMetrics | null;
   loading: boolean;
@@ -44,6 +47,10 @@ export function useProtocolData(owner?: string | null): ProtocolData {
   const requestId = useRef(0);
   const [pools, setPools] = useState<readonly ProtocolPool[]>([]);
   const [swaps, setSwaps] = useState<readonly ProtocolSwap[]>([]);
+  const [activity, setActivity] = useState<readonly ProtocolActivity[]>([]);
+  const [accountActivity, setAccountActivity] = useState<
+    readonly ProtocolActivity[]
+  >([]);
   const [positions, setPositions] = useState<readonly ProtocolPosition[]>([]);
   const [positionsOwner, setPositionsOwner] = useState(owner);
   const [metrics, setMetrics] = useState<IndexerMetrics | null>(null);
@@ -57,7 +64,14 @@ export function useProtocolData(owner?: string | null): ProtocolData {
     setError(null);
     try {
       const ownerQuery = owner ? `&owner=${encodeURIComponent(owner)}` : "";
-      const [poolPage, swapPage, positionPage, nextMetrics] = await Promise.all(
+      const [
+        poolPage,
+        swapPage,
+        activityPage,
+        accountActivityPage,
+        positionPage,
+        nextMetrics,
+      ] = await Promise.all(
         [
           apiRequest<{ items: ProtocolPool[] }>(
             webPublicConfig.apiUrl,
@@ -67,6 +81,16 @@ export function useProtocolData(owner?: string | null): ProtocolData {
             webPublicConfig.apiUrl,
             "/v1/protocol/swaps?limit=100",
           ),
+          apiRequest<{ items: ProtocolActivity[] }>(
+            webPublicConfig.apiUrl,
+            "/v1/protocol/activity?limit=100",
+          ),
+          owner
+            ? apiRequest<{ items: ProtocolActivity[] }>(
+                webPublicConfig.apiUrl,
+                `/v1/protocol/activity?limit=100${ownerQuery}`,
+              )
+            : Promise.resolve({ items: [] as ProtocolActivity[] }),
           apiRequest<{ items: ProtocolPosition[] }>(
             webPublicConfig.apiUrl,
             `/v1/protocol/positions?limit=100${ownerQuery}`,
@@ -85,6 +109,8 @@ export function useProtocolData(owner?: string | null): ProtocolData {
         ),
       );
       setSwaps(swapPage.items);
+      setActivity(activityPage.items);
+      setAccountActivity(accountActivityPage.items);
       setPositions(
         positionPage.items.filter((position) =>
           isPublicPair(position.token0Symbol, position.token1Symbol),
@@ -112,6 +138,8 @@ export function useProtocolData(owner?: string | null): ProtocolData {
   return {
     pools,
     swaps,
+    activity,
+    accountActivity,
     positions: positionsOwner === owner ? positions : [],
     metrics,
     loading,

@@ -2,6 +2,7 @@ import type { ProtocolEventKind } from "./domain.js";
 
 const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   PoolCreated: "pool",
+  PoolRegistered: "pool",
   Swap: "swap",
   SwapRouted: "swap",
   PositionCreated: "position",
@@ -16,7 +17,15 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   DlmmPoolInitialized: "pool",
   ProtocolFeesCollected: "fee",
   CommitmentDeposited: "commitment",
+  Deposited: "commitment",
+  Withdrawn: "commitment",
+  NoteWithdrawn: "commitment",
   NoteInserted: "commitment",
+  AggregateLiquidityInvested: "liquidity",
+  AggregateLiquidityDivested: "liquidity",
+  AggregatePositionIncreased: "liquidity",
+  AggregatePositionDecreased: "liquidity",
+  EmergencyExit: "liquidity",
   IntentReserved: "private_intent",
   IntentSettled: "private_intent",
   IntentRefunded: "private_intent",
