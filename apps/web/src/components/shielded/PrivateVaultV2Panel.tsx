@@ -21,6 +21,7 @@ import {
   emptyJournalV2,
   journalStorageKeyV2,
   persistJournalV2,
+  privateJournalUnlockError,
   type PrivateJournalV2,
 } from "@/lib/private-v2-journal";
 import {
@@ -87,6 +88,7 @@ function PrivateVaultV2Session({
   const { address, config } = useApp();
   const [manifest, setManifest] = useState<PrivateProverReleaseV2 | null>(null);
   const [journal, setJournal] = useState<PrivateJournalV2 | null>(null);
+  const [savedJournalFound, setSavedJournalFound] = useState(false);
   const [passphrase, setPassphrase] = useState("");
   const [flow, setFlow] = useState<PrivateFlow>("deposit");
   const [assetIndex, setAssetIndex] = useState("0");
@@ -114,6 +116,12 @@ function PrivateVaultV2Session({
       active = false;
     };
     // Scope and reference are immutable for this keyed session.
+  }, []);
+  useEffect(() => {
+    setSavedJournalFound(
+      localStorage.getItem(journalStorageKeyV2(scope)) !== null,
+    );
+    // This session is keyed by its immutable network scope.
   }, []);
   useEffect(() => {
     publishPrivateV2SessionSummary(journal);
@@ -156,6 +164,7 @@ function PrivateVaultV2Session({
       },
     });
     setJournal(merged);
+    setSavedJournalFound(true);
     setBackupDownloaded(false);
     setBackupSaved(false);
     return merged;
@@ -166,10 +175,16 @@ function PrivateVaultV2Session({
       if (passphrase.length < 12)
         throw new Error("Use a passphrase of at least 12 characters.");
       const serialized = localStorage.getItem(journalStorageKeyV2(scope));
-      const next = serialized
-        ? await decryptJournalV2(serialized, passphrase, scope, verify)
-        : emptyJournalV2();
+      let next: PrivateJournalV2;
+      try {
+        next = serialized
+          ? await decryptJournalV2(serialized, passphrase, scope, verify)
+          : emptyJournalV2();
+      } catch (error) {
+        throw new Error(privateJournalUnlockError(error));
+      }
       setJournal(next);
+      setSavedJournalFound(Boolean(serialized));
       setStatus("Private journal unlocked in this browser.");
     });
   const assetPolicy = config?.shieldedV2?.assets;
@@ -302,18 +317,36 @@ function PrivateVaultV2Session({
       {!journal ? (
         <div className="grid gap-3">
           <label htmlFor={`${id}-unlock`}>Journal passphrase</label>
+          {savedJournalFound && (
+            <p className="text-xs leading-relaxed text-muted">
+              A saved journal was found in this browser. Enter the same
+              passphrase used when it was created.
+            </p>
+          )}
           <input
             id={`${id}-unlock`}
             type="password"
             autoComplete="new-password"
             className={inputClass}
             value={passphrase}
-            onChange={(event) => setPassphrase(event.target.value)}
+            onChange={(event) => {
+              setPassphrase(event.target.value);
+              setStatus("");
+            }}
             disabled={busy}
           />
           <Button onClick={() => void unlock()} disabled={busy || !manifest}>
             Unlock / create journal
           </Button>
+          {status && (
+            <p
+              role="alert"
+              aria-live="assertive"
+              className="text-xs leading-relaxed text-danger"
+            >
+              {status}
+            </p>
+          )}
         </div>
       ) : (
         <>
@@ -522,13 +555,15 @@ function PrivateVaultV2Session({
           Last submitted transaction: {lastSubmittedHash}
         </a>
       )}
-      <p
-        role="status"
-        aria-live="polite"
-        className="break-words text-xs leading-relaxed text-muted"
-      >
-        {busy ? status || "Working locally…" : status}
-      </p>
+      {journal && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="break-words text-xs leading-relaxed text-muted"
+        >
+          {busy ? status || "Working locally…" : status}
+        </p>
+      )}
     </div>
   );
 }

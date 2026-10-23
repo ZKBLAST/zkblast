@@ -37,6 +37,16 @@ export const emptyJournalV2 = (): PrivateJournalV2 => ({
   archivedIntents: [],
   transactions: [],
 });
+
+export function privateJournalUnlockError(error: unknown): string {
+  if (
+    error instanceof DOMException
+      ? error.name === "OperationError"
+      : error instanceof Error && error.name === "OperationError"
+  )
+    return "Passphrase does not match the journal saved in this browser. Check it and try again, or restore your latest encrypted recovery file.";
+  return error instanceof Error ? error.message : "PRIVATE_V2_JOURNAL_UNLOCK_FAILED";
+}
 const decimal = /^[1-9][0-9]{0,76}$/u;
 const bytes32 = /^0x[0-9a-f]{64}$/iu;
 

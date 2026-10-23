@@ -6,6 +6,7 @@ import {
   journalStorageKeyV2,
   mergeJournalsV2,
   persistJournalV2,
+  privateJournalUnlockError,
   validateJournalV2,
   type PrivateJournalV2,
 } from "../src/lib/private-v2-journal";
@@ -53,6 +54,13 @@ const journal: PrivateJournalV2 = {
   ],
 };
 const passphrase = "local-journal-test-passphrase";
+
+test("wrong journal passphrase has a clear recovery-safe message", () => {
+  const error = new Error("The operation failed");
+  error.name = "OperationError";
+  assert.match(privateJournalUnlockError(error), /Passphrase does not match/u);
+  assert.match(privateJournalUnlockError(error), /encrypted recovery file/u);
+});
 
 test("journal roundtrip keeps outputs and refunds together without plaintext storage", async () => {
   const storage = new Map<string, string>();
