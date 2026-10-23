@@ -30,7 +30,7 @@ export function TradeActions({
   const publicMode = mode === "liquidity" ? "liquidity" : "swap";
   return (
     <aside
-      className="min-h-0 min-w-0 border-t border-line xl:overflow-y-auto xl:border-l xl:border-t-0"
+      className="min-h-0 min-w-0 max-w-full overflow-x-hidden border-t border-line xl:overflow-y-auto xl:border-l xl:border-t-0"
       aria-label="Trade actions"
     >
       <TerminalTabs
@@ -47,6 +47,7 @@ export function TradeActions({
         }
       />
       <div
+        className="min-w-0 max-w-full overflow-x-hidden"
         role="tabpanel"
         id="execution-panel-public"
         aria-labelledby="execution-tab-public"
@@ -134,6 +135,7 @@ export function TradeActions({
           ))}
       </div>
       <div
+        className="min-w-0 max-w-full overflow-x-hidden"
         role="tabpanel"
         id="execution-panel-shielded"
         aria-labelledby="execution-tab-shielded"

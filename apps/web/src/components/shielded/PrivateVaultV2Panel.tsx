@@ -311,7 +311,7 @@ function PrivateVaultV2Session({
       setStatus(`Confirmed: ${hash}`);
     });
   return (
-    <div className="grid min-w-0 gap-5 p-4 text-sm">
+    <div className="grid min-w-0 max-w-full gap-5 overflow-x-hidden p-4 text-sm">
       <div>
         <h3 className="text-base">Private vault v2</h3>
         <p className="mt-2 text-xs leading-relaxed text-muted">
@@ -532,14 +532,17 @@ function PrivateVaultV2Session({
           {journal.transactions.length > 0 && (
             <details className="min-w-0 text-xs">
               <summary>Submitted transactions</summary>
-              <ul className="mt-3 grid gap-3">
+              <ul className="mt-3 grid min-w-0 max-w-full gap-3">
                 {journal.transactions.map((transaction) => (
-                  <li key={transaction.hash} className="break-all">
+                  <li
+                    key={transaction.hash}
+                    className="min-w-0 max-w-full [overflow-wrap:anywhere]"
+                  >
                     <a
                       href={`${config?.explorerUrl}/tx/${transaction.hash}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="underline"
+                      className="block min-w-0 max-w-full [overflow-wrap:anywhere] underline"
                     >
                       {transaction.operation}: {transaction.hash}
                     </a>
@@ -552,7 +555,7 @@ function PrivateVaultV2Session({
       )}
       {lastSubmittedHash && (
         <a
-          className="break-all text-xs underline"
+          className="block min-w-0 max-w-full text-xs [overflow-wrap:anywhere] underline"
           target="_blank"
           rel="noreferrer"
           href={`${config?.explorerUrl}/tx/${lastSubmittedHash}`}
@@ -564,7 +567,7 @@ function PrivateVaultV2Session({
         <p
           role="status"
           aria-live="polite"
-          className="break-words text-xs leading-relaxed text-muted"
+          className="min-w-0 max-w-full text-xs leading-relaxed text-muted [overflow-wrap:anywhere]"
         >
           {busy ? status || "Working locally…" : status}
         </p>

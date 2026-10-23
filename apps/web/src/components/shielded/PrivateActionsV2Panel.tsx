@@ -207,7 +207,7 @@ export function PrivateActionsV2Panel({
       );
     });
   return (
-    <div className="grid min-w-0 gap-4">
+    <div className="grid min-w-0 max-w-full gap-4 overflow-x-hidden">
       <p className="text-xs leading-relaxed text-muted">
         Select the private note to use. The proof fixes the output before your
         wallet submits the transaction.
@@ -284,7 +284,7 @@ export function PrivateActionsV2Panel({
             ? "liquidity"
             : "removal"}
       </Button>
-      <div className="grid gap-4 border-t border-line pt-4">
+      <div className="grid min-w-0 max-w-full gap-4 border-t border-line pt-4">
         <h4>Prepared transactions</h4>
         {!journal.intents.length && (
           <p className="text-xs text-muted">
@@ -313,7 +313,7 @@ export function PrivateActionsV2Panel({
                   {states[intent.id] ?? "Ready to check"}
                 </span>
               </div>
-              <p className="break-all font-mono text-[10px] text-muted">
+              <p className="min-w-0 max-w-full font-mono text-[10px] text-muted [overflow-wrap:anywhere]">
                 {intent.id}
               </p>
               <p className="text-xs text-muted">
