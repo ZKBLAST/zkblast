@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Address, Hex } from "viem";
+import { formatUnits, type Address, type Hex } from "viem";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
 import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
 import type {
@@ -19,6 +19,9 @@ import {
   assertPrivateIntentNotesV2,
 } from "@/lib/private-v2-recovery";
 import { decodeActionStatementV2 } from "@/lib/private-v2-intent";
+import { useExternalMarkets } from "@/lib/use-external-markets";
+import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { ShieldedTokenLogo } from "./ShieldedTokenLogo";
 
 const inputClass =
   "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
@@ -30,6 +33,7 @@ export function PrivateActionsV2Panel({
   manifest,
   journal,
   pool,
+  poolSupported,
   action,
   busy,
   backupSaved,
@@ -42,6 +46,7 @@ export function PrivateActionsV2Panel({
   manifest: PrivateProverReleaseV2;
   journal: PrivateJournalV2;
   pool: ProtocolExecutionPool | null;
+  poolSupported: boolean;
   action: PrivateActionV2;
   busy: boolean;
   backupSaved: boolean;
@@ -55,6 +60,7 @@ export function PrivateActionsV2Panel({
   ) => Promise<void>;
 }) {
   const { address, config } = useApp();
+  const markets = useExternalMarkets();
   const [selection0, setSelection0] = useState("");
   const [selection1, setSelection1] = useState("");
   const [bin, setBin] = useState("0");
@@ -87,6 +93,37 @@ export function PrivateActionsV2Panel({
       note.resource.address.toLowerCase() === pool.address.toLowerCase() &&
       note.resource.model === pool.model,
   );
+  const token0Notes = tokenNotes.filter(
+    (note) =>
+      note.resource.kind === "token" &&
+      note.resource.address.toLowerCase() ===
+        pool?.token0Address.toLowerCase(),
+  );
+  const token1Notes = tokenNotes.filter(
+    (note) =>
+      note.resource.kind === "token" &&
+      note.resource.address.toLowerCase() ===
+        pool?.token1Address.toLowerCase(),
+  );
+  const selectedInputNote = tokenNotes.find(
+    (note) => note.commitment === selection0,
+  );
+  const inputIsToken1 = Boolean(
+    selectedInputNote?.resource.kind === "token" &&
+      pool &&
+      selectedInputNote.resource.address.toLowerCase() ===
+        pool.token1Address.toLowerCase(),
+  );
+  const inputSymbol = pool
+    ? inputIsToken1
+      ? pool.token1Symbol
+      : pool.token0Symbol
+    : "Token";
+  const outputSymbol = pool
+    ? inputIsToken1
+      ? pool.token0Symbol
+      : pool.token1Symbol
+    : "Token";
   const optionLabel = (note: StoredNoteV2) => {
     const symbol =
       note.resource.kind === "lp"
@@ -95,12 +132,24 @@ export function PrivateActionsV2Panel({
             pool?.token0Address.toLowerCase()
           ? pool.token0Symbol
           : pool?.token1Symbol;
-    return `${symbol} · ${note.amount} raw units · ${note.commitment.slice(0, 8)}…`;
+    const amount =
+      note.resource.kind === "lp"
+        ? `${note.amount} shares`
+        : formatUnits(
+            BigInt(note.amount),
+            note.resource.address.toLowerCase() ===
+              pool?.token0Address.toLowerCase()
+              ? (pool?.token0Decimals ?? 18)
+              : (pool?.token1Decimals ?? 18),
+          );
+    return `${symbol} · ${amount} · ${note.commitment.slice(0, 8)}…`;
   };
   const prepare = () =>
     run(async () => {
       if (!window.ethereum || !address || !pool)
         throw new Error("SELECT_MARKET_AND_CONNECT_WALLET");
+      if (!poolSupported)
+        throw new Error("This market is not enabled for private execution.");
       const selected =
         action === "add" ? [selection0, selection1] : [selection0];
       const inputNotes = selected.map((commitment) =>
@@ -208,10 +257,30 @@ export function PrivateActionsV2Panel({
     });
   return (
     <div className="grid min-w-0 max-w-full gap-4 overflow-x-hidden">
-      <p className="text-xs leading-relaxed text-muted">
-        Select the private note to use. The proof fixes the output before your
-        wallet submits the transaction.
-      </p>
+      {pool ? (
+        <div className="flex min-w-0 items-center gap-3">
+          <ProtocolPairLogo
+            base={pool.token0Symbol}
+            quote={pool.token1Symbol}
+            markets={markets.items}
+          />
+          <div className="min-w-0">
+            <p className="font-mono text-xs">
+              {pool.model.toUpperCase()} · {pool.token0Symbol}/
+              {pool.token1Symbol}
+            </p>
+            <p className="mt-1 text-xs text-muted">Private execution</p>
+          </div>
+        </div>
+      ) : (
+        <p className="text-xs text-muted">Select a market to continue.</p>
+      )}
+      {!poolSupported && pool && (
+        <p className="text-xs text-warn">
+          This pair is visible publicly but is not enabled for Shielded
+          execution yet.
+        </p>
+      )}
       {pool?.model === "dlmm" && action === "add" && (
         <label className="grid gap-2">
           DLMM bin ID
@@ -224,8 +293,26 @@ export function PrivateActionsV2Panel({
           />
         </label>
       )}
-      <label className="grid gap-2">
-        {action === "remove" ? "Private LP note" : "Input note"}
+      <label className="grid gap-2 border border-line bg-bg/80 p-3">
+        <span className="flex items-center justify-between gap-3 text-xs text-muted">
+          <span>
+            {action === "remove"
+              ? "Private LP position"
+              : action === "add"
+                ? "Deposit first token"
+                : "You pay"}
+          </span>
+          {action !== "remove" && pool && (
+            <span className="flex items-center gap-2 text-foreground">
+              <ShieldedTokenLogo
+                symbol={inputSymbol}
+                markets={markets.items}
+                className="size-7"
+              />
+              {inputSymbol}
+            </span>
+          )}
+        </span>
         <select
           className={inputClass}
           value={selection0}
@@ -240,7 +327,12 @@ export function PrivateActionsV2Panel({
           disabled={busy}
         >
           <option value="">Select a note</option>
-          {(action === "remove" ? lpNotes : tokenNotes).map((note) => (
+          {(action === "remove"
+            ? lpNotes
+            : action === "add"
+              ? token0Notes
+              : tokenNotes
+          ).map((note) => (
             <option key={note.commitment} value={note.commitment}>
               {optionLabel(note)}
             </option>
@@ -248,8 +340,20 @@ export function PrivateActionsV2Panel({
         </select>
       </label>
       {action === "add" && (
-        <label className="grid gap-2">
-          Second token note
+        <label className="grid gap-2 border border-line bg-bg/80 p-3">
+          <span className="flex items-center justify-between gap-3 text-xs text-muted">
+            <span>Deposit paired token</span>
+            {pool && (
+              <span className="flex items-center gap-2 text-foreground">
+                <ShieldedTokenLogo
+                  symbol={pool.token1Symbol}
+                  markets={markets.items}
+                  className="size-7"
+                />
+                {pool.token1Symbol}
+              </span>
+            )}
+          </span>
           <select
             className={inputClass}
             value={selection1}
@@ -257,8 +361,7 @@ export function PrivateActionsV2Panel({
             disabled={busy}
           >
             <option value="">Select the other token</option>
-            {tokenNotes
-              .filter((note) => note.commitment !== selection0)
+            {token1Notes
               .map((note) => (
                 <option key={note.commitment} value={note.commitment}>
                   {optionLabel(note)}
@@ -267,11 +370,30 @@ export function PrivateActionsV2Panel({
           </select>
         </label>
       )}
+      {action === "swap" && (
+        <div className="grid gap-2 border border-line bg-bg/80 p-3">
+          <span className="flex items-center justify-between gap-3 text-xs text-muted">
+            <span>You receive privately</span>
+            {pool && (
+              <span className="flex items-center gap-2 text-foreground">
+                <ShieldedTokenLogo
+                  symbol={outputSymbol}
+                  markets={markets.items}
+                  className="size-7"
+                />
+                {outputSymbol}
+              </span>
+            )}
+          </span>
+          <span className="font-mono text-xl text-muted">Quote in proof</span>
+        </div>
+      )}
       <Button
         onClick={() => void prepare()}
         disabled={
           busy ||
           !pool ||
+          !poolSupported ||
           !address ||
           !selection0 ||
           (action === "add" && !selection1)

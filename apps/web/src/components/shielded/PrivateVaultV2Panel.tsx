@@ -10,6 +10,7 @@ import { parseUnits, type Address } from "viem";
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
 import type { ProtocolExecutionPool } from "@/types/application";
+import { useExternalMarkets } from "@/lib/use-external-markets";
 import { download } from "@/lib/notecrypto";
 import {
   encryptPrivatePayloadV2,
@@ -35,6 +36,7 @@ import {
   PrivateActionsV2Panel,
   type PrivateActionV2,
 } from "./PrivateActionsV2Panel";
+import { ShieldedTokenLogo } from "./ShieldedTokenLogo";
 
 const inputClass =
   "w-full min-w-0 border border-line bg-bg px-3 py-3 text-sm focus:border-line-strong focus:outline-none";
@@ -86,6 +88,7 @@ function PrivateVaultV2Session({
   onBusyChange: (busy: boolean) => void;
 }) {
   const { address, config } = useApp();
+  const markets = useExternalMarkets();
   const [manifest, setManifest] = useState<PrivateProverReleaseV2 | null>(null);
   const [journal, setJournal] = useState<PrivateJournalV2 | null>(null);
   const [savedJournalFound, setSavedJournalFound] = useState(false);
@@ -210,18 +213,20 @@ function PrivateVaultV2Session({
       ]
     : [];
   const assets = assetPolicy
-    ? poolAssets.filter(
-        (asset) => configuredAssets.get(asset.address.toLowerCase())?.enabled,
-      )
+    ? assetPolicy.filter((asset) => asset.enabled)
     : poolAssets;
-  const unsupportedPool = pool !== null && assets.length !== poolAssets.length;
+  const selectedAsset = assets[Number(assetIndex)];
+  const unsupportedPool =
+    assetPolicy !== undefined &&
+    pool !== null &&
+    poolAssets.some(
+      (asset) => !configuredAssets.get(asset.address.toLowerCase())?.enabled,
+    );
   const recoveryPrepared = Boolean(
     journal && (journal.notes.length > 0 || journal.intents.length > 0),
   );
   const prepare = () =>
     run(async () => {
-      if (unsupportedPool)
-        throw new Error("This market is not enabled for private v2 yet.");
       const asset = assets[Number(assetIndex)];
       if (!journal || !manifest || !asset)
         throw new Error("SELECT_A_MARKET_AND_UNLOCK_JOURNAL");
@@ -232,7 +237,7 @@ function PrivateVaultV2Session({
         throw new Error("INVALID_TOKEN_AMOUNT");
       const note = await createPrivateNoteV2(
         scope,
-        { kind: "token", address: asset.address },
+        { kind: "token", address: asset.address as Address },
         String(parseUnits(amount, asset.decimals)),
         "input",
         manifest,
@@ -442,29 +447,44 @@ function PrivateVaultV2Session({
           </section>
           {flow === "deposit" && (
             <div className="grid gap-3">
-              <label htmlFor={`${id}-asset`}>Token from selected market</label>
-              <select
-                id={`${id}-asset`}
-                className={inputClass}
-                value={assetIndex}
-                onChange={(event) => setAssetIndex(event.target.value)}
-                disabled={busy}
-              >
-                {assets.map((asset, index) => (
-                  <option key={asset.address} value={index}>
-                    {asset.symbol}
-                  </option>
-                ))}
-              </select>
-              <label htmlFor={`${id}-amount`}>Amount</label>
-              <input
-                id={`${id}-amount`}
-                className={inputClass}
-                inputMode="decimal"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                disabled={busy}
-              />
+              <div className="border border-line bg-bg/80 p-3">
+                <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted">
+                  <label htmlFor={`${id}-amount`}>You deposit privately</label>
+                  <span>{assets.length} enabled tokens</span>
+                </div>
+                <div className="flex min-w-0 items-center gap-3">
+                  <input
+                    id={`${id}-amount`}
+                    className="w-full min-w-0 bg-transparent font-mono text-xl outline-none"
+                    inputMode="decimal"
+                    placeholder="0.0"
+                    value={amount}
+                    onChange={(event) => setAmount(event.target.value)}
+                    disabled={busy}
+                  />
+                  {selectedAsset && (
+                    <ShieldedTokenLogo
+                      symbol={selectedAsset.symbol}
+                      markets={markets.items}
+                      className="size-8"
+                    />
+                  )}
+                  <select
+                    id={`${id}-asset`}
+                    aria-label="Private deposit token"
+                    className="min-w-20 shrink-0 border border-line bg-bg px-2 py-2 font-mono text-xs focus:border-line-strong focus:outline-none"
+                    value={assetIndex}
+                    onChange={(event) => setAssetIndex(event.target.value)}
+                    disabled={busy}
+                  >
+                    {assets.map((asset, index) => (
+                      <option key={asset.address} value={index}>
+                        {asset.symbol}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <Button
                 onClick={() => void prepare()}
                 disabled={busy || !assets.length}
@@ -479,6 +499,7 @@ function PrivateVaultV2Session({
               manifest={manifest}
               journal={journal}
               pool={pool}
+              poolSupported={!unsupportedPool}
               action={flow as PrivateActionV2}
               busy={busy}
               backupSaved={backupSaved}
