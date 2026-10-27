@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } fr
 import { ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
+import { ContractAddressBadge } from "@/components/ui/ContractAddressBadge";
 import { easeOut } from "@/lib/motion";
 import { MerkleField } from "./MerkleField";
 import { EventStream, PoolRail } from "./HeroRails";
@@ -89,6 +90,7 @@ export function Hero() {
 
           <motion.div {...rise(0.05)} className="panel ticks p-2.5">
             <div className="panel-inset px-4 py-8 text-center sm:px-8 sm:py-10">
+              <ContractAddressBadge className="mb-4 justify-center" />
               <p className="label mb-6 flex items-center justify-center gap-2"><span className="size-1.5 bg-lime motion-safe:animate-blink" aria-hidden /> Zero-knowledge liquidity · Robinhood Chain</p>
               <h1 className="display">
                 <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Provide</span>

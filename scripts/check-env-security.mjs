@@ -1,7 +1,12 @@
 import { readFile } from "node:fs/promises";
 
 const envFiles = [".env.testnet", ".env.mainnet"];
-const allowedPublicKeys = new Set(["NEXT_PUBLIC_API_URL"]);
+const allowedPublicKeys = new Set([
+  "NEXT_PUBLIC_API_URL",
+  "NEXT_PUBLIC_ZKBLAST_CA",
+  "NEXT_PUBLIC_CA",
+  "NEXT_PUBLIC_CONTRACT_ADDRESS",
+]);
 const privateKeys = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "SUPABASE_DIRECT_DATABASE_URL",
@@ -38,7 +43,7 @@ for (const envFile of envFiles) {
 
   if (invalidNames.length > 0) {
     throw new Error(
-      `${envFile}: only NEXT_PUBLIC_API_URL may be public; remove ${invalidNames.join(", ")}`,
+      `${envFile}: only approved public keys (${[...allowedPublicKeys].join(", ")}) may be public; remove ${invalidNames.join(", ")}`,
     );
   }
 

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/components/shell/AppProvider";
+import { ContractAddressBadge } from "@/components/ui/ContractAddressBadge";
+import { XIcon } from "@/components/ui/Icons";
 import { nav } from "@/lib/nav";
 import { Logo } from "./Logo";
 
@@ -11,11 +13,24 @@ export function Footer() {
   const path = usePathname();
   if (path === "/trade")
     return (
-      <footer className="mx-auto flex max-w-[1600px] flex-wrap justify-between gap-3 border-t border-line px-4 py-5 font-mono text-[10px] text-faint">
-        <span>
-          ZKBLAST · {config?.chainName ?? "Connecting to API"} ·{" "}
-          {config?.environment ?? "Network pending"}
-        </span>
+      <footer className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-5 font-mono text-[10px] text-faint">
+        <div className="flex flex-wrap items-center gap-3">
+          <span>
+            ZKBLAST · {config?.chainName ?? "Connecting to API"} ·{" "}
+            {config?.environment ?? "Network pending"}
+          </span>
+          <a
+            href="https://x.com/zkblast20"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="ZKBLAST on X"
+            title="Follow @zkblast20 on X"
+            className="inline-flex items-center text-muted hover:text-lime transition-colors"
+          >
+            <XIcon className="size-3" />
+          </a>
+          <ContractAddressBadge />
+        </div>
         <span>
           Onchain transactions carry risk.{" "}
           <Link className="text-muted hover:text-fg" href="/docs">
@@ -40,6 +55,18 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="https://x.com/zkblast20"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-fg/85 transition-colors hover:text-lime"
+                  aria-label="Follow ZKBLAST on X"
+                >
+                  <XIcon className="size-3.5" />
+                  <span>X</span>
+                </a>
+              </li>
               <li className="inline-flex items-center gap-2 text-fg/85">
                 Status{" "}
                 <span className="grid size-4 place-items-center border border-lime/50">
@@ -57,6 +84,18 @@ export function Footer() {
                 Zero-knowledge liquidity infrastructure. Operational values are
                 read from validated {config?.environment ?? "network"} records.
               </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <ContractAddressBadge />
+                <a
+                  href="https://x.com/zkblast20"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-line bg-raised/50 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-muted transition-colors hover:border-lime/60 hover:text-fg"
+                >
+                  <XIcon className="size-3.5" />
+                  <span>@zkblast20</span>
+                </a>
+              </div>
             </div>
             <div className="font-mono text-[12px] leading-relaxed text-faint md:text-right">
               <p className="uppercase tracking-[0.06em]">
@@ -69,8 +108,19 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.08em] text-faint">
+          <div className="flex flex-wrap items-center gap-4 font-mono text-[11px] uppercase tracking-[0.08em] text-faint">
             <span>ZKBLAST</span>
+            <span aria-hidden className="h-px flex-1 bg-line" />
+            <a
+              href="https://x.com/zkblast20"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-faint/80 hover:text-lime transition-colors"
+              aria-label="ZKBLAST on X"
+            >
+              <XIcon className="size-3" />
+              <span>@zkblast20</span>
+            </a>
             <span aria-hidden className="h-px flex-1 bg-line" />
             <span className="text-faint/70">© 2026 ZKBLAST</span>
             <span aria-hidden className="h-px flex-1 bg-line" />

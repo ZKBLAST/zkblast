@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cx, shortHex } from "@/lib/format";
 import { nav } from "@/lib/nav";
+import { XIcon } from "@/components/ui/Icons";
 import { useApp } from "./AppProvider";
 import { Logo } from "./Logo";
 
@@ -113,6 +114,17 @@ export function Header() {
               />
               {config?.chainName ?? "API sync"}
             </span>
+
+            <a
+              href="https://x.com/zkblast20"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="ZKBLAST on X (Twitter)"
+              title="Follow @zkblast20 on X"
+              className="inline-flex size-10 items-center justify-center border border-line text-muted transition-colors hover:border-lime/60 hover:text-fg hover:bg-white/[0.02]"
+            >
+              <XIcon className="size-4" />
+            </a>
 
             {address ? (
               <div className="relative">
@@ -241,6 +253,23 @@ export function Header() {
                     </Link>
                   </motion.li>
                 ))}
+                <motion.li
+                  variants={{
+                    h: { opacity: 0, x: -16 },
+                    s: { opacity: 1, x: 0 },
+                  }}
+                  className="border-b border-line"
+                >
+                  <a
+                    href="https://x.com/zkblast20"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-16 items-center justify-between font-mono text-[20px] uppercase tracking-[0.04em] text-fg hover:text-lime"
+                  >
+                    <span>Follow on X</span>
+                    <XIcon className="size-5" />
+                  </a>
+                </motion.li>
               </motion.ul>
               <p className="mt-6 font-mono text-xs uppercase tracking-wide text-faint">
                 {config
