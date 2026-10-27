@@ -13,27 +13,29 @@ export function ContractAddressBadge({ className }: { className?: string }) {
     ""
   ).trim();
 
-  const handleCopy = useCallback(async () => {
+  const handleCopy = useCallback(() => {
     if (!ca) return;
-    try {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(ca);
-      } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = ca;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
+    void (async () => {
+      try {
+        if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(ca);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = ca;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // copy failed silently
       }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // copy failed silently
-    }
+    })();
   }, [ca]);
 
   if (!ca) return null;
@@ -42,7 +44,9 @@ export function ContractAddressBadge({ className }: { className?: string }) {
     <div className={cx("flex items-center", className)}>
       <button
         type="button"
-        onClick={handleCopy}
+        onClick={() => {
+          handleCopy();
+        }}
         title="Click to copy Contract Address"
         aria-label={`Copy Contract Address ${ca}`}
         className="group relative inline-flex max-w-full items-center gap-2 border border-line-strong bg-[#0d0e19] px-3 py-1.5 font-mono text-[11px] text-muted transition-all duration-150 hover:border-lime/60 hover:text-fg hover:shadow-[0_0_12px_rgba(223,227,238,0.1)] active:scale-[0.99] cursor-pointer"
