@@ -51,6 +51,8 @@
     "rehearse:recovery:testnet": "dotenv -e .env.testnet -- node scripts/run-testnet-recovery-rehearsal.mjs",
     "configure:mainnet:from-testnet": "node scripts/configure-mainnet-from-testnet.mjs",
     "configure:operations-tokens": "node scripts/ensure-operations-tokens.mjs",
+    "deploy:pipeline:testnet": "./scripts/deploy-testnet.sh",
+    "deploy:pipeline:mainnet": "./scripts/deploy-mainnet.sh",
     "contracts:deploy:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/contracts run deploy",
     "contracts:deploy:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run deploy",
     "contracts:deploy:mainnet-timelock": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run deploy:mainnet-timelock",
