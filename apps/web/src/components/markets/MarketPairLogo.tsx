@@ -36,7 +36,9 @@ export function MarketPairLogo({ market }: { market: ExternalMarket }) {
       aria-label={`${market.symbol}/${marketDisplayQuoteSymbol(market)}`}
     >
       <AssetLogo
-        url={market.logoUrl}
+        url={
+          KNOWN_ASSET_LOGOS[market.symbol.toUpperCase()] ?? market.logoUrl
+        }
         label={market.symbol}
         className="absolute left-0 top-0 z-10"
       />
@@ -58,6 +60,7 @@ const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
   USDG: "/asset-logo/USDG",
   WETH: "/asset-logo/WETH",
   ETH: "/asset-logo/ETH",
+  ZKBLAST: "/asset-logo/ZKBLAST",
 };
 
 export function ProtocolPairLogo({

@@ -49,12 +49,22 @@ export function useExternalMarkets(): MarketData {
             "/v1/markets?source=robinhood_stock_token&region=unclassified&limit=200",
           ),
         ]);
-      setItems([
+      const combined = [
         ...pons.items,
         ...usStocks.items,
         ...chinaStocks.items,
         ...unclassifiedStocks.items,
-      ]);
+      ];
+      combined.sort((left, right) => {
+        const leftIsProtocol = left.symbol.toUpperCase() === "ZKBLAST" ? 1 : 0;
+        const rightIsProtocol =
+          right.symbol.toUpperCase() === "ZKBLAST" ? 1 : 0;
+        if (leftIsProtocol !== rightIsProtocol) {
+          return rightIsProtocol - leftIsProtocol;
+        }
+        return Number(right.canTrade) - Number(left.canTrade);
+      });
+      setItems(combined);
     } catch (reason) {
       setError(
         reason instanceof Error ? reason.message : "MARKET_DATA_UNAVAILABLE",

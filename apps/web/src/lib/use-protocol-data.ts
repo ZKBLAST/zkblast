@@ -104,9 +104,15 @@ export function useProtocolData(owner?: string | null): ProtocolData {
       if (currentRequest !== requestId.current) return;
       setPositionsOwner(owner);
       setPools(
-        poolPage.items.filter((pool) =>
-          isPublicPair(pool.token0Symbol, pool.token1Symbol),
-        ),
+        poolPage.items
+          .filter((pool) =>
+            isPublicPair(pool.token0Symbol, pool.token1Symbol),
+          )
+          .sort(
+            (left, right) =>
+              Number(right.createdBlock || "0") -
+              Number(left.createdBlock || "0"),
+          ),
       );
       setSwaps(swapPage.items);
       setActivity(activityPage.items);
