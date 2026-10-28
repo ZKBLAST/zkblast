@@ -20,7 +20,7 @@ export function Footer() {
             {config?.environment ?? "Network pending"}
           </span>
           <a
-            href="https://x.com/zkblast20"
+            href="https://x.com/zkblast9"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="ZKBLAST on X"
@@ -57,7 +57,7 @@ export function Footer() {
               ))}
               <li>
                 <a
-                  href="https://x.com/zkblast20"
+                  href="https://x.com/zkblast9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-fg/85 transition-colors hover:text-lime"
@@ -87,7 +87,7 @@ export function Footer() {
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <ContractAddressBadge />
                 <a
-                  href="https://x.com/zkblast20"
+                  href="https://x.com/zkblast9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 border border-line bg-raised/50 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-muted transition-colors hover:border-lime/60 hover:text-fg"
@@ -112,7 +112,7 @@ export function Footer() {
             <span>ZKBLAST</span>
             <span aria-hidden className="h-px flex-1 bg-line" />
             <a
-              href="https://x.com/zkblast20"
+              href="https://x.com/zkblast9"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-faint/80 hover:text-lime transition-colors"

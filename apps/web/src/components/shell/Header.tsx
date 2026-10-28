@@ -116,7 +116,7 @@ export function Header() {
             </span>
 
             <a
-              href="https://x.com/zkblast20"
+              href="https://x.com/zkblast9"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="ZKBLAST on X (Twitter)"
@@ -261,7 +261,7 @@ export function Header() {
                   className="border-b border-line"
                 >
                   <a
-                    href="https://x.com/zkblast20"
+                    href="https://x.com/zkblast9"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex h-16 items-center justify-between font-mono text-[20px] uppercase tracking-[0.04em] text-fg hover:text-lime"
