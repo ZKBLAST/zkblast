@@ -191,7 +191,25 @@ function PrivateVaultV2Session({
       setSavedJournalFound(Boolean(serialized));
       setStatus("Private journal unlocked in this browser.");
     });
-  const assetPolicy = config?.shieldedV2?.assets;
+  const rawAssetPolicy = config?.shieldedV2?.assets;
+  const assetPolicy =
+    rawAssetPolicy &&
+    config?.chainId === 4663 &&
+    !rawAssetPolicy.some(
+      (asset) =>
+        asset.address.toLowerCase() ===
+        "0x3f9ff9f1d40369f99c281375bd19d6ecbebfecd7",
+    )
+      ? [
+          ...rawAssetPolicy,
+          {
+            address: "0x3f9Ff9f1D40369f99c281375bD19D6EcbEbFeCd7",
+            symbol: "ZKBLAST",
+            decimals: 18,
+            enabled: true,
+          },
+        ]
+      : rawAssetPolicy;
   const configuredAssets = new Map(
     (assetPolicy ?? []).map((asset) => [
       asset.address.toLowerCase(),

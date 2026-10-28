@@ -802,6 +802,12 @@
         "symbol": "PONS",
         "decimals": 18,
         "enabled": true
+      },
+      {
+        "address": "0x3f9Ff9f1D40369f99c281375bD19D6EcbEbFeCd7",
+        "symbol": "ZKBLAST",
+        "decimals": 18,
+        "enabled": true
       }
     ]
   }

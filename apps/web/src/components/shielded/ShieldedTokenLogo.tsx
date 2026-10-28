@@ -7,6 +7,7 @@ const NETWORK_ASSET_LOGOS: Readonly<Record<string, string>> = {
   USDG: "/asset-logo/USDG",
   WETH: "/asset-logo/WETH",
   ETH: "/asset-logo/ETH",
+  ZKBLAST: "/asset-logo/ZKBLAST",
 };
 
 export function shieldedTokenLogoUrl(
