@@ -1,12 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 const envFiles = [".env.testnet", ".env.mainnet"];
-const allowedPublicKeys = new Set([
-  "NEXT_PUBLIC_API_URL",
-  "NEXT_PUBLIC_ZKBLAST_CA",
-  "NEXT_PUBLIC_CA",
-  "NEXT_PUBLIC_CONTRACT_ADDRESS",
-]);
+const allowedPublicKeys = new Set(["NEXT_PUBLIC_API_URL"]);
 const privateKeys = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "SUPABASE_DIRECT_DATABASE_URL",

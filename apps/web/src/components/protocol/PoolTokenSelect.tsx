@@ -192,7 +192,7 @@ function TokenLoading() {
 }
 
 function logoFor(token: PoolTokenOption) {
-  return ["USDG", "WETH", "ETH"].includes(token.symbol.toUpperCase())
+  return ["USDG", "WETH", "ETH", "ZKBLAST"].includes(token.symbol.toUpperCase())
     ? `/asset-logo/${token.symbol.toUpperCase()}`
     : token.logoUrl;
 }

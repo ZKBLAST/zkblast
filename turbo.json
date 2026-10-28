@@ -10,10 +10,7 @@
     "API_PORT",
     "WEB_ORIGIN",
     "NEXT_PUBLIC_API_URL",
-    "ZKBLAST_CA",
-    "NEXT_PUBLIC_ZKBLAST_CA",
-    "NEXT_PUBLIC_CA",
-    "NEXT_PUBLIC_CONTRACT_ADDRESS"
+    "ZKBLAST_CA"
   ],
   "globalPassThroughEnv": [
     "RPC_URL",
