@@ -120,7 +120,7 @@ export function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="ZKBLAST on X (Twitter)"
-              title="Follow @zkblast20 on X"
+              title="Follow @zkblast9 on X"
               className="inline-flex size-10 items-center justify-center border border-line text-muted transition-colors hover:border-lime/60 hover:text-fg hover:bg-white/[0.02]"
             >
               <XIcon className="size-4" />

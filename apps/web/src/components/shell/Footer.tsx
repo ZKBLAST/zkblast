@@ -24,7 +24,7 @@ export function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="ZKBLAST on X"
-            title="Follow @zkblast20 on X"
+            title="Follow @zkblast9 on X"
             className="inline-flex items-center text-muted hover:text-lime transition-colors"
           >
             <XIcon className="size-3" />
@@ -93,7 +93,7 @@ export function Footer() {
                   className="inline-flex items-center gap-2 border border-line bg-raised/50 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-muted transition-colors hover:border-lime/60 hover:text-fg"
                 >
                   <XIcon className="size-3.5" />
-                  <span>@zkblast20</span>
+                  <span>@zkblast9</span>
                 </a>
               </div>
             </div>
@@ -119,7 +119,7 @@ export function Footer() {
               aria-label="ZKBLAST on X"
             >
               <XIcon className="size-3" />
-              <span>@zkblast20</span>
+              <span>@zkblast9</span>
             </a>
             <span aria-hidden className="h-px flex-1 bg-line" />
             <span className="text-faint/70">© 2026 ZKBLAST</span>
