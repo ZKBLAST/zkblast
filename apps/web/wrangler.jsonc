@@ -22,6 +22,7 @@
   ],
   "vars": {
     "API_URL": "https://api.zkblast.tech",
-    "NEXT_PUBLIC_API_URL": "https://api.zkblast.tech"
+    "NEXT_PUBLIC_API_URL": "https://api.zkblast.tech",
+    "ZKBLAST_CA": "0x3f9ff9f1d40369f99c281375bd19d6ecbebfecd7"
   }
 }

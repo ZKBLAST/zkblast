@@ -15,6 +15,12 @@ function getApiProxyTarget(): string | null {
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  env: {
+    ZKBLAST_CA:
+      process.env.ZKBLAST_CA ??
+      process.env.NEXT_PUBLIC_ZKBLAST_CA ??
+      "0x3f9ff9f1d40369f99c281375bd19d6ecbebfecd7",
+  },
   transpilePackages: ["@zkblast/config", "@zkblast/sdk", "@zkblast/ui"],
   webpack(config) {
     config.resolve.extensionAlias = {
