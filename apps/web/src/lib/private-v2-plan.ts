@@ -62,15 +62,17 @@ export async function preparePrivateActionV2(
     onStage,
   } = args;
   await assertPrivateWalletV2(provider, account, scope.chainId);
-  if (
-    !isPrivateV2Network(scope.environment, scope.chainId) ||
-    pool.chainId !== Number(scope.chainId) ||
-    !Number.isInteger(binId) ||
-    binId < -8388608 ||
-    binId >= 8388608 ||
-    (pool.model === "damm" && binId !== 0)
-  )
-    throw new Error("INVALID_V2_POOL_CONTEXT");
+  if (!isPrivateV2Network(scope.environment, scope.chainId))
+    throw new Error("V2_SCOPE_NETWORK_UNSUPPORTED");
+  const poolChainId = Number(pool.chainId);
+  if (!Number.isSafeInteger(poolChainId))
+    throw new Error("V2_POOL_CHAIN_INVALID");
+  if (poolChainId !== Number(scope.chainId))
+    throw new Error("V2_POOL_NETWORK_MISMATCH");
+  if (!Number.isInteger(binId) || binId < -8388608 || binId >= 8388608)
+    throw new Error("V2_DLMM_BIN_INVALID");
+  if (pool.model === "damm" && binId !== 0)
+    throw new Error("V2_DAMM_BIN_MUST_BE_ZERO");
   const resources: StoredNoteV2["resource"][] = [
     { kind: "token", address: pool.token0Address as Address },
     { kind: "token", address: pool.token1Address as Address },

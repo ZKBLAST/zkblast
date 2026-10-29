@@ -24,7 +24,7 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
 
   pools(query: PageQuery) {
     return this.sql.unsafe(
-      `select p.chain_id as "chainId", p.address, p.pool_kind as model, p.fee_bps as "feeBps", p.status, p.created_block as "createdBlock", x.address as "token0Address", x.symbol as "token0Symbol", x.decimals as "token0Decimals", y.address as "token1Address", y.symbol as "token1Symbol", y.decimals as "token1Decimals" from ${this.schema}.pools p join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id where ($1::text is null or p.address > $1) order by p.address asc limit $2`,
+      `select p.chain_id::integer as "chainId", p.address, p.pool_kind as model, p.fee_bps as "feeBps", p.status, p.created_block as "createdBlock", x.address as "token0Address", x.symbol as "token0Symbol", x.decimals as "token0Decimals", y.address as "token1Address", y.symbol as "token1Symbol", y.decimals as "token1Decimals" from ${this.schema}.pools p join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id where ($1::text is null or p.address > $1) order by p.address asc limit $2`,
       [query.cursor ?? null, query.limit],
     );
   }
