@@ -36,6 +36,34 @@ type Path = {
   siblings: string[];
   directions: number[];
 };
+
+const PRIVATE_PATH_TIMEOUT_MS = 45_000;
+
+async function fetchPrivatePath(commitment: bigint): Promise<Path> {
+  const path = `/v1/shielded-v2/path/${fieldHexV2(commitment)}`;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await apiRequest<Path>("/api", path, {
+        signal: AbortSignal.timeout(PRIVATE_PATH_TIMEOUT_MS),
+      });
+    } catch (error) {
+      const timedOut =
+        error instanceof Error &&
+        (error.name === "TimeoutError" ||
+          error.message.toLowerCase().includes("timed out"));
+      if (!timedOut || attempt === 1)
+        throw new Error(
+          timedOut
+            ? "PRIVATE_NOTE_PATH_TEMPORARILY_UNAVAILABLE"
+            : error instanceof Error
+              ? error.message
+              : "PRIVATE_NOTE_PATH_FAILED",
+        );
+    }
+  }
+  throw new Error("PRIVATE_NOTE_PATH_TEMPORARILY_UNAVAILABLE");
+}
+
 export async function preparePrivateActionV2(
   args: Readonly<{
     scope: NoteScopeV2;
@@ -111,12 +139,7 @@ export async function preparePrivateActionV2(
   );
   const paths: (Path | null)[] = await Promise.all(
     slots.map(async (note) =>
-      note
-        ? await apiRequest<Path>(
-            "/api",
-            `/v1/shielded-v2/path/${fieldHexV2(BigInt(note.commitment))}`,
-          )
-        : null,
+      note ? await fetchPrivatePath(BigInt(note.commitment)) : null,
     ),
   );
   const roots = paths
