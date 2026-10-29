@@ -24,11 +24,19 @@ type Config = Readonly<{
   deploymentBlock: bigint;
 }>;
 
+type MerkleTree = Readonly<{
+  leaves: readonly Hex[];
+  levels: readonly (readonly Hex[])[];
+  zeros: readonly Hex[];
+}>;
+
 export class ShieldedService {
   private readonly pathCache = new Map<
     string,
     Awaited<ReturnType<ShieldedService["buildPath"]>>
   >();
+  private readonly treeCache = new Map<string, MerkleTree>();
+  private readonly treeBuilds = new Map<string, Promise<MerkleTree>>();
 
   constructor(
     private readonly client: PublicClient,
@@ -66,7 +74,8 @@ export class ShieldedService {
     const cacheKey = `${onchainRoot.toLowerCase()}:${commitment.toLowerCase()}`;
     const cached = this.pathCache.get(cacheKey);
     if (cached) return { ...cached, syncedBlock: head.toString() };
-    const result = await this.buildPath(commitment, head, onchainRoot);
+    const tree = await this.tree(head, onchainRoot);
+    const result = this.buildPath(commitment, head, onchainRoot, tree);
     this.pathCache.set(cacheKey, result);
     return result;
   }
@@ -103,7 +112,27 @@ export class ShieldedService {
     return { commitment, inserted, syncedBlock: String(blockNumber) };
   }
 
-  private async buildPath(commitment: Hex, head: bigint, onchainRoot: Hex) {
+  private async tree(head: bigint, onchainRoot: Hex): Promise<MerkleTree> {
+    const key = onchainRoot.toLowerCase();
+    const cached = this.treeCache.get(key);
+    if (cached) return cached;
+    const pending = this.treeBuilds.get(key);
+    if (pending) return pending;
+    const build = this.buildTree(head, onchainRoot)
+      .then((tree) => {
+        this.treeCache.set(key, tree);
+        if (this.treeCache.size > 4) {
+          const oldest = this.treeCache.keys().next().value;
+          if (oldest) this.treeCache.delete(oldest);
+        }
+        return tree;
+      })
+      .finally(() => this.treeBuilds.delete(key));
+    this.treeBuilds.set(key, build);
+    return build;
+  }
+
+  private async buildTree(head: bigint, onchainRoot: Hex): Promise<MerkleTree> {
     const logs = await this.commitmentLogs(head);
     const leaves: Hex[] = [];
     for (const log of logs) {
@@ -112,20 +141,11 @@ export class ShieldedService {
         throw new Error("NON_SEQUENTIAL_COMMITMENT_TREE");
       leaves.push(log.args.commitment);
     }
-    const target = leaves.findIndex(
-      (leaf) => leaf.toLowerCase() === commitment.toLowerCase(),
-    );
-    if (target < 0) throw new Error("COMMITMENT_NOT_FOUND");
-
-    const siblings: Hex[] = [];
-    const directions: number[] = [];
-    let index = target;
     let nodes = leaves;
     let zero = EMPTY_LEAF;
+    const levels: Hex[][] = [leaves];
+    const zeros: Hex[] = [zero];
     for (let level = 0; level < DEPTH; level += 1) {
-      const isRight = index % 2 === 1;
-      siblings.push(isRight ? nodes[index - 1]! : (nodes[index + 1] ?? zero));
-      directions.push(isRight ? 1 : 0);
       const pairs = Array.from(
         { length: Math.ceil(nodes.length / 2) },
         (_, pair) =>
@@ -137,15 +157,40 @@ export class ShieldedService {
       ]);
       zero = nextZero;
       nodes = nextNodes;
-      index = Math.floor(index / 2);
+      zeros.push(zero);
+      levels.push(nodes);
     }
     const root = nodes[0];
     if (!root || root.toLowerCase() !== onchainRoot.toLowerCase())
       throw new Error("MERKLE_ROOT_MISMATCH");
+    return { leaves, levels, zeros };
+  }
+
+  private buildPath(
+    commitment: Hex,
+    head: bigint,
+    onchainRoot: Hex,
+    tree: MerkleTree,
+  ) {
+    const target = tree.leaves.findIndex(
+      (leaf) => leaf.toLowerCase() === commitment.toLowerCase(),
+    );
+    if (target < 0) throw new Error("COMMITMENT_NOT_FOUND");
+    const siblings: Hex[] = [];
+    const directions: number[] = [];
+    let index = target;
+    for (let level = 0; level < DEPTH; level += 1) {
+      const nodes = tree.levels[level]!;
+      const zero = tree.zeros[level]!;
+      const isRight = index % 2 === 1;
+      siblings.push(isRight ? nodes[index - 1]! : (nodes[index + 1] ?? zero));
+      directions.push(isRight ? 1 : 0);
+      index = Math.floor(index / 2);
+    }
     return {
       commitment,
       leafIndex: target,
-      root,
+      root: onchainRoot,
       siblings,
       directions,
       syncedBlock: head.toString(),
