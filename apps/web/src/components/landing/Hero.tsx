@@ -92,37 +92,6 @@ export function Hero() {
             <div className="panel-inset px-4 py-8 text-center sm:px-8 sm:py-10">
               <ContractAddressBadge className="mb-4 justify-center" />
               <p className="label mb-6 flex items-center justify-center gap-2"><span className="size-1.5 bg-lime motion-safe:animate-blink" aria-hidden /> Zero-knowledge liquidity · Robinhood Chain</p>
-              <div className="mx-auto mb-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-2 rounded-sm border border-line bg-black/30 p-2 font-mono">
-                <a
-                  href="https://zkblast.tech"
-                  className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
-                  aria-label="Visit ZKBLAST at zkblast.tech"
-                >
-                  <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-black">
-                    <img src="/zk/logo.png" alt="ZKBLAST" className="size-full rounded-full object-cover" />
-                  </span>
-                  <span className="text-left leading-tight">
-                    <strong className="block text-[11px] tracking-[0.12em] text-white">ZKBLAST</strong>
-                    <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">zkblast.tech</span>
-                  </span>
-                </a>
-
-                <span className="px-1 text-sm font-semibold text-lime" aria-hidden>×</span>
-
-                <a
-                  href="https://quantapools.tech"
-                  className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
-                  aria-label="Visit Quanta Pools at quantapools.tech"
-                >
-                  <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
-                    <img src="https://quantapools.tech/logo.png" alt="Quanta Pools" className="size-full rounded-full object-cover" />
-                  </span>
-                  <span className="text-left leading-tight">
-                    <strong className="block text-[11px] tracking-[0.12em] text-white">QUANTA</strong>
-                    <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">quantapools.tech</span>
-                  </span>
-                </a>
-              </div>
               <h1 className="display">
                 <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Provide</span>
                 <span className="ticks relative mx-auto my-4 block max-w-[560px] border border-line bg-[linear-gradient(180deg,#14142100,#14142180)] px-4 py-3 font-mono text-[clamp(2.4rem,7vw,4.2rem)] font-normal tracking-[-0.04em] text-white shadow-[inset_0_1px_10px_rgba(0,0,0,0.6),inset_0_0_14px_rgba(255,255,255,0.04)] [--tick-c:rgba(223,227,238,0.6)]">
@@ -144,6 +113,38 @@ export function Hero() {
           <motion.div {...rise(0.45)} className="panel-inset mx-auto mt-3 flex w-fit bg-[#090911] flex-wrap justify-center gap-2 p-2">
             <ButtonLink href="#lanes" variant="secondary">Explore features</ButtonLink>
             <ButtonLink href="/trade">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
+          </motion.div>
+
+          <motion.div {...rise(0.55)} className="mx-auto mt-3 flex w-fit max-w-full flex-wrap items-center justify-center gap-2 rounded-sm border border-line bg-black/30 p-2 font-mono">
+            <a
+              href="https://zkblast.tech"
+              className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
+              aria-label="Visit ZKBLAST at zkblast.tech"
+            >
+              <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
+                <img src="/zk/logo.png" alt="ZKBLAST" className="size-full rounded-full object-cover" />
+              </span>
+              <span className="text-left leading-tight">
+                <strong className="block text-[11px] tracking-[0.12em] text-white">ZKBLAST</strong>
+                <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">zkblast.tech</span>
+              </span>
+            </a>
+
+            <span className="px-1 text-sm font-semibold text-lime" aria-hidden>×</span>
+
+            <a
+              href="https://quantapools.tech"
+              className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
+              aria-label="Visit Quanta Pools at quantapools.tech"
+            >
+              <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
+                <img src="https://quantapools.tech/logo.png" alt="Quanta Pools" className="size-full rounded-full object-cover" />
+              </span>
+              <span className="text-left leading-tight">
+                <strong className="block text-[11px] tracking-[0.12em] text-white">QUANTA</strong>
+                <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">quantapools.tech</span>
+              </span>
+            </a>
           </motion.div>
         </motion.div>
 
