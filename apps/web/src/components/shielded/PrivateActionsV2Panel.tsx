@@ -74,9 +74,9 @@ export function PrivateActionsV2Panel({
   const [selection1, setSelection1] = useState("");
   const [bin, setBin] = useState("0");
   const [states, setStates] = useState<Record<string, string>>({});
-  const [insertedNotes, setInsertedNotes] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [insertedNotes, setInsertedNotes] = useState<
+    Record<string, boolean | null>
+  >({});
   useEffect(() => {
     setSelection0("");
     setSelection1("");
@@ -160,7 +160,12 @@ export function PrivateActionsV2Panel({
             }),
           ] as const;
         } catch {
-          return [note.commitment, false] as const;
+          // A wallet RPC failure is not evidence that a locally-held note is
+          // absent onchain. Preserve it as an unknown state so users do not
+          // lose access to valid notes when the injected provider is slow or
+          // temporarily unavailable. The path/proof preflight remains the
+          // authoritative validation before a transaction can be prepared.
+          return [note.commitment, null] as const;
         }
       }),
     ).then((entries) => {
@@ -175,7 +180,7 @@ export function PrivateActionsV2Panel({
   );
   const available = journal.notes.filter(
     (note) =>
-      insertedNotes[note.commitment] === true &&
+      insertedNotes[note.commitment] !== false &&
       !journal.intents.some(
         (intent) =>
           !journal.archivedIntents.includes(intent.id) &&
