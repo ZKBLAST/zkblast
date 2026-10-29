@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatUnits, type Address, type Hex } from "viem";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
 import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
@@ -71,6 +71,55 @@ export function PrivateActionsV2Panel({
     setSelection0("");
     setSelection1("");
   }, [action]);
+  const activeIntentIds = useMemo(
+    () =>
+      journal.intents
+        .filter(
+          (intent) =>
+            intent.reservationProof &&
+            !journal.archivedIntents.includes(intent.id),
+        )
+        .map((intent) => intent.id),
+    [journal.archivedIntents, journal.intents],
+  );
+  const statusScope = useMemo(
+    () => scope,
+    [scope.chainId, scope.environment, scope.settlement, scope.treeVersion],
+  );
+  useEffect(() => {
+    const provider = window.ethereum;
+    if (!provider || activeIntentIds.length === 0) return;
+    let active = true;
+    setStates((current) => ({
+      ...current,
+      ...Object.fromEntries(
+        activeIntentIds
+          .filter((id) => current[id] === undefined)
+          .map((id) => [id, "checking"]),
+      ),
+    }));
+    void Promise.all(
+      activeIntentIds.map(async (id) => {
+        try {
+          return [
+            id,
+            await privateIntentStateV2(provider, statusScope, id as Hex),
+          ] as const;
+        } catch {
+          return [id, "unavailable"] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (active)
+        setStates((current) => ({
+          ...current,
+          ...Object.fromEntries(entries),
+        }));
+    });
+    return () => {
+      active = false;
+    };
+  }, [activeIntentIds, statusScope]);
   const available = journal.notes.filter(
     (note) =>
       !journal.intents.some(
@@ -472,6 +521,7 @@ export function PrivateActionsV2Panel({
               </p>
             );
           const decoded = decodeActionStatementV2(intent.statement, scope);
+          const intentState = states[intent.id] ?? "checking";
           return (
             <section
               key={intent.id}
@@ -481,8 +531,12 @@ export function PrivateActionsV2Panel({
                 <span>
                   {intent.action} · intent {index + 1}
                 </span>
-                <span className="text-muted">
-                  {states[intent.id] ?? "Ready to check"}
+                <span className="shrink-0 border border-line px-2 py-1 font-mono text-[10px] uppercase text-muted">
+                  {intentState === "checking"
+                    ? "Checking…"
+                    : intentState === "unavailable"
+                      ? "Refresh needed"
+                      : intentState}
                 </span>
               </div>
               <p className="min-w-0 max-w-full font-mono text-[10px] text-muted [overflow-wrap:anywhere]">
@@ -500,9 +554,9 @@ export function PrivateActionsV2Panel({
                 disabled={busy}
                 onClick={() => void refresh(intent)}
               >
-                Check status
+                Refresh status
               </Button>
-              {states[intent.id] === "unsubmitted" &&
+              {intentState === "unsubmitted" &&
                 !journal.archivedIntents.includes(intent.id) && (
                   <Button
                     size="sm"
@@ -513,14 +567,19 @@ export function PrivateActionsV2Panel({
                     Archive unsubmitted draft
                   </Button>
                 )}
-              <div className="grid gap-2 sm:grid-cols-3">
+              {intentState === "unsubmitted" && !backupSaved && (
+                <p className="text-xs leading-relaxed text-muted">
+                  Save the recovery checkpoint above to enable submission.
+                </p>
+              )}
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   size="sm"
                   disabled={
                     busy ||
                     !backupSaved ||
                     journal.archivedIntents.includes(intent.id) ||
-                    states[intent.id] !== "unsubmitted"
+                    intentState !== "unsubmitted"
                   }
                   onClick={() => void execute(intent, "reserve")}
                 >
@@ -528,7 +587,7 @@ export function PrivateActionsV2Panel({
                 </Button>
                 <Button
                   size="sm"
-                  disabled={busy || states[intent.id] !== "pending"}
+                  disabled={busy || intentState !== "pending"}
                   onClick={() => void execute(intent, "settle")}
                 >
                   2. Complete
@@ -536,7 +595,8 @@ export function PrivateActionsV2Panel({
                 <Button
                   size="sm"
                   variant="secondary"
-                  disabled={busy || states[intent.id] !== "pending"}
+                  className="col-span-2 w-full"
+                  disabled={busy || intentState !== "pending"}
                   onClick={() => void execute(intent, "refund")}
                 >
                   Recover expired
