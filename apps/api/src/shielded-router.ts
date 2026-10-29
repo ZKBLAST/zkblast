@@ -22,6 +22,18 @@ export function createShieldedRouter(
         next(error);
       }
     });
+  if (privateV2)
+    router.get("/commitment/:commitment", async (request, response, next) => {
+      try {
+        response.json(
+          await service.commitmentStatus(
+            commitmentSchema.parse(request.params.commitment) as Hex,
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    });
   router.get("/path/:commitment", async (request, response, next) => {
     try {
       response.json(

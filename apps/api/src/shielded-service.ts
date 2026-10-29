@@ -89,6 +89,20 @@ export class ShieldedService {
     return { id, status: label, syncedBlock: String(blockNumber) };
   }
 
+  async commitmentStatus(commitment: Hex) {
+    if (this.config.schemaVersion !== 2)
+      throw new Error("V2_COMMITMENT_SERVICE_UNAVAILABLE");
+    const blockNumber = await this.client.getBlockNumber();
+    const inserted = await this.client.readContract({
+      address: this.config.vault,
+      abi: privateVaultV2Abi,
+      functionName: "commitmentInserted",
+      args: [commitment],
+      blockNumber,
+    });
+    return { commitment, inserted, syncedBlock: String(blockNumber) };
+  }
+
   private async buildPath(commitment: Hex, head: bigint, onchainRoot: Hex) {
     const logs = await this.commitmentLogs(head);
     const leaves: Hex[] = [];

@@ -2,14 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  decodeFunctionResult,
-  encodeFunctionData,
   formatUnits,
   type Address,
   type Hex,
 } from "viem";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
-import { privateVaultV2Abi } from "@zkblast/abi";
 import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
 import type {
   PrivateJournalV2,
@@ -27,6 +24,8 @@ import {
 } from "@/lib/private-v2-recovery";
 import { decodeActionStatementV2 } from "@/lib/private-v2-intent";
 import { useExternalMarkets } from "@/lib/use-external-markets";
+import { useDlmmBins } from "@/lib/use-dlmm-bins";
+import { apiRequest } from "@/lib/api-client";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
 import { ShieldedTokenLogo } from "./ShieldedTokenLogo";
 
@@ -77,6 +76,9 @@ export function PrivateActionsV2Panel({
   const [insertedNotes, setInsertedNotes] = useState<
     Record<string, boolean | null>
   >({});
+  const dlmmBins = useDlmmBins(
+    pool?.model === "dlmm" ? pool.address : undefined,
+  );
   useEffect(() => {
     setSelection0("");
     setSelection1("");
@@ -131,40 +133,20 @@ export function PrivateActionsV2Panel({
     };
   }, [activeIntentIds, statusScope]);
   useEffect(() => {
-    const provider = window.ethereum;
-    if (!provider || journal.notes.length === 0) return;
+    if (journal.notes.length === 0) return;
     let active = true;
     void Promise.all(
       journal.notes.map(async (note) => {
         try {
-          const data = (await provider.request({
-            method: "eth_call",
-            params: [
-              {
-                to: statusScope.settlement,
-                data: encodeFunctionData({
-                  abi: privateVaultV2Abi,
-                  functionName: "commitmentInserted",
-                  args: [note.commitment as Hex],
-                }),
-              },
-              "latest",
-            ],
-          })) as Hex;
-          return [
-            note.commitment,
-            decodeFunctionResult({
-              abi: privateVaultV2Abi,
-              functionName: "commitmentInserted",
-              data,
-            }),
-          ] as const;
+          const commitment = `0x${BigInt(note.commitment)
+            .toString(16)
+            .padStart(64, "0")}`;
+          const result = await apiRequest<{ inserted: boolean }>(
+            "/api",
+            `/v1/shielded-v2/commitment/${commitment}`,
+          );
+          return [note.commitment, result.inserted] as const;
         } catch {
-          // A wallet RPC failure is not evidence that a locally-held note is
-          // absent onchain. Preserve it as an unknown state so users do not
-          // lose access to valid notes when the injected provider is slow or
-          // temporarily unavailable. The path/proof preflight remains the
-          // authoritative validation before a transaction can be prepared.
           return [note.commitment, null] as const;
         }
       }),
@@ -174,7 +156,11 @@ export function PrivateActionsV2Panel({
     return () => {
       active = false;
     };
-  }, [address, journal.notes, states, statusScope]);
+  }, [journal.notes, states]);
+  useEffect(() => {
+    if (pool?.model === "dlmm" && action === "add" && dlmmBins.data)
+      setBin(String(dlmmBins.data.activeBin));
+  }, [action, dlmmBins.data, pool?.address, pool?.model]);
   const notesChecking = journal.notes.some(
     (note) => insertedNotes[note.commitment] === undefined,
   );
@@ -427,13 +413,25 @@ export function PrivateActionsV2Panel({
       {pool?.model === "dlmm" && action === "add" && (
         <label className="grid gap-2">
           DLMM bin ID
-          <input
+          <select
             className={inputClass}
-            inputMode="numeric"
             value={bin}
             onChange={(event) => setBin(event.target.value)}
-            disabled={busy}
-          />
+            disabled={busy || dlmmBins.loading || !dlmmBins.data}
+          >
+            {dlmmBins.data?.bins.map((item) => (
+              <option key={item.binId} value={item.binId}>
+                Bin {item.binId}
+                {item.binId === dlmmBins.data?.activeBin ? " · active" : ""}
+              </option>
+            ))}
+          </select>
+          {dlmmBins.loading && (
+            <span className="text-xs text-muted">Loading active bin…</span>
+          )}
+          {dlmmBins.error && (
+            <span className="text-xs text-warn">{dlmmBins.error}</span>
+          )}
         </label>
       )}
       <label className="grid gap-2 border border-line bg-bg/80 p-3">
