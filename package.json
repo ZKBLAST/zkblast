@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Zero-Knowledge Liquidity Infrastructure",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20.0.0",
