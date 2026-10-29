@@ -34,6 +34,7 @@ export function PrivateActionsV2Panel({
   journal,
   pool,
   poolSupported,
+  onRequestDeposit,
   action,
   busy,
   backupSaved,
@@ -47,6 +48,7 @@ export function PrivateActionsV2Panel({
   journal: PrivateJournalV2;
   pool: ProtocolExecutionPool | null;
   poolSupported: boolean;
+  onRequestDeposit: () => void;
   action: PrivateActionV2;
   busy: boolean;
   backupSaved: boolean;
@@ -59,7 +61,7 @@ export function PrivateActionsV2Panel({
     commitment: string,
   ) => Promise<void>;
 }) {
-  const { address, config } = useApp();
+  const { address, config, connect } = useApp();
   const markets = useExternalMarkets();
   const [selection0, setSelection0] = useState("");
   const [selection1, setSelection1] = useState("");
@@ -124,6 +126,33 @@ export function PrivateActionsV2Panel({
       ? pool.token0Symbol
       : pool.token1Symbol
     : "Token";
+  const selectableNotes =
+    action === "remove"
+      ? lpNotes
+      : action === "add"
+        ? token0Notes
+        : tokenNotes;
+  const missingRequiredNotes =
+    action === "remove"
+      ? lpNotes.length === 0
+      : action === "add"
+        ? token0Notes.length === 0 || token1Notes.length === 0
+        : tokenNotes.length === 0;
+  const readinessMessage = !pool
+    ? "Select an executable market from Markets."
+    : !poolSupported
+      ? "This pair is not enabled for Shielded execution."
+      : !address
+        ? "Connect and sign in with your wallet to continue."
+        : missingRequiredNotes
+          ? action === "remove"
+            ? "Add private liquidity first to create an LP note."
+            : `Deposit ${pool.token0Symbol} or ${pool.token1Symbol} privately first.`
+          : !selection0
+            ? "Select the private note you want to spend."
+            : action === "add" && !selection1
+              ? `Select a ${pool.token1Symbol} private note.`
+              : null;
   const optionLabel = (note: StoredNoteV2) => {
     const symbol =
       note.resource.kind === "lp"
@@ -270,6 +299,10 @@ export function PrivateActionsV2Panel({
               {pool.token1Symbol}
             </p>
             <p className="mt-1 text-xs text-muted">Private execution</p>
+            <p className="mt-1 text-[10px] text-faint">
+              Change the pair from Markets to access another Shielded-enabled
+              pool.
+            </p>
           </div>
         </div>
       ) : (
@@ -327,12 +360,7 @@ export function PrivateActionsV2Panel({
           disabled={busy}
         >
           <option value="">Select a note</option>
-          {(action === "remove"
-            ? lpNotes
-            : action === "add"
-              ? token0Notes
-              : tokenNotes
-          ).map((note) => (
+          {selectableNotes.map((note) => (
             <option key={note.commitment} value={note.commitment}>
               {optionLabel(note)}
             </option>
@@ -385,26 +413,48 @@ export function PrivateActionsV2Panel({
               </span>
             )}
           </span>
-          <span className="font-mono text-xl text-muted">Quote in proof</span>
+          <span className="font-mono text-sm text-muted">
+            {selection0
+              ? "The protected output is fixed during local proof generation."
+              : "Select a private note to calculate the protected output."}
+          </span>
         </div>
       )}
+      {readinessMessage && (
+        <p className="text-xs leading-relaxed text-muted" role="status">
+          {readinessMessage}
+        </p>
+      )}
       <Button
-        onClick={() => void prepare()}
+        onClick={() => {
+          if (!address) connect();
+          else if (missingRequiredNotes) onRequestDeposit();
+          else void prepare();
+        }}
         disabled={
           busy ||
           !pool ||
           !poolSupported ||
-          !address ||
-          !selection0 ||
-          (action === "add" && !selection1)
+          Boolean(
+            address &&
+              !missingRequiredNotes &&
+              (!selection0 || (action === "add" && !selection1)),
+          )
         }
       >
-        Prepare{" "}
-        {action === "swap"
-          ? "swap"
-          : action === "add"
-            ? "liquidity"
-            : "removal"}
+        {!address
+          ? "Connect wallet"
+          : missingRequiredNotes
+            ? action === "remove"
+              ? "Add private liquidity first"
+              : "Deposit private tokens first"
+            : `Prepare ${
+                action === "swap"
+                  ? "swap"
+                  : action === "add"
+                    ? "liquidity"
+                    : "removal"
+              }`}
       </Button>
       <div className="grid min-w-0 max-w-full gap-4 border-t border-line pt-4">
         <h4>Prepared transactions</h4>

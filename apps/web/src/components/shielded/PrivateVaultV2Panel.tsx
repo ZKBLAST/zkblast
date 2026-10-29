@@ -518,6 +518,13 @@ function PrivateVaultV2Session({
               journal={journal}
               pool={pool}
               poolSupported={!unsupportedPool}
+              onRequestDeposit={() => {
+                setFlow("deposit");
+                setSelectedNote("");
+                setStatus(
+                  "Prepare a private deposit for one of the selected pair tokens, then return to swap.",
+                );
+              }}
               action={flow as PrivateActionV2}
               busy={busy}
               backupSaved={backupSaved}
