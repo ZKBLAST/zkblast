@@ -52,11 +52,47 @@ function PixelArrow() {
   );
 }
 
+function PartnershipBadge() {
+  return (
+    <div className="mx-auto mb-5 flex w-fit max-w-full flex-wrap items-center justify-center gap-2 rounded-sm border border-line bg-black/30 p-1.5 font-mono sm:mb-6">
+      <a
+        href="https://zkblast.tech"
+        className="group flex items-center gap-2 rounded-sm px-2 py-1 transition-colors hover:bg-white/[0.05]"
+        aria-label="Visit ZKBLAST at zkblast.tech"
+      >
+        <span className="grid size-7 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
+          <img src="/zk/logo.png" alt="ZKBLAST" className="size-full rounded-full object-cover" />
+        </span>
+        <span className="text-left leading-tight">
+          <strong className="block text-[10px] tracking-[0.12em] text-white">ZKBLAST</strong>
+          <span className="block text-[8px] text-faint transition-colors group-hover:text-lime">zkblast.tech</span>
+        </span>
+      </a>
+
+      <span className="px-0.5 text-sm font-semibold text-lime" aria-hidden>×</span>
+
+      <a
+        href="https://quantapools.tech"
+        className="group flex items-center gap-2 rounded-sm px-2 py-1 transition-colors hover:bg-white/[0.05]"
+        aria-label="Visit Quanta Pools at quantapools.tech"
+      >
+        <span className="grid size-7 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
+          <img src="https://quantapools.tech/logo.png" alt="Quanta Pools" className="size-full rounded-full object-cover" />
+        </span>
+        <span className="text-left leading-tight">
+          <strong className="block text-[10px] tracking-[0.12em] text-white">QUANTA</strong>
+          <span className="block text-[8px] text-faint transition-colors group-hover:text-lime">quantapools.tech</span>
+        </span>
+      </a>
+    </div>
+  );
+}
+
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const consoleY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const consoleY = useTransform(scrollYProgress, [0, 1], [0, -40]);
   const consoleScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
   const fieldY = useTransform(scrollYProgress, [0, 1], [0, 200]);
     const [feed, setFeed] = useState<{ leaf: number; root: string }[]>([]);
@@ -65,7 +101,7 @@ export function Hero() {
   const rise = (d: number) => (reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: d, ease: easeOut } });
 
   return (
-    <section ref={ref} className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden pt-[var(--header-h)]">
+    <section ref={ref} className="relative isolate flex min-h-[100svh] flex-col overflow-x-clip pt-[var(--header-h)]">
       {/* Inner bay rails, mirroring the chassis */}
       <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 hidden w-[min(1040px,100%)] -translate-x-1/2 border-x border-line md:block xl:hidden">
         <div className="absolute inset-y-0 -left-[49px] w-12 border-x border-line bg-[linear-gradient(180deg,rgba(45,45,82,0.22),rgba(6,6,12,0.1))]" />
@@ -76,25 +112,26 @@ export function Hero() {
         <MerkleField scrollProgress={scrollYProgress} onInsert={onInsert} />
       </motion.div>
 
-      <div className="mx-auto grid w-full max-w-[1392px] flex-1 xl:h-[max(640px,calc(100dvh-var(--header-h)-50px))] xl:flex-none xl:grid-cols-[300px_minmax(0,1fr)_300px] xl:border-x xl:border-line">
+      <div className="mx-auto grid w-full max-w-[1392px] flex-1 xl:min-h-[max(640px,calc(100svh-var(--header-h)-50px))] xl:grid-cols-[300px_minmax(0,1fr)_300px] xl:border-x xl:border-line">
       <aside aria-label="Pool prices" className="hidden min-h-0 border-r border-line bg-[#0a0a12]/80 xl:block"><PoolRail /></aside>
-      <div className="relative flex min-h-[calc(100dvh-var(--header-h)-50px)] flex-col xl:min-h-0">
+      <div className="relative flex min-h-[calc(100svh-var(--header-h)-50px)] min-w-0 flex-col xl:min-h-0">
         <div className="hidden h-11 shrink-0 items-center justify-between border-b border-line px-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint xl:flex">
           <span>ZKBLAST / Liquidity infrastructure</span><span>Built on Robinhood Chain</span>
         </div>
         <div aria-hidden className="dotmatrix absolute inset-0 top-11 -z-10 hidden xl:block" />
-      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10 xl:py-6">
         <motion.div style={{ y: consoleY, scale: consoleScale }} className="relative w-full max-w-[680px]">
           <div aria-hidden className="grip absolute -left-6 top-0 hidden h-24 sm:block" />
           <div aria-hidden className="grip absolute -right-6 bottom-6 hidden h-24 sm:block" />
 
           <motion.div {...rise(0.05)} className="panel ticks p-2.5">
-            <div className="panel-inset px-4 py-8 text-center sm:px-8 sm:py-10">
-              <ContractAddressBadge className="mb-4 justify-center" />
-              <p className="label mb-6 flex items-center justify-center gap-2"><span className="size-1.5 bg-lime motion-safe:animate-blink" aria-hidden /> Zero-knowledge liquidity · Robinhood Chain</p>
+            <div className="panel-inset px-4 py-6 text-center sm:px-8 sm:py-8">
+              <ContractAddressBadge className="mb-3 justify-center" />
+              <p className="label mb-3 flex items-center justify-center gap-2"><span className="size-1.5 bg-lime motion-safe:animate-blink" aria-hidden /> Zero-knowledge liquidity · Robinhood Chain</p>
+              <PartnershipBadge />
               <h1 className="display">
                 <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Provide</span>
-                <span className="ticks relative mx-auto my-4 block max-w-[560px] border border-line bg-[linear-gradient(180deg,#14142100,#14142180)] px-4 py-3 font-mono text-[clamp(2.4rem,7vw,4.2rem)] font-normal tracking-[-0.04em] text-white shadow-[inset_0_1px_10px_rgba(0,0,0,0.6),inset_0_0_14px_rgba(255,255,255,0.04)] [--tick-c:rgba(223,227,238,0.6)]">
+                <span className="ticks relative mx-auto my-3 block max-w-[560px] border border-line bg-[linear-gradient(180deg,#14142100,#14142180)] px-4 py-2.5 font-mono text-[clamp(2.4rem,7vw,4.2rem)] font-normal tracking-[-0.04em] text-white shadow-[inset_0_1px_10px_rgba(0,0,0,0.6),inset_0_0_14px_rgba(255,255,255,0.04)] [--tick-c:rgba(223,227,238,0.6)]">
                   <Drum />
                 </span>
                 <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Without exposure</span>
@@ -104,7 +141,7 @@ export function Hero() {
 
           <div aria-hidden className="flex justify-center gap-24 py-1.5"><span className="barcode w-16" /><span className="barcode w-16" /></div>
 
-          <motion.div {...rise(0.25)} className="panel ticks px-5 py-5 text-center sm:px-8">
+          <motion.div {...rise(0.25)} className="panel ticks px-5 py-4 text-center sm:px-8">
             <p className="text-[14px] uppercase leading-relaxed tracking-[0.02em] text-muted sm:text-[15px]">
               Public DLMM and DAMM pools for price discovery, and a shielded vault where a deposit becomes a private note only you can prove you own.
             </p>
@@ -115,41 +152,10 @@ export function Hero() {
             <ButtonLink href="/trade">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
           </motion.div>
 
-          <motion.div {...rise(0.55)} className="mx-auto mt-3 flex w-fit max-w-full flex-wrap items-center justify-center gap-2 rounded-sm border border-line bg-black/30 p-2 font-mono">
-            <a
-              href="https://zkblast.tech"
-              className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
-              aria-label="Visit ZKBLAST at zkblast.tech"
-            >
-              <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
-                <img src="/zk/logo.png" alt="ZKBLAST" className="size-full rounded-full object-cover" />
-              </span>
-              <span className="text-left leading-tight">
-                <strong className="block text-[11px] tracking-[0.12em] text-white">ZKBLAST</strong>
-                <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">zkblast.tech</span>
-              </span>
-            </a>
-
-            <span className="px-1 text-sm font-semibold text-lime" aria-hidden>×</span>
-
-            <a
-              href="https://quantapools.tech"
-              className="group flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.05]"
-              aria-label="Visit Quanta Pools at quantapools.tech"
-            >
-              <span className="grid size-8 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
-                <img src="https://quantapools.tech/logo.png" alt="Quanta Pools" className="size-full rounded-full object-cover" />
-              </span>
-              <span className="text-left leading-tight">
-                <strong className="block text-[11px] tracking-[0.12em] text-white">QUANTA</strong>
-                <span className="block text-[9px] text-faint transition-colors group-hover:text-lime">quantapools.tech</span>
-              </span>
-            </a>
-          </motion.div>
         </motion.div>
 
 
-        <a href="#lanes" aria-label="Scroll to how it works" className="mt-12 opacity-80 transition-opacity hover:opacity-100">
+        <a href="#lanes" aria-label="Scroll to how it works" className="mt-5 opacity-80 transition-opacity hover:opacity-100 sm:mt-8">
           <PixelArrow />
         </a>
       </div>
