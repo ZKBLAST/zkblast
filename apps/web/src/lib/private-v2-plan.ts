@@ -28,41 +28,7 @@ import {
   fieldHexV2,
 } from "./private-v2-intent";
 import { proveInBrowserV2 } from "./private-v2-prover";
-import { apiRequest } from "./api-client";
-
-type Path = {
-  root: string;
-  leafIndex: number;
-  siblings: string[];
-  directions: number[];
-};
-
-const PRIVATE_PATH_TIMEOUT_MS = 45_000;
-
-async function fetchPrivatePath(commitment: bigint): Promise<Path> {
-  const path = `/v1/shielded-v2/path/${fieldHexV2(commitment)}`;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      return await apiRequest<Path>("/api", path, {
-        signal: AbortSignal.timeout(PRIVATE_PATH_TIMEOUT_MS),
-      });
-    } catch (error) {
-      const timedOut =
-        error instanceof Error &&
-        (error.name === "TimeoutError" ||
-          error.message.toLowerCase().includes("timed out"));
-      if (!timedOut || attempt === 1)
-        throw new Error(
-          timedOut
-            ? "PRIVATE_NOTE_PATH_TEMPORARILY_UNAVAILABLE"
-            : error instanceof Error
-              ? error.message
-              : "PRIVATE_NOTE_PATH_FAILED",
-        );
-    }
-  }
-  throw new Error("PRIVATE_NOTE_PATH_TEMPORARILY_UNAVAILABLE");
-}
+import { fetchPrivatePathV2, type PrivatePathV2 } from "./private-v2-path";
 
 export async function preparePrivateActionV2(
   args: Readonly<{
@@ -137,13 +103,13 @@ export async function preparePrivateActionV2(
     binId,
     args.quoter,
   );
-  const paths: (Path | null)[] = await Promise.all(
+  const paths: (PrivatePathV2 | null)[] = await Promise.all(
     slots.map(async (note) =>
-      note ? await fetchPrivatePath(BigInt(note.commitment)) : null,
+      note ? await fetchPrivatePathV2(BigInt(note.commitment)) : null,
     ),
   );
   const roots = paths
-    .filter((path): path is Path => path !== null)
+    .filter((path): path is PrivatePathV2 => path !== null)
     .map((path) => String(BigInt(path.root)));
   if (!roots.length || new Set(roots).size !== 1)
     throw new Error("V2_TREE_CHANGED_RETRY_PREPARATION");

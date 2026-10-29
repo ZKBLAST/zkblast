@@ -12,7 +12,7 @@ import type { EthereumProvider } from "@/types/application";
 import { calculatePrivateNoteV2 } from "./private-v2-notes";
 import { proveInBrowserV2, type PrivateProofV2 } from "./private-v2-prover";
 import type { StoredNoteV2 } from "./notecrypto-v2";
-import { apiRequest } from "./api-client";
+import { fetchPrivatePathV2 } from "./private-v2-path";
 import { waitForReceipt } from "./swap-flow";
 
 export function encodePrivateProofV2({ proof }: PrivateProofV2): Hex {
@@ -168,15 +168,7 @@ export async function fundPrivateNoteV2(
   let leafIndex = 0;
   if (operation === "withdraw") {
     onStage("Syncing private note path");
-    const path = await apiRequest<{
-      root: Hex;
-      leafIndex: number;
-      siblings: Hex[];
-      directions: number[];
-    }>(
-      "/api",
-      `/v1/shielded-v2/path/0x${BigInt(note.commitment).toString(16).padStart(64, "0")}`,
-    );
+    const path = await fetchPrivatePathV2(BigInt(note.commitment));
     if (
       path.siblings.length !== 32 ||
       path.directions.length !== 32 ||
