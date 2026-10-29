@@ -287,6 +287,8 @@ export function createApp(
       ].includes(error.message);
     const usernameConflict =
       error instanceof Error && error.message === "USERNAME_TAKEN";
+    const commitmentMissing =
+      error instanceof Error && error.message === "COMMITMENT_NOT_FOUND";
     const databaseCapacity =
       error instanceof Error && error.message.includes("EMAXCONNSESSION");
     const status = invalidRequest
@@ -295,6 +297,8 @@ export function createApp(
         ? 401
         : usernameConflict
           ? 409
+          : commitmentMissing
+            ? 404
           : databaseCapacity
             ? 503
             : 500;
@@ -318,6 +322,8 @@ export function createApp(
             ? "AUTHENTICATION_FAILED"
             : usernameConflict
               ? "USERNAME_TAKEN"
+              : commitmentMissing
+                ? "COMMITMENT_NOT_FOUND"
               : databaseCapacity
                 ? "TEMPORARILY_UNAVAILABLE"
                 : "INTERNAL_ERROR",

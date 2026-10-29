@@ -39,11 +39,23 @@ export class ShieldedService {
     const head = await this.client.getBlockNumber();
     const onchainRoot =
       this.config.schemaVersion === 2
-        ? await this.client.readContract({
-            address: this.config.vault,
-            abi: privateVaultV2Abi,
-            functionName: "currentRoot",
-            blockNumber: head,
+        ? await Promise.all([
+            this.client.readContract({
+              address: this.config.vault,
+              abi: privateVaultV2Abi,
+              functionName: "currentRoot",
+              blockNumber: head,
+            }),
+            this.client.readContract({
+              address: this.config.vault,
+              abi: privateVaultV2Abi,
+              functionName: "commitmentInserted",
+              args: [commitment],
+              blockNumber: head,
+            }),
+          ]).then(([root, inserted]) => {
+            if (!inserted) throw new Error("COMMITMENT_NOT_FOUND");
+            return root;
           })
         : await this.client.readContract({
             address: this.config.vault,

@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { formatUnits, type Address, type Hex } from "viem";
+import {
+  decodeFunctionResult,
+  encodeFunctionData,
+  formatUnits,
+  type Address,
+  type Hex,
+} from "viem";
 import type { PrivateProverReleaseV2 } from "@zkblast/config";
+import { privateVaultV2Abi } from "@zkblast/abi";
 import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
 import type {
   PrivateJournalV2,
@@ -67,6 +74,9 @@ export function PrivateActionsV2Panel({
   const [selection1, setSelection1] = useState("");
   const [bin, setBin] = useState("0");
   const [states, setStates] = useState<Record<string, string>>({});
+  const [insertedNotes, setInsertedNotes] = useState<Record<string, boolean>>(
+    {},
+  );
   useEffect(() => {
     setSelection0("");
     setSelection1("");
@@ -120,8 +130,52 @@ export function PrivateActionsV2Panel({
       active = false;
     };
   }, [activeIntentIds, statusScope]);
+  useEffect(() => {
+    const provider = window.ethereum;
+    if (!provider || journal.notes.length === 0) return;
+    let active = true;
+    void Promise.all(
+      journal.notes.map(async (note) => {
+        try {
+          const data = (await provider.request({
+            method: "eth_call",
+            params: [
+              {
+                to: statusScope.settlement,
+                data: encodeFunctionData({
+                  abi: privateVaultV2Abi,
+                  functionName: "commitmentInserted",
+                  args: [note.commitment as Hex],
+                }),
+              },
+              "latest",
+            ],
+          })) as Hex;
+          return [
+            note.commitment,
+            decodeFunctionResult({
+              abi: privateVaultV2Abi,
+              functionName: "commitmentInserted",
+              data,
+            }),
+          ] as const;
+        } catch {
+          return [note.commitment, false] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (active) setInsertedNotes(Object.fromEntries(entries));
+    });
+    return () => {
+      active = false;
+    };
+  }, [address, journal.notes, states, statusScope]);
+  const notesChecking = journal.notes.some(
+    (note) => insertedNotes[note.commitment] === undefined,
+  );
   const available = journal.notes.filter(
     (note) =>
+      insertedNotes[note.commitment] === true &&
       !journal.intents.some(
         (intent) =>
           !journal.archivedIntents.includes(intent.id) &&
@@ -193,7 +247,9 @@ export function PrivateActionsV2Panel({
       ? "This pair is not enabled for Shielded execution."
       : !address
         ? "Connect and sign in with your wallet to continue."
-        : missingRequiredNotes
+        : notesChecking
+          ? "Checking which private notes are available onchain…"
+          : missingRequiredNotes
           ? action === "remove"
             ? "Add private liquidity first to create an LP note."
             : `Deposit ${pool.token0Symbol} or ${pool.token1Symbol} privately first.`
@@ -477,6 +533,7 @@ export function PrivateActionsV2Panel({
       <Button
         onClick={() => {
           if (!address) connect();
+          else if (notesChecking) return;
           else if (missingRequiredNotes) onRequestDeposit();
           else void prepare();
         }}
@@ -484,6 +541,7 @@ export function PrivateActionsV2Panel({
           busy ||
           !pool ||
           !poolSupported ||
+          notesChecking ||
           Boolean(
             address &&
               !missingRequiredNotes &&
@@ -493,6 +551,8 @@ export function PrivateActionsV2Panel({
       >
         {!address
           ? "Connect wallet"
+          : notesChecking
+            ? "Checking private notes…"
           : missingRequiredNotes
             ? action === "remove"
               ? "Add private liquidity first"
