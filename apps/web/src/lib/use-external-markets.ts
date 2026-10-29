@@ -47,7 +47,7 @@ export function useExternalMarkets(): MarketData {
           apiRequest<{ items: ExternalMarket[] }>(
             webPublicConfig.apiUrl,
             "/v1/markets?source=robinhood_stock_token&region=unclassified&limit=200",
-          ),
+          ), 
         ]);
       const combined = [
         ...pons.items,
