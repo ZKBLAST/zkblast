@@ -93,6 +93,15 @@ export function createPerpsRouter(service: PerpsService) {
       next(error);
     }
   });
+  router.get("/positions/:positionId/live", async (request, response, next) => {
+    try {
+      response.json(await service.livePosition(
+        bytes32.parse(request.params.positionId) as `0x${string}`,
+      ));
+    } catch (error) {
+      next(error);
+    }
+  });
   router.get("/vault", async (_request, response, next) => {
     try {
       response.json({ vault: await service.vault() });

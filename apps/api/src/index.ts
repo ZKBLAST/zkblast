@@ -146,6 +146,14 @@ const perpsService = new PerpsService(
         args: [oracleId],
       })
     : undefined,
+  manifest.perps
+    ? async (positionId) => chainClient.readContract({
+        address: getAddress(manifest.perps!.engine),
+        abi: parseAbi(["function getPosition(bytes32) view returns ((bytes32 marketId,bytes32 ownerCommitment,uint128 marginUsd,uint128 notionalUsd,uint128 baseSize,uint128 entryPriceX18,int128 fundingIndexX18,uint64 openedAt,bool isLong) position)"]),
+        functionName: "getPosition",
+        args: [positionId],
+      })
+    : undefined,
 );
 const swapService = new SwapService(
   chainClient,

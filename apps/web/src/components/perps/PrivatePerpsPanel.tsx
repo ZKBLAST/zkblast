@@ -176,21 +176,20 @@ export function PrivatePerpsPanel({
       return () => controller.abort();
     }
     void Promise.all(open.map(async (record) => {
-      const ownerCommitment = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
-      const response = await apiRequest<{ items: Array<{
+      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
+      const position = await apiRequest<{
         positionId: string;
         marketId: string;
         entryPriceX18: string;
         marginRaw: string;
         isLong: boolean;
         status: string;
-      }> }>(
+      }>(
         webPublicConfig.apiUrl,
-        `/v1/perps/positions?ownerCommitment=${encodeURIComponent(ownerCommitment)}`,
+        `/v1/perps/positions/${positionId}/live`,
         { signal: controller.signal },
       );
-      const position = response.items.find((item) => item.status === "open");
-      return position ? {
+      return position.status === "open" ? {
         id: position.positionId,
         marketId: position.marketId,
         price: Number(position.entryPriceX18) / 1e18,

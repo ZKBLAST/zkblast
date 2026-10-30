@@ -32,7 +32,12 @@ function usd(raw: string): string {
 export function PerpsAccountWorkspace({
   panel,
   revision,
-}: Readonly<{ panel: TradePanel; revision: number }>) {
+  privatePositionLines = [],
+}: Readonly<{
+  panel: TradePanel;
+  revision: number;
+  privatePositionLines?: readonly (Readonly<{ id: string; marketId: string; label: string; color: string; price: number }>)[];
+}>) {
   const { address, injectedAddress, config } = useApp();
   const wallet = injectedAddress ?? address;
   const [positions, setPositions] = useState<readonly Position[]>([]);
@@ -88,10 +93,21 @@ export function PerpsAccountWorkspace({
     panel === "positions" ? position.status === "open" : position.status !== "open",
   );
   if (panel !== "activity") {
-    return visiblePositions.length === 0 ? (
+    const visiblePrivatePositions = panel === "positions" ? privatePositionLines : [];
+    return visiblePositions.length === 0 && visiblePrivatePositions.length === 0 ? (
       <p className="p-5 text-sm text-muted">No {panel === "positions" ? "open" : "closed"} Perps positions for this wallet.</p>
     ) : (
       <div className="divide-y divide-line">
+        {visiblePrivatePositions.map((position) => (
+          <article key={position.id} className="grid gap-3 p-5 font-mono text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center">
+            <div>
+              <p>{markets.find((market) => market.marketId === position.marketId)?.symbol ?? "Shielded perpetual"}</p>
+              <p className="mt-1" style={{ color: position.color }}>{position.label}</p>
+            </div>
+            <div className="sm:text-right"><p>Entry {position.price.toLocaleString(undefined, { maximumFractionDigits: 8 })} USD</p><p className="mt-1 text-muted">Private ownership</p></div>
+            <span className="w-fit border border-line px-2 py-1 uppercase text-muted">open · shielded</span>
+          </article>
+        ))}
         {visiblePositions.map((position) => (
           <article key={position.positionId} className="grid gap-3 p-5 font-mono text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center">
             <div>

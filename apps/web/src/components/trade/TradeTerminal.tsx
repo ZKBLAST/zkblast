@@ -176,7 +176,11 @@ function Terminal() {
             ]}
           />
           <div role="tabpanel" id={`perps-account-panel-${panel}`} aria-labelledby={`perps-account-tab-${panel}`}>
-            <PerpsAccountWorkspace panel={panel} revision={revision} />
+            <PerpsAccountWorkspace
+              panel={panel}
+              revision={revision}
+              privatePositionLines={privatePositionLines}
+            />
           </div>
         </section>
       </div>

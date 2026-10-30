@@ -26,6 +26,17 @@ type ModifyQuote = Readonly<{
   realizedPnlUsd: bigint;
   fundingPaymentUsd: bigint;
 }>;
+type LivePosition = Readonly<{
+  marketId: Hex;
+  ownerCommitment: Hex;
+  marginUsd: bigint;
+  notionalUsd: bigint;
+  baseSize: bigint;
+  entryPriceX18: bigint;
+  fundingIndexX18: bigint;
+  openedAt: bigint;
+  isLong: boolean;
+}>;
 
 export class PerpsService {
   readonly #sql: postgres.Sql;
@@ -36,6 +47,7 @@ export class PerpsService {
   readonly #liquidatedResidual: ((positionId: Hex) => Promise<bigint>) | undefined;
   readonly #simulatePrivateRelay: ((input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>) | undefined;
   readonly #latestOraclePrice: ((oracleId: Hex) => Promise<Readonly<{ value: bigint; updatedAt: bigint }>>) | undefined;
+  readonly #livePosition: ((positionId: Hex) => Promise<LivePosition>) | undefined;
 
   constructor(
     databaseUrl: string,
@@ -46,6 +58,7 @@ export class PerpsService {
     liquidatedResidual?: (positionId: Hex) => Promise<bigint>,
     simulatePrivateRelay?: (input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>,
     latestOraclePrice?: (oracleId: Hex) => Promise<Readonly<{ value: bigint; updatedAt: bigint }>>,
+    livePosition?: (positionId: Hex) => Promise<LivePosition>,
   ) {
     if (!/^zkblast_(testnet|mainnet)$/u.test(schema)) throw new Error("Invalid schema");
     this.#sql = postgres(databaseUrl, { max: 3 });
@@ -56,6 +69,7 @@ export class PerpsService {
     this.#liquidatedResidual = liquidatedResidual;
     this.#simulatePrivateRelay = simulatePrivateRelay;
     this.#latestOraclePrice = latestOraclePrice;
+    this.#livePosition = livePosition;
   }
 
   async markets() {
@@ -143,6 +157,26 @@ export class PerpsService {
         and (${ownerAddress?.toLowerCase() ?? null}::text is null or public_owner_address=${ownerAddress?.toLowerCase() ?? null})
       order by opened_block desc limit 100
     `;
+  }
+
+  async livePosition(positionId: Hex) {
+    if (!this.#livePosition) throw new Error("PERPS_NOT_DEPLOYED");
+    const position = await this.#livePosition(positionId);
+    if (position.openedAt === 0n) throw new Error("PERP_POSITION_NOT_FOUND");
+    return {
+      positionId,
+      marketId: position.marketId,
+      ownerCommitment: position.ownerCommitment,
+      marginRaw: position.marginUsd.toString(),
+      notionalRaw: position.notionalUsd.toString(),
+      baseSizeRaw: position.baseSize.toString(),
+      entryPriceX18: position.entryPriceX18.toString(),
+      fundingIndexX18: position.fundingIndexX18.toString(),
+      openedAt: position.openedAt.toString(),
+      isLong: position.isLong,
+      status: "open" as const,
+      source: "onchain" as const,
+    };
   }
 
   async vault() {
