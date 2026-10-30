@@ -80,8 +80,9 @@ test("prover worker generates and verifies the released open proof", async () =>
     await readFile(path.join(root, "packages/circuits/vectors/perps-v1/open-valid.json"), "utf8"),
   );
   manifest.adapter = "0x0000000000000000000000000000000000000064";
+  input.adapter = manifest.adapter;
   const expectedPublicInputs = [
-    input.schema_version, input.action, input.chain_id, input.adapter, input.custody,
+    input.schema_version, input.action, input.chain_id, String(BigInt(input.adapter)), input.custody,
     input.collateral, input.tree_version, input.merkle_root, input.market_low,
     input.market_high, input.is_long, input.margin, input.leverage_bps,
     input.acceptable_price_x18, input.deadline, input.nullifier,

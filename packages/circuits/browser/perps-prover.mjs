@@ -18,10 +18,16 @@ export async function provePrivatePerps(request, { groth16, fetchAsset, sha256, 
   const canonical = (value) => typeof value === "string" && /^(0|[1-9][0-9]{0,77})$/u.test(value) && BigInt(value) < FIELD;
   if (!Array.isArray(expectedPublicInputs) || expectedPublicInputs.length !== count || !expectedPublicInputs.every(canonical))
     throw new Error("INVALID_PERPS_PUBLIC_INPUTS");
+  let inputAdapter;
+  try {
+    inputAdapter = BigInt(String(input?.adapter));
+  } catch {
+    throw new Error("PERPS_PROVER_INPUT_SCOPE_MISMATCH");
+  }
   if (
     expectedPublicInputs[0] !== "1" || expectedPublicInputs[2] !== scope.chainId ||
     expectedPublicInputs[3] !== String(BigInt(scope.adapter)) ||
-    String(input?.chain_id) !== scope.chainId || String(input?.adapter) !== String(BigInt(scope.adapter))
+    String(input?.chain_id) !== scope.chainId || inputAdapter !== BigInt(scope.adapter)
   ) throw new Error("PERPS_PROVER_INPUT_SCOPE_MISMATCH");
 
   const load = async (asset) => {
