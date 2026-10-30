@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "oracle": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+  "oracleId": "0xee8aa28af3844bd6a0f1eef8bd997e768271372798c2c7e56bb176c9be16a1f9",
+  "feed": "0x2cAa8AC140407538f4567E8499acA3e9e941544d",
+  "previousMaximumAgeSeconds": 900,
+  "maximumAgeSeconds": 3600,
+  "transactionHash": "0xf01956cc8ad3a73c10040e2a74f28b6ff59189a84d47bf7048d0733d91b721a3",
+  "blockNumber": "101836789",
+  "gasUsed": "176447",
+  "feeEth": "0.00000369832912",
+  "approvedCapEth": "0.0000052",
+  "status": "confirmed"
+}

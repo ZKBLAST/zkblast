@@ -274,7 +274,7 @@
         "answer": "23703797",
         "updatedAt": "1793353833",
         "ageSeconds": "61",
-        "maximumAge": 900
+        "maximumAge": 3600
       },
       "config": {
         "baseAsset": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
