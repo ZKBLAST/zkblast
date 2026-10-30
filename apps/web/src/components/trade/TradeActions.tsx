@@ -1,17 +1,15 @@
 "use client";
 
-import { ArrowLeftRight, ChartNoAxesCombined, Globe, Layers, Shield } from "lucide-react";
+import { ArrowLeftRight, Globe, Layers, Shield } from "lucide-react";
 import { ShieldedExecutionPanel } from "@/components/shielded/ShieldedExecutionPanel";
 import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspace";
 import type { TradeInstrument, TradeMode } from "@/lib/trade-instruments";
 import { TerminalTabs } from "./TerminalTabs";
 import { CreatePoolPanel } from "@/components/protocol/CreatePoolPanel";
-import { PerpsPanel } from "@/components/perps/PerpsPanel";
 
 const actions = [
   { value: "swap", label: "Swap", icon: ArrowLeftRight },
   { value: "liquidity", label: "Liquidity", icon: Layers },
-  { value: "perps", label: "Perps", icon: ChartNoAxesCombined },
 ];
 
 export function TradeActions({
@@ -35,21 +33,19 @@ export function TradeActions({
       className="min-h-0 min-w-0 max-w-full overflow-x-hidden border-t border-line xl:overflow-y-auto xl:border-l xl:border-t-0"
       aria-label="Trade actions"
     >
-      {mode !== "perps" && (
-        <TerminalTabs
-          prefix="execution"
-          label="Execution privacy"
-          items={[
-            { value: "public", label: "Public", icon: Globe },
-            { value: "shielded", label: "Shielded", icon: Shield },
-          ]}
-          value={mode === "shielded" ? "shielded" : "public"}
-          disabled={busy}
-          onChange={(value) =>
-            onModeChange(value === "shielded" ? "shielded" : "swap")
-          }
-        />
-      )}
+      <TerminalTabs
+        prefix="execution"
+        label="Execution privacy"
+        items={[
+          { value: "public", label: "Public", icon: Globe },
+          { value: "shielded", label: "Shielded", icon: Shield },
+        ]}
+        value={mode === "shielded" ? "shielded" : "public"}
+        disabled={busy}
+        onChange={(value) =>
+          onModeChange(value === "shielded" ? "shielded" : "swap")
+        }
+      />
       <div
         className="min-w-0 max-w-full overflow-x-hidden"
         role="tabpanel"
@@ -96,13 +92,8 @@ export function TradeActions({
             </div>
           </div>
         )}
-        {mode === "perps" && (
-          <div role="tabpanel" id="action-panel-perps" aria-labelledby="action-tab-perps">
-            <PerpsPanel onBusyChange={onBusyChange} onConfirmed={onConfirmed} />
-          </div>
-        )}
         {(["swap", "liquidity"] as const)
-          .filter(() => mode !== "create" && mode !== "perps")
+          .filter(() => mode !== "create")
           .map((value) => (
             <div
               key={value}

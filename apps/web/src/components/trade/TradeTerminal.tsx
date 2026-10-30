@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PositionsView } from "@/app/positions/PositionsView";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
+import { PerpsPanel } from "@/components/perps/PerpsPanel";
 import { useApp } from "@/components/shell/AppProvider";
 import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
@@ -57,10 +58,39 @@ function Terminal() {
     await Promise.all([protocol.refresh(), markets.refresh()]);
   }
 
+  if (mode === "perps") {
+    return (
+      <div className="mx-auto max-w-[1120px] px-3 pb-8 pt-[calc(var(--header-h)+1rem)] sm:px-4">
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="font-mono text-lg uppercase tracking-[0.12em]">Perps</h1>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
+              Open and manage USDG-margined perpetual positions. Choose public or shielded execution inside the position panel.
+            </p>
+          </div>
+          <p className="font-mono text-[10px] uppercase text-muted">
+            {config
+              ? `${config.environment} · ${config.chainName} · ${config.chainId}`
+              : "Loading network…"}
+          </p>
+        </div>
+        <section className="panel ticks min-w-0" aria-label="Perpetual positions workspace">
+          <PerpsPanel
+            onBusyChange={setBusy}
+            onConfirmed={() => setRevision((value) => value + 1)}
+          />
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-[1600px] px-3 pb-8 pt-[calc(var(--header-h)+1rem)] sm:px-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-mono text-lg uppercase tracking-[0.12em]">Trade</h1>
+        <div>
+          <h1 className="font-mono text-lg uppercase tracking-[0.12em]">Pools</h1>
+          <p className="mt-1 text-xs text-muted">DAMM and DLMM swaps, liquidity and shielded pool execution.</p>
+        </div>
         <p className="font-mono text-[10px] uppercase text-muted">
           {config
             ? `${config.environment} · ${config.chainName} · ${config.chainId}`
