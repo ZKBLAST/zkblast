@@ -176,6 +176,13 @@ export function Header() {
                       >
                         My notes
                       </Link>
+                      <Link
+                        href="/trade?mode=perps"
+                        onClick={() => setAcct(false)}
+                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
+                      >
+                        Trade Perps
+                      </Link>
                       <button
                         onClick={() => {
                           void disconnect();

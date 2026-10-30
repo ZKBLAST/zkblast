@@ -9,6 +9,7 @@ import { MaskHeading, Reveal } from "@/components/ui/Reveal";
 
 const lanes = [
   {
+    id: "pools",
     lane: "public" as const,
     title: "Public lane",
     lead: "DLMM bins and DAMM pools. Every swap, bin and fee is visible onchain, the way an AMM should be when you want price discovery.",
@@ -17,6 +18,16 @@ const lanes = [
     cta: "Browse pools",
   },
   {
+    id: "perps",
+    lane: "public" as const,
+    title: "Perpetuals",
+    lead: "Open a USDG-margined long or short from the same trading terminal, with oracle pricing, capped leverage and positions tracked onchain.",
+    points: ["PONS, ZKBLAST and WETH markets", "Long or short with controlled leverage", "Live position and activity tracking", "Public or shielded execution"],
+    href: "/trade?mode=perps",
+    cta: "Trade Perps",
+  },
+  {
+    id: "shielded",
     lane: "shielded" as const,
     title: "Shielded lane",
     lead: "A vault where a deposit becomes a private note. Withdrawing proves you own an unspent note without pointing at which deposit was yours.",
@@ -35,7 +46,7 @@ export function Lanes() {
     <section id="lanes" ref={ref} className="mx-auto max-w-[1360px] scroll-mt-24 px-4 pt-32 sm:px-6 md:pt-44">
       <div className="grid gap-6 md:grid-cols-[1fr_minmax(0,28rem)] md:items-end">
         <Bay index="02" title="Lanes" className="md:col-span-2" />
-        <MaskHeading lines={["Two lanes.", "Never confused."]} className="display text-[clamp(2.2rem,4.6vw,3.6rem)]" />
+        <MaskHeading lines={["One terminal.", "Clear execution."]} className="display text-[clamp(2.2rem,4.6vw,3.6rem)]" />
         <Reveal>
           <p className="font-mono text-[13.5px] leading-relaxed text-muted">
             A zero-knowledge verifier does not make a public transfer private. So ZKBLAST keeps the lanes apart, labels every action with the lane it runs in, and never puts a privacy mark on a public one.
@@ -43,10 +54,11 @@ export function Lanes() {
         </Reveal>
       </div>
 
-      <div className="relative mt-16 grid gap-3 md:grid-cols-2">
-        <motion.div aria-hidden className="absolute left-1/2 top-0 z-10 hidden w-px -translate-x-1/2 origin-top bg-lime shadow-[0_0_10px_rgba(223,227,238,0.7)] md:block" style={{ height: split }} />
+      <div className="relative mt-16 grid gap-3 lg:grid-cols-3">
+        <motion.div aria-hidden className="absolute left-1/3 top-0 z-10 hidden w-px -translate-x-1/2 origin-top bg-lime shadow-[0_0_10px_rgba(223,227,238,0.7)] lg:block" style={{ height: split }} />
+        <motion.div aria-hidden className="absolute left-2/3 top-0 z-10 hidden w-px -translate-x-1/2 origin-top bg-lime shadow-[0_0_10px_rgba(223,227,238,0.7)] lg:block" style={{ height: split }} />
         {lanes.map((l, i) => (
-          <Reveal key={l.lane} delay={i * 0.12} className="panel ticks p-6 pt-10 sm:p-8 sm:pt-12">
+          <Reveal key={l.id} delay={i * 0.12} className="panel ticks p-6 pt-10 sm:p-8 sm:pt-12">
             <LaneBadge lane={l.lane} stage={false} />
             <h3 className="wide mt-6 text-[clamp(1.2rem,2vw,1.5rem)]">{l.title}</h3>
             <p className="mt-4 max-w-[34rem] font-mono text-[13.5px] leading-relaxed text-muted">{l.lead}</p>

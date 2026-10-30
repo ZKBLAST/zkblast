@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "status": "confirmed",
+  "markets": [
+    "PONS-PERP",
+    "ZKBLAST-PERP",
+    "WETH-PERP"
+  ],
+  "vaultRaw": "3000000",
+  "insuranceRaw": "1000000",
+  "totalFeeWei": "28461220698000",
+  "totalFeeEth": "0.000028461220698",
+  "approvedCapEth": "0.0002",
+  "transactions": [
+    {
+      "step": "refresh-PONS-1",
+      "hash": "0x8db9a03f390c86f49cdd7f3f8ee453d1b0e49c96d38f1f7664963bd4a46b964d",
+      "feeWei": "1003982296000"
+    },
+    {
+      "step": "refresh-ZKBLAST-1",
+      "hash": "0x16b936a5b5e54d115726e643bccce1768f5d5d75891101cc9c6e0c57ef01e589",
+      "feeWei": "1004484470000"
+    },
+    {
+      "step": "unpause-vault-deposits",
+      "hash": "0x4fd9626d76299340e8f71cbd18a87fa67dc8e83f93019b34ea485c26c06c657a",
+      "feeWei": "1671530784000"
+    },
+    {
+      "step": "approve-vault",
+      "hash": "0x21a68aef34a50c10b2583d6afb1592981618fc111946669a1da6eb6fc52d638f",
+      "feeWei": "2093781760000"
+    },
+    {
+      "step": "fund-vault",
+      "hash": "0x870e8433cbf9c3cacd16faf23938ea511c2babd45598974080920bbcaa7b0652",
+      "feeWei": "4477760000000"
+    },
+    {
+      "step": "approve-insurance",
+      "hash": "0x5f8916156f382afb89c94086aacd44a15257f3767ba332b432e3640eb1a276b1",
+      "feeWei": "2091201320000"
+    },
+    {
+      "step": "fund-insurance",
+      "hash": "0x0e381e2de0d8bc51b3c0ab76fce1d73972cc0798a9051f23f372d5f464a2eaaf",
+      "feeWei": "2895827190000"
+    },
+    {
+      "step": "enable-PONS-PERP",
+      "hash": "0xe8d5f0ae76e9f504721db93ca5083c222416c33ac7d0bbc46cf4c5d4da56b6b2",
+      "feeWei": "1724262288000"
+    },
+    {
+      "step": "unpause-PONS-PERP",
+      "hash": "0x0ab9a98c89f5abf314f2b2c8ce3e012c0d758b51a1b1e1d978ae1278c3f03dca",
+      "feeWei": "1597565220000"
+    },
+    {
+      "step": "enable-ZKBLAST-PERP",
+      "hash": "0xeb6b2d5eae043c6c708fc929db02115d3fd2020139dc2d03b7d78500ce0bfb00",
+      "feeWei": "1696916052000"
+    },
+    {
+      "step": "unpause-ZKBLAST-PERP",
+      "hash": "0x6a921b369ad6f8a744bf5277c745a6baa40c30fa1ee38449ba65c37d9358a215",
+      "feeWei": "1614387726000"
+    },
+    {
+      "step": "enable-WETH-PERP",
+      "hash": "0x856623bdbae7fccfacbb9501ab30148658c2c6447f085e651bfa51cae1f6690c",
+      "feeWei": "1730010240000"
+    },
+    {
+      "step": "unpause-WETH-PERP",
+      "hash": "0x4044edba75a251cb22db40d020db83a35db4809c6e1bc91ca9a12f441090f9d1",
+      "feeWei": "1605092000000"
+    },
+    {
+      "step": "unpause-vault-positions",
+      "hash": "0x597923eaca0dd716527711fed7d0885e03cba14264406f9bd5ec82bc44d58aaf",
+      "feeWei": "1633437776000"
+    },
+    {
+      "step": "unpause-engine-openings",
+      "hash": "0x923ed259a4b800b55df7fb62985d8b4667e68f30527f9f83114cc028368881c0",
+      "feeWei": "1620981576000"
+    }
+  ]
+}

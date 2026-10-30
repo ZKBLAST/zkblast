@@ -35,19 +35,21 @@ export function TradeActions({
       className="min-h-0 min-w-0 max-w-full overflow-x-hidden border-t border-line xl:overflow-y-auto xl:border-l xl:border-t-0"
       aria-label="Trade actions"
     >
-      <TerminalTabs
-        prefix="execution"
-        label="Execution privacy"
-        items={[
-          { value: "public", label: "Public", icon: Globe },
-          { value: "shielded", label: "Shielded", icon: Shield },
-        ]}
-        value={mode === "shielded" ? "shielded" : "public"}
-        disabled={busy}
-        onChange={(value) =>
-          onModeChange(value === "shielded" ? "shielded" : "swap")
-        }
-      />
+      {mode !== "perps" && (
+        <TerminalTabs
+          prefix="execution"
+          label="Execution privacy"
+          items={[
+            { value: "public", label: "Public", icon: Globe },
+            { value: "shielded", label: "Shielded", icon: Shield },
+          ]}
+          value={mode === "shielded" ? "shielded" : "public"}
+          disabled={busy}
+          onChange={(value) =>
+            onModeChange(value === "shielded" ? "shielded" : "swap")
+          }
+        />
+      )}
       <div
         className="min-w-0 max-w-full overflow-x-hidden"
         role="tabpanel"

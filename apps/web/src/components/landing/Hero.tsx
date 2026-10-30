@@ -149,6 +149,7 @@ export function Hero() {
 
           <motion.div {...rise(0.45)} className="panel-inset mx-auto mt-3 flex w-fit bg-[#090911] flex-wrap justify-center gap-2 p-2">
             <ButtonLink href="#lanes" variant="secondary">Explore features</ButtonLink>
+            <ButtonLink href="/trade?mode=perps" variant="secondary">Trade Perps</ButtonLink>
             <ButtonLink href="/trade">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
           </motion.div>
 

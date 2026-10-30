@@ -86,8 +86,8 @@ export function PerpsPanel({
   const [positions, setPositions] = useState<readonly PerpPosition[]>([]);
   const [activity, setActivity] = useState<readonly PerpActivity[]>([]);
   const [side, setSide] = useState<"long" | "short">("long");
-  const [margin, setMargin] = useState("0.1");
-  const [leverage, setLeverage] = useState(2);
+  const [margin, setMargin] = useState("0.05");
+  const [leverage, setLeverage] = useState(1);
   const [executionMode, setExecutionMode] = useState<"public" | "shielded">("public");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,6 +148,17 @@ export function PerpsPanel({
     return Number.isFinite(value) ? value * leverage : 0;
   }, [leverage, margin]);
   const executable = Boolean(market?.enabled && !market.paused);
+  const marginRaw = Number.isFinite(Number(margin))
+    ? Math.round(Number(margin) * 1e6)
+    : 0;
+  const positionRaw = marginRaw * leverage;
+  const amountError = !marginRaw
+    ? "Enter a margin amount"
+    : market && positionRaw < Number(market.minPositionRaw)
+      ? `Minimum position size is ${usd(market.minPositionRaw)}`
+      : market && positionRaw > Number(market.maxPositionRaw)
+        ? `Maximum position size is ${usd(market.maxPositionRaw)}`
+        : null;
   const liquidationPrice = useMemo(() => {
     if (!market?.currentPriceX18 || leverage <= 0) return null;
     const price = Number(market.currentPriceX18) / 1e18;
@@ -271,7 +282,7 @@ export function PerpsPanel({
             onClick={() => setExecutionMode(mode)}
             className={`h-9 font-mono text-[10px] font-bold uppercase tracking-[0.12em] ${executionMode === mode ? "bg-fg text-bg" : "text-muted hover:bg-raised hover:text-fg"}`}
           >
-            {mode}
+            {mode === "public" ? "Public position" : "Shielded position"}
           </button>
         ))}
       </div>
@@ -306,11 +317,22 @@ export function PerpsPanel({
               onChange={(event) => setSelectedPool(event.target.value)}
               className="mt-2 h-11 w-full border border-line bg-bg px-3 font-mono text-xs outline-none focus:border-lime/70"
             >
-              {catalog.map((item) => (
-                <option key={item.poolAddress} value={item.poolAddress}>
-                  {item.baseSymbol}/{item.quoteSymbol} · {item.poolModel.toUpperCase()}{item.executionStatus === "executable" ? "" : " · Oracle pending"}
-                </option>
-              ))}
+              <optgroup label="Available now">
+                {catalog.filter((item) => item.executionStatus === "executable").map((item) => (
+                  <option key={item.poolAddress} value={item.poolAddress}>
+                    {item.baseSymbol}/{item.quoteSymbol} · {item.poolModel.toUpperCase()}
+                  </option>
+                ))}
+              </optgroup>
+              {catalog.some((item) => item.executionStatus !== "executable") && (
+                <optgroup label="More markets">
+                  {catalog.filter((item) => item.executionStatus !== "executable").map((item) => (
+                    <option key={item.poolAddress} value={item.poolAddress} disabled>
+                      {item.baseSymbol}/{item.quoteSymbol} · not active
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -344,6 +366,12 @@ export function PerpsPanel({
             </div>
           </label>
 
+          {amountError && (
+            <p className="border border-line bg-raised px-3 py-2 text-xs text-muted" role="status">
+              {amountError}
+            </p>
+          )}
+
           <label className="block text-xs text-muted">
             Leverage <span className="float-right font-mono text-fg">{leverage}x</span>
             <input
@@ -371,7 +399,7 @@ export function PerpsPanel({
 
           <button
             type="button"
-            disabled={!executable || !market?.currentPriceX18 || Boolean(executionState)}
+            disabled={!executable || !market?.currentPriceX18 || Boolean(executionState) || Boolean(amountError)}
             onClick={() => void submit()}
             className="flex h-12 w-full items-center justify-center gap-2 bg-fg font-mono text-xs font-bold uppercase tracking-[0.12em] text-bg disabled:cursor-not-allowed disabled:opacity-40"
           >
