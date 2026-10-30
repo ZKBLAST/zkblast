@@ -7,7 +7,7 @@ import {
 } from "motion/react";
 import { ChevronDown, LogOut, Menu, Wallet, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cx, shortHex } from "@/lib/format";
 import { nav } from "@/lib/nav";
@@ -17,12 +17,22 @@ import { Logo } from "./Logo";
 
 export function Header() {
   const path = usePathname();
+  const search = useSearchParams();
+  const tradeMode = search.get("mode");
   const { address, config, connect, disconnect, injectedAddress } = useApp();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const [acct, setAcct] = useState(false);
   const { scrollY } = useScroll();
+  const isNavActive = (item: (typeof nav)[number]) => {
+    const navPath = item.href.split("?")[0] ?? item.href;
+    if (item.mode) return path === navPath && tradeMode === item.mode;
+    return (
+      (path === navPath && !(navPath === "/trade" && tradeMode === "perps")) ||
+      path.startsWith(navPath + "/")
+    );
+  };
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
@@ -68,7 +78,7 @@ export function Header() {
           >
             <ul className="flex items-stretch">
               {nav.map((n) => {
-                const on = path === n.href || path.startsWith(n.href + "/");
+                const on = isNavActive(n);
                 return (
                   <li
                     key={n.href}
@@ -253,7 +263,7 @@ export function Header() {
                       href={n.href}
                       className={cx(
                         "flex h-16 items-center justify-between font-mono text-[20px] uppercase tracking-[0.04em]",
-                        path.startsWith(n.href) ? "text-lime" : "text-fg",
+                        isNavActive(n) ? "text-lime" : "text-fg",
                       )}
                     >
                       {n.label}
