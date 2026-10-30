@@ -78,6 +78,7 @@ export function PrivatePerpsPanel({
   const [noteRelease, setNoteRelease] = useState<PrivateProverReleaseV2 | null>(null);
   const [noteJournal, setNoteJournal] = useState<PrivateJournalV2 | null>(null);
   const [selectedNote, setSelectedNote] = useState("");
+  const [insertedNotes, setInsertedNotes] = useState<Readonly<Record<string, boolean | null>>>({});
   const [stage, setStage] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -244,9 +245,49 @@ export function PrivatePerpsPanel({
     }
   }
 
+  useEffect(() => {
+    const notes = noteJournal?.notes ?? [];
+    if (notes.length === 0) {
+      setInsertedNotes({});
+      return;
+    }
+    const controller = new AbortController();
+    void Promise.all(notes.map(async (note) => {
+      try {
+        const commitment = `0x${BigInt(note.commitment).toString(16).padStart(64, "0")}`;
+        const result = await apiRequest<{ inserted: boolean }>(
+          "/api",
+          `/v1/shielded-v2/commitment/${commitment}`,
+          { signal: controller.signal },
+        );
+        return [note.commitment, result.inserted] as const;
+      } catch {
+        return [note.commitment, null] as const;
+      }
+    })).then((entries) => {
+      if (!controller.signal.aborted) setInsertedNotes(Object.fromEntries(entries));
+    });
+    return () => controller.abort();
+  }, [noteJournal]);
+
   const availableNotes = useMemo(() => noteJournal?.notes.filter((note) =>
     note.resource.kind === "token"
-      && note.resource.address.toLowerCase() === config?.perps?.collateral.toLowerCase()) ?? [], [config, noteJournal]);
+      && note.resource.address.toLowerCase() === config?.perps?.collateral.toLowerCase()
+      && insertedNotes[note.commitment] !== false
+      && !noteJournal.intents.some((intent) =>
+        !noteJournal.archivedIntents.includes(intent.id)
+          && intent.inputs.includes(note.commitment),
+      )) ?? [], [config, insertedNotes, noteJournal]);
+
+  const notesChecking = useMemo(() => noteJournal?.notes.some(
+    (note) => insertedNotes[note.commitment] === undefined,
+  ) ?? false, [insertedNotes, noteJournal]);
+
+  useEffect(() => {
+    if (selectedNote && !availableNotes.some((note) => note.commitment === selectedNote)) {
+      setSelectedNote(availableNotes[0]?.commitment ?? "");
+    }
+  }, [availableNotes, selectedNote]);
 
   async function saveNoteJournal(next: PrivateJournalV2) {
     if (!noteScope || !noteRelease || !navigator.locks) throw new Error("V2_BROWSER_LOCKS_REQUIRED");
@@ -358,7 +399,16 @@ export function PrivatePerpsPanel({
       setJournal(submitted); setStatuses((current) => ({ ...current, [relay.requestId]: relay }));
       setStage("Private position submitted");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "PRIVATE_PERPS_OPEN_FAILED");
+      const message = reason instanceof Error ? reason.message : "PRIVATE_PERPS_OPEN_FAILED";
+      if (message.includes("COMMITMENT_NOT_FOUND")) {
+        if (selectedNote) {
+          setInsertedNotes((current) => ({ ...current, [selectedNote]: false }));
+          setSelectedNote("");
+        }
+        setError("This private note is not available in the active vault. Select another confirmed note or make a new private deposit.");
+      } else {
+        setError(message);
+      }
       setStage("");
     } finally { setBusy(false); }
   }
@@ -795,10 +845,10 @@ export function PrivatePerpsPanel({
           <input type="range" min={1} max={maximumLeverage} step={1} value={Math.min(leverage, maximumLeverage)}
             onChange={(event) => onLeverageChange(Number(event.target.value))} className="mt-3 w-full accent-lime" />
         </label>
-        <button type="button" disabled={busy || !selectedNote || !marketId || !currentPriceX18}
+        <button type="button" disabled={busy || notesChecking || !selectedNote || !marketId || !currentPriceX18}
           onClick={() => void prepareOpen()}
           className="h-11 w-full bg-fg font-mono text-xs font-bold uppercase tracking-[0.12em] text-bg disabled:cursor-not-allowed disabled:opacity-40">
-          {busy ? stage || "Preparing" : "Open private position"}
+          {busy ? stage || "Preparing" : notesChecking ? "Checking private notes" : "Open private position"}
         </button>
         {availableNotes.length === 0 && (
           <p className="text-xs leading-relaxed text-muted">Deposit USDG privately to use it as position margin.</p>
