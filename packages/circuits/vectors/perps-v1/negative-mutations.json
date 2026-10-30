@@ -1,0 +1,12 @@
+[
+  "wrong-chain",
+  "wrong-adapter",
+  "wrong-custody",
+  "wrong-market",
+  "wrong-root",
+  "leverage-out-of-range",
+  "payout-mismatch",
+  "relayer-fee-consumes-payout",
+  "modify-commitment-reuse",
+  "residual-mismatch"
+]

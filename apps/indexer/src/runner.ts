@@ -11,6 +11,7 @@ import { ViemChainReader } from "./viem-chain-reader.js";
 import { marketChartSynchronizer } from "./market-chart-sync.js";
 import { fastCatchup } from "./fast-catchup.js";
 import { privateV2Synchronizer } from "./private-v2-sync.js";
+import { deploymentAddress, PerpsStateSynchronizer } from "./perps-state-sync.js";
 
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -37,11 +38,14 @@ const manifest = await loadDeploymentManifestFile(
 );
 const addresses = [
   ...Object.values(manifest.integration),
+  ...Object.values(manifest.contracts).map(
+    (deployment) => deployment.proxyAddress ?? deployment.implementationAddress,
+  ),
   ...(manifest.shieldedV2 ? [manifest.shieldedV2.vault] : []),
   ...(manifest.shielded
     ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
     : []),
-].map(getAddress);
+].map(getAddress).filter((address, index, all) => all.indexOf(address) === index);
 const client = createPublicClient({
   cacheTime: 0,
   transport: http(config.RPC_URL, { timeout: 20000, retryCount: 1 }),
@@ -73,6 +77,28 @@ const privateV2 = manifest.shieldedV2
       maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,
     })
   : undefined;
+const perpsDeployments = {
+  oracle: deploymentAddress(manifest.contracts, "ChainlinkOracleAdapter"),
+  engine: deploymentAddress(manifest.contracts, "PerpEngine"),
+  funding: deploymentAddress(manifest.contracts, "FundingRateModule"),
+  vault: deploymentAddress(manifest.contracts, "LiquidityVaultUSDG"),
+  insurance: deploymentAddress(manifest.contracts, "InsuranceFund"),
+};
+const perpsState = new PerpsStateSynchronizer(
+  runner.SUPABASE_DIRECT_DATABASE_URL,
+  config.SUPABASE_SCHEMA,
+  client,
+  perpsDeployments.oracle && perpsDeployments.engine && perpsDeployments.funding &&
+    perpsDeployments.vault && perpsDeployments.insurance
+    ? {
+        oracle: perpsDeployments.oracle,
+        engine: perpsDeployments.engine,
+        funding: perpsDeployments.funding,
+        vault: perpsDeployments.vault,
+        insurance: perpsDeployments.insurance,
+      }
+    : undefined,
+);
 let syncing = false;
 let lastActivitySync = 0;
 
@@ -126,6 +152,7 @@ async function synchronize(): Promise<void> {
         getAddress(manifest.integration.positionManager),
         BigInt(runner.INDEXER_CONFIRMATIONS),
       );
+      await perpsState.synchronize();
       lastActivitySync = Date.now();
     }
     console.log(

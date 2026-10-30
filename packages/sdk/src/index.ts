@@ -21,3 +21,4 @@ export * from "./shielded-v2-accounting.js";
 export * from "./shielded-v2-note.js";
 export * from "./shielded-v2-statement.js";
 export * from "./shielded-v2-funds.js";
+export * from "./perps-statement.js";

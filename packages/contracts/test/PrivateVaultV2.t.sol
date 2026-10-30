@@ -306,4 +306,26 @@ contract PrivateVaultV2Test {
         vault.withdraw(hex"1234", p);
         require(vault.liabilityRaw(address(token0)) == 0, "upgraded note cannot withdraw");
     }
+
+    function testAuthorizedPerpsBridgePreservesLiabilityAndReplayProtection() public {
+        token0.approve(address(vault), 2 * AMOUNT);
+        vault.deposit(hex"1234", fund(address(token0), AMOUNT, 2001));
+        bytes32 root = vault.currentRoot();
+        vault.setPerpsAdapterAuthorization(address(this), true);
+        vault.consumePerpsNote(
+            address(token0), 2, root, bytes32(uint256(700)), AMOUNT, address(this)
+        );
+        require(vault.liabilityRaw(address(token0)) == 0, "consume liability");
+        rejected(
+            address(vault),
+            abi.encodeCall(
+                vault.consumePerpsNote,
+                (address(token0), 2, root, bytes32(uint256(700)), AMOUNT, address(this))
+            )
+        );
+        token0.approve(address(vault), AMOUNT);
+        vault.insertPerpsNote(address(token0), AMOUNT, bytes32(uint256(2002)), address(this));
+        require(vault.liabilityRaw(address(token0)) == AMOUNT, "insert liability");
+        require(vault.commitmentInserted(bytes32(uint256(2002))), "perps note missing");
+    }
 }

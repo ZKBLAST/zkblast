@@ -4,7 +4,7 @@
   "environment": "testnet",
   "chainId": 46630,
   "chainName": "Robinhood Chain Testnet",
-  "generatedAt": "2026-10-20T10:17:25.162Z",
+  "generatedAt": "2026-10-30T07:49:55.512Z",
   "deploymentBlock": 137788528,
   "deploymentBlockHash": "0x31aeb683bff765a5d45f91e9fd9bd4a5a27a232cf2e02dc29cd29aad4b92e63b",
   "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
@@ -775,9 +775,9 @@
     "factory": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E"
   },
   "totals": {
-    "transactionCount": 38,
-    "gasUsed": "38290398",
-    "totalFeeWei": "382903980000000"
+    "transactionCount": 60,
+    "gasUsed": "58481783",
+    "totalFeeWei": "584817830000000"
   },
   "integration": {
     "poolRegistry": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
@@ -815,6 +815,25 @@
     "proverRelease": {
       "manifestPath": "/zk/testnet/v2/manifest.json",
       "manifestSha256": "0d25d509d32b12957d81454c2eaa57e09cefda08f5b38b9f705b39a8b75f95f8"
+    }
+  },
+  "perps": {
+    "registry": "0x031f08B96982cC05D594D7E8230D2024aD297bB6",
+    "oracle": "0xdFd695Efd91fAF12fF34F856741Fdec6326D964F",
+    "funding": "0x32beB92E734B5DA63c790548B9bc79CE959714d0",
+    "engine": "0x69a833AF5061c92a407820a00Ca0e0Be9D1b2d65",
+    "insuranceFund": "0x54B8B0b22b102b1Df9337Df06CF2Afbf313721Bd",
+    "liquidityVault": "0xCeBaC81B234ACB2f2F6C4B1E4493BF641D0B965b",
+    "shieldedAdapter": "0x29794582fa487e5c45F85227fe527f0F552C08a5",
+    "collateral": "0x7E955252E15c84f5768B83c41a71F9eba181802F",
+    "deploymentBlock": 145227185,
+    "proverRelease": {
+      "manifestPath": "/zk/testnet/perps-v1/manifest.json",
+      "manifestSha256": "a2dfa86ffd2e4ef14da629e6d74de51c42d1326cc75dd3cec9b396fa5db03799"
+    },
+    "relayer": {
+      "address": "0x44D204AfC9fC75607721007303D2Ce39417510d9",
+      "feeRaw": "1000"
     }
   }
 }

@@ -51,6 +51,7 @@ contract PrivateVaultV2 is VerifiedSettlementV2, ProtocolAccess, UUPSUpgradeable
     mapping(bytes32 resource => uint256 liability) public shareLiability;
     mapping(bytes32 commitment => bool inserted) public commitmentInserted;
     mapping(bytes32 nullifier => bool spent) public withdrawalSpent;
+    mapping(address adapter => bool authorized) public perpsAdapterAuthorized;
 
     event AssetEnabled(address indexed asset, bool enabled);
     event PauseUpdated(bool deposits, bool actions, bool withdrawals);
@@ -58,6 +59,13 @@ contract PrivateVaultV2 is VerifiedSettlementV2, ProtocolAccess, UUPSUpgradeable
     event Deposited(address indexed asset, uint256 amount, bytes32 indexed commitment);
     event Withdrawn(
         address indexed asset, address indexed recipient, uint256 amount, bytes32 indexed nullifier
+    );
+    event PerpsAdapterAuthorizationUpdated(address indexed adapter, bool authorized);
+    event PerpsNoteConsumed(
+        address indexed adapter, address indexed asset, bytes32 indexed nullifier, uint256 amount
+    );
+    event PerpsNoteInserted(
+        address indexed adapter, address indexed asset, bytes32 indexed commitment, uint256 amount
     );
 
     constructor() {
@@ -107,6 +115,56 @@ contract PrivateVaultV2 is VerifiedSettlementV2, ProtocolAccess, UUPSUpgradeable
         actionsPaused = actions;
         withdrawalsPaused = withdrawals;
         emit PauseUpdated(deposits, actions, withdrawals);
+    }
+
+    function setPerpsAdapterAuthorization(address adapter, bool authorized)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (adapter == address(0) || (authorized && adapter.code.length == 0)) {
+            revert InvalidConfiguration();
+        }
+        perpsAdapterAuthorized[adapter] = authorized;
+        emit PerpsAdapterAuthorizationUpdated(adapter, authorized);
+    }
+
+    function consumePerpsNote(
+        address asset,
+        uint64 treeVersion_,
+        bytes32 root,
+        bytes32 nullifier,
+        uint256 amount,
+        address recipient
+    ) external nonReentrant {
+        if (!perpsAdapterAuthorized[msg.sender]) revert InvalidConfiguration();
+        if (
+            !assetEnabled[asset] || treeVersion_ != treeVersion || !isKnownRoot(root)
+                || nullifier == bytes32(0) || amount == 0 || amount > type(uint128).max
+                || recipient == address(0) || withdrawalSpent[nullifier]
+                || nullifierIntent[nullifier] != bytes32(0)
+        ) revert NoteUnavailable();
+        withdrawalSpent[nullifier] = true;
+        liabilityRaw[asset] -= amount;
+        asset.pushExact(recipient, amount);
+        _assertAssetSolvent(asset);
+        emit PerpsNoteConsumed(msg.sender, asset, nullifier, amount);
+    }
+
+    function insertPerpsNote(address asset, uint256 amount, bytes32 commitment, address payer)
+        external
+        nonReentrant
+    {
+        if (!perpsAdapterAuthorized[msg.sender]) revert InvalidConfiguration();
+        if (
+            !assetEnabled[asset] || amount == 0 || amount > type(uint128).max
+                || payer == address(0) || commitment == bytes32(0)
+                || uint256(commitment) >= FIELD || commitmentInserted[commitment]
+        ) revert NoteUnavailable();
+        asset.pullExact(payer, amount);
+        liabilityRaw[asset] += amount;
+        _insert(commitment);
+        _assertAssetSolvent(asset);
+        emit PerpsNoteInserted(msg.sender, asset, commitment, amount);
     }
 
     function currentRoot() external view returns (bytes32) {

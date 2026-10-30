@@ -6,3 +6,6 @@ export * from "./repository.js";
 export * from "./viem-chain-reader.js";
 export * from "./validation.js";
 export * from "./transaction-reconciliation.js";
+export * from "./perps-projection.js";
+export * from "./persist-perps-event.js";
+export * from "./perps-state-sync.js";

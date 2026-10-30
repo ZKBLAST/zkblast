@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "architecture": "../../architecture/perps-v1.json",
+  "generatedPositive": [
+    "open-valid", "close-valid", "modify-valid", "claim-liquidated-valid"
+  ],
+  "generatedNegative": [
+    "wrong-chain", "wrong-adapter", "wrong-market", "wrong-root",
+    "leverage-out-of-range", "payout-mismatch", "relayer-fee-consumes-payout",
+    "modify-commitment-reuse", "residual-mismatch"
+  ],
+  "adapterStateChecks": [
+    "expired-deadline", "nullifier-reuse"
+  ],
+  "status": "circuit-vectors-and-adapter-state-checks-complete-release-setup-pending"
+}

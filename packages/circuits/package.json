@@ -29,6 +29,13 @@
     "v2:note:browser:prepare": "node scripts/prepare-v2-note-browser.mjs",
     "v2:note:browser:test": "node --test test/private-v2-note-worker.test.mjs",
     "v2:browser:real:test": "node --test test/private-v2-prover-real.test.mjs",
+    "perps:vectors": "node scripts/generate-perps-vectors.mjs",
+    "perps:setup:candidate": "node scripts/setup-perps-candidate.mjs",
+    "perps:release:prepare": "node scripts/prepare-perps-release.mjs",
+    "perps:release:bind": "node scripts/bind-perps-release-plan.mjs",
+    "perps:verifiers:stage": "node scripts/stage-perps-verifiers.mjs",
+    "perps:browser:prepare": "esbuild browser/perps-worker.js --bundle --platform=browser --format=iife --outfile=../../apps/web/public/zk/perps-v1-worker.js --minify",
+    "perps:position-browser:prepare": "node scripts/prepare-perps-position-browser.mjs",
     "v1:ceremony": "node scripts/ceremony-v1.mjs"
   },
   "devDependencies": {

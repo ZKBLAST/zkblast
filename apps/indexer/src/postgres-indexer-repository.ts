@@ -8,6 +8,7 @@ import { persistPoolSwap } from "./persist-pool-swap.js";
 import { installCheckpointGuard } from "./checkpoint-guard.js";
 import { reconcileUserActivity } from "./reconcile-user-activity.js";
 import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
+import { persistPerpsEvent } from "./persist-perps-event.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -113,6 +114,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         );
         const observation = transactionObservation(event);
         await persistPoolSwap(transaction, this.schema, event);
+        await persistPerpsEvent(transaction, this.schema, event);
         if (observation)
           await transaction.unsafe(
             `insert into ${this.schema}.transactions
@@ -156,6 +158,36 @@ export class PostgresIndexerRepository implements IndexerRepository {
       await transaction.unsafe(
         `update ${this.schema}.swaps set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.perp_events set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.perp_oracle_prices set canonical=false where block_number >= $1`,
+        [fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `delete from ${this.schema}.perp_vault_snapshots where block_number >= $1`,
+        [fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.perp_lp_activity set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.perp_insurance_activity set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `delete from ${this.schema}.perp_positions where opened_block >= $1`,
+        [fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.perp_positions set status='open',closed_transaction_hash=null,
+         closed_block=null,closed_at=null,updated_at=now()
+         where closed_block >= $1 and opened_block < $1`,
+        [fromBlock.toString()],
       );
       await transaction.unsafe(
         `update ${this.schema}.trade_history set status='submitted',confirmed_at=null,error_code='CHAIN_REORG'

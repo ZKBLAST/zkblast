@@ -1,15 +1,17 @@
 "use client";
 
-import { ArrowLeftRight, Globe, Layers, Shield } from "lucide-react";
+import { ArrowLeftRight, ChartNoAxesCombined, Globe, Layers, Shield } from "lucide-react";
 import { ShieldedExecutionPanel } from "@/components/shielded/ShieldedExecutionPanel";
 import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspace";
 import type { TradeInstrument, TradeMode } from "@/lib/trade-instruments";
 import { TerminalTabs } from "./TerminalTabs";
 import { CreatePoolPanel } from "@/components/protocol/CreatePoolPanel";
+import { PerpsPanel } from "@/components/perps/PerpsPanel";
 
 const actions = [
   { value: "swap", label: "Swap", icon: ArrowLeftRight },
   { value: "liquidity", label: "Liquidity", icon: Layers },
+  { value: "perps", label: "Perps", icon: ChartNoAxesCombined },
 ];
 
 export function TradeActions({
@@ -92,8 +94,13 @@ export function TradeActions({
             </div>
           </div>
         )}
+        {mode === "perps" && (
+          <div role="tabpanel" id="action-panel-perps" aria-labelledby="action-tab-perps">
+            <PerpsPanel onBusyChange={onBusyChange} onConfirmed={onConfirmed} />
+          </div>
+        )}
         {(["swap", "liquidity"] as const)
-          .filter(() => mode !== "create")
+          .filter(() => mode !== "create" && mode !== "perps")
           .map((value) => (
             <div
               key={value}

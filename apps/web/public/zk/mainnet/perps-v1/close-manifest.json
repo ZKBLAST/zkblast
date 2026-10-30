@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "feature": "shielded-perps",
+  "kind": "close",
+  "environment": "mainnet",
+  "chainId": "4663",
+  "adapter": "0xdc73abe1174034a301b870623edfc8d2d692dcda",
+  "publicInputs": 17,
+  "proofSystem": "groth16",
+  "curve": "bn128",
+  "sources": {
+    "circuitSha256": "66425e032e61e39011084de62701e0bf6611d042b938d36554f097d748fddb59",
+    "positionSha256": "a7175ad959869d8890adf262c91dda6ca0eb44a6c87278c2dfd11695dbcd7ddc",
+    "verifierSha256": "c52beab4b396935cb356e3a4a11b457422cc3cb1c1795c43b2c73ee6499f64b4"
+  },
+  "assets": {
+    "wasm": {
+      "path": "/zk/mainnet/perps-v1/close.wasm",
+      "sha256": "5182e214e05503ac6af7ecf36c7c4e579af1519aa1eb646326c8418dfcb40c07"
+    },
+    "zkey": {
+      "path": "/zk/mainnet/perps-v1/close_final.zkey",
+      "sha256": "2db49d449e3e2fb668cf8759ecf9089f1a46a5ffebf31f42ec7a4ac26a71ee07"
+    },
+    "verificationKey": {
+      "path": "/zk/mainnet/perps-v1/close_verification_key.json",
+      "sha256": "5df8a9c261166ab98eae5da07fbb99fe44615403fc01a3b2f0938463bde5914a"
+    }
+  }
+}

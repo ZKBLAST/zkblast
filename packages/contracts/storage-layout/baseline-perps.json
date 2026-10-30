@@ -1,0 +1,1287 @@
+{
+  "PerpMarketRegistry": {
+    "storage": [
+      {
+        "astId": 20240,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 20242,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 2637,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 11273,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_markets",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_struct(MarketConfig)12462_storage)"
+      },
+      {
+        "astId": 11277,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_registered",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 11281,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_paused",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 11284,
+        "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+        "label": "_marketIds",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_array(t_bytes32)dyn_storage"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32",
+        "base": "t_bytes32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(MarketConfig)12462_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct PerpTypes.MarketConfig)",
+        "numberOfBytes": "32",
+        "value": "t_struct(MarketConfig)12462_storage"
+      },
+      "t_struct(MarketConfig)12462_storage": {
+        "encoding": "inplace",
+        "label": "struct PerpTypes.MarketConfig",
+        "numberOfBytes": "160",
+        "members": [
+          {
+            "astId": 12439,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "baseAsset",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 12441,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "oracleId",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 12443,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maxOpenInterestUsd",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12445,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maxSkewUsd",
+            "offset": 16,
+            "slot": "2",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12447,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maxPositionUsd",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12449,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "minPositionUsd",
+            "offset": 16,
+            "slot": "3",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12451,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maxLeverageBps",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 12453,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maintenanceMarginBps",
+            "offset": 4,
+            "slot": "4",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 12455,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "positionFeeBps",
+            "offset": 6,
+            "slot": "4",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 12457,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "liquidationFeeBps",
+            "offset": 8,
+            "slot": "4",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 12459,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "maxPriceImpactBps",
+            "offset": 10,
+            "slot": "4",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 12461,
+            "contract": "src/perps/PerpMarketRegistry.sol:PerpMarketRegistry",
+            "label": "enabled",
+            "offset": 12,
+            "slot": "4",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint128": {
+        "encoding": "inplace",
+        "label": "uint128",
+        "numberOfBytes": "16"
+      },
+      "t_uint16": {
+        "encoding": "inplace",
+        "label": "uint16",
+        "numberOfBytes": "2"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "ChainlinkOracleAdapter": {
+    "storage": [
+      {
+        "astId": 20240,
+        "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 20242,
+        "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 2637,
+        "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 7653,
+        "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+        "label": "_feeds",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_struct(FeedConfig)7648_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(FeedConfig)7648_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct ChainlinkOracleAdapter.FeedConfig)",
+        "numberOfBytes": "32",
+        "value": "t_struct(FeedConfig)7648_storage"
+      },
+      "t_struct(FeedConfig)7648_storage": {
+        "encoding": "inplace",
+        "label": "struct ChainlinkOracleAdapter.FeedConfig",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 7641,
+            "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+            "label": "feed",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 7643,
+            "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+            "label": "maximumAge",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 7645,
+            "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+            "label": "decimals",
+            "offset": 24,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 7647,
+            "contract": "src/perps/ChainlinkOracleAdapter.sol:ChainlinkOracleAdapter",
+            "label": "enabled",
+            "offset": 25,
+            "slot": "0",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  },
+  "FundingRateModule": {
+    "storage": [
+      {
+        "astId": 20240,
+        "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 20242,
+        "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 2637,
+        "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 7948,
+        "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+        "label": "_funding",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_struct(FundingState)7943_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_int128": {
+        "encoding": "inplace",
+        "label": "int128",
+        "numberOfBytes": "16"
+      },
+      "t_int32": {
+        "encoding": "inplace",
+        "label": "int32",
+        "numberOfBytes": "4"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(FundingState)7943_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct FundingRateModule.FundingState)",
+        "numberOfBytes": "32",
+        "value": "t_struct(FundingState)7943_storage"
+      },
+      "t_struct(FundingState)7943_storage": {
+        "encoding": "inplace",
+        "label": "struct FundingRateModule.FundingState",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 7936,
+            "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+            "label": "cumulativeIndexX18",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_int128"
+          },
+          {
+            "astId": 7938,
+            "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+            "label": "rateBpsPerHour",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_int32"
+          },
+          {
+            "astId": 7940,
+            "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+            "label": "maximumAbsoluteRateBpsPerHour",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 7942,
+            "contract": "src/perps/FundingRateModule.sol:FundingRateModule",
+            "label": "updatedAt",
+            "offset": 24,
+            "slot": "0",
+            "type": "t_uint64"
+          }
+        ]
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "PerpEngine": {
+    "storage": [
+      {
+        "astId": 9891,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 9893,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 60,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 3088,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "registry",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(PerpMarketRegistry)5900"
+      },
+      {
+        "astId": 3091,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "oracle",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(IPerpOracle)9758"
+      },
+      {
+        "astId": 3094,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "funding",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(FundingRateModule)1416"
+      },
+      {
+        "astId": 3096,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "openingsPaused",
+        "offset": 20,
+        "slot": "4",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3098,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "totalBadDebtUsd",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3103,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "_positions",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_bytes32,t_struct(Position)2951_storage)"
+      },
+      {
+        "astId": 3108,
+        "contract": "src/perps/PerpEngine.sol:PerpEngine",
+        "label": "_marketRisk",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_bytes32,t_struct(MarketRisk)3042_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(FundingRateModule)1416": {
+        "encoding": "inplace",
+        "label": "contract FundingRateModule",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IPerpOracle)9758": {
+        "encoding": "inplace",
+        "label": "contract IPerpOracle",
+        "numberOfBytes": "20"
+      },
+      "t_contract(PerpMarketRegistry)5900": {
+        "encoding": "inplace",
+        "label": "contract PerpMarketRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_int128": {
+        "encoding": "inplace",
+        "label": "int128",
+        "numberOfBytes": "16"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(MarketRisk)3042_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct PerpEngine.MarketRisk)",
+        "numberOfBytes": "32",
+        "value": "t_struct(MarketRisk)3042_storage"
+      },
+      "t_mapping(t_bytes32,t_struct(Position)2951_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct PerpEngine.Position)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Position)2951_storage"
+      },
+      "t_struct(MarketRisk)3042_storage": {
+        "encoding": "inplace",
+        "label": "struct PerpEngine.MarketRisk",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 3039,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "longOpenInterestUsd",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 3041,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "shortOpenInterestUsd",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_uint128"
+          }
+        ]
+      },
+      "t_struct(Position)2951_storage": {
+        "encoding": "inplace",
+        "label": "struct PerpEngine.Position",
+        "numberOfBytes": "160",
+        "members": [
+          {
+            "astId": 2934,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "marketId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 2936,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "ownerCommitment",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 2938,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "marginUsd",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 2940,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "notionalUsd",
+            "offset": 16,
+            "slot": "2",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 2942,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "baseSize",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 2944,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "entryPriceX18",
+            "offset": 16,
+            "slot": "3",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 2946,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "fundingIndexX18",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_int128"
+          },
+          {
+            "astId": 2948,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "openedAt",
+            "offset": 16,
+            "slot": "4",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 2950,
+            "contract": "src/perps/PerpEngine.sol:PerpEngine",
+            "label": "isLong",
+            "offset": 24,
+            "slot": "4",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint128": {
+        "encoding": "inplace",
+        "label": "uint128",
+        "numberOfBytes": "16"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "InsuranceFund": {
+    "storage": [
+      {
+        "astId": 20240,
+        "contract": "src/perps/InsuranceFund.sol:InsuranceFund",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 20242,
+        "contract": "src/perps/InsuranceFund.sol:InsuranceFund",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 2637,
+        "contract": "src/perps/InsuranceFund.sol:InsuranceFund",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 21046,
+        "contract": "src/perps/InsuranceFund.sol:InsuranceFund",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 8338,
+        "contract": "src/perps/InsuranceFund.sol:InsuranceFund",
+        "label": "asset",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_address"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LiquidityVaultUSDG": {
+    "storage": [
+      {
+        "astId": 9891,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 9893,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 60,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 10108,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1660,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "asset",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_address"
+      },
+      {
+        "astId": 1663,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "engine",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(PerpEngine)5454"
+      },
+      {
+        "astId": 1666,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "insuranceFund",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_contract(InsuranceFund)1606"
+      },
+      {
+        "astId": 1668,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "depositCeiling",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_uint128"
+      },
+      {
+        "astId": 1670,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "withdrawalCooldown",
+        "offset": 16,
+        "slot": "6",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 1672,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "insuranceFeeShareBps",
+        "offset": 24,
+        "slot": "6",
+        "type": "t_uint16"
+      },
+      {
+        "astId": 1674,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "depositsPaused",
+        "offset": 26,
+        "slot": "6",
+        "type": "t_bool"
+      },
+      {
+        "astId": 1676,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "withdrawalsPaused",
+        "offset": 27,
+        "slot": "6",
+        "type": "t_bool"
+      },
+      {
+        "astId": 1678,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "positionsPaused",
+        "offset": 28,
+        "slot": "6",
+        "type": "t_bool"
+      },
+      {
+        "astId": 1680,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "totalShares",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1682,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "traderMarginLiability",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1684,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "reservedProfitLiquidity",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1688,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "sharesOf",
+        "offset": 0,
+        "slot": "10",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 1692,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "lastDepositAt",
+        "offset": 0,
+        "slot": "11",
+        "type": "t_mapping(t_address,t_uint64)"
+      },
+      {
+        "astId": 1696,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "positionOwner",
+        "offset": 0,
+        "slot": "12",
+        "type": "t_mapping(t_bytes32,t_address)"
+      },
+      {
+        "astId": 1700,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "positionMargin",
+        "offset": 0,
+        "slot": "13",
+        "type": "t_mapping(t_bytes32,t_uint128)"
+      },
+      {
+        "astId": 1704,
+        "contract": "src/perps/LiquidityVaultUSDG.sol:LiquidityVaultUSDG",
+        "label": "positionReserve",
+        "offset": 0,
+        "slot": "14",
+        "type": "t_mapping(t_bytes32,t_uint128)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(InsuranceFund)1606": {
+        "encoding": "inplace",
+        "label": "contract InsuranceFund",
+        "numberOfBytes": "20"
+      },
+      "t_contract(PerpEngine)5454": {
+        "encoding": "inplace",
+        "label": "contract PerpEngine",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_address,t_uint64)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint64)",
+        "numberOfBytes": "32",
+        "value": "t_uint64"
+      },
+      "t_mapping(t_bytes32,t_address)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_uint128)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint128)",
+        "numberOfBytes": "32",
+        "value": "t_uint128"
+      },
+      "t_uint128": {
+        "encoding": "inplace",
+        "label": "uint128",
+        "numberOfBytes": "16"
+      },
+      "t_uint16": {
+        "encoding": "inplace",
+        "label": "uint16",
+        "numberOfBytes": "2"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "ShieldedPerpAdapter": {
+    "storage": [
+      {
+        "astId": 9891,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 9893,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 60,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 10108,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 7309,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "collateral",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_address"
+      },
+      {
+        "astId": 7312,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "vault",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(LiquidityVaultUSDG)2871"
+      },
+      {
+        "astId": 7315,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "custody",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_contract(IPrivatePerpCustody)9799"
+      },
+      {
+        "astId": 7318,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "openVerifier",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_contract(IPrivatePerpVerifier)9812"
+      },
+      {
+        "astId": 7321,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "closeVerifier",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_contract(IPrivatePerpVerifier)9812"
+      },
+      {
+        "astId": 7324,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "modifyVerifier",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_contract(IPrivatePerpVerifier)9812"
+      },
+      {
+        "astId": 7327,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "claimVerifier",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_contract(IPrivatePerpVerifier)9812"
+      },
+      {
+        "astId": 7331,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "positionNullifierSpent",
+        "offset": 0,
+        "slot": "10",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 7335,
+        "contract": "src/perps/ShieldedPerpAdapter.sol:ShieldedPerpAdapter",
+        "label": "liquidatedResidual",
+        "offset": 0,
+        "slot": "11",
+        "type": "t_mapping(t_bytes32,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IPrivatePerpCustody)9799": {
+        "encoding": "inplace",
+        "label": "contract IPrivatePerpCustody",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IPrivatePerpVerifier)9812": {
+        "encoding": "inplace",
+        "label": "contract IPrivatePerpVerifier",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LiquidityVaultUSDG)2871": {
+        "encoding": "inplace",
+        "label": "contract LiquidityVaultUSDG",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  }
+}

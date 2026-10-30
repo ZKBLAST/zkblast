@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "feature": "shielded-perps",
+  "curve": "bn254",
+  "hash": "poseidon2",
+  "domains": {
+    "position": "3001001",
+    "positionNullifier": "3001002",
+    "open": "3001003",
+    "close": "3001004"
+  },
+  "openPublicInputs": [
+    "schema_version", "action", "chain_id", "adapter", "custody", "collateral",
+    "tree_version", "merkle_root", "market_low", "market_high", "is_long",
+    "margin", "leverage_bps", "acceptable_price_x18", "deadline", "nullifier",
+    "position_commitment", "refund_commitment", "refund_amount", "relayer", "relayer_fee"
+  ],
+  "closePublicInputs": [
+    "schema_version", "action", "chain_id", "adapter", "custody", "collateral",
+    "tree_version", "market_low", "market_high", "position_commitment",
+    "position_nullifier", "expected_payout", "acceptable_price_x18", "deadline",
+    "payout_commitment", "relayer", "relayer_fee"
+  ],
+  "modifyPublicInputs": [
+    "schema_version", "action", "chain_id", "adapter", "market_low", "market_high",
+    "is_long", "old_margin", "expected_new_margin", "old_leverage_bps", "new_leverage_bps",
+    "old_position_commitment", "old_position_nullifier", "new_position_commitment",
+    "acceptable_close_price_x18", "acceptable_open_price_x18", "deadline", "relayer", "relayer_fee"
+  ],
+  "claimLiquidatedPublicInputs": [
+    "schema_version", "action", "chain_id", "adapter", "custody", "collateral", "tree_version",
+    "market_low", "market_high", "position_commitment", "position_nullifier",
+    "expected_residual", "deadline", "payout_commitment", "relayer", "relayer_fee"
+  ],
+  "notes": [
+    "Existing shielded-v2 note, nullifier and Merkle domains are reused only for USDG note ownership.",
+    "Perps position ownership and nullification use independent domains.",
+    "Close settlement must atomically match expected_payout before inserting payout_commitment.",
+    "Open v1 requires a non-zero refund note to avoid conditional note hashing.",
+    "Modify v1 atomically realizes PnL, funding and fees before rotating the position commitment with the resulting margin.",
+    "Liquidated residual claims must atomically match expected_residual before inserting payout_commitment."
+  ]
+}

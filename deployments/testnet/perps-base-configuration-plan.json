@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "environment": "testnet",
+  "chainId": 46630,
+  "observedBlock": "145263987",
+  "governance": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+  "governanceWorkflow": "direct-wallet",
+  "preState": {
+    "openingsPaused": false,
+    "adapterAuthorized": false
+  },
+  "actions": [
+    {
+      "name": "pause-engine-openings",
+      "target": "0x69a833AF5061c92a407820a00Ca0e0Be9D1b2d65",
+      "data": "0xd3fa4aba0000000000000000000000000000000000000000000000000000000000000001",
+      "estimatedTargetGas": "35083",
+      "calldataHash": "0x70421376f18e8b8b28c891647ff535a15e594d59775f12b17f1c4dc64e229821"
+    },
+    {
+      "name": "authorize-shielded-adapter",
+      "target": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+      "data": "0x60ee437900000000000000000000000029794582fa487e5c45f85227fe527f0f552c08a50000000000000000000000000000000000000000000000000000000000000001",
+      "estimatedTargetGas": "56221",
+      "calldataHash": "0xcf2633c913157bd439a512f9cdee907c7f0703578a4d3c85e74b3fe3f6cf6ecd"
+    }
+  ],
+  "gas": {
+    "observedPriceWei": "10000000",
+    "targetEstimate": "91304",
+    "governanceOverhead": "0",
+    "modeledTotal": "91304",
+    "feeCeilingWei": "1826080000000",
+    "feeCeilingEth": "0.00000182608"
+  },
+  "invariants": [
+    "no note, root, nullifier, liability or token balance mutation",
+    "engine openings remain paused",
+    "vault LP deposits and positions remain paused",
+    "adapter authorization is limited to the deployed ShieldedPerpAdapter"
+  ]
+}

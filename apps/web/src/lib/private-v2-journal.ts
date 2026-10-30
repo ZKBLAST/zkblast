@@ -314,3 +314,28 @@ export async function persistJournalV2(
     return merged;
   });
 }
+
+/** Replaces a journal after validation under the same browser lock; used only for local draft cleanup. */
+export async function replaceJournalV2(
+  next: PrivateJournalV2,
+  passphrase: string,
+  scope: NoteScopeV2,
+  dependencies: Readonly<{
+    storage: Pick<Storage, "getItem" | "setItem">;
+    lock: <T>(name: string, work: () => Promise<T>) => Promise<T>;
+    verify: (note: StoredNoteV2) => Promise<boolean>;
+  }>,
+): Promise<PrivateJournalV2> {
+  const storageKey = journalStorageKeyV2(scope);
+  return dependencies.lock(storageKey, async () => {
+    const previous = dependencies.storage.getItem(storageKey);
+    const validated = validateJournalV2(next, scope);
+    for (const note of validated.notes) {
+      if (!(await dependencies.verify(note))) throw new Error("V2_NOTE_COMMITMENT_MISMATCH");
+    }
+    const backup = await encryptPrivatePayloadV2(validated, passphrase, scope, "journal");
+    if (dependencies.storage.getItem(storageKey) !== previous) throw new Error("V2_JOURNAL_CHANGED_RETRY");
+    dependencies.storage.setItem(storageKey, JSON.stringify(backup));
+    return validated;
+  });
+}

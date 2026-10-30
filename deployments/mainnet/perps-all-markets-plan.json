@@ -1,0 +1,586 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "observedBlock": "101636323",
+  "governance": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "workflow": "safe-2-of-2",
+  "poolCount": 11,
+  "marketCount": 10,
+  "executableCandidates": [
+    "AMD-PERP",
+    "AMZN-PERP",
+    "META-PERP",
+    "MSFT-PERP",
+    "NFLX-PERP",
+    "PLTR-PERP",
+    "PONS-PERP",
+    "TSLA-PERP",
+    "WETH-PERP",
+    "ZKBLAST-PERP"
+  ],
+  "oracleRequired": [],
+  "markets": [
+    {
+      "symbol": "AMD-PERP",
+      "marketId": "0x024614bce76dda7e2c5d59b242db26fb9cd8557f35e8bc7d1fcf3b787822190d",
+      "oracleId": "0x3e44c0f8358fc0db78f17ac14e1de758d5e9d7b19ae149b3b29c281afbc2ea00",
+      "baseAsset": "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0x6F6451971bC3640B122FB8200582Bddb0bf2364B"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x943A29E7ae51A4798823ca9eEd2ed533B2A22C72",
+        "description": "RHAMD / USD",
+        "decimals": 8,
+        "answer": "52150000000",
+        "updatedAt": "1793352193",
+        "ageSeconds": "1701",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC",
+        "oracleId": "0x3e44c0f8358fc0db78f17ac14e1de758d5e9d7b19ae149b3b29c281afbc2ea00",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "AMZN-PERP",
+      "marketId": "0x183fc54548980354c72d4001d54c2714d6cb3d8aa4933f5108233af511d48985",
+      "oracleId": "0x680c3fa349f83381f1e2f6d0097535459c9640f37e14ce1d6cbd8e2027612302",
+      "baseAsset": "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0xa4e4D3254a41c460f9522b9b3fa78413f46DF53F"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0xD5a1508ceD74c084eBf3cBe853e2C968fB2a651C",
+        "description": "Robinhood AMZN / USD",
+        "decimals": 8,
+        "answer": "22724000000",
+        "updatedAt": "1793349387",
+        "ageSeconds": "4507",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
+        "oracleId": "0x680c3fa349f83381f1e2f6d0097535459c9640f37e14ce1d6cbd8e2027612302",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "META-PERP",
+      "marketId": "0xd0d8f0b3468ff7c972cd3ca0daa2bfc7f0cd70fe5136a8c610fda16e19da4c14",
+      "oracleId": "0xbd4cc5abdeb064c5603a8a6f0ca2906ce7d84771347d935386a4a6f23021d4d5",
+      "baseAsset": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0xEF6892976b7E69890986746583909Ce0cC9dFA95"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x7C38C00C30BEe9378381E7B6135d7283356D71b1",
+        "description": "Robinhood META / USD",
+        "decimals": 8,
+        "answer": "61538802760",
+        "updatedAt": "1793347756",
+        "ageSeconds": "6138",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+        "oracleId": "0xbd4cc5abdeb064c5603a8a6f0ca2906ce7d84771347d935386a4a6f23021d4d5",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "MSFT-PERP",
+      "marketId": "0x8d890504805f63580e0dce181b27f82419e33e1dcfd2eda2bdaa3a001787de6b",
+      "oracleId": "0xa7d18bcb52a9d8553af54967f6ff5428962287f5be1a86f18d8e39859d7716fe",
+      "baseAsset": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0x2aAFe4D1fa1b1c75951D5Fd325e82B420558CA48"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x45C3C877C15E6BA2EBB19eA114Ea508d14C1Af2E",
+        "description": "RHMSFT / USD",
+        "decimals": 8,
+        "answer": "52815301211",
+        "updatedAt": "1793350361",
+        "ageSeconds": "3533",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+        "oracleId": "0xa7d18bcb52a9d8553af54967f6ff5428962287f5be1a86f18d8e39859d7716fe",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "NFLX-PERP",
+      "marketId": "0xb153f685c7d53863cbf5e8fc038b24e2133d9a0b93945ccf0db7e36a6b1af7e2",
+      "oracleId": "0x9655080ce27c282166e020546ce9d193a352e51849365746dc444cfc2764fc91",
+      "baseAsset": "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0xFc81e903218c5C50486F750D44D54d8a002D2Fb4"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "managed_alpha",
+        "feed": "0x3288DC7b5914F984588Fe79e45f8f89CDf8700F4",
+        "description": "NFLX / USD (ZKBLAST managed alpha)",
+        "decimals": 8,
+        "answer": "6261000000",
+        "updatedAt": "1793353833",
+        "ageSeconds": "61",
+        "maximumAge": 900
+      },
+      "config": {
+        "baseAsset": "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8",
+        "oracleId": "0x9655080ce27c282166e020546ce9d193a352e51849365746dc444cfc2764fc91",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "PLTR-PERP",
+      "marketId": "0x9a675063ae77cdc1df3731e64a07bd06713b7464d3c9a7fd4b6f907fea5706cc",
+      "oracleId": "0x1c14deb39e82688cc708b39590e2f273129ff35bb47d89b73b7c6b750978fec2",
+      "baseAsset": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0xBDB9d62e9604F3A6ea48F6F24b8cF1693de27A28"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x820ABedFF239034956B7A9d2F0a331f9F075eB4c",
+        "description": "Robinhood PLTR / USD",
+        "decimals": 8,
+        "answer": "19460910000",
+        "updatedAt": "1793350206",
+        "ageSeconds": "3688",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+        "oracleId": "0x1c14deb39e82688cc708b39590e2f273129ff35bb47d89b73b7c6b750978fec2",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "PONS-PERP",
+      "marketId": "0x90e3df21de23f777ef63b5fea83600f46a38271a80580d20ab174e3d9d3c0e55",
+      "oracleId": "0xee8aa28af3844bd6a0f1eef8bd997e768271372798c2c7e56bb176c9be16a1f9",
+      "baseAsset": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0x8E5B5D68015152eDbC7374568c5171141Ffa72f3"
+        },
+        {
+          "model": "dlmm",
+          "address": "0x0A0163fD4AcF6ab403bf22DAC0c91D8510783919"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "managed_alpha",
+        "feed": "0x2cAa8AC140407538f4567E8499acA3e9e941544d",
+        "description": "PONS / USD (ZKBLAST managed alpha)",
+        "decimals": 8,
+        "answer": "23703797",
+        "updatedAt": "1793353833",
+        "ageSeconds": "61",
+        "maximumAge": 900
+      },
+      "config": {
+        "baseAsset": "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+        "oracleId": "0xee8aa28af3844bd6a0f1eef8bd997e768271372798c2c7e56bb176c9be16a1f9",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "TSLA-PERP",
+      "marketId": "0xea6d76c79f29e6f7e78b374f1225986632d433c26098973af388accd7fafe109",
+      "oracleId": "0x24781c98d551f6bbefbc400073ef5896c751db566c3c7dc787e6ef67b086bc1f",
+      "baseAsset": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0x99a9D62B9e1730F3e1e9230E5F1433Ffa99c6e20"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x4A1166a659A55625345e9515b32adECea5547C38",
+        "description": "RHTSLA / USD",
+        "decimals": 8,
+        "answer": "39330000000",
+        "updatedAt": "1793353650",
+        "ageSeconds": "244",
+        "maximumAge": 259200
+      },
+      "config": {
+        "baseAsset": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+        "oracleId": "0x24781c98d551f6bbefbc400073ef5896c751db566c3c7dc787e6ef67b086bc1f",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "WETH-PERP",
+      "marketId": "0x1860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f9",
+      "oracleId": "0x9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a",
+      "baseAsset": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+      "pools": [
+        {
+          "model": "damm",
+          "address": "0x04235f09dBf73E83fE6a49E9235851bb53eB8f71"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "chainlink",
+        "feed": "0x78F3556b67E17Df817D51Ef5a990cDaF09E8d3A9",
+        "description": "ETH / USD",
+        "decimals": 8,
+        "answer": "222674706425",
+        "updatedAt": "1793347548",
+        "ageSeconds": "6346",
+        "maximumAge": 90000
+      },
+      "config": {
+        "baseAsset": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+        "oracleId": "0x9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    },
+    {
+      "symbol": "ZKBLAST-PERP",
+      "marketId": "0x49e97ac73d356598b3297d0d6c319fcdb511f5be3c3c64fa37c97c61c293aa11",
+      "oracleId": "0x687be26808e38e30f0aefc079cc125d568ab473f3ee0500661faefcaa3797089",
+      "baseAsset": "0x3f9Ff9f1D40369f99c281375bD19D6EcbEbFeCd7",
+      "pools": [
+        {
+          "model": "dlmm",
+          "address": "0xe6197894D4D4A4E0b1Eef50501D1e9C3dd37bd9f"
+        }
+      ],
+      "registered": true,
+      "oracle": {
+        "status": "validated",
+        "kind": "managed_alpha",
+        "feed": "0x6d57DE017f8Ff7b3EEC8B43581b3F5252654f27A",
+        "description": "ZKBLAST / USD (ZKBLAST managed alpha)",
+        "decimals": 8,
+        "answer": "1001700",
+        "updatedAt": "1793353833",
+        "ageSeconds": "61",
+        "maximumAge": 300
+      },
+      "config": {
+        "baseAsset": "0x3f9Ff9f1D40369f99c281375bD19D6EcbEbFeCd7",
+        "oracleId": "0x687be26808e38e30f0aefc079cc125d568ab473f3ee0500661faefcaa3797089",
+        "maxOpenInterestUsd": "100000",
+        "maxSkewUsd": "100000",
+        "maxPositionUsd": "100000",
+        "minPositionUsd": "50000",
+        "maxLeverageBps": 20000,
+        "maintenanceMarginBps": 1000,
+        "positionFeeBps": 30,
+        "liquidationFeeBps": 50,
+        "maxPriceImpactBps": 100,
+        "enabled": false
+      }
+    }
+  ],
+  "actions": [
+    {
+      "name": "configure-feed",
+      "symbol": "AMD",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce3e44c0f8358fc0db78f17ac14e1de758d5e9d7b19ae149b3b29c281afbc2ea00000000000000000000000000943a29e7ae51a4798823ca9eed2ed533b2a22c72000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xe4b343320d90e4dbe346246f3213e3a0f3abe9980462c3d10fe5902c009e4850",
+      "estimatedTargetGas": "44904"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "AMD",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a9024614bce76dda7e2c5d59b242db26fb9cd8557f35e8bc7d1fcf3b787822190d000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0x8a31db96495a36911ff5aeed310615db91253e21b6c48e55dc1496006f93064e",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "AMZN",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce680c3fa349f83381f1e2f6d0097535459c9640f37e14ce1d6cbd8e2027612302000000000000000000000000d5a1508ced74c084ebf3cbe853e2c968fb2a651c000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x27891b972a1f7cc0013486063e527897c1e695e4402329c21700b8d45eb90498",
+      "estimatedTargetGas": "44916"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "AMZN",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a9183fc54548980354c72d4001d54c2714d6cb3d8aa4933f5108233af511d48985000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0x50bb99c3b0ce3f21a3a1a66d572ff662edff2569e9c6c2a1e953d62fa1a21914",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "META",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fcebd4cc5abdeb064c5603a8a6f0ca2906ce7d84771347d935386a4a6f23021d4d50000000000000000000000007c38c00c30bee9378381e7b6135d7283356d71b1000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x7a8959d4b8d2e7437ee962e07d615e513d502cd1b14b6b6b2713fd374623216e",
+      "estimatedTargetGas": "44916"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "META",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a9d0d8f0b3468ff7c972cd3ca0daa2bfc7f0cd70fe5136a8c610fda16e19da4c14000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xdadd00c545d6ef42f3a6421170473421c31b7b1b5f84a4227c834f0c89d29366",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "MSFT",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fcea7d18bcb52a9d8553af54967f6ff5428962287f5be1a86f18d8e39859d7716fe00000000000000000000000045c3c877c15e6ba2ebb19ea114ea508d14c1af2e000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x2f358231cd6ba9419491ab4025a9470e6c8479e3a872a1664b7ca9b6ebb55896",
+      "estimatedTargetGas": "44916"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "MSFT",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a98d890504805f63580e0dce181b27f82419e33e1dcfd2eda2bdaa3a001787de6b000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0x3ec1aeae7eea0557686899528adbee73dd6bd168fa311b7e40350ea38053b21c",
+      "estimatedTargetGas": "38346"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "NFLX",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce9655080ce27c282166e020546ce9d193a352e51849365746dc444cfc2764fc910000000000000000000000003288dc7b5914f984588fe79e45f8f89cdf8700f400000000000000000000000000000000000000000000000000000000000003840000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x1af70ad1e822c052905f47b286daeca80f362179c8a47c637935fb6e862033db",
+      "estimatedTargetGas": "39514"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "NFLX",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a9b153f685c7d53863cbf5e8fc038b24e2133d9a0b93945ccf0db7e36a6b1af7e2000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0x3fc2ec8be0482f7ee2da00f923219f4c5128d4958f8d85d2a603d52d6d3794d6",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "PLTR",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce1c14deb39e82688cc708b39590e2f273129ff35bb47d89b73b7c6b750978fec2000000000000000000000000820abedff239034956b7a9d2f0a331f9f075eb4c000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xd122a8259f419d345eccb3f7bc2f26bbf905faf6dd05cf48868791a7fbbf79ac",
+      "estimatedTargetGas": "44916"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "PLTR",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a99a675063ae77cdc1df3731e64a07bd06713b7464d3c9a7fd4b6f907fea5706cc000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xcb3e695af42281ec76e10e5b09600326e5430a3fd401d113aa00f86f52739290",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "PONS",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fceee8aa28af3844bd6a0f1eef8bd997e768271372798c2c7e56bb176c9be16a1f90000000000000000000000002caa8ac140407538f4567e8499aca3e9e941544d00000000000000000000000000000000000000000000000000000000000003840000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xdd9b1685c9279b9c4a36212befc08ddb0ba1d37bf1b5f11cf0c807583ec1f58f",
+      "estimatedTargetGas": "39526"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "PONS",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a990e3df21de23f777ef63b5fea83600f46a38271a80580d20ab174e3d9d3c0e55000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xeb20a0452bc521f4b17f157af3046f9b773ba1fcb2ca1f2e2d7e662917aaf6e9",
+      "estimatedTargetGas": "38346"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "TSLA",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce24781c98d551f6bbefbc400073ef5896c751db566c3c7dc787e6ef67b086bc1f0000000000000000000000004a1166a659a55625345e9515b32adecea5547c38000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x69e355d96d1a8bd2fdfb0ffc0b08174a8010e8d20d4e6fed5080cbf1cccbfdf1",
+      "estimatedTargetGas": "44904"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "TSLA",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a9ea6d76c79f29e6f7e78b374f1225986632d433c26098973af388accd7fafe109000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xf92a9c39150ec3a08ba577d27a403c428d1b0dd7139180371df6a38ccf60e939",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "WETH",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a00000000000000000000000078f3556b67e17df817d51ef5a990cdaf09e8d3a90000000000000000000000000000000000000000000000000000000000015f900000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x58e1dacbf4f20d7e1874d439d02259240f143a2c0f4f7f43d4092a1cdb83c65a",
+      "estimatedTargetGas": "44904"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "WETH",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a91860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f9000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xaf5632545c1edf7c16dfd76ab58b0ddf829062d9d6dd3232c091f91c8f033119",
+      "estimatedTargetGas": "38358"
+    },
+    {
+      "name": "configure-feed",
+      "symbol": "ZKBLAST",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce687be26808e38e30f0aefc079cc125d568ab473f3ee0500661faefcaa37970890000000000000000000000006d57de017f8ff7b3eec8b43581b3f5252654f27a000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xbee2fb5114eada87036d55904af360b26ce565ba443aa4cc3b02d1337d292526",
+      "estimatedTargetGas": "39526"
+    },
+    {
+      "name": "configure-funding-cap",
+      "symbol": "ZKBLAST",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a949e97ac73d356598b3297d0d6c319fcdb511f5be3c3c64fa37c97c61c293aa11000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xd9383d5aa6159e193f974969f37c83b40b0053ef937ac98c5d8cdc956e30fd35",
+      "estimatedTargetGas": "38358"
+    }
+  ],
+  "gas": {
+    "observedPriceWei": "20184000",
+    "targetEstimate": "816498",
+    "safeOverhead": "5000000",
+    "feeCeilingWei": "234800391264000",
+    "feeCeilingEth": "0.000234800391264"
+  },
+  "invariants": [
+    "all markets are registered disabled and paused",
+    "all market caps total at most 1 USDG OI",
+    "missing-oracle markets cannot execute",
+    "AMM spot prices are never authoritative Perps oracles",
+    "engine openings and vault positions remain paused",
+    "no token approval, funding or transfer is included"
+  ]
+}

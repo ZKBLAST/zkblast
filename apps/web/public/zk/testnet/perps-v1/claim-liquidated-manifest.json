@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "feature": "shielded-perps",
+  "kind": "claim-liquidated",
+  "environment": "testnet",
+  "chainId": "46630",
+  "adapter": "0x29794582fa487e5c45f85227fe527f0f552c08a5",
+  "publicInputs": 16,
+  "proofSystem": "groth16",
+  "curve": "bn128",
+  "sources": {
+    "circuitSha256": "510d090bc13aebcb159b06b42d9490083770491ca54f5d98c4d1197302bf8226",
+    "positionSha256": "a7175ad959869d8890adf262c91dda6ca0eb44a6c87278c2dfd11695dbcd7ddc",
+    "verifierSha256": "18a04a543cfa7042959bb4e65479a22b3ca8739d3f8d008c25eb8c01c323b626"
+  },
+  "assets": {
+    "wasm": {
+      "path": "/zk/testnet/perps-v1/claim-liquidated.wasm",
+      "sha256": "33614de4c20a9c91d96dc7f8e3929bef160da058d9fb532fa573ec999411ce78"
+    },
+    "zkey": {
+      "path": "/zk/testnet/perps-v1/claim-liquidated_final.zkey",
+      "sha256": "195cb31be3ad5c11cc94740f9d2a87747b23ea271ee49313fa82951580df58d9"
+    },
+    "verificationKey": {
+      "path": "/zk/testnet/perps-v1/claim-liquidated_verification_key.json",
+      "sha256": "38577a18223f647e47a361364c2444d945b686e9148e18b45c49c537d241abb1"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "status": "confirmed",
+  "transactions": [
+    {
+      "step": "deploy-NFLX",
+      "hash": "0x327b479ca133a4ed1a5c447428334661ccdb8f6875efeeb85ffdb6e93605ed03",
+      "gasUsed": "683121",
+      "effectiveGasPrice": "20062000",
+      "contractAddress": "0x3288dc7b5914f984588fe79e45f8f89cdf8700f4"
+    },
+    {
+      "step": "deploy-PONS",
+      "hash": "0xe2067cd559a6d53b9dcbfbdef8677708e71b98a51d31534bc9e2350b9f092883",
+      "gasUsed": "683105",
+      "effectiveGasPrice": "20164000",
+      "contractAddress": "0x2caa8ac140407538f4567e8499aca3e9e941544d"
+    },
+    {
+      "step": "deploy-ZKBLAST",
+      "hash": "0xb08cf4504254b7e7a68b00c8f008394626034ae4398300adb5088bd2f2c6a1a1",
+      "gasUsed": "683132",
+      "effectiveGasPrice": "20052000",
+      "contractAddress": "0x6d57de017f8ff7b3eec8b43581b3f5252654f27a"
+    },
+    {
+      "step": "configure-NFLX",
+      "hash": "0xe03c85190e712950ee5b0b56d1a315b9180d22dac554e7b1727763bc518e2f2f",
+      "gasUsed": "97332",
+      "effectiveGasPrice": "20000000",
+      "contractAddress": null
+    },
+    {
+      "step": "configure-PONS",
+      "hash": "0xbbfa919bc7da885f0f8049805e4571f21596a1a9dcefecba8e0ac403a22de00e",
+      "gasUsed": "97366",
+      "effectiveGasPrice": "20040000",
+      "contractAddress": null
+    },
+    {
+      "step": "configure-ZKBLAST",
+      "hash": "0xd3131e0f5ca48b50314f623655191d441532fe64251ebf1b1755304eb8438211",
+      "gasUsed": "97364",
+      "effectiveGasPrice": "20026000",
+      "contractAddress": null
+    }
+  ],
+  "feeds": {
+    "NFLX": "0x3288DC7b5914F984588Fe79e45f8f89CDf8700F4",
+    "PONS": "0x2cAa8AC140407538f4567E8499acA3e9e941544d",
+    "ZKBLAST": "0x6d57DE017f8Ff7b3EEC8B43581b3F5252654f27A"
+  },
+  "totalFeeWei": "47024731690000",
+  "totalFeeEth": "0.00004702473169",
+  "approvedCapEth": "0.000123",
+  "postState": "NFLX, PONS and ZKBLAST feeds configured; all three markets disabled and paused"
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "feature": "shielded-perps",
+  "environment": "testnet",
+  "chainId": "46630",
+  "adapter": "0x29794582fa487e5c45f85227fe527f0f552c08a5",
+  "positionCalculator": {
+    "path": "/zk/testnet/perps-v1/position-vector.wasm",
+    "sha256": "4d6a193b623e403a33f132f73432682da414b1766b78bf637b21092faa00f350"
+  },
+  "actions": {
+    "open": {
+      "manifestPath": "/zk/testnet/perps-v1/open-manifest.json",
+      "manifestSha256": "0c2bff11647023a85b0c625cff4d59ef1b4aedac0bfb67d544e3b1364ec792ea",
+      "generatedVerifierSha256": "a94c5c0eb142e78c16e908e8296672438c1394b249196644f2e8ccbe4211407b"
+    },
+    "close": {
+      "manifestPath": "/zk/testnet/perps-v1/close-manifest.json",
+      "manifestSha256": "d0ee214ec9768843bfd3228aa74b9941f68140b463da0875ecfd7c7bf363ef48",
+      "generatedVerifierSha256": "c52beab4b396935cb356e3a4a11b457422cc3cb1c1795c43b2c73ee6499f64b4"
+    },
+    "modify": {
+      "manifestPath": "/zk/testnet/perps-v1/modify-manifest.json",
+      "manifestSha256": "dc5fc299c75f6f5a49585f7c0d886b3954740e4048d2169baf3da933a7a22b47",
+      "generatedVerifierSha256": "8fb1eea2502df58bef8659d4c353c3f31fa0b5690fcd7fa43853c4ea84f55b5d"
+    },
+    "claim-liquidated": {
+      "manifestPath": "/zk/testnet/perps-v1/claim-liquidated-manifest.json",
+      "manifestSha256": "23c4f0e05d6e37f4cc38b2fd2c8a7de1306acd6b824d3eaebbfbcaa8b351517c",
+      "generatedVerifierSha256": "18a04a543cfa7042959bb4e65479a22b3ca8739d3f8d008c25eb8c01c323b626"
+    }
+  }
+}

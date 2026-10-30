@@ -26,7 +26,12 @@ function serializeArgs(
         value === null
       )
         return [key, value];
-      return [key, String(value)];
+      return [
+        key,
+        JSON.stringify(value, (_nestedKey, nestedValue) =>
+          typeof nestedValue === "bigint" ? nestedValue.toString() : nestedValue,
+        ),
+      ];
     }),
   );
 }

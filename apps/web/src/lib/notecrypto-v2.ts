@@ -208,7 +208,7 @@ export async function encryptPrivatePayloadV2(
   payload: unknown,
   passphrase: string,
   scope: NoteScopeV2,
-  purpose: "notes" | "journal",
+  purpose: "notes" | "journal" | "perps-journal",
 ): Promise<BackupV2> {
   const plaintext = encoder.encode(JSON.stringify(payload));
   if (plaintext.length > 1_000_000) throw new Error("V2_BACKUP_TOO_LARGE");
@@ -219,7 +219,7 @@ export async function encryptPrivatePayloadV2(
       name: "AES-GCM",
       iv,
       additionalData: encoder.encode(
-        `zkblast-note-backup:2:${scopeKey(scope)}${purpose === "journal" ? ":journal" : ""}`,
+        `zkblast-note-backup:2:${scopeKey(scope)}${purpose === "journal" ? ":journal" : purpose === "perps-journal" ? ":perps-journal" : ""}`,
       ),
     },
     await key(passphrase, salt),
@@ -261,7 +261,7 @@ export async function decryptPrivatePayloadV2(
   serialized: string,
   passphrase: string,
   scope: NoteScopeV2,
-  purpose: "notes" | "journal",
+  purpose: "notes" | "journal" | "perps-journal",
 ): Promise<unknown> {
   if (serialized.length > MAX_BACKUP_BYTES)
     throw new Error("V2_BACKUP_TOO_LARGE");
@@ -283,7 +283,7 @@ export async function decryptPrivatePayloadV2(
       name: "AES-GCM",
       iv: iv as BufferSource,
       additionalData: encoder.encode(
-        `zkblast-note-backup:2:${scopeKey(scope)}${purpose === "journal" ? ":journal" : ""}`,
+        `zkblast-note-backup:2:${scopeKey(scope)}${purpose === "journal" ? ":journal" : purpose === "perps-journal" ? ":perps-journal" : ""}`,
       ),
     },
     await key(passphrase, salt),

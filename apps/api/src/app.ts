@@ -7,6 +7,8 @@ import {
   privateVaultV2ConfigSchema,
   privateV2ConfigIssue,
   type PrivateVaultV2Config,
+  privatePerpsConfigSchema,
+  type PrivatePerpsConfig,
 } from "@zkblast/config";
 import { createAuthRouter } from "./auth-router.js";
 import type { AuthService } from "./auth-service.js";
@@ -24,9 +26,12 @@ import type { ExternalMarketService } from "./external-market-service.js";
 import type { TradeReceiptService } from "./trade-receipt-service.js";
 import type { PoolCreationService } from "./pool-creation-service.js";
 import { createPoolCreationRouter } from "./pool-creation-router.js";
+import { createPerpsRouter } from "./perps-router.js";
+import type { PerpsService } from "./perps-service.js";
 
 export type ApiPublicConfig = Readonly<{
   shieldedV2?: PrivateVaultV2Config;
+  perps?: PrivatePerpsConfig;
   environment: "testnet" | "mainnet";
   chainId: number;
   chainName: string;
@@ -63,6 +68,7 @@ export type ApiPublicConfig = Readonly<{
 const publicConfigResponseSchema = z
   .object({
     shieldedV2: privateVaultV2ConfigSchema.optional(),
+    perps: privatePerpsConfigSchema.optional(),
     environment: z.enum(["testnet", "mainnet"]),
     chainId: z.number().int().positive(),
     chainName: z.string().min(1),
@@ -158,6 +164,7 @@ export function createApp(
     externalMarketService?: ExternalMarketService;
     tradeReceiptService?: TradeReceiptService;
     poolCreationService?: PoolCreationService;
+    perpsService?: PerpsService;
   }> = {},
 ) {
   const app = express();
@@ -207,6 +214,7 @@ export function createApp(
       contracts: config.contracts,
       shielded: config.shielded,
       shieldedV2: config.shieldedV2,
+      perps: config.perps,
     });
     response.json(body);
   });
@@ -258,6 +266,9 @@ export function createApp(
       ),
     );
   }
+  if (dependencies.perpsService) {
+    app.use("/v1/perps", createPerpsRouter(dependencies.perpsService));
+  }
 
   app.use((_request, response) => {
     response.status(404).json({ error: { code: "NOT_FOUND" } });
@@ -291,6 +302,14 @@ export function createApp(
       error instanceof Error && error.message === "COMMITMENT_NOT_FOUND";
     const databaseCapacity =
       error instanceof Error && error.message.includes("EMAXCONNSESSION");
+    const perpsUnavailable =
+      error instanceof Error &&
+      ["PERPS_NOT_DEPLOYED", "PERP_MARKET_UNAVAILABLE"].includes(error.message);
+    const perpsRequestConflict =
+      error instanceof Error &&
+      ["PERP_RISK_LIMIT", "PERP_INVALID_DEADLINE"].includes(error.message);
+    const perpsRelayMissing =
+      error instanceof Error && error.message === "PERPS_RELAY_REQUEST_NOT_FOUND";
     const status = invalidRequest
       ? 400
       : authenticationFailure
@@ -299,9 +318,13 @@ export function createApp(
           ? 409
           : commitmentMissing
             ? 404
-          : databaseCapacity
-            ? 503
-            : 500;
+            : perpsRelayMissing
+              ? 404
+              : databaseCapacity || perpsUnavailable
+              ? 503
+              : perpsRequestConflict
+                ? 409
+                : 500;
     if (status === 500) {
       console.error(
         JSON.stringify({
@@ -324,9 +347,19 @@ export function createApp(
               ? "USERNAME_TAKEN"
               : commitmentMissing
                 ? "COMMITMENT_NOT_FOUND"
-              : databaseCapacity
-                ? "TEMPORARILY_UNAVAILABLE"
-                : "INTERNAL_ERROR",
+                : perpsRelayMissing
+                  ? "PERPS_RELAY_REQUEST_NOT_FOUND"
+                  : databaseCapacity
+                  ? "TEMPORARILY_UNAVAILABLE"
+                  : perpsUnavailable
+                    ? error instanceof Error
+                      ? error.message
+                      : "PERPS_UNAVAILABLE"
+                    : perpsRequestConflict
+                      ? error instanceof Error
+                        ? error.message
+                        : "PERP_REQUEST_CONFLICT"
+                      : "INTERNAL_ERROR",
       },
     });
   };

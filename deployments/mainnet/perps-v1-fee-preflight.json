@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": "101535061",
+  "planSha256": "4ade54e1b173d71b1edc07b6b4550f4868530f0c1c6c732a515df7366b9a93fd",
+  "transactionCount": 22,
+  "liveGasPriceWei": "20036000",
+  "gasPriceCapWei": "40072000",
+  "modeledGas": "27347856",
+  "bufferedGas": "34184820",
+  "estimatedFeeEth": "0.000547941642816",
+  "recommendedFeeCeilingEth": "0.00136985410704",
+  "deployerBalanceEth": "0.001620629261592783",
+  "balanceCoversCeiling": true,
+  "methodology": "conservative-bytecode-create-model-125pct-gas-2x-price-cap",
+  "broadcastAllowed": false,
+  "stages": [
+    {
+      "step": "OpenGroth16",
+      "artifact": "OpenGroth16",
+      "creationBytes": 3222,
+      "runtimeBytes": 3194,
+      "estimatedGas": "1043352"
+    },
+    {
+      "step": "CloseGroth16",
+      "artifact": "CloseGroth16",
+      "creationBytes": 2845,
+      "runtimeBytes": 2817,
+      "estimatedGas": "961920"
+    },
+    {
+      "step": "ModifyGroth16",
+      "artifact": "ModifyGroth16",
+      "creationBytes": 3035,
+      "runtimeBytes": 3007,
+      "estimatedGas": "1002960"
+    },
+    {
+      "step": "ClaimGroth16",
+      "artifact": "ClaimGroth16",
+      "creationBytes": 2749,
+      "runtimeBytes": 2721,
+      "estimatedGas": "941184"
+    },
+    {
+      "step": "PrivatePerpOpenVerifier",
+      "artifact": "PrivatePerpOpenVerifier",
+      "creationBytes": 1555,
+      "runtimeBytes": 1380,
+      "estimatedGas": "533880"
+    },
+    {
+      "step": "PrivatePerpCloseVerifier",
+      "artifact": "PrivatePerpCloseVerifier",
+      "creationBytes": 1555,
+      "runtimeBytes": 1380,
+      "estimatedGas": "533880"
+    },
+    {
+      "step": "PrivatePerpModifyVerifier",
+      "artifact": "PrivatePerpModifyVerifier",
+      "creationBytes": 1555,
+      "runtimeBytes": 1380,
+      "estimatedGas": "533880"
+    },
+    {
+      "step": "PrivatePerpClaimVerifier",
+      "artifact": "PrivatePerpClaimVerifier",
+      "creationBytes": 1555,
+      "runtimeBytes": 1380,
+      "estimatedGas": "533880"
+    },
+    {
+      "step": "PerpMarketRegistryImplementation",
+      "artifact": "PerpMarketRegistry",
+      "creationBytes": 6619,
+      "runtimeBytes": 6481,
+      "estimatedGas": "1755104"
+    },
+    {
+      "step": "PerpMarketRegistryProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "ChainlinkOracleAdapterImplementation",
+      "artifact": "ChainlinkOracleAdapter",
+      "creationBytes": 5132,
+      "runtimeBytes": 4994,
+      "estimatedGas": "1433912"
+    },
+    {
+      "step": "ChainlinkOracleAdapterProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "FundingRateModuleImplementation",
+      "artifact": "FundingRateModule",
+      "creationBytes": 4400,
+      "runtimeBytes": 4262,
+      "estimatedGas": "1275800"
+    },
+    {
+      "step": "FundingRateModuleProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "PerpEngineImplementation",
+      "artifact": "PerpEngine",
+      "creationBytes": 17644,
+      "runtimeBytes": 17506,
+      "estimatedGas": "4136504"
+    },
+    {
+      "step": "PerpEngineProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "InsuranceFundImplementation",
+      "artifact": "InsuranceFund",
+      "creationBytes": 4798,
+      "runtimeBytes": 4660,
+      "estimatedGas": "1361768"
+    },
+    {
+      "step": "InsuranceFundProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "LiquidityVaultUSDGImplementation",
+      "artifact": "LiquidityVaultUSDG",
+      "creationBytes": 13173,
+      "runtimeBytes": 13035,
+      "estimatedGas": "3170768"
+    },
+    {
+      "step": "LiquidityVaultUSDGProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    },
+    {
+      "step": "ShieldedPerpAdapterImplementation",
+      "artifact": "ShieldedPerpAdapter",
+      "creationBytes": 12368,
+      "runtimeBytes": 12230,
+      "estimatedGas": "2996888"
+    },
+    {
+      "step": "ShieldedPerpAdapterProxy",
+      "artifact": "ERC1967Proxy",
+      "creationBytes": 673,
+      "runtimeBytes": 97,
+      "estimatedGas": "733168"
+    }
+  ]
+}

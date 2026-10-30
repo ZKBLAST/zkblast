@@ -1,4 +1,4 @@
-import type { PrivateVaultV2Config } from "@zkblast/config";
+import type { PrivatePerpsConfig, PrivateVaultV2Config } from "@zkblast/config";
 
 export type EthereumProvider = Readonly<{
   request(
@@ -16,6 +16,7 @@ export type EthereumProvider = Readonly<{
 
 export type PublicConfig = Readonly<{
   shieldedV2?: PrivateVaultV2Config;
+  perps?: PrivatePerpsConfig;
   environment: "testnet" | "mainnet";
   chainId: number;
   chainName: string;

@@ -28,6 +28,12 @@ export {
   isPrivateV2Network,
   privateV2ConfigIssue,
 } from "./private-prover-v2.js";
+export {
+  fetchPrivatePerpsRelease,
+  privatePerpsConfigSchema,
+  privatePerpsReleaseIndexSchema,
+} from "./private-perps.js";
+export type { PrivatePerpsConfig, PrivatePerpsReleaseIndex } from "./private-perps.js";
 export type {
   PrivateProverReleaseV2,
   PrivateProverReleaseRefV2,

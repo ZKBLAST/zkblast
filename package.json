@@ -10,6 +10,7 @@
     "pnpm": ">=9.0.0"
   },
   "scripts": {
+    "preflight:perps:database": "node --experimental-strip-types scripts/preflight-perps-database.ts",
     "build": "turbo run build --filter=!@zkblast/contracts",
     "dev": "turbo run dev",
     "dev:testnet": "dotenv -e .env.testnet -- turbo run dev",

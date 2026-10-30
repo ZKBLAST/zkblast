@@ -1,4 +1,4 @@
-import { poolRegistryAbi } from "@zkblast/abi";
+import { perpEngineAbi, poolRegistryAbi, shieldedPerpAdapterAbi } from "@zkblast/abi";
 import { loadServerConfig } from "@zkblast/config";
 import {
   loadDeploymentManifestFile,
@@ -24,6 +24,7 @@ import { ShieldedService } from "./shielded-service.js";
 import { ExternalMarketService } from "./external-market-service.js";
 import { TradeReceiptService } from "./trade-receipt-service.js";
 import { PoolCreationService } from "./pool-creation-service.js";
+import { PerpsService } from "./perps-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -82,6 +83,56 @@ const protocolAddresses = resolveProtocolAddresses(manifest, {
   environment: serverConfig.APP_ENV,
   chainId: serverConfig.CHAIN_ID,
 });
+const perpVaultDeployment = Object.values(manifest.contracts).find(
+  (contract) => contract.contractName === "LiquidityVaultUSDG",
+);
+const usdgAsset = manifest.shielded?.assets.find((asset) => asset.symbol === "USDG");
+const perpsService = new PerpsService(
+  directDatabaseUrl,
+  serverConfig.SUPABASE_SCHEMA,
+  perpVaultDeployment && (manifest.perps || usdgAsset)
+    ? {
+        chainId: serverConfig.CHAIN_ID,
+        vault: getAddress(
+          perpVaultDeployment.proxyAddress ?? perpVaultDeployment.implementationAddress,
+        ),
+        collateral: getAddress(manifest.perps?.collateral ?? usdgAsset!.address),
+        ...(manifest.perps
+          ? {
+              privateExecution: {
+                adapter: getAddress(manifest.perps.shieldedAdapter),
+                relayer: getAddress(manifest.perps.relayer.address),
+                feeRaw: BigInt(manifest.perps.relayer.feeRaw),
+              },
+            }
+          : {}),
+      }
+    : undefined,
+  manifest.perps
+    ? async (positionId) => chainClient.readContract({
+        address: getAddress(manifest.perps!.engine),
+        abi: perpEngineAbi,
+        functionName: "quoteClose",
+        args: [positionId],
+      })
+    : undefined,
+  manifest.perps
+    ? async (positionId, leverageBps, externalFeeRaw) => chainClient.readContract({
+        address: getAddress(manifest.perps!.engine),
+        abi: perpEngineAbi,
+        functionName: "quoteModify",
+        args: [positionId, leverageBps, externalFeeRaw],
+      })
+    : undefined,
+  manifest.perps
+    ? async (positionId) => chainClient.readContract({
+        address: getAddress(manifest.perps!.shieldedAdapter),
+        abi: shieldedPerpAdapterAbi,
+        functionName: "liquidatedResidual",
+        args: [positionId],
+      })
+    : undefined,
+);
 const swapService = new SwapService(
   chainClient,
   protocolAddresses,
@@ -182,6 +233,7 @@ const app = createApp(
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
     ...(manifest.shieldedV2 ? { shieldedV2: manifest.shieldedV2 } : {}),
+    ...(manifest.perps ? { perps: manifest.perps } : {}),
     operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
     contracts: Object.values(manifest.contracts)
       .map((contract) => ({
@@ -222,6 +274,7 @@ const app = createApp(
     ...(shieldedService ? { shieldedService } : {}),
     ...(shieldedV2Service ? { shieldedV2Service } : {}),
     poolCreationService,
+    perpsService,
   },
 );
 

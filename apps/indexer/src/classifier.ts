@@ -31,6 +31,18 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   IntentRefunded: "private_intent",
   RootRegistered: "root",
   TransactionReceipt: "receipt",
+  PositionOpened: "position",
+  PositionClosed: "position",
+  PositionLiquidated: "position",
+  PublicPositionOpened: "position",
+  PublicPositionClosed: "position",
+  PublicPositionLiquidated: "position",
+  FundingRateUpdated: "position",
+  MarketStatusUpdated: "position",
+  MarketPauseUpdated: "position",
+  Redeemed: "liquidity",
+  InsuranceFunded: "fee",
+  InsuranceCovered: "fee",
 };
 
 export function classifyProtocolEvent(

@@ -3,6 +3,7 @@ import {
   privateVaultV2ConfigSchema,
   privateV2ConfigIssue,
 } from "./private-prover-v2.js";
+import { privatePerpsConfigSchema } from "./private-perps.js";
 
 const addressSchema = z
   .string()
@@ -119,6 +120,7 @@ export const deploymentManifestSchema = z
       poolQuoter: addressSchema,
     }),
     shieldedV2: privateVaultV2ConfigSchema.optional(),
+    perps: privatePerpsConfigSchema.optional(),
     shielded: z
       .object({
         vault: addressSchema,

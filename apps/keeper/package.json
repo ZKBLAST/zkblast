@@ -15,7 +15,9 @@
     "@zkblast/config": "workspace:*",
     "@zkblast/database": "workspace:*",
     "@zkblast/observability": "workspace:*",
-    "@zkblast/sdk": "workspace:*"
+    "@zkblast/sdk": "workspace:*",
+    "postgres": "^3.4.5",
+    "viem": "^2.21.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

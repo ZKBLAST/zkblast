@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "protocol": "ZKBLAST",
+  "feature": "perps-v1",
+  "environment": "testnet",
+  "chainId": 46630,
+  "referenceBlock": "145224684",
+  "referenceBlockHash": "0xd1b0eeceda6169a538b998ef4909b473b608a58d309db1933efb838ce2b18baa",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "startingNonce": 109,
+  "transactionCount": 22,
+  "order": [
+    "OpenGroth16",
+    "CloseGroth16",
+    "ModifyGroth16",
+    "ClaimGroth16",
+    "PrivatePerpOpenVerifier",
+    "PrivatePerpCloseVerifier",
+    "PrivatePerpModifyVerifier",
+    "PrivatePerpClaimVerifier",
+    "PerpMarketRegistryImplementation",
+    "PerpMarketRegistryProxy",
+    "ChainlinkOracleAdapterImplementation",
+    "ChainlinkOracleAdapterProxy",
+    "FundingRateModuleImplementation",
+    "FundingRateModuleProxy",
+    "PerpEngineImplementation",
+    "PerpEngineProxy",
+    "InsuranceFundImplementation",
+    "InsuranceFundProxy",
+    "LiquidityVaultUSDGImplementation",
+    "LiquidityVaultUSDGProxy",
+    "ShieldedPerpAdapterImplementation",
+    "ShieldedPerpAdapterProxy"
+  ],
+  "addresses": {
+    "OpenGroth16": "0xf35DD38b16989B8f0ADc2E7b0afE948A36128cA3",
+    "CloseGroth16": "0xEc5750CC94c7Cb2b179428724b568Fa11C8425fB",
+    "ModifyGroth16": "0x7AE5Dfe60c64a59859D50911b494dF6493654CD6",
+    "ClaimGroth16": "0xecDCAa8E66ca44198532eaDD07c89f161BfB53b1",
+    "PrivatePerpOpenVerifier": "0xB29C190aB34110eD02FC0F6E6D0b4C47A81769db",
+    "PrivatePerpCloseVerifier": "0x81523F5EBa597E6Af99057D708212Cf5030833Db",
+    "PrivatePerpModifyVerifier": "0xf5B5FF5ee1E3aC86f67b30ba29A5fF9E2F76c8d5",
+    "PrivatePerpClaimVerifier": "0x351f3e41f3878a13D22fe1A55214790327774930",
+    "PerpMarketRegistryImplementation": "0x119170Ba6C70B3d97E1d067f00930C1785c6f04A",
+    "PerpMarketRegistryProxy": "0x031f08B96982cC05D594D7E8230D2024aD297bB6",
+    "ChainlinkOracleAdapterImplementation": "0x6C9845D4C4497324e8A58B3C828d1614e75c0C7E",
+    "ChainlinkOracleAdapterProxy": "0xdFd695Efd91fAF12fF34F856741Fdec6326D964F",
+    "FundingRateModuleImplementation": "0x6E99A7638fcefbE47C6aBb0EA7612FF6a128B614",
+    "FundingRateModuleProxy": "0x32beB92E734B5DA63c790548B9bc79CE959714d0",
+    "PerpEngineImplementation": "0xf1D64756A30f3aC846bF81B73a8c17DF87b03C02",
+    "PerpEngineProxy": "0x69a833AF5061c92a407820a00Ca0e0Be9D1b2d65",
+    "InsuranceFundImplementation": "0xD7bC9b8A35451503aF80e5138b24925DB4966C74",
+    "InsuranceFundProxy": "0x54B8B0b22b102b1Df9337Df06CF2Afbf313721Bd",
+    "LiquidityVaultUSDGImplementation": "0x109D20117e58091BA593ea63EdcABfcbF2825a2A",
+    "LiquidityVaultUSDGProxy": "0xCeBaC81B234ACB2f2F6C4B1E4493BF641D0B965b",
+    "ShieldedPerpAdapterImplementation": "0x75F85e69D56404Af026B5C92FABE20DDBAAD501F",
+    "ShieldedPerpAdapterProxy": "0x29794582fa487e5c45F85227fe527f0F552C08a5"
+  },
+  "dependencies": {
+    "collateral": "0x7E955252E15c84f5768B83c41a71F9eba181802F",
+    "privateVaultV2": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+    "treeVersion": 2
+  },
+  "governance": {
+    "admin": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+    "upgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed"
+  },
+  "limits": {
+    "depositCeilingRaw": "5000000",
+    "withdrawalCooldownSeconds": 300,
+    "insuranceFeeShareBps": 5000,
+    "initiallyPaused": true
+  },
+  "initializerCalldataHashes": {
+    "PerpMarketRegistry": "0xaf3c8d70c50114f1e7481257b53405947969b6d603e54cdd73b389662340420a",
+    "ChainlinkOracleAdapter": "0xaf3c8d70c50114f1e7481257b53405947969b6d603e54cdd73b389662340420a",
+    "FundingRateModule": "0xaf3c8d70c50114f1e7481257b53405947969b6d603e54cdd73b389662340420a",
+    "PerpEngine": "0x74f100dc86bdcb574ff6f8e69d2d411ed5f2597cbc9aa2028d02fd7f97d3749b",
+    "InsuranceFund": "0x077c209935cc5ca35d73c24647c8c5bbc91fc7e683eebde8336528d64b15eca9",
+    "LiquidityVaultUSDG": "0x89216e5a56f272fdf4f44663101abd67c27298132677b39ad27859e59b568971",
+    "ShieldedPerpAdapter": "0x4948e51f0f052b6c900c79c59e1ac5ee06f6f83d8879b68901f7e5ad68c08dfa"
+  },
+  "sourceArtifacts": {
+    "OpenGroth16": {
+      "creationBytecodeHash": "0x6f73b22a0b8a0a4246522fa13938af8f8b7380911b0c17e2a58245406a937a3f",
+      "runtimeBytecodeHash": "0x588acac9a4c9bae11ef245c1c1093976eb3c1563472906628955f68a735e8c14"
+    },
+    "CloseGroth16": {
+      "creationBytecodeHash": "0x13e250db934cbac154d351bda22712933e3b3051c070453daffd4e69ac234e2c",
+      "runtimeBytecodeHash": "0x1159506d16c63e89174bad8c81c401cf9f7add7961540373f509ef0bbe9be6b1"
+    },
+    "ModifyGroth16": {
+      "creationBytecodeHash": "0x7e40329cde57d5b278ee482815647cdaff77106ae496ddd200179d811e547fe4",
+      "runtimeBytecodeHash": "0x3290930b89d21520eccd8d40330bcadb8dd7d868acef1f4c97a7c2e5a6f60705"
+    },
+    "ClaimGroth16": {
+      "creationBytecodeHash": "0x612ef40e6b04af0584afa7c2561a02e910b40797c1e061f7f899de8b7e5f55e0",
+      "runtimeBytecodeHash": "0xaedd98e0964329714b90127dfc60568ade71bea64fef90a4882b26683f5880f3"
+    },
+    "PrivatePerpOpenVerifier": {
+      "creationBytecodeHash": "0x41b9c3c0a96a0c29419d10c0a966ca7c47220630d959b7826205f9fae717ac0e",
+      "runtimeBytecodeHash": "0x246f4af6f8e1dfe18436c833224f1f0516ce1ca38a085c9a31bc46b9eb39c341"
+    },
+    "PrivatePerpCloseVerifier": {
+      "creationBytecodeHash": "0x360814f6bf34363fbd69d87cddc36adf93530ccf8f523cc2a6321d652ff0a20d",
+      "runtimeBytecodeHash": "0x657e272b17dc76f59973ee11635d623df455a25362326126c3161c5017078a1c"
+    },
+    "PrivatePerpModifyVerifier": {
+      "creationBytecodeHash": "0xaef494cf66ed86a76b46b2dabec12efcd72f5909ff0343b6feb195142479f496",
+      "runtimeBytecodeHash": "0x7370711c7bef6b6a033c0319a9773bf3ffdc62976e00e0d1a0134537826daa15"
+    },
+    "PrivatePerpClaimVerifier": {
+      "creationBytecodeHash": "0xaaf3ca9d50c649cc3785fcdebbdd9c24028cb16bba5935d768ffb7625e48f5d3",
+      "runtimeBytecodeHash": "0x3d91810794f8ab3c4758c7176b8e28e03396394e47ef4b5f58d42dec73f4f9c4"
+    },
+    "PerpMarketRegistry": {
+      "creationBytecodeHash": "0x45f27281650b07da61d4f065b5e5a1aebf084e2d538045fdd6d8abdb5b7ee1ab",
+      "runtimeBytecodeHash": "0x016eac83179381bb5a33b77d3ef7e15252b83584cb233959b6ad60b7e24e708e"
+    },
+    "ChainlinkOracleAdapter": {
+      "creationBytecodeHash": "0xfc2663a2fbc5c4d1629f7b7aaee9f5c7cdb560eaa8232097cf4b6d0dfe5c8607",
+      "runtimeBytecodeHash": "0x2f7c7ed4d590c604aa70fc794545d3795a536227d49ce5b2839c8c5783dfd28e"
+    },
+    "FundingRateModule": {
+      "creationBytecodeHash": "0x2231c18950672420fb3a54808e894ac41ba17d779278e3236c339a5b824b1b51",
+      "runtimeBytecodeHash": "0xc6f8c144dbc58219fbfa46843a1bd4c721af58bc96fd503135c8cce6659b947a"
+    },
+    "PerpEngine": {
+      "creationBytecodeHash": "0xe29a83e5d4d3a86101474dbda5fd87cb5762e8b163a0d0f8d35c98e55abad649",
+      "runtimeBytecodeHash": "0xd59763d40c62d3f41b6c2e77340f111c0ff46b5826ddc395ee92b8dc32f35b73"
+    },
+    "InsuranceFund": {
+      "creationBytecodeHash": "0xeb59a3807a9e0f6e2d229b745f54e044aa9fce2069b20a148ce5c0917d4ba9c0",
+      "runtimeBytecodeHash": "0x53239bda4a748d8953c4bbbe9057ca49b92f3eca17fe2577c9a93c8e92278c98"
+    },
+    "LiquidityVaultUSDG": {
+      "creationBytecodeHash": "0x17caad7081ab1620b291ec15bea878a4ea70c7e088b2319b6403054017e59e08",
+      "runtimeBytecodeHash": "0xc10d3c18436a893dcbe313bc2294be246ac702b9b6e90dd96fec75f7973065fb"
+    },
+    "ShieldedPerpAdapter": {
+      "creationBytecodeHash": "0x8ee478c5e82ddcefaad3653d9c7252ab9e085170a99344397680ca66e889f643",
+      "runtimeBytecodeHash": "0x6b6667cbb561660e67812e62ff71861e47677d7514c5e6091183cc6a4ce81f00"
+    },
+    "ERC1967Proxy": {
+      "creationBytecodeHash": "0x8d521118b5f55999011a67154a1db04a6708824e8c8e6bb1652249a13b5b7b5b",
+      "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e"
+    }
+  },
+  "circuitSetup": {
+    "schemaVersion": 1,
+    "proofSystem": "groth16",
+    "curve": "bn128",
+    "circuits": {
+      "open": {
+        "sourceSha256": "39094a1e97a9b97df310b4856c2e6c64fbdcf91645fa01d1746e4df2e628e220",
+        "wasmSha256": "6bf863f2dcd9a9ecf15e805ea968623769e05b8c478894b2e0d487771c42a3d9",
+        "r1csSha256": "c3433f2f85e49134ddd13cdb76af7cec925c6b563a0c48ef71baa5cb0af7b591",
+        "zkeySha256": "d578ad8c2c37006c2174a6d3fa8bb1580cb8fc0a47af2d5d06d5b45d729df9eb"
+      },
+      "close": {
+        "sourceSha256": "66425e032e61e39011084de62701e0bf6611d042b938d36554f097d748fddb59",
+        "wasmSha256": "5182e214e05503ac6af7ecf36c7c4e579af1519aa1eb646326c8418dfcb40c07",
+        "r1csSha256": "b20b7999367170bb1f6c63349947ab6fef38beb8ec46bb365705d23bfaa57cba",
+        "zkeySha256": "2db49d449e3e2fb668cf8759ecf9089f1a46a5ffebf31f42ec7a4ac26a71ee07"
+      },
+      "modify": {
+        "sourceSha256": "0bd39f6855340e2d9ebbc59a46d841258099fdc4b996bf6dc3f67e6ed858199a",
+        "wasmSha256": "0cd75de356edcc0021e4d07b16f1c5fc8e4bce049d410c56a5992b3653cb6006",
+        "r1csSha256": "d8d146f9a1b5d4a5867d825b8f34c151c564e70cde5c8ecdae396d85712c4eae",
+        "zkeySha256": "d23333e47726e1b37749b029b4201208cd90696f638751bfbf1740d58ecc4342"
+      },
+      "claim-liquidated": {
+        "sourceSha256": "510d090bc13aebcb159b06b42d9490083770491ca54f5d98c4d1197302bf8226",
+        "wasmSha256": "33614de4c20a9c91d96dc7f8e3929bef160da058d9fb532fa573ec999411ce78",
+        "r1csSha256": "6a77ce5a02077e8e80ea0994b708b1ef0ef2b42c4433e2fbe517d8f435e006f1",
+        "zkeySha256": "195cb31be3ad5c11cc94740f9d2a87747b23ea271ee49313fa82951580df58d9"
+      }
+    },
+    "positionCalculator": {
+      "sourceSha256": "72b9fdbc00b9619f81c4b1b8acc8145e2d393bf9ae4b49ae1d707349dc18ac94",
+      "wasmSha256": "4d6a193b623e403a33f132f73432682da414b1766b78bf637b21092faa00f350"
+    },
+    "ptauSha256": "73d2a0b71256b0d426d7d46499c0b36f45302d3c62bd0d75deb61a9e189b9857"
+  },
+  "requiredPostDeployment": [
+    "verify all runtime bytecode and proxy implementation slots",
+    "authorize ShieldedPerpAdapter on PrivateVaultV2",
+    "configure independent oracle feeds and only then register markets",
+    "fund insurance and LP vault within the approved cap",
+    "keep deposits and positions paused until acceptance"
+  ],
+  "authorization": {
+    "broadcastAllowed": false,
+    "activeManifestChanged": false
+  },
+  "proverRelease": {
+    "environment": "testnet",
+    "chainId": "46630",
+    "adapter": "0x29794582fa487e5c45f85227fe527f0f552c08a5",
+    "indexSha256": "a2dfa86ffd2e4ef14da629e6d74de51c42d1326cc75dd3cec9b396fa5db03799",
+    "actions": {
+      "open": {
+        "manifestSha256": "0c2bff11647023a85b0c625cff4d59ef1b4aedac0bfb67d544e3b1364ec792ea",
+        "generatedVerifierSha256": "a94c5c0eb142e78c16e908e8296672438c1394b249196644f2e8ccbe4211407b",
+        "zkeySha256": "d578ad8c2c37006c2174a6d3fa8bb1580cb8fc0a47af2d5d06d5b45d729df9eb",
+        "wasmSha256": "6bf863f2dcd9a9ecf15e805ea968623769e05b8c478894b2e0d487771c42a3d9",
+        "verificationKeySha256": "248b1037697dc721b461a2283b78d48224974217a6bdbfb6dcce63c4100e9c79"
+      },
+      "close": {
+        "manifestSha256": "d0ee214ec9768843bfd3228aa74b9941f68140b463da0875ecfd7c7bf363ef48",
+        "generatedVerifierSha256": "c52beab4b396935cb356e3a4a11b457422cc3cb1c1795c43b2c73ee6499f64b4",
+        "zkeySha256": "2db49d449e3e2fb668cf8759ecf9089f1a46a5ffebf31f42ec7a4ac26a71ee07",
+        "wasmSha256": "5182e214e05503ac6af7ecf36c7c4e579af1519aa1eb646326c8418dfcb40c07",
+        "verificationKeySha256": "5df8a9c261166ab98eae5da07fbb99fe44615403fc01a3b2f0938463bde5914a"
+      },
+      "modify": {
+        "manifestSha256": "dc5fc299c75f6f5a49585f7c0d886b3954740e4048d2169baf3da933a7a22b47",
+        "generatedVerifierSha256": "8fb1eea2502df58bef8659d4c353c3f31fa0b5690fcd7fa43853c4ea84f55b5d",
+        "zkeySha256": "d23333e47726e1b37749b029b4201208cd90696f638751bfbf1740d58ecc4342",
+        "wasmSha256": "0cd75de356edcc0021e4d07b16f1c5fc8e4bce049d410c56a5992b3653cb6006",
+        "verificationKeySha256": "96e10a405616940c09f5bf4758395e0d3d78c59537013d589dbddde9919f89bc"
+      },
+      "claim-liquidated": {
+        "manifestSha256": "23c4f0e05d6e37f4cc38b2fd2c8a7de1306acd6b824d3eaebbfbcaa8b351517c",
+        "generatedVerifierSha256": "18a04a543cfa7042959bb4e65479a22b3ca8739d3f8d008c25eb8c01c323b626",
+        "zkeySha256": "195cb31be3ad5c11cc94740f9d2a87747b23ea271ee49313fa82951580df58d9",
+        "wasmSha256": "33614de4c20a9c91d96dc7f8e3929bef160da058d9fb532fa573ec999411ce78",
+        "verificationKeySha256": "38577a18223f647e47a361364c2444d945b686e9148e18b45c49c537d241abb1"
+      }
+    },
+    "published": false
+  }
+}

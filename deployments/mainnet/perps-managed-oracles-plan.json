@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "observedBlock": "101635776",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "reporter": "0x44D204AfC9fC75607721007303D2Ce39417510d9",
+  "trustModel": "single ZKBLAST reporter with onchain freshness and deviation bounds",
+  "deployments": [
+    {
+      "symbol": "NFLX",
+      "address": "0x3288DC7b5914F984588Fe79e45f8f89CDf8700F4",
+      "nonce": 496,
+      "args": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x44D204AfC9fC75607721007303D2Ce39417510d9",
+        "NFLX / USD (ZKBLAST managed alpha)",
+        "6261000000",
+        "1793353833",
+        500,
+        900
+      ],
+      "dataHash": "0x63495531caec13d4bf42c55c42190e6eba6c1fc4903678b4dab80c8bb82a6e87",
+      "estimatedGas": "689799"
+    },
+    {
+      "symbol": "PONS",
+      "address": "0x2cAa8AC140407538f4567E8499acA3e9e941544d",
+      "nonce": 497,
+      "args": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x44D204AfC9fC75607721007303D2Ce39417510d9",
+        "PONS / USD (ZKBLAST managed alpha)",
+        "23703797",
+        "1793353833",
+        1000,
+        900
+      ],
+      "dataHash": "0x1c97b42c4910f036f54a90e9feb1fe35884cc2633e9ea99085ba356b8fa5d214",
+      "estimatedGas": "689786"
+    },
+    {
+      "symbol": "ZKBLAST",
+      "address": "0x6d57DE017f8Ff7b3EEC8B43581b3F5252654f27A",
+      "nonce": 498,
+      "args": [
+        "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+        "0x44D204AfC9fC75607721007303D2Ce39417510d9",
+        "ZKBLAST / USD (ZKBLAST managed alpha)",
+        "1001700",
+        "1793353833",
+        1000,
+        300
+      ],
+      "dataHash": "0xeb59c3a6f50dfefad99686d9c35a54c1851a37e77563f0108dd0389f20bb4f32",
+      "estimatedGas": "689810"
+    }
+  ],
+  "configurations": [
+    {
+      "symbol": "NFLX",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce9655080ce27c282166e020546ce9d193a352e51849365746dc444cfc2764fc910000000000000000000000003288dc7b5914f984588fe79e45f8f89cdf8700f400000000000000000000000000000000000000000000000000000000000003840000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x1af70ad1e822c052905f47b286daeca80f362179c8a47c637935fb6e862033db",
+      "estimatedTargetGas": "80000"
+    },
+    {
+      "symbol": "PONS",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fceee8aa28af3844bd6a0f1eef8bd997e768271372798c2c7e56bb176c9be16a1f90000000000000000000000002caa8ac140407538f4567e8499aca3e9e941544d00000000000000000000000000000000000000000000000000000000000003840000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xdd9b1685c9279b9c4a36212befc08ddb0ba1d37bf1b5f11cf0c807583ec1f58f",
+      "estimatedTargetGas": "80000"
+    },
+    {
+      "symbol": "ZKBLAST",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce687be26808e38e30f0aefc079cc125d568ab473f3ee0500661faefcaa37970890000000000000000000000006d57de017f8ff7b3eec8b43581b3f5252654f27a000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xbee2fb5114eada87036d55904af360b26ce565ba443aa4cc3b02d1337d292526",
+      "estimatedTargetGas": "80000"
+    }
+  ],
+  "sources": {
+    "NFLX": "external market reference; 5% per-update bound; 15-minute maximum age",
+    "PONS": "PONS/WETH reference converted by Chainlink ETH/USD; 10% per-update bound; 15-minute maximum age",
+    "ZKBLAST": "ZKBLAST/USDG reference; 10% per-update bound; 5-minute maximum age"
+  },
+  "gas": {
+    "observedPriceWei": "20022000",
+    "deploymentEstimate": "2069395",
+    "configurationEstimate": "240000",
+    "safeOverhead": "750000",
+    "modeledTotal": "3059395",
+    "feeCeilingWei": "122510413380000",
+    "feeCeilingEth": "0.00012251041338"
+  },
+  "invariants": [
+    "markets remain disabled and paused",
+    "engine openings and vault positions remain paused",
+    "no USDG movement",
+    "reporter cannot bypass freshness or deviation limits"
+  ]
+}

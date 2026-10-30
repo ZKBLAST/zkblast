@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "status": "confirmed",
+  "coveredPools": 11,
+  "registeredMarkets": 10,
+  "marketState": "all-disabled-and-paused",
+  "oracleConfiguredMarkets": 7,
+  "oracleRequiredMarkets": ["NFLX-PERP", "PONS-PERP", "ZKBLAST-PERP"],
+  "fundingTransfer": {
+    "from": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "to": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "amountRaw": "4000000",
+    "transactionHash": "0x34084c30f2f248f8778b37ca348b0fa7bca8121bca04f23d3c948863b0b2e0d5"
+  },
+  "governanceExecution": {
+    "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "safeTransactionCount": 37,
+    "endingSafeNonce": "73",
+    "firstTransactionHash": "0x656a8c2041d67e5368f5b0c92d6f58ff47f608a43afe9ea770853e779e9a067f",
+    "lastTransactionHash": "0xe47fba29ff2d8f6e939264ffa62a74180e5743f92924f07879fdf59706694682"
+  },
+  "fee": {
+    "transactionCount": 38,
+    "actualWei": "103324513688000",
+    "actualEth": "0.000103324513688",
+    "approvedCapEth": "0.00053"
+  },
+  "postState": {
+    "deployerUsdgRaw": "477280",
+    "governanceSafeUsdgRaw": "4000000",
+    "engineOpeningsPaused": true,
+    "vaultPositionsPaused": true
+  }
+}

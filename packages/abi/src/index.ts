@@ -12,6 +12,7 @@ export {
   shieldedStateRegistryAbi,
   shieldedLPManagerAbi,
 } from "./generated.js";
+export { liquidityVaultUsdGAbi, perpEngineAbi, perpsEventsAbi, shieldedPerpAdapterAbi } from "./perps.js";
 
 import {
   privateVaultV2Abi,
@@ -27,6 +28,7 @@ import {
   shieldedStateRegistryAbi,
   shieldedLPManagerAbi,
 } from "./generated.js";
+import { perpsEventsAbi } from "./perps.js";
 
 export const protocolAbis = {
   PrivateVaultV2: privateVaultV2Abi,
@@ -41,4 +43,5 @@ export const protocolAbis = {
   ShieldedStateRegistry: shieldedStateRegistryAbi,
   ShieldedLPManager: shieldedLPManagerAbi,
   ERC20: erc20Abi,
+  Perps: perpsEventsAbi,
 } as const;

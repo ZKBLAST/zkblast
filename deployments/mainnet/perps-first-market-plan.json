@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "observedBlock": "101596804",
+  "governance": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "workflow": "safe-2-of-2",
+  "market": {
+    "symbol": "WETH-PERP",
+    "marketId": "0x1860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f9",
+    "oracleId": "0x9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a",
+    "config": {
+      "baseAsset": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+      "oracleId": "0x9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a",
+      "maxOpenInterestUsd": "1000000",
+      "maxSkewUsd": "500000",
+      "maxPositionUsd": "250000",
+      "minPositionUsd": "100000",
+      "maxLeverageBps": 20000,
+      "maintenanceMarginBps": 1000,
+      "positionFeeBps": 30,
+      "liquidationFeeBps": 50,
+      "maxPriceImpactBps": 100,
+      "enabled": false
+    },
+    "registered": false
+  },
+  "oracle": {
+    "feed": "0x78F3556b67E17Df817D51Ef5a990cDaF09E8d3A9",
+    "description": "ETH / USD",
+    "decimals": 8,
+    "answer": "222674706425",
+    "updatedAt": "1793347548",
+    "ageSeconds": "2169",
+    "maximumAge": 90000
+  },
+  "roles": {
+    "oracle": true,
+    "market": true,
+    "funding": true
+  },
+  "actions": [
+    {
+      "name": "configure-weth-oracle",
+      "target": "0x4a60D7c94A6e907d927a40694D08A520b8Ff27bE",
+      "data": "0x7b8f3fce9e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a00000000000000000000000078f3556b67e17df817d51ef5a990cdaf09e8d3a90000000000000000000000000000000000000000000000000000000000015f900000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x58e1dacbf4f20d7e1874d439d02259240f143a2c0f4f7f43d4092a1cdb83c65a",
+      "estimatedTargetGas": "65236"
+    },
+    {
+      "name": "register-weth-perp-disabled",
+      "target": "0x45bcFa20414dcF5D20aC079076A87d859b702F93",
+      "data": "0xe47f225c1860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f90000000000000000000000000bd7d308f8e1639fab988df18a8011f41eacad739e962a420236543ecec4857cd603a75f4dc60a2b49494cdf12504e0055d0fe9a00000000000000000000000000000000000000000000000000000000000f4240000000000000000000000000000000000000000000000000000000000007a120000000000000000000000000000000000000000000000000000000000003d09000000000000000000000000000000000000000000000000000000000000186a00000000000000000000000000000000000000000000000000000000000004e2000000000000000000000000000000000000000000000000000000000000003e8000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000003200000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000000000",
+      "calldataHash": "0x3ffda565476b424ebe5494189b35c96db546d8e3cf161e6f0b80dcfb9b1b1cca",
+      "estimatedTargetGas": "227463"
+    },
+    {
+      "name": "configure-weth-funding-cap",
+      "target": "0x15293d89eC40ab4B444F3629bf9610a8e355fb76",
+      "data": "0xae3887a91860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f9000000000000000000000000000000000000000000000000000000000000000a",
+      "calldataHash": "0xaf5632545c1edf7c16dfd76ab58b0ddf829062d9d6dd3232c091f91c8f033119",
+      "estimatedTargetGas": "54852"
+    },
+    {
+      "name": "pause-weth-perp-after-registration",
+      "target": "0x45bcFa20414dcF5D20aC079076A87d859b702F93",
+      "data": "0xc9d1219e1860b58c048041c07b3d62ba8be2144a5a264b3dfafa3168146bb42d21b2f3f90000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xbab9413f8b880d8eb469ecb7a55e8d54e844b096f107ac343d60ec622f5bfc4a",
+      "estimatedTargetGas": "55000"
+    }
+  ],
+  "funding": {
+    "collateral": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "symbol": "USDG",
+    "decimals": 6,
+    "recommendedLpRaw": "3000000",
+    "recommendedInsuranceRaw": "1000000",
+    "governanceBalanceRaw": "0",
+    "vaultAssetsRaw": "0",
+    "insuranceAssetsRaw": "0",
+    "depositCeilingRaw": "5000000",
+    "depositsPaused": true,
+    "positionsPaused": true,
+    "includedInThisPlan": false
+  },
+  "gas": {
+    "observedPriceWei": "20008000",
+    "targetEstimate": "402551",
+    "governanceOverhead": "1000000",
+    "feeCeilingWei": "56124480816000",
+    "feeCeilingEth": "0.000056124480816"
+  },
+  "invariants": [
+    "WETH-PERP remains disabled and paused after configuration",
+    "engine openings and vault positions remain paused",
+    "no USDG approval, transfer, LP deposit or insurance funding is included",
+    "PONS-PERP and every unapproved market remain unregistered"
+  ]
+}
