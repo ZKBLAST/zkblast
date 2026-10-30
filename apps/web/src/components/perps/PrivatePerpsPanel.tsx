@@ -114,6 +114,7 @@ export function PrivatePerpsPanel({
     if (pending.length === 0) return;
     const controller = new AbortController();
     const refresh = async () => {
+      const startedAt = Date.now();
       setRelayRefreshing(true);
       try {
         const results = await Promise.allSettled(pending.map(async (record) => {
@@ -153,7 +154,13 @@ export function PrivatePerpsPanel({
           }
         }
       } finally {
-        if (!controller.signal.aborted) setRelayRefreshing(false);
+        if (!controller.signal.aborted) {
+          const remainingIndicatorMs = Math.max(0, 600 - (Date.now() - startedAt));
+          if (remainingIndicatorMs > 0) {
+            await new Promise((resolve) => setTimeout(resolve, remainingIndicatorMs));
+          }
+          if (!controller.signal.aborted) setRelayRefreshing(false);
+        }
       }
     };
     void refresh();
@@ -898,7 +905,9 @@ export function PrivatePerpsPanel({
             aria-label="Refresh private position statuses"
           >
             <RefreshCw className={`size-3 ${relayRefreshing ? "animate-spin" : ""}`} aria-hidden />
-            <span>{queuedRelayCount > 0 ? `${queuedRelayCount} queued` : "Refresh"}</span>
+            <span aria-live="polite">
+              {relayRefreshing ? "Refreshing…" : queuedRelayCount > 0 ? `${queuedRelayCount} queued` : "Refresh"}
+            </span>
           </button>
         </div>
         {journal.records.length === 0 ? (
