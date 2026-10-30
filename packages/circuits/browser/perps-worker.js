@@ -2,6 +2,15 @@ import { groth16 } from "snarkjs";
 import { provePrivatePerps } from "./perps-prover.mjs";
 
 let busy = false;
+
+function failureCode(reason) {
+  const message = reason instanceof Error ? reason.message : "";
+  if (/^PERPS_[A-Z0-9_]+$/u.test(message)) return message;
+  if (/Assert Failed|Input signal|witness/i.test(message)) return "PERPS_WITNESS_GENERATION_FAILED";
+  if (/memory|allocation/i.test(message)) return "PERPS_PROVER_MEMORY_FAILED";
+  return "PERPS_PROVER_RUNTIME_FAILED";
+}
+
 self.onmessage = async ({ data }) => {
   const { id } = data;
   if (busy) return self.postMessage({ id, error: "PERPS_PROVER_BUSY" });
@@ -21,8 +30,9 @@ self.onmessage = async ({ data }) => {
       onStage: (stage) => self.postMessage({ id, stage }),
     });
     self.postMessage({ id, stage: "complete", ...result });
-  } catch {
-    self.postMessage({ id, error: "PERPS_PROVER_FAILED" });
+  } catch (reason) {
+    console.error("Private Perps prover failed", reason);
+    self.postMessage({ id, error: failureCode(reason) });
   } finally {
     busy = false;
   }

@@ -277,7 +277,7 @@ export class PerpsService {
     const privateExecution = execution.privateExecution;
     if (!privateExecution) throw new Error("PERPS_RELAYER_UNAVAILABLE");
     const specification = {
-      open: { count: 21, deadline: 14, relayer: 19, fee: 20, functionName: "openPrivatePosition" },
+      open: { count: 21, deadline: 14, relayer: 18, fee: 19, functionName: "openPrivatePosition" },
       close: { count: 17, deadline: 13, relayer: 15, fee: 16, functionName: "closePrivatePosition" },
       modify: { count: 19, deadline: 16, relayer: 17, fee: 18, functionName: "modifyPrivatePosition" },
       "claim-liquidated": { count: 16, deadline: 12, relayer: 14, fee: 15, functionName: "claimLiquidatedResidual" },

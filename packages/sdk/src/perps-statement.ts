@@ -125,8 +125,8 @@ export function privatePerpOpenPublicInputsV1(statement: PrivatePerpOpenStatemen
     statement.treeVersion, statement.merkleRoot, ...context.market,
     statement.isLong ? 1n : 0n, statement.margin, statement.leverageBps,
     statement.acceptablePriceX18, statement.deadline, statement.nullifier,
-    statement.positionCommitment, statement.refundCommitment, statement.refundAmount, context.relayer,
-    statement.relayerFee,
+    statement.positionCommitment, statement.refundCommitment, context.relayer, statement.relayerFee,
+    statement.refundAmount,
   ] as const;
 }
 

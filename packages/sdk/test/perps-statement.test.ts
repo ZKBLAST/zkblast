@@ -52,6 +52,7 @@ test("private Perps v1 freezes open and close public input order", () => {
   assert.deepEqual(openInputs.slice(0, 2), [1n, 1n]);
   assert.deepEqual(closeInputs.slice(0, 2), [1n, 2n]);
   assert.equal(openInputs[15], open.nullifier);
+  assert.deepEqual(openInputs.slice(18), [BigInt(open.relayer), open.relayerFee, open.refundAmount]);
   assert.equal(closeInputs[10], close.positionNullifier);
 });
 

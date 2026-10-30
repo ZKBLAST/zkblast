@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "proxy": "0xdc73abE1174034A301b870623Edfc8D2d692dCDA",
+  "previousImplementation": "0x29E7a2cDdCE195aF15956779549C58bE505968C7",
+  "implementation": "0xAd09E4bb9C4b1b9Dc7207f56753c31e540C3f0ef",
+  "timelock": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+  "governance": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "delaySeconds": 300,
+  "operationId": "0xd7b8483d888be21b3af41932cafdb38a0cc0027e33accdb0636f1ba7748f47b4",
+  "transactions": [
+    {
+      "step": "deploy-implementation",
+      "hash": "0x7728c90bedf3122e45f9bb1c451e262187d169244d504a95f501c4d7a30b89ad",
+      "gasUsed": "2720833",
+      "effectiveGasPrice": "20356000",
+      "contractAddress": "0xad09e4bb9c4b1b9dc7207f56753c31e540c3f0ef"
+    },
+    {
+      "step": "schedule-upgrade",
+      "hash": "0xc9e6859118dcea1708d3869226279ad85c2261c2ac401d6dace7e1504ea85537",
+      "gasUsed": "96106",
+      "effectiveGasPrice": "20738000",
+      "contractAddress": null
+    },
+    {
+      "step": "execute-upgrade",
+      "hash": "0xfdc46ab3ad83a506526475ff8ad4fa9e96de9b858f322482ff136a281460ea6c",
+      "gasUsed": "95974",
+      "effectiveGasPrice": "20326000",
+      "contractAddress": null
+    }
+  ],
+  "totalFeeWei": "59329090300000",
+  "totalFeeEth": "0.0000593290903",
+  "approvedCapEth": "0.00022",
+  "status": "confirmed"
+}

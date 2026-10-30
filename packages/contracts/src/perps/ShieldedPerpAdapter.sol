@@ -89,7 +89,7 @@ contract ShieldedPerpAdapter is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard
             p[4] > type(uint160).max || p[5] > type(uint160).max || p[6] > type(uint64).max
                 || p[10] > 1 || p[11] > type(uint128).max || p[12] > type(uint32).max
                 || p[13] > type(uint128).max || p[14] > type(uint64).max
-                || p[18] > type(uint128).max || p[19] > type(uint160).max
+                || p[18] > type(uint160).max || p[19] > type(uint128).max
                 || p[20] > type(uint128).max || p[4] != uint160(address(custody))
                 || p[5] != uint160(collateral)
                 || p[7] == 0 || !custody.isKnownRoot(bytes32(p[7]))
@@ -97,9 +97,9 @@ contract ShieldedPerpAdapter is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard
             revert InvalidProofContext();
         }
         _verify(openVerifier, proof, inputs);
-        uint256 total = p[11] + p[18] + p[20];
+        uint256 total = p[11] + p[19] + p[20];
         custody.consumePerpsNote(collateral, uint64(p[6]), bytes32(p[7]), bytes32(p[15]), total, address(this));
-        _pay(address(uint160(p[19])), p[20]);
+        _pay(address(uint160(p[18])), p[19]);
         collateral.forceApprove(address(vault), p[11]);
         bytes32 positionId = bytes32(p[16]);
         result = vault.openPublicPosition(
@@ -114,8 +114,8 @@ contract ShieldedPerpAdapter is ProtocolAccess, UUPSUpgradeable, ReentrancyGuard
                 isLong: p[10] == 1
             })
         );
-        collateral.forceApprove(address(custody), p[18]);
-        custody.insertPerpsNote(collateral, p[18], bytes32(p[17]), address(this));
+        collateral.forceApprove(address(custody), p[20]);
+        custody.insertPerpsNote(collateral, p[20], bytes32(p[17]), address(this));
         emit PrivatePositionOpened(positionId, bytes32(p[15]));
     }
 

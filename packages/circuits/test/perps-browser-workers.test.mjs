@@ -71,3 +71,63 @@ test("position worker executes the released mainnet WASM", async () => {
   assert.match(result.commitment, /^[1-9][0-9]*$/u);
   assert.match(result.nullifier, /^[1-9][0-9]*$/u);
 });
+
+test("prover worker generates and verifies the released open proof", async () => {
+  const source = await readFile(path.join(publicRoot, "perps-v1-worker.js"), "utf8");
+  const releaseRoot = path.join(publicRoot, "mainnet/perps-v1");
+  const manifest = JSON.parse(await readFile(path.join(releaseRoot, "open-manifest.json"), "utf8"));
+  const input = JSON.parse(
+    await readFile(path.join(root, "packages/circuits/vectors/perps-v1/open-valid.json"), "utf8"),
+  );
+  manifest.adapter = "0x0000000000000000000000000000000000000064";
+  const expectedPublicInputs = [
+    input.schema_version, input.action, input.chain_id, input.adapter, input.custody,
+    input.collateral, input.tree_version, input.merkle_root, input.market_low,
+    input.market_high, input.is_long, input.margin, input.leverage_bps,
+    input.acceptable_price_x18, input.deadline, input.nullifier,
+    input.position_commitment, input.refund_commitment, input.relayer,
+    input.relayer_fee, input.refund_amount,
+  ];
+  const messages = [];
+  let resolveOutput;
+  const output = new Promise((resolve) => { resolveOutput = resolve; });
+  const self = {
+    postMessage(message) {
+      messages.push(message);
+      if (message.error || message.stage === "complete") resolveOutput(message);
+    },
+  };
+  vm.runInNewContext(source, {
+    self,
+    WebAssembly,
+    Uint8Array,
+    Uint32Array,
+    ArrayBuffer,
+    DataView,
+    TextEncoder,
+    TextDecoder,
+    crypto,
+    AbortSignal,
+    console,
+    Response,
+    Blob,
+    URL,
+    setTimeout,
+    clearTimeout,
+    fetch: async (assetPath) => new Response(
+      await readFile(path.join(root, "apps/web/public", assetPath)),
+    ),
+  });
+  await self.onmessage({ data: {
+    id: "open-proof-worker-test",
+    kind: "open",
+    input,
+    expectedPublicInputs,
+    manifest,
+    scope: { environment: "mainnet", chainId: "4663", adapter: manifest.adapter },
+  } });
+  const result = await output;
+  assert.equal(result.error, undefined);
+  assert.equal(result.publicSignals.length, 21);
+  assert.deepEqual(messages.map(({ stage }) => stage), ["proving", "verifying", "complete"]);
+});

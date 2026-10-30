@@ -24,6 +24,7 @@
     "preflight:perps:activation": "node --import tsx scripts/preflight-perps-activation.ts",
     "plan:private-v2:perps-upgrade": "node --import tsx scripts/prepare-private-v2-perps-upgrade.ts",
     "execute:private-v2:perps-upgrade": "node --import tsx scripts/execute-private-v2-perps-upgrade.ts",
+    "upgrade:shielded-perps:open-order": "node --import tsx scripts/upgrade-shielded-perps-input-order.ts",
     "plan:perps:base-configuration": "node --import tsx scripts/prepare-perps-base-configuration.ts",
     "execute:perps:base-configuration": "node --import tsx scripts/execute-perps-base-configuration.ts",
     "plan:perps:first-market": "node --import tsx scripts/prepare-perps-first-market.ts",

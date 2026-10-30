@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Download, KeyRound, RefreshCw, ShieldCheck, Upload, ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { Download, KeyRound, LoaderCircle, RefreshCw, ShieldCheck, Upload, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { fetchPrivateProverV2, type PrivateProverReleaseV2, type PrivatePerpsReleaseIndex } from "@zkblast/config";
 import { privatePerpClaimLiquidatedPublicInputsV1, privatePerpClosePublicInputsV1, privatePerpModifyPublicInputsV1, privatePerpOpenPublicInputsV1 } from "@zkblast/sdk";
 import type { Address } from "viem";
@@ -845,11 +845,26 @@ export function PrivatePerpsPanel({
           <input type="range" min={1} max={maximumLeverage} step={1} value={Math.min(leverage, maximumLeverage)}
             onChange={(event) => onLeverageChange(Number(event.target.value))} className="mt-3 w-full accent-lime" />
         </label>
-        <button type="button" disabled={busy || notesChecking || !selectedNote || !marketId || !currentPriceX18}
+        <button type="button" aria-busy={busy} disabled={busy || notesChecking || !selectedNote || !marketId || !currentPriceX18}
           onClick={() => void prepareOpen()}
-          className="h-11 w-full bg-fg font-mono text-xs font-bold uppercase tracking-[0.12em] text-bg disabled:cursor-not-allowed disabled:opacity-40">
+          className="flex h-11 w-full items-center justify-center gap-2 bg-fg font-mono text-xs font-bold uppercase tracking-[0.12em] text-bg disabled:cursor-not-allowed disabled:opacity-60">
+          {(busy || notesChecking) && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
           {busy ? stage || "Preparing" : notesChecking ? "Checking private notes" : "Open private position"}
         </button>
+        {busy && (
+          <div className="space-y-2 border border-line bg-black/30 p-3" role="status" aria-live="polite">
+            <div className="flex items-center gap-2 text-xs text-fg">
+              <LoaderCircle className="size-4 shrink-0 animate-spin text-lime" aria-hidden />
+              <span>{stage || "Preparing private position"}</span>
+            </div>
+            <div className="h-1 overflow-hidden bg-raised">
+              <div className="h-full w-1/2 animate-pulse bg-lime" />
+            </div>
+            <p className="text-[10px] leading-relaxed text-muted">
+              Keep this tab open while the proof is generated and verified locally.
+            </p>
+          </div>
+        )}
         {availableNotes.length === 0 && (
           <p className="text-xs leading-relaxed text-muted">Deposit USDG privately to use it as position margin.</p>
         )}
