@@ -1,4 +1,5 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createPublicClient,
   createWalletClient,
@@ -24,10 +25,11 @@ export async function startPerpsRelayerFromEnv(): Promise<() => Promise<void>> {
   const chainId = Number(required("CHAIN_ID"));
   const expectedChainId = environment === "mainnet" ? 4663 : 46630;
   if (chainId !== expectedChainId) throw new Error("PERPS_RELAYER_CHAIN_INVALID");
-  const manifest = await loadDeploymentManifestFile(
-    path.resolve(required("DEPLOYMENT_MANIFEST_PATH")),
-    { environment, chainId },
-  );
+  const configuredManifestPath = required("DEPLOYMENT_MANIFEST_PATH");
+  const manifestPath = path.isAbsolute(configuredManifestPath)
+    ? configuredManifestPath
+    : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..", configuredManifestPath);
+  const manifest = await loadDeploymentManifestFile(manifestPath, { environment, chainId });
   if (!manifest.perps) throw new Error("PERPS_RELAYER_DEPLOYMENT_MISSING");
   const privateKey = required("PERPS_RELAYER_PRIVATE_KEY") as Hex;
   if (!/^0x[0-9a-f]{64}$/iu.test(privateKey)) throw new Error("PERPS_RELAYER_KEY_INVALID");

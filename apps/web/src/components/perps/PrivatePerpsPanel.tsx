@@ -83,6 +83,8 @@ export function PrivatePerpsPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statuses, setStatuses] = useState<Readonly<Record<string, RelayStatus>>>({});
+  const [relayRefreshing, setRelayRefreshing] = useState(false);
+  const [relayRefreshNonce, setRelayRefreshNonce] = useState(0);
   const [residuals, setResiduals] = useState<Readonly<Record<string, string>>>({});
   const restoreInput = useRef<HTMLInputElement>(null);
   const scope = useMemo<NoteScopeV2 | null>(() => {
@@ -112,47 +114,52 @@ export function PrivatePerpsPanel({
     if (pending.length === 0) return;
     const controller = new AbortController();
     const refresh = async () => {
-      const results = await Promise.allSettled(pending.map(async (record) => {
-        const status = await apiRequest<RelayStatus>(
-          webPublicConfig.apiUrl,
-          `/v1/perps/private/relay/${record.relayRequestId}`,
-          { signal: controller.signal },
-        );
-        return [record.relayRequestId!, status] as const;
-      }));
-      if (controller.signal.aborted) return;
-      setStatuses((current) => Object.fromEntries([
-        ...Object.entries(current),
-        ...results.flatMap((result) => result.status === "fulfilled" ? [result.value] : []),
-      ]));
-      const completed = new Map(results.flatMap((result) =>
-        result.status === "fulfilled" && result.value[1].status === "confirmed"
-          ? [result.value] : []));
-      if (completed.size > 0 && scope) {
-        const replaced = new Set(journal.records.flatMap((record) =>
-          record.relayRequestId && completed.has(record.relayRequestId) && record.replacesCommitment
-            ? [record.replacesCommitment] : []));
-        const next: PrivatePerpsJournal = { ...journal, records: journal.records.map((record) => {
-          const relay = record.relayRequestId ? completed.get(record.relayRequestId) : undefined;
-          if (replaced.has(record.positionCommitment)) return { ...record, status: "closed" as const };
-          if (!relay) return record;
-          return {
-            ...record,
-            status: record.status === "closing" || record.status === "liquidated"
-              ? "closed" as const : "open" as const,
-            ...(relay.transactionHash ? { transactionHash: relay.transactionHash as `0x${string}` } : {}),
-          };
-        }) };
-        if (JSON.stringify(next) !== JSON.stringify(journal)) {
-          await savePrivatePerpsJournal(localStorage, next, passphrase, scope);
-          if (!controller.signal.aborted) setJournal(next);
+      setRelayRefreshing(true);
+      try {
+        const results = await Promise.allSettled(pending.map(async (record) => {
+          const status = await apiRequest<RelayStatus>(
+            webPublicConfig.apiUrl,
+            `/v1/perps/private/relay/${record.relayRequestId}`,
+            { signal: controller.signal },
+          );
+          return [record.relayRequestId!, status] as const;
+        }));
+        if (controller.signal.aborted) return;
+        setStatuses((current) => Object.fromEntries([
+          ...Object.entries(current),
+          ...results.flatMap((result) => result.status === "fulfilled" ? [result.value] : []),
+        ]));
+        const completed = new Map(results.flatMap((result) =>
+          result.status === "fulfilled" && result.value[1].status === "confirmed"
+            ? [result.value] : []));
+        if (completed.size > 0 && scope) {
+          const replaced = new Set(journal.records.flatMap((record) =>
+            record.relayRequestId && completed.has(record.relayRequestId) && record.replacesCommitment
+              ? [record.replacesCommitment] : []));
+          const next: PrivatePerpsJournal = { ...journal, records: journal.records.map((record) => {
+            const relay = record.relayRequestId ? completed.get(record.relayRequestId) : undefined;
+            if (replaced.has(record.positionCommitment)) return { ...record, status: "closed" as const };
+            if (!relay) return record;
+            return {
+              ...record,
+              status: record.status === "closing" || record.status === "liquidated"
+                ? "closed" as const : "open" as const,
+              ...(relay.transactionHash ? { transactionHash: relay.transactionHash as `0x${string}` } : {}),
+            };
+          }) };
+          if (JSON.stringify(next) !== JSON.stringify(journal)) {
+            await savePrivatePerpsJournal(localStorage, next, passphrase, scope);
+            if (!controller.signal.aborted) setJournal(next);
+          }
         }
+      } finally {
+        if (!controller.signal.aborted) setRelayRefreshing(false);
       }
     };
     void refresh();
     const interval = setInterval(() => void refresh(), 5_000);
     return () => { controller.abort(); clearInterval(interval); };
-  }, [journal]);
+  }, [journal, relayRefreshNonce]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -785,6 +792,11 @@ export function PrivatePerpsPanel({
     );
   }
 
+  const queuedRelayCount = journal.records.filter((record) => {
+    if (!record.relayRequestId) return false;
+    return (statuses[record.relayRequestId]?.status ?? "queued") === "queued";
+  }).length;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 border border-line bg-black/20 p-3">
@@ -878,7 +890,16 @@ export function PrivatePerpsPanel({
           <h4 id="private-perps-positions" className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
             Private positions
           </h4>
-          <RefreshCw className="size-3 text-muted" aria-hidden />
+          <button
+            type="button"
+            disabled={relayRefreshing}
+            onClick={() => setRelayRefreshNonce((current) => current + 1)}
+            className="flex h-8 items-center gap-2 border border-line px-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted transition-colors hover:bg-raised hover:text-fg disabled:cursor-wait disabled:opacity-60"
+            aria-label="Refresh private position statuses"
+          >
+            <RefreshCw className={`size-3 ${relayRefreshing ? "animate-spin" : ""}`} aria-hidden />
+            <span>{queuedRelayCount > 0 ? `${queuedRelayCount} queued` : "Refresh"}</span>
+          </button>
         </div>
         {journal.records.length === 0 ? (
           <p className="border border-line p-3 text-xs leading-relaxed text-muted">
@@ -893,6 +914,9 @@ export function PrivatePerpsPanel({
                 <span className="shrink-0 uppercase text-muted">{relay?.status ?? record.status}</span>
               </div>
               <p className="mt-1 text-muted">Margin {(Number(record.marginRaw) / 1e6).toFixed(4)} USDG</p>
+              {record.relayRequestId && (
+                <p className="mt-2 break-all text-[9px] text-muted">Request {record.relayRequestId}</p>
+              )}
               {relay?.transactionHash && (
                 <a
                   href={`${config.explorerUrl}/tx/${relay.transactionHash}`}

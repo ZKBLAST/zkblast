@@ -29,7 +29,15 @@ if (isMain) {
     void import("./perps-relayer-runner.js")
       .then(({ startPerpsRelayerFromEnv }) => startPerpsRelayerFromEnv())
       .then((stop) => { stopRelayer = stop; })
-      .catch(() => { process.exitCode = 1; });
+      .catch((error: unknown) => {
+        console.error(JSON.stringify({
+          service: "keeper",
+          component: "perps-relayer",
+          status: "error",
+          error: error instanceof Error ? error.message : "PERPS_RELAYER_START_FAILED",
+        }));
+        process.exitCode = 1;
+      });
   }
   const heartbeat = setInterval(() => {
     // Keep alive heartbeat
