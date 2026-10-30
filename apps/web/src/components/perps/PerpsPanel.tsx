@@ -77,7 +77,14 @@ function randomBytes32(): `0x${string}` {
 export function PerpsPanel({
   onBusyChange,
   onConfirmed,
-}: Readonly<{ onBusyChange: (busy: boolean) => void; onConfirmed: () => void }>) {
+  selectedPoolAddress,
+  onSelectedPoolChange,
+}: Readonly<{
+  onBusyChange: (busy: boolean) => void;
+  onConfirmed: () => void;
+  selectedPoolAddress?: string;
+  onSelectedPoolChange?: (poolAddress: string) => void;
+}>) {
   const { config, injectedAddress, address, openWallet, toast } = useApp();
   const [markets, setMarkets] = useState<readonly PerpMarket[]>([]);
   const [catalog, setCatalog] = useState<readonly PerpCatalogMarket[]>([]);
@@ -126,7 +133,12 @@ export function PerpsPanel({
         setMarkets(marketResponse.items);
         setVault(vaultResponse.vault);
         setCatalog(catalogResponse.items);
-        setSelectedPool((current) => current || catalogResponse.items.find((item) => item.executionStatus === "executable")?.poolAddress || catalogResponse.items[0]?.poolAddress || "");
+        setSelectedPool((current) => {
+          const requested = catalogResponse.items.find(
+            (item) => item.poolAddress.toLowerCase() === selectedPoolAddress?.toLowerCase(),
+          )?.poolAddress;
+          return requested || current || catalogResponse.items.find((item) => item.executionStatus === "executable")?.poolAddress || catalogResponse.items[0]?.poolAddress || "";
+        });
         setPositions(positionResponse.items);
         setActivity(activityResponse.items);
         setError(null);
@@ -138,7 +150,7 @@ export function PerpsPanel({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [refreshKey, wallet]);
+  }, [refreshKey, selectedPoolAddress, wallet]);
 
   const selectedCatalog = catalog.find((item) => item.poolAddress === selectedPool);
   const market = markets.find((item) => item.marketId === selectedCatalog?.marketId);
@@ -314,7 +326,10 @@ export function PerpsPanel({
             Perpetual market
             <select
               value={selectedPool}
-              onChange={(event) => setSelectedPool(event.target.value)}
+              onChange={(event) => {
+                setSelectedPool(event.target.value);
+                onSelectedPoolChange?.(event.target.value);
+              }}
               className="mt-2 h-11 w-full border border-line bg-bg px-3 font-mono text-xs outline-none focus:border-lime/70"
             >
               <optgroup label="Available now">
