@@ -14,15 +14,23 @@ type Proof = Readonly<{
 type Result = Readonly<{ proof: Proof; publicSignals: readonly string[] }>;
 
 export function encodePrivatePerpsProof({ proof }: Result): Hex {
+  const [a0, a1] = proof.pi_a;
+  const [b0, b1] = proof.pi_b;
+  const [b00, b01] = b0 ?? [];
+  const [b10, b11] = b1 ?? [];
+  const [c0, c1] = proof.pi_c;
+  if (![a0, a1, b00, b01, b10, b11, c0, c1].every((value) => typeof value === "string")) {
+    throw new Error("PERPS_PROOF_SHAPE_INVALID");
+  }
   return encodeAbiParameters(
     [{ type: "uint256[2]" }, { type: "uint256[2][2]" }, { type: "uint256[2]" }],
     [
-      [BigInt(proof.pi_a[0]!), BigInt(proof.pi_a[1]!)],
+      [BigInt(a0), BigInt(a1)],
       [
-        [BigInt(proof.pi_b[0]![1]!), BigInt(proof.pi_b[0]![0]!)],
-        [BigInt(proof.pi_b[1]![1]!), BigInt(proof.pi_b[1]![0]!)],
+        [BigInt(b01), BigInt(b00)],
+        [BigInt(b11), BigInt(b10)],
       ],
-      [BigInt(proof.pi_c[0]!), BigInt(proof.pi_c[1]!)],
+      [BigInt(c0), BigInt(c1)],
     ],
   );
 }

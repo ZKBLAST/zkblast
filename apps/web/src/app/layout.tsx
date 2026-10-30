@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { AppProvider } from "@/components/shell/AppProvider";
 import { Header } from "@/components/shell/Header";
@@ -34,7 +35,16 @@ export default function RootLayout({
       <body>
         <AppProvider>
           <SmoothScroll />
-          <Header />
+          <Suspense
+            fallback={
+              <div
+                className="fixed inset-x-0 top-0 z-50 h-[var(--header-h)] border-b border-line bg-[#0b0b14]/85"
+                aria-hidden
+              />
+            }
+          >
+            <Header />
+          </Suspense>
           <main id="main" tabIndex={-1} className="outline-none">
             {children}
           </main>

@@ -26,7 +26,7 @@ import {
 import { calculatePrivateNoteV2, createPrivateNoteV2 } from "@/lib/private-v2-notes";
 import { decryptJournalV2, journalStorageKeyV2, persistJournalV2, replaceJournalV2, type PrivateJournalV2 } from "@/lib/private-v2-journal";
 import { fetchPrivatePathV2 } from "@/lib/private-v2-path";
-import type { NoteScopeV2, StoredNoteV2 } from "@/lib/notecrypto-v2";
+import type { NoteScopeV2 } from "@/lib/notecrypto-v2";
 
 type RelayStatus = Readonly<{
   requestId: `0x${string}`;
@@ -239,7 +239,7 @@ export function PrivatePerpsPanel({
   }
 
   async function prepareOpen() {
-    if (!config?.perps || !noteScope || !noteRelease || !release || !journal || !noteJournal || !marketId || !currentPriceX18) return;
+    if (!config?.perps || !scope || !noteScope || !noteRelease || !release || !journal || !noteJournal || !marketId || !currentPriceX18) return;
     setBusy(true); setError(null); setStage("Preparing private position");
     try {
       const inputNote = availableNotes.find((note) => note.commitment === selectedNote);
@@ -286,7 +286,7 @@ export function PrivatePerpsPanel({
         ownerSecret, ownerNonce, operation: "open", generatedNoteCommitment: refund.commitment,
         status: "prepared",
       }] };
-      await savePrivatePerpsJournal(localStorage, preparedJournal, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, preparedJournal, passphrase, scope);
       setJournal(preparedJournal);
       const witness = {
         schema_version: "1", action: "1", chain_id: String(config.chainId),
@@ -314,7 +314,7 @@ export function PrivatePerpsPanel({
       });
       const submitted: PrivatePerpsJournal = { ...preparedJournal, records: preparedJournal.records.map((record) =>
         record.positionCommitment === position.commitment ? { ...record, relayRequestId: relay.requestId } : record) };
-      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope);
       setJournal(submitted); setStatuses((current) => ({ ...current, [relay.requestId]: relay }));
       setStage("Private position submitted");
     } catch (reason) {
@@ -324,10 +324,10 @@ export function PrivatePerpsPanel({
   }
 
   async function prepareClose(record: PrivatePerpsJournal["records"][number]) {
-    if (!config?.perps || !noteScope || !noteRelease || !release || !journal || !noteJournal) return;
+    if (!config?.perps || !scope || !noteScope || !noteRelease || !release || !journal || !noteJournal) return;
     setBusy(true); setError(null); setStage("Quoting private close");
     try {
-      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}` as `0x${string}`;
+      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
       const quote = await apiRequest<{
         executionPriceX18: string; payoutUsd: string;
       }>(webPublicConfig.apiUrl, `/v1/perps/quote/close/${positionId}`);
@@ -374,7 +374,7 @@ export function PrivatePerpsPanel({
           ...item, operation: "close" as const, generatedNoteCommitment: payout.commitment,
           status: "closing" as const,
         } : item) };
-      await savePrivatePerpsJournal(localStorage, closing, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, closing, passphrase, scope);
       setJournal(closing);
       const proof = await provePrivatePerpsInBrowser({
         environment: config.environment, chainId: config.chainId, config: config.perps,
@@ -399,7 +399,7 @@ export function PrivatePerpsPanel({
       });
       const submitted: PrivatePerpsJournal = { ...closing, records: closing.records.map((item) =>
         item.positionCommitment === record.positionCommitment ? { ...item, relayRequestId: relay.requestId } : item) };
-      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope);
       setJournal(submitted); setStatuses((current) => ({ ...current, [relay.requestId]: relay }));
       setStage("Private close submitted");
     } catch (reason) {
@@ -409,7 +409,7 @@ export function PrivatePerpsPanel({
   }
 
   async function prepareModify(record: PrivatePerpsJournal["records"][number]) {
-    if (!config?.perps || !release || !journal || !marketId) return;
+    if (!config?.perps || !scope || !release || !journal || !marketId) return;
     const newLeverageBps = leverage * 10_000;
     if (newLeverageBps === record.leverageBps) {
       setError("Choose a different leverage before modifying the position.");
@@ -417,7 +417,7 @@ export function PrivatePerpsPanel({
     }
     setBusy(true); setError(null); setStage("Quoting position update");
     try {
-      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}` as `0x${string}`;
+      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
       const quote = await apiRequest<{
         expectedLockedMarginUsd: string; closePriceX18: string; openPriceX18: string;
       }>(webPublicConfig.apiUrl, `/v1/perps/quote/modify/${positionId}?leverageBps=${newLeverageBps}`);
@@ -470,7 +470,7 @@ export function PrivatePerpsPanel({
           status: "prepared" as const,
         },
       ] };
-      await savePrivatePerpsJournal(localStorage, prepared, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, prepared, passphrase, scope);
       setJournal(prepared);
       const proof = await provePrivatePerpsInBrowser({
         environment: config.environment, chainId: config.chainId, config: config.perps,
@@ -495,7 +495,7 @@ export function PrivatePerpsPanel({
       });
       const submitted: PrivatePerpsJournal = { ...prepared, records: prepared.records.map((item) =>
         item.positionCommitment === newPosition.commitment ? { ...item, relayRequestId: relay.requestId } : item) };
-      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope);
       setJournal(submitted); setStatuses((current) => ({ ...current, [relay.requestId]: relay }));
       setStage("Private position update submitted");
     } catch (reason) {
@@ -505,10 +505,10 @@ export function PrivatePerpsPanel({
   }
 
   async function claimResidual(record: PrivatePerpsJournal["records"][number]) {
-    if (!config?.perps || !noteScope || !noteRelease || !release || !journal || !noteJournal) return;
+    if (!config?.perps || !scope || !noteScope || !noteRelease || !release || !journal || !noteJournal) return;
     setBusy(true); setError(null); setStage("Preparing residual claim");
     try {
-      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}` as `0x${string}`;
+      const positionId = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
       const { residualRaw } = await apiRequest<{ residualRaw: string }>(
         webPublicConfig.apiUrl, `/v1/perps/private/residual/${positionId}`,
       );
@@ -549,7 +549,7 @@ export function PrivatePerpsPanel({
           ...item, operation: "claim-liquidated" as const,
           generatedNoteCommitment: payout.commitment, status: "liquidated" as const,
         } : item) };
-      await savePrivatePerpsJournal(localStorage, claiming, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, claiming, passphrase, scope);
       setJournal(claiming);
       const proof = await provePrivatePerpsInBrowser({
         environment: config.environment, chainId: config.chainId, config: config.perps,
@@ -574,7 +574,7 @@ export function PrivatePerpsPanel({
       });
       const submitted: PrivatePerpsJournal = { ...claiming, records: claiming.records.map((item) =>
         item.positionCommitment === record.positionCommitment ? { ...item, relayRequestId: relay.requestId } : item) };
-      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope!);
+      await savePrivatePerpsJournal(localStorage, submitted, passphrase, scope);
       setJournal(submitted); setStatuses((current) => ({ ...current, [relay.requestId]: relay }));
       setStage("Residual claim submitted");
     } catch (reason) {
@@ -590,13 +590,11 @@ export function PrivatePerpsPanel({
       const restored = journal.records.flatMap((item) => {
         if (item.positionCommitment === record.positionCommitment) {
           if (record.replacesCommitment || record.operation === "open") return [];
-          const {
-            relayRequestId: _relayRequestId,
-            transactionHash: _transactionHash,
-            generatedNoteCommitment: _generatedNoteCommitment,
-            operation: _operation,
-            ...base
-          } = item;
+          const base = { ...item };
+          delete base.relayRequestId;
+          delete base.transactionHash;
+          delete base.generatedNoteCommitment;
+          delete base.operation;
           return [{ ...base, status: "open" as const }];
         }
         if (record.replacesCommitment && item.positionCommitment === record.replacesCommitment) {
