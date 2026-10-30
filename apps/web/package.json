@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "pnpm --filter @zkblast/circuits run perps:browser:prepare-all",
     "build": "next build",
+    "prebuild:worker": "pnpm --filter @zkblast/circuits run perps:browser:prepare-all",
     "build:worker": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare deploy",

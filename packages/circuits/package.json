@@ -36,6 +36,8 @@
     "perps:verifiers:stage": "node scripts/stage-perps-verifiers.mjs",
     "perps:browser:prepare": "esbuild browser/perps-worker.js --bundle --platform=browser --format=iife --outfile=../../apps/web/public/zk/perps-v1-worker.js --minify",
     "perps:position-browser:prepare": "node scripts/prepare-perps-position-browser.mjs",
+    "perps:browser:prepare-all": "pnpm run perps:position-browser:prepare && pnpm run perps:browser:prepare",
+    "perps:browser:test": "node --test test/perps-browser-workers.test.mjs",
     "v1:ceremony": "node scripts/ceremony-v1.mjs"
   },
   "devDependencies": {

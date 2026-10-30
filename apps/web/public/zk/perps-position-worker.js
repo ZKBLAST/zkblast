@@ -1,30 +1,16 @@
-import buildWitnessCalculator from "zkblast-v2-calculator";
-
-self.onmessage = async ({ data }) => {
-  const { id, input, asset, environment } = data;
-  try {
-    if (
-      !["testnet", "mainnet"].includes(environment)
-        || !asset?.path?.startsWith(`/zk/${environment}/perps-v1/`)
-        || !/^[a-f0-9]{64}$/u.test(asset?.sha256)
-    ) throw new Error("INVALID_POSITION_CALCULATOR");
-    const response = await fetch(asset.path, {
-      credentials: "omit", redirect: "error", signal: AbortSignal.timeout(30_000),
-    });
-    if (!response.ok) throw new Error("POSITION_CALCULATOR_UNAVAILABLE");
-    const wasm = await response.arrayBuffer();
-    const digest = Array.from(
-      new Uint8Array(await crypto.subtle.digest("SHA-256", wasm)),
-      (byte) => byte.toString(16).padStart(2, "0"),
-    ).join("");
-    if (digest !== asset.sha256) throw new Error("POSITION_CALCULATOR_HASH_MISMATCH");
-    const witness = await (await buildWitnessCalculator(wasm)).calculateWitness(input, 1);
-    self.postMessage({
-      id,
-      commitment: witness[1].toString(),
-      nullifier: witness[2].toString(),
-    });
-  } catch {
-    self.postMessage({ id, error: "PERPS_POSITION_CALCULATION_FAILED" });
-  }
-};
+"use strict";(()=>{var W=Object.create;var p=Object.defineProperty;var b=Object.getOwnPropertyDescriptor;var M=Object.getOwnPropertyNames;var B=Object.getPrototypeOf,E=Object.prototype.hasOwnProperty;var v=(r,e)=>()=>(e||r((e={exports:{}}).exports,e),e.exports);var O=(r,e,s,t)=>{if(e&&typeof e=="object"||typeof e=="function")for(let n of M(e))!E.call(r,n)&&n!==s&&p(r,n,{get:()=>e[n],enumerable:!(t=b(e,n))||t.enumerable});return r};var z=(r,e,s)=>(s=r!=null?W(B(r)):{},O(e||!r||!r.__esModule?p(s,"default",{value:r,enumerable:!0}):s,r));var x=v((U,I)=>{I.exports=async function(e,s){s=s||{};let t;try{t=await WebAssembly.compile(e)}catch(i){throw console.log(i),console.log(`
+Try to run circom --c in order to generate c++ code instead
+`),new Error(i)}let n,o="",c="",h=await WebAssembly.instantiate(t,{runtime:{exceptionHandler:function(i){let a;throw i==1?a=`Signal not found.
+`:i==2?a=`Too many signals set.
+`:i==3?a=`Signal already set.
+`:i==4?a=`Assert Failed.
+`:i==5?a=`Not enough memory.
+`:i==6?a=`Input signal array access exceeds the size.
+`:i==7?a=`Out of bounds array access.
+`:a=`Unknown error.
+`,new Error(a+o)},printErrorMessage:function(){o+=g()+`
+`},writeBufferMessage:function(){let i=g();i===`
+`?(console.log(c),c=""):(c!==""&&(c+=" "),c+=i)},showSharedRWMemory:function(){u()}}}),l=s;return n=new y(h,l),n;function g(){for(var i="",a=h.exports.getMessageChar();a!=0;)i+=String.fromCharCode(a),a=h.exports.getMessageChar();return i}function u(){let i=h.exports.getFieldNumLen32(),a=new Uint32Array(i);for(let f=0;f<i;f++)a[i-1-f]=h.exports.readSharedRWMemory(f);c!==""&&(c+=" "),c+=S(a).toString()}};var y=class{constructor(e,s){this.instance=e,this.version=this.instance.exports.getVersion(),this.n32=this.instance.exports.getFieldNumLen32(),this.instance.exports.getRawPrime();let t=new Uint32Array(this.n32);for(let n=0;n<this.n32;n++)t[this.n32-1-n]=this.instance.exports.readSharedRWMemory(n);this.prime=S(t),this.witnessSize=this.instance.exports.getWitnessSize(),this.sanityCheck=s}circom_version(){return this.instance.exports.getVersion()}async _doCalculateWitness(e,s){this.instance.exports.init(this.sanityCheck||s?1:0);let t="";var n=new Object;d(t,e,n);let o=Object.keys(n);var c=0;if(o.forEach(h=>{let l=N(h),g=parseInt(l.slice(0,8),16),u=parseInt(l.slice(8,16),16),i=A(n[h]),a=this.instance.exports.getInputSignalSize(g,u);if(a<0)throw new Error(`Signal ${h} not found
+`);if(i.length<a)throw new Error(`Not enough values for input signal ${h}
+`);if(i.length>a)throw new Error(`Too many values for input signal ${h}
+`);for(let f=0;f<i.length;f++){let _=L(R(i[f],this.prime),this.n32);for(let w=0;w<this.n32;w++)this.instance.exports.writeSharedRWMemory(w,_[this.n32-1-w]);try{this.instance.exports.setInputSignal(g,u,f),c++}catch(w){throw new Error(w)}}}),c<this.instance.exports.getInputSize())throw new Error(`Not all inputs have been set. Only ${c} out of ${this.instance.exports.getInputSize()}`)}async calculateWitness(e,s){let t=[];await this._doCalculateWitness(e,s);for(let n=0;n<this.witnessSize;n++){this.instance.exports.getWitness(n);let o=new Uint32Array(this.n32);for(let c=0;c<this.n32;c++)o[this.n32-1-c]=this.instance.exports.readSharedRWMemory(c);t.push(S(o))}return t}async calculateBinWitness(e,s){let t=new Uint32Array(this.witnessSize*this.n32),n=new Uint8Array(t.buffer);await this._doCalculateWitness(e,s);for(let o=0;o<this.witnessSize;o++){this.instance.exports.getWitness(o);let c=o*this.n32;for(let h=0;h<this.n32;h++)t[c+h]=this.instance.exports.readSharedRWMemory(h)}return n}async calculateWTNSBin(e,s){let t=new Uint32Array(this.witnessSize*this.n32+this.n32+11),n=new Uint8Array(t.buffer);await this._doCalculateWitness(e,s),n[0]=119,n[1]=116,n[2]=110,n[3]=115,t[1]=2,t[2]=2,t[3]=1;let o=this.n32*4,h=(8+o).toString(16);t[4]=parseInt(h.slice(0,8),16),t[5]=parseInt(h.slice(8,16),16),t[6]=o,this.instance.exports.getRawPrime();var l=7;for(let i=0;i<this.n32;i++)t[l+i]=this.instance.exports.readSharedRWMemory(i);l+=this.n32,t[l]=this.witnessSize,l++,t[l]=2,l++;let u=(o*this.witnessSize).toString(16);t[l]=parseInt(u.slice(0,8),16),t[l+1]=parseInt(u.slice(8,16),16),l+=2;for(let i=0;i<this.witnessSize;i++){this.instance.exports.getWitness(i);for(let a=0;a<this.n32;a++)t[l+a]=this.instance.exports.readSharedRWMemory(a);l+=this.n32}return n}};function m(r,e,s){if(Array.isArray(e))for(let t=0;t<e.length;t++){let n=r+"["+t+"]";m(n,e[t],s)}else d(r,e,s)}function d(r,e,s){if(Array.isArray(e)){let t=A(e);if(t.length>0){let n=typeof t[0];for(let o=1;o<t.length;o++)if(typeof t[o]!=n)throw new Error(`Types are not the same in the key ${r}`);n=="object"?m(r,e,s):s[r]=e}else s[r]=e}else typeof e=="object"?Object.keys(e).forEach(n=>{let o=r==""?n:r+"."+n;d(o,e[n],s)}):s[r]=e}function L(r,e){let s=[],t=BigInt(4294967296);for(;r;)s.unshift(Number(r%t)),r=r/t;if(e)for(var n=e-s.length;n>0;)s.unshift(0),n--;return s}function S(r){var e=BigInt(0);let s=BigInt(4294967296);for(let t=0;t<r.length;t++)e=e*s+BigInt(r[t]);return e}function A(r){var e=[];return s(e,r),e;function s(t,n){if(Array.isArray(n))for(let o=0;o<n.length;o++)s(t,n[o]);else t.push(n)}}function R(r,e){let s=BigInt(r)%e;return s<0&&(s+=e),s}function N(r){let e=BigInt(2)**BigInt(64),s=BigInt("0xCBF29CE484222325");for(var t=0;t<r.length;t++)s^=BigInt(r[t].charCodeAt()),s*=BigInt(1099511628211),s%=e;let n=s.toString(16),o=16-n.length;return n="0".repeat(o).concat(n),n}});var C=z(x());self.onmessage=async({data:r})=>{let{id:e,input:s,asset:t,environment:n}=r;try{if(!["testnet","mainnet"].includes(n)||!t?.path?.startsWith(`/zk/${n}/perps-v1/`)||!/^[a-f0-9]{64}$/u.test(t?.sha256))throw new Error("INVALID_POSITION_CALCULATOR");let o=await fetch(t.path,{credentials:"omit",redirect:"error",signal:AbortSignal.timeout(3e4)});if(!o.ok)throw new Error("POSITION_CALCULATOR_UNAVAILABLE");let c=await o.arrayBuffer();if(Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",c)),g=>g.toString(16).padStart(2,"0")).join("")!==t.sha256)throw new Error("POSITION_CALCULATOR_HASH_MISMATCH");let l=await(await(0,C.default)(c)).calculateWitness(s,1);self.postMessage({id:e,commitment:l[1].toString(),nullifier:l[2].toString()})}catch{self.postMessage({id:e,error:"PERPS_POSITION_CALCULATION_FAILED"})}};})();
