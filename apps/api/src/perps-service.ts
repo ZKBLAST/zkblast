@@ -74,6 +74,22 @@ export class PerpsService {
     `;
   }
 
+  async oracleHistory(
+    marketId: string,
+    input: Readonly<{ from: Date; to: Date; limit: number }>,
+  ) {
+    return this.#sql<Array<Record<string, unknown>>>`
+      select 'oracle' as source,oracle_updated_at as "observedAt",
+        (price_x18::numeric / 1000000000000000000)::text as price,
+        null::text as volume,block_number::text as "blockNumber",
+        null::text as "transactionHash",'USD' as "priceUnit"
+      from ${this.#sql(this.#schema)}.perp_oracle_prices
+      where market_id=${marketId} and canonical
+        and oracle_updated_at >= ${input.from} and oracle_updated_at <= ${input.to}
+      order by oracle_updated_at asc,block_number asc limit ${input.limit}
+    `;
+  }
+
   async marketCatalog() {
     return this.#sql<Array<Record<string, unknown>>>`
       select c.pool_address as "poolAddress",c.pool_model as "poolModel",
@@ -276,6 +292,8 @@ export class PerpsService {
       input.publicInputs[action.relayer] !== BigInt(privateExecution.relayer)
         || input.publicInputs[action.fee] !== privateExecution.feeRaw
     ) throw new Error("PERPS_RELAYER_TERMS_MISMATCH");
+    // The selected ABI overload is runtime-bound after the exact public-input length check above.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const calldata = encodeFunctionData({
       abi: shieldedPerpAdapterAbi,
       functionName: action.functionName,

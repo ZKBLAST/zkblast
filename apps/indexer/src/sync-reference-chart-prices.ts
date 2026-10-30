@@ -35,6 +35,8 @@ type Market = {
   contract_address: string;
   chain_id: string;
   metadata: Record<string, unknown>;
+  route_pool: string | null;
+  route_quote_address: string | null;
   has_oracle: boolean;
   has_reference: boolean;
 };
@@ -87,9 +89,16 @@ export async function syncReferenceChartPrices(input: {
   const markets = await sql.unsafe<
     Market[]
   >(`select m.id,m.source,m.symbol,m.contract_address,m.chain_id::text,m.metadata,
+    route.pool_identifier as route_pool,route.quote_address as route_quote_address,
     exists(select 1 from ${schema}.external_market_price_points p where p.market_id=m.id and p.source='oracle') as has_oracle,
     exists(select 1 from ${schema}.external_market_price_points p where p.market_id=m.id and p.source='reference') as has_reference
-    from ${schema}.external_markets m where m.status='active' order by m.symbol limit 250`);
+    from ${schema}.external_markets m
+    left join lateral (
+      select pool_identifier,quote_address from ${schema}.external_market_pairs
+      where market_id=m.id and route_status='validated' and pool_identifier is not null
+        and quote_address is not null order by priority asc limit 1
+    ) route on true
+    where m.status='active' order by m.symbol limit 250`);
   const stats = {
     referenceAccepted: 0,
     oracleAccepted: 0,
@@ -209,8 +218,8 @@ export async function syncReferenceChartPrices(input: {
         });
         stats.referenceAccepted++;
       } else {
-        const poolValue = market.metadata.poolIdentifier;
-        const quoteValue = market.metadata.sourceQuoteAddress;
+        const poolValue = market.route_pool ?? market.metadata.poolIdentifier;
+        const quoteValue = market.route_quote_address ?? market.metadata.sourceQuoteAddress;
         if (
           typeof poolValue !== "string" ||
           !/^0x[\da-f]{40}$/iu.test(poolValue) ||

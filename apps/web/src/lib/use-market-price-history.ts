@@ -18,11 +18,12 @@ export function useMarketPriceHistory(
   source: PriceSource | "auto",
   range: ChartRange = "1W",
   poolAddress: string | null = null,
+  perpsMarketId: string | null = null,
 ) {
   const available =
     source === "swap" ? Boolean(poolAddress) : Boolean(marketId);
   const requestId = useRef(0);
-  const key = `${marketId}:${poolAddress}:${source}:${range}`;
+  const key = `${marketId}:${poolAddress}:${perpsMarketId}:${source}:${range}`;
   const [snapshot, setSnapshot] = useState<{
     key: string;
     source: PriceSource;
@@ -70,7 +71,9 @@ export function useMarketPriceHistory(
           query.set("source", selected);
           const result = await apiRequest<{ items: MarketPricePoint[] }>(
             webPublicConfig.apiUrl,
-            selected === "swap" && poolAddress
+            selected === "oracle" && perpsMarketId
+              ? `/v1/perps/markets/${encodeURIComponent(perpsMarketId)}/chart?${query.toString()}`
+              : selected === "swap" && poolAddress
               ? `/v1/protocol/pools/${encodeURIComponent(poolAddress)}/chart?${query.toString()}`
               : `/v1/markets/${marketId}/chart?${query.toString()}`,
           );
@@ -105,7 +108,7 @@ export function useMarketPriceHistory(
           }));
       }
     },
-    [marketId, poolAddress, available, source, range, key, initialSource],
+    [marketId, poolAddress, perpsMarketId, available, source, range, key, initialSource],
   );
   useEffect(() => {
     void refresh();

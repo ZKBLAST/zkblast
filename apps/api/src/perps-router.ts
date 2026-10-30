@@ -14,6 +14,14 @@ const activityQuery = z.object({
 const modifyQuoteQuery = z.object({ leverageBps: z.coerce.number().int().min(10_000).max(100_000) });
 const bytes32 = z.string().regex(/^0x[\da-f]{64}$/iu);
 const unsigned = z.string().regex(/^\d+$/u);
+const chartQuery = z.object({
+  from: z.coerce.date(),
+  to: z.coerce.date(),
+  limit: z.coerce.number().int().min(1).max(2_000).default(500),
+}).refine((value) => value.to > value.from, { message: "to must be after from" })
+  .refine((value) => value.to.getTime() - value.from.getTime() <= 31 * 86_400_000, {
+    message: "chart range cannot exceed 31 days",
+  });
 const openBody = z.object({
   positionId: bytes32,
   ownerCommitment: bytes32,
@@ -42,6 +50,21 @@ export function createPerpsRouter(service: PerpsService) {
   router.get("/markets", async (_request, response, next) => {
     try {
       response.json({ items: await service.markets() });
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.get("/markets/:marketId/chart", async (request, response, next) => {
+    try {
+      const marketId = bytes32.parse(request.params.marketId);
+      const query = chartQuery.parse(request.query);
+      response.json({
+        marketId,
+        source: "oracle",
+        from: query.from.toISOString(),
+        to: query.to.toISOString(),
+        items: await service.oracleHistory(marketId, query),
+      });
     } catch (error) {
       next(error);
     }
@@ -124,7 +147,7 @@ export function createPerpsRouter(service: PerpsService) {
       next(error);
     }
   });
-  router.post("/prepare/close", async (request, response, next) => {
+  router.post("/prepare/close", (request, response, next) => {
     try {
       const body = closeBody.parse(request.body);
       response.json(service.prepareClose({

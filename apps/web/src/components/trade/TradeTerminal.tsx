@@ -36,6 +36,7 @@ function Terminal() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
+  const [perpsMarketId, setPerpsMarketId] = useState<string | null>(null);
   const instruments = tradeInstruments(
     protocol.pools,
     markets.items,
@@ -99,6 +100,7 @@ function Terminal() {
               poolAddress={selected?.pool?.address ?? null}
               pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
               inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
+              perpsMarketId={perpsMarketId}
             />
             <div className="border-t border-line px-4 py-3 text-xs text-muted">
               Oracle and reference observations are shown for market context. Position execution uses the Perps oracle and current risk limits.
@@ -108,6 +110,7 @@ function Terminal() {
             <PerpsPanel
               selectedPoolAddress={selected?.pool?.address}
               onSelectedPoolChange={(address) => update("pool", address.toLowerCase())}
+              onSelectedMarketChange={setPerpsMarketId}
               onBusyChange={setBusy}
               onConfirmed={() => setRevision((value) => value + 1)}
             />

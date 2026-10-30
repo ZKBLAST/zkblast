@@ -79,11 +79,13 @@ export function PerpsPanel({
   onConfirmed,
   selectedPoolAddress,
   onSelectedPoolChange,
+  onSelectedMarketChange,
 }: Readonly<{
   onBusyChange: (busy: boolean) => void;
   onConfirmed: () => void;
   selectedPoolAddress?: string;
   onSelectedPoolChange?: (poolAddress: string) => void;
+  onSelectedMarketChange?: (marketId: string | null) => void;
 }>) {
   const { config, injectedAddress, address, openWallet, toast } = useApp();
   const [markets, setMarkets] = useState<readonly PerpMarket[]>([]);
@@ -154,6 +156,9 @@ export function PerpsPanel({
 
   const selectedCatalog = catalog.find((item) => item.poolAddress === selectedPool);
   const market = markets.find((item) => item.marketId === selectedCatalog?.marketId);
+  useEffect(() => {
+    onSelectedMarketChange?.(market?.marketId ?? null);
+  }, [market?.marketId, onSelectedMarketChange]);
   const maximumLeverage = Math.max(1, Math.floor((market?.maxLeverageBps ?? 10_000) / 10_000));
   const notional = useMemo(() => {
     const value = Number(margin);

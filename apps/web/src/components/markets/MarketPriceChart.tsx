@@ -30,11 +30,13 @@ export function MarketPriceChart({
   poolAddress = null,
   pairLabel,
   inverted = false,
+  perpsMarketId = null,
 }: {
   marketId: string | null;
   poolAddress?: string | null;
   pairLabel?: string;
   inverted?: boolean;
+  perpsMarketId?: string | null;
 }) {
   const [selection, setSelection] = useState<{
     market: string;
@@ -51,6 +53,7 @@ export function MarketPriceChart({
     requestedSource,
     range,
     poolAddress,
+    perpsMarketId,
   );
   const bars = useMemo(
     () =>
