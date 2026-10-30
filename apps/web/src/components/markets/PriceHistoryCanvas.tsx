@@ -10,6 +10,7 @@ import {
   LineType,
   HistogramSeries,
   type IChartApi,
+  type IPriceLine,
   type ISeriesApi,
   type UTCTimestamp,
 } from "lightweight-charts";
@@ -21,6 +22,7 @@ import {
   type ChartStyle,
   type MarketCandle,
   type MarketVolumeBar,
+  type ChartPositionLine,
 } from "@/lib/market-chart-data";
 
 export function PriceHistoryCanvas({
@@ -30,6 +32,7 @@ export function PriceHistoryCanvas({
   volumes,
   volumeUnit,
   limited = false,
+  positionLines = [],
 }: {
   bars: readonly MarketCandle[];
   style: ChartStyle;
@@ -37,6 +40,7 @@ export function PriceHistoryCanvas({
   volumes: readonly MarketVolumeBar[];
   volumeUnit: string | null;
   limited?: boolean;
+  positionLines?: readonly ChartPositionLine[];
 }) {
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -45,6 +49,7 @@ export function PriceHistoryCanvas({
   >(null);
   const fitted = useRef(false);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  const positionLineRefs = useRef<IPriceLine[]>([]);
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const [tooltipLeft, setTooltipLeft] = useState(8);
   const barsRef = useRef(bars);
@@ -158,6 +163,7 @@ export function PriceHistoryCanvas({
       chartRef.current = null;
       seriesRef.current = null;
       volumeRef.current = null;
+      positionLineRefs.current = [];
     };
   }, [style, hasVolume]);
   useEffect(() => {
@@ -184,6 +190,21 @@ export function PriceHistoryCanvas({
       fitted.current = true;
     }
   }, [bars, volumes, style, hasVolume]);
+  useEffect(() => {
+    const series = seriesRef.current;
+    if (!series) return;
+    for (const line of positionLineRefs.current) series.removePriceLine(line);
+    positionLineRefs.current = positionLines
+      .filter((line) => Number.isFinite(line.price) && line.price > 0)
+      .map((line) => series.createPriceLine({
+        price: line.price,
+        color: line.color,
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: line.label,
+      }));
+  }, [positionLines, style]);
   const observation = hover ?? bars.at(-1);
   return (
     <div className="flex min-h-80 flex-1 flex-col">

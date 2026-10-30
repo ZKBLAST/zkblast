@@ -27,6 +27,7 @@ import { calculatePrivateNoteV2, createPrivateNoteV2 } from "@/lib/private-v2-no
 import { decryptJournalV2, journalStorageKeyV2, persistJournalV2, replaceJournalV2, type PrivateJournalV2 } from "@/lib/private-v2-journal";
 import { fetchPrivatePathV2 } from "@/lib/private-v2-path";
 import type { NoteScopeV2 } from "@/lib/notecrypto-v2";
+import type { ChartPositionLine } from "@/lib/market-chart-data";
 
 type RelayStatus = Readonly<{
   requestId: `0x${string}`;
@@ -55,6 +56,7 @@ export function PrivatePerpsPanel({
   onSideChange,
   onMarginChange,
   onLeverageChange,
+  onPositionLinesChange,
 }: Readonly<{
   marketLabel: string;
   marketId?: `0x${string}`;
@@ -66,6 +68,7 @@ export function PrivatePerpsPanel({
   onSideChange: (side: "long" | "short") => void;
   onMarginChange: (margin: string) => void;
   onLeverageChange: (leverage: number) => void;
+  onPositionLinesChange?: (lines: readonly (ChartPositionLine & { marketId: string })[]) => void;
 }>) {
   const { config } = useApp();
   const [passphrase, setPassphrase] = useState("");
@@ -149,6 +152,43 @@ export function PrivatePerpsPanel({
     const interval = setInterval(() => void refresh(), 5_000);
     return () => { controller.abort(); clearInterval(interval); };
   }, [journal]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const open = journal?.records.filter((record) => record.status === "open") ?? [];
+    if (!onPositionLinesChange || open.length === 0) {
+      onPositionLinesChange?.([]);
+      return () => controller.abort();
+    }
+    void Promise.all(open.map(async (record) => {
+      const ownerCommitment = `0x${BigInt(record.positionCommitment).toString(16).padStart(64, "0")}`;
+      const response = await apiRequest<{ items: Array<{
+        positionId: string;
+        marketId: string;
+        entryPriceX18: string;
+        marginRaw: string;
+        isLong: boolean;
+        status: string;
+      }> }>(
+        webPublicConfig.apiUrl,
+        `/v1/perps/positions?ownerCommitment=${encodeURIComponent(ownerCommitment)}`,
+        { signal: controller.signal },
+      );
+      const position = response.items.find((item) => item.status === "open");
+      return position ? {
+        id: position.positionId,
+        marketId: position.marketId,
+        price: Number(position.entryPriceX18) / 1e18,
+        color: position.isLong ? "#56d9ad" : "#f07b87",
+        label: `SHIELDED ${position.isLong ? "LONG" : "SHORT"} · ${(Number(position.marginRaw) / 1e6).toLocaleString(undefined, { maximumFractionDigits: 4 })} USDG`,
+      } : null;
+    })).then((lines) => {
+      if (!controller.signal.aborted) onPositionLinesChange(lines.filter((line) => line !== null));
+    }).catch(() => {
+      if (!controller.signal.aborted) onPositionLinesChange([]);
+    });
+    return () => controller.abort();
+  }, [journal, onPositionLinesChange]);
 
   useEffect(() => {
     if (!journal) return;

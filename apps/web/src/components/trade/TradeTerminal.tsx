@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PositionsView } from "@/app/positions/PositionsView";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
@@ -9,6 +9,9 @@ import { PerpsAccountWorkspace } from "@/components/perps/PerpsAccountWorkspace"
 import { useApp } from "@/components/shell/AppProvider";
 import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
+import { apiRequest } from "@/lib/api-client";
+import { webPublicConfig } from "@/config/public-env";
+import type { ChartPositionLine } from "@/lib/market-chart-data";
 import {
   tradeInstruments,
   tradeMode,
@@ -29,7 +32,7 @@ export function TradeTerminal() {
 }
 
 function Terminal() {
-  const { config } = useApp();
+  const { config, address, injectedAddress } = useApp();
   const protocol = useProtocolData();
   const markets = useExternalMarkets();
   const search = useSearchParams();
@@ -37,6 +40,16 @@ function Terminal() {
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
   const [perpsMarketId, setPerpsMarketId] = useState<string | null>(null);
+  const [perpsPositions, setPerpsPositions] = useState<readonly Readonly<{
+    positionId: string;
+    marketId: string;
+    isLong: boolean;
+    marginRaw: string;
+    entryPriceX18: string;
+    status: "open" | "closed" | "liquidated";
+  }>[]>([]);
+  const [privatePositionLines, setPrivatePositionLines] = useState<readonly (ChartPositionLine & { marketId: string })[]>([]);
+  const wallet = injectedAddress ?? address;
   const instruments = tradeInstruments(
     protocol.pools,
     markets.items,
@@ -48,6 +61,37 @@ function Terminal() {
     instruments[0];
   const mode = tradeMode(search.get("mode"));
   const panel = tradePanel(search.get("panel"));
+
+  useEffect(() => {
+    const controller = new AbortController();
+    if (mode !== "perps" || !wallet) {
+      setPerpsPositions([]);
+      return () => controller.abort();
+    }
+    void apiRequest<{ items: typeof perpsPositions }>(
+      webPublicConfig.apiUrl,
+      `/v1/perps/positions?ownerAddress=${encodeURIComponent(wallet)}`,
+      { signal: controller.signal },
+    ).then((response) => setPerpsPositions(response.items)).catch(() => {
+      if (!controller.signal.aborted) setPerpsPositions([]);
+    });
+    return () => controller.abort();
+  }, [mode, revision, wallet]);
+  const publicPositionLines = useMemo(() => perpsPositions
+    .filter((position) => position.status === "open" && position.marketId === perpsMarketId)
+    .map((position) => ({
+      id: position.positionId,
+      price: Number(position.entryPriceX18) / 1e18,
+      color: position.isLong ? "#56d9ad" : "#f07b87",
+      label: `${position.isLong ? "LONG" : "SHORT"} · ${(Number(position.marginRaw) / 1e6).toLocaleString(undefined, { maximumFractionDigits: 4 })} USDG`,
+    })), [perpsMarketId, perpsPositions]);
+  const positionLines = useMemo(
+    () => [
+      ...publicPositionLines,
+      ...privatePositionLines.filter((line) => line.marketId === perpsMarketId),
+    ],
+    [perpsMarketId, privatePositionLines, publicPositionLines],
+  );
 
   function update(key: string, value: string) {
     if (busy) return;
@@ -101,6 +145,7 @@ function Terminal() {
               pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
               inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
               perpsMarketId={perpsMarketId}
+              positionLines={positionLines}
             />
             <div className="border-t border-line px-4 py-3 text-xs text-muted">
               Oracle and reference observations are shown for market context. Position execution uses the Perps oracle and current risk limits.
@@ -111,6 +156,7 @@ function Terminal() {
               selectedPoolAddress={selected?.pool?.address}
               onSelectedPoolChange={(address) => update("pool", address.toLowerCase())}
               onSelectedMarketChange={setPerpsMarketId}
+              onPrivatePositionLinesChange={setPrivatePositionLines}
               onBusyChange={setBusy}
               onConfirmed={() => setRevision((value) => value + 1)}
             />

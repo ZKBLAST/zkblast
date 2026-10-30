@@ -86,16 +86,17 @@ const protocolAddresses = resolveProtocolAddresses(manifest, {
 const perpVaultDeployment = Object.values(manifest.contracts).find(
   (contract) => contract.contractName === "LiquidityVaultUSDG",
 );
+const perpVaultAddress = manifest.perps?.liquidityVault
+  ?? perpVaultDeployment?.proxyAddress
+  ?? perpVaultDeployment?.implementationAddress;
 const usdgAsset = manifest.shielded?.assets.find((asset) => asset.symbol === "USDG");
 const perpsService = new PerpsService(
   directDatabaseUrl,
   serverConfig.SUPABASE_SCHEMA,
-  perpVaultDeployment && (manifest.perps || usdgAsset)
+  perpVaultAddress && (manifest.perps || usdgAsset)
     ? {
         chainId: serverConfig.CHAIN_ID,
-        vault: getAddress(
-          perpVaultDeployment.proxyAddress ?? perpVaultDeployment.implementationAddress,
-        ),
+        vault: getAddress(perpVaultAddress),
         collateral: getAddress(manifest.perps?.collateral ?? usdgAsset!.address),
         ...(manifest.perps
           ? {

@@ -41,6 +41,12 @@ export type MarketCandle = {
 };
 
 export type MarketVolumeBar = { time: number; value: number; color: string };
+export type ChartPositionLine = Readonly<{
+  id: string;
+  price: number;
+  label: string;
+  color: string;
+}>;
 
 /** Quote-token traded volume only; oracle reports and rolling daily totals are not bar volume. */
 export function marketVolumes(

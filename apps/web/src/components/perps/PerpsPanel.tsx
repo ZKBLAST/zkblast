@@ -6,6 +6,7 @@ import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import { useApp } from "@/components/shell/AppProvider";
 import { executeTransactions, type PreparedTransaction } from "@/lib/swap-flow";
+import type { ChartPositionLine } from "@/lib/market-chart-data";
 import { PrivatePerpsPanel } from "./PrivatePerpsPanel";
 
 type PerpMarket = Readonly<{
@@ -80,12 +81,14 @@ export function PerpsPanel({
   selectedPoolAddress,
   onSelectedPoolChange,
   onSelectedMarketChange,
+  onPrivatePositionLinesChange,
 }: Readonly<{
   onBusyChange: (busy: boolean) => void;
   onConfirmed: () => void;
   selectedPoolAddress?: string;
   onSelectedPoolChange?: (poolAddress: string) => void;
   onSelectedMarketChange?: (marketId: string | null) => void;
+  onPrivatePositionLinesChange?: (lines: readonly (ChartPositionLine & { marketId: string })[]) => void;
 }>) {
   const { config, injectedAddress, address, openWallet, toast } = useApp();
   const [markets, setMarkets] = useState<readonly PerpMarket[]>([]);
@@ -316,6 +319,7 @@ export function PerpsPanel({
           onSideChange={setSide}
           onMarginChange={setMargin}
           onLeverageChange={setLeverage}
+          onPositionLinesChange={onPrivatePositionLinesChange}
         />
       ) : loading ? (
         <div className="space-y-2" aria-label="Loading Perps market">

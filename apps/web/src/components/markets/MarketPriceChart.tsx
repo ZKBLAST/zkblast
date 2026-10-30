@@ -20,6 +20,7 @@ import {
   marketVolumes,
   type ChartInterval,
   type ChartStyle,
+  type ChartPositionLine,
   type PriceSource,
 } from "@/lib/market-chart-data";
 import { useMarketPriceHistory } from "@/lib/use-market-price-history";
@@ -31,12 +32,14 @@ export function MarketPriceChart({
   pairLabel,
   inverted = false,
   perpsMarketId = null,
+  positionLines = [],
 }: {
   marketId: string | null;
   poolAddress?: string | null;
   pairLabel?: string;
   inverted?: boolean;
   perpsMarketId?: string | null;
+  positionLines?: readonly ChartPositionLine[];
 }) {
   const [selection, setSelection] = useState<{
     market: string;
@@ -209,6 +212,7 @@ export function MarketPriceChart({
             limited={items.length >= 2000}
             style={style}
             label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
+            positionLines={positionLines}
           />
         )}
       </div>
