@@ -11,7 +11,10 @@ import { ViemChainReader } from "./viem-chain-reader.js";
 import { marketChartSynchronizer } from "./market-chart-sync.js";
 import { fastCatchup } from "./fast-catchup.js";
 import { privateV2Synchronizer } from "./private-v2-sync.js";
-import { deploymentAddress, PerpsStateSynchronizer } from "./perps-state-sync.js";
+import {
+  deploymentAddress,
+  PerpsStateSynchronizer,
+} from "./perps-state-sync.js";
 
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -36,6 +39,17 @@ const manifest = await loadDeploymentManifestFile(
   resolve(projectRoot, config.DEPLOYMENT_MANIFEST_PATH),
   { environment: config.APP_ENV, chainId: config.CHAIN_ID },
 );
+const configuredPerpsAddresses = manifest.perps
+  ? [
+      manifest.perps.registry,
+      manifest.perps.oracle,
+      manifest.perps.funding,
+      manifest.perps.engine,
+      manifest.perps.insuranceFund,
+      manifest.perps.liquidityVault,
+      manifest.perps.shieldedAdapter,
+    ]
+  : [];
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -45,7 +59,10 @@ const addresses = [
   ...(manifest.shielded
     ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
     : []),
-].map(getAddress).filter((address, index, all) => all.indexOf(address) === index);
+  ...configuredPerpsAddresses,
+]
+  .map(getAddress)
+  .filter((address, index, all) => all.indexOf(address) === index);
 const client = createPublicClient({
   cacheTime: 0,
   transport: http(config.RPC_URL, { timeout: 20000, retryCount: 1 }),
@@ -78,24 +95,42 @@ const privateV2 = manifest.shieldedV2
     })
   : undefined;
 const perpsDeployments = {
-  oracle: deploymentAddress(manifest.contracts, "ChainlinkOracleAdapter"),
-  engine: deploymentAddress(manifest.contracts, "PerpEngine"),
-  funding: deploymentAddress(manifest.contracts, "FundingRateModule"),
-  vault: deploymentAddress(manifest.contracts, "LiquidityVaultUSDG"),
-  insurance: deploymentAddress(manifest.contracts, "InsuranceFund"),
+  registry:
+    manifest.perps?.registry ??
+    deploymentAddress(manifest.contracts, "PerpMarketRegistry"),
+  oracle:
+    manifest.perps?.oracle ??
+    deploymentAddress(manifest.contracts, "ChainlinkOracleAdapter"),
+  engine:
+    manifest.perps?.engine ??
+    deploymentAddress(manifest.contracts, "PerpEngine"),
+  funding:
+    manifest.perps?.funding ??
+    deploymentAddress(manifest.contracts, "FundingRateModule"),
+  vault:
+    manifest.perps?.liquidityVault ??
+    deploymentAddress(manifest.contracts, "LiquidityVaultUSDG"),
+  insurance:
+    manifest.perps?.insuranceFund ??
+    deploymentAddress(manifest.contracts, "InsuranceFund"),
 };
 const perpsState = new PerpsStateSynchronizer(
   runner.SUPABASE_DIRECT_DATABASE_URL,
   config.SUPABASE_SCHEMA,
   client,
-  perpsDeployments.oracle && perpsDeployments.engine && perpsDeployments.funding &&
-    perpsDeployments.vault && perpsDeployments.insurance
+  perpsDeployments.registry &&
+    perpsDeployments.oracle &&
+    perpsDeployments.engine &&
+    perpsDeployments.funding &&
+    perpsDeployments.vault &&
+    perpsDeployments.insurance
     ? {
-        oracle: perpsDeployments.oracle,
-        engine: perpsDeployments.engine,
-        funding: perpsDeployments.funding,
-        vault: perpsDeployments.vault,
-        insurance: perpsDeployments.insurance,
+        registry: getAddress(perpsDeployments.registry),
+        oracle: getAddress(perpsDeployments.oracle),
+        engine: getAddress(perpsDeployments.engine),
+        funding: getAddress(perpsDeployments.funding),
+        vault: getAddress(perpsDeployments.vault),
+        insurance: getAddress(perpsDeployments.insurance),
       }
     : undefined,
 );
