@@ -1,6 +1,7 @@
 import postgres from "postgres";
 import { encodeFunctionData, keccak256, type Address, type Hex } from "viem";
 import { erc20Abi, liquidityVaultUsdGAbi, shieldedPerpAdapterAbi } from "@zkblast/abi";
+import { perpsRelaySimulationErrorCode } from "./perps-relay-errors.js";
 
 type PerpsExecutionConfig = Readonly<{
   chainId: number;
@@ -33,6 +34,7 @@ export class PerpsService {
   readonly #quoteClose: ((positionId: Hex) => Promise<CloseQuote>) | undefined;
   readonly #quoteModify: ((positionId: Hex, leverageBps: number, externalFeeRaw: bigint) => Promise<ModifyQuote>) | undefined;
   readonly #liquidatedResidual: ((positionId: Hex) => Promise<bigint>) | undefined;
+  readonly #simulatePrivateRelay: ((input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>) | undefined;
 
   constructor(
     databaseUrl: string,
@@ -41,6 +43,7 @@ export class PerpsService {
     quoteClose?: (positionId: Hex) => Promise<CloseQuote>,
     quoteModify?: (positionId: Hex, leverageBps: number, externalFeeRaw: bigint) => Promise<ModifyQuote>,
     liquidatedResidual?: (positionId: Hex) => Promise<bigint>,
+    simulatePrivateRelay?: (input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>,
   ) {
     if (!/^zkblast_(testnet|mainnet)$/u.test(schema)) throw new Error("Invalid schema");
     this.#sql = postgres(databaseUrl, { max: 3 });
@@ -49,6 +52,7 @@ export class PerpsService {
     this.#quoteClose = quoteClose;
     this.#quoteModify = quoteModify;
     this.#liquidatedResidual = liquidatedResidual;
+    this.#simulatePrivateRelay = simulatePrivateRelay;
   }
 
   async markets() {
@@ -300,6 +304,17 @@ export class PerpsService {
       args: [input.proof, input.publicInputs],
     } as never);
     const requestId = keccak256(calldata);
+    if (this.#simulatePrivateRelay) {
+      try {
+        await this.#simulatePrivateRelay({
+          from: privateExecution.relayer,
+          to: privateExecution.adapter,
+          data: calldata,
+        });
+      } catch (error) {
+        throw new Error(perpsRelaySimulationErrorCode(error));
+      }
+    }
     await this.#sql`
       insert into ${this.#sql(this.#schema)}.perp_relayer_jobs
         (request_id,action,adapter,calldata,deadline)

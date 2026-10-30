@@ -310,6 +310,9 @@ export function createApp(
       ["PERP_RISK_LIMIT", "PERP_INVALID_DEADLINE"].includes(error.message);
     const perpsRelayMissing =
       error instanceof Error && error.message === "PERPS_RELAY_REQUEST_NOT_FOUND";
+    const perpsRelayPreflight =
+      error instanceof Error &&
+      ["STALE_ORACLE_PRICE", "PERPS_RELAY_SIMULATION_FAILED"].includes(error.message);
     const status = invalidRequest
       ? 400
       : authenticationFailure
@@ -320,6 +323,8 @@ export function createApp(
             ? 404
             : perpsRelayMissing
               ? 404
+              : perpsRelayPreflight
+                ? 409
               : databaseCapacity || perpsUnavailable
               ? 503
               : perpsRequestConflict
@@ -349,6 +354,10 @@ export function createApp(
                 ? "COMMITMENT_NOT_FOUND"
                 : perpsRelayMissing
                   ? "PERPS_RELAY_REQUEST_NOT_FOUND"
+                  : perpsRelayPreflight
+                    ? error instanceof Error
+                      ? error.message
+                      : "PERPS_RELAY_SIMULATION_FAILED"
                   : databaseCapacity
                   ? "TEMPORARILY_UNAVAILABLE"
                   : perpsUnavailable

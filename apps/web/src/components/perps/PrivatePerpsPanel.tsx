@@ -420,6 +420,10 @@ export function PrivatePerpsPanel({
           setSelectedNote("");
         }
         setError("This private note is not available in the active vault. Select another confirmed note or make a new private deposit.");
+      } else if (message.includes("STALE_ORACLE_PRICE")) {
+        setError("The market price is being refreshed. No position was queued and your private note remains available. Try again shortly.");
+      } else if (message.includes("PERPS_RELAY_SIMULATION_FAILED")) {
+        setError("The position did not pass the onchain preflight. No transaction was queued and your private note remains available. Refresh the market and try again.");
       } else {
         setError(message);
       }

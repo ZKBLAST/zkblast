@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import type { Address, Hex } from "viem";
+import { perpsRelaySimulationErrorCode } from "./perps-relay-errors.js";
 
 type RelayJob = Readonly<{
   requestId: Hex;
@@ -87,8 +88,8 @@ export class PerpsRelayerWorker {
   async #execute(job: RelayJob): Promise<void> {
     try {
       await this.#chain.simulate({ from: this.#account, to: this.#adapter, data: job.calldata });
-    } catch {
-      await this.#fail(job.requestId, "SIMULATION_FAILED");
+    } catch (error) {
+      await this.#fail(job.requestId, perpsRelaySimulationErrorCode(error));
       return;
     }
     let estimate: bigint;

@@ -133,6 +133,11 @@ const perpsService = new PerpsService(
         args: [positionId],
       })
     : undefined,
+  manifest.perps
+    ? async ({ from, to, data }) => {
+        await chainClient.call({ account: from, to, data });
+      }
+    : undefined,
 );
 const swapService = new SwapService(
   chainClient,
