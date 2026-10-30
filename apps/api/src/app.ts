@@ -312,7 +312,7 @@ export function createApp(
       error instanceof Error && error.message === "PERPS_RELAY_REQUEST_NOT_FOUND";
     const perpsRelayPreflight =
       error instanceof Error &&
-      ["STALE_ORACLE_PRICE", "PERPS_RELAY_SIMULATION_FAILED"].includes(error.message);
+      ["STALE_ORACLE_PRICE", "PRICE_LIMIT_EXCEEDED", "PERPS_RELAY_SIMULATION_FAILED"].includes(error.message);
     const status = invalidRequest
       ? 400
       : authenticationFailure

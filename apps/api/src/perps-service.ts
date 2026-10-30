@@ -35,6 +35,7 @@ export class PerpsService {
   readonly #quoteModify: ((positionId: Hex, leverageBps: number, externalFeeRaw: bigint) => Promise<ModifyQuote>) | undefined;
   readonly #liquidatedResidual: ((positionId: Hex) => Promise<bigint>) | undefined;
   readonly #simulatePrivateRelay: ((input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>) | undefined;
+  readonly #latestOraclePrice: ((oracleId: Hex) => Promise<Readonly<{ value: bigint; updatedAt: bigint }>>) | undefined;
 
   constructor(
     databaseUrl: string,
@@ -44,6 +45,7 @@ export class PerpsService {
     quoteModify?: (positionId: Hex, leverageBps: number, externalFeeRaw: bigint) => Promise<ModifyQuote>,
     liquidatedResidual?: (positionId: Hex) => Promise<bigint>,
     simulatePrivateRelay?: (input: Readonly<{ from: Address; to: Address; data: Hex }>) => Promise<void>,
+    latestOraclePrice?: (oracleId: Hex) => Promise<Readonly<{ value: bigint; updatedAt: bigint }>>,
   ) {
     if (!/^zkblast_(testnet|mainnet)$/u.test(schema)) throw new Error("Invalid schema");
     this.#sql = postgres(databaseUrl, { max: 3 });
@@ -53,6 +55,7 @@ export class PerpsService {
     this.#quoteModify = quoteModify;
     this.#liquidatedResidual = liquidatedResidual;
     this.#simulatePrivateRelay = simulatePrivateRelay;
+    this.#latestOraclePrice = latestOraclePrice;
   }
 
   async markets() {
@@ -92,6 +95,18 @@ export class PerpsService {
         and oracle_updated_at >= ${input.from} and oracle_updated_at <= ${input.to}
       order by oracle_updated_at asc,block_number asc limit ${input.limit}
     `;
+  }
+
+  async currentOraclePrice(marketId: Hex) {
+    if (!this.#latestOraclePrice) throw new Error("PERPS_ORACLE_UNAVAILABLE");
+    const rows = await this.#sql<Array<{ oracleId: Hex }>>`
+      select oracle_id as "oracleId" from ${this.#sql(this.#schema)}.perp_markets
+      where market_id=${marketId.toLowerCase()} limit 1
+    `;
+    const market = rows[0];
+    if (!market) throw new Error("PERP_MARKET_UNAVAILABLE");
+    const price = await this.#latestOraclePrice(market.oracleId);
+    return { marketId, priceX18: price.value.toString(), updatedAt: price.updatedAt.toString(), source: "onchain_oracle" };
   }
 
   async marketCatalog() {

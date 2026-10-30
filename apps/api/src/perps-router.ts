@@ -69,6 +69,15 @@ export function createPerpsRouter(service: PerpsService) {
       next(error);
     }
   });
+  router.get("/markets/:marketId/price", async (request, response, next) => {
+    try {
+      response.json(await service.currentOraclePrice(
+        bytes32.parse(request.params.marketId) as `0x${string}`,
+      ));
+    } catch (error) {
+      next(error);
+    }
+  });
   router.get("/catalog", async (_request, response, next) => {
     try {
       response.json({ items: await service.marketCatalog() });

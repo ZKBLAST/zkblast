@@ -360,7 +360,11 @@ export function PrivatePerpsPanel({
         is_long: side === "long" ? "1" : "0", margin: marginRaw.toString(),
         leverage_bps: String(leverage * 10_000), owner_secret: ownerSecret, owner_nonce: ownerNonce,
       });
-      const price = BigInt(currentPriceX18);
+      const livePrice = await apiRequest<{ priceX18: string }>(
+        webPublicConfig.apiUrl,
+        `/v1/perps/markets/${marketId}/price`,
+      );
+      const price = BigInt(livePrice.priceX18);
       const acceptablePrice = side === "long" ? price * 10_100n / 10_000n : price * 9_900n / 10_000n;
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200);
       const statement = {
@@ -422,6 +426,8 @@ export function PrivatePerpsPanel({
         setError("This private note is not available in the active vault. Select another confirmed note or make a new private deposit.");
       } else if (message.includes("STALE_ORACLE_PRICE")) {
         setError("The market price is being refreshed. No position was queued and your private note remains available. Try again shortly.");
+      } else if (message.includes("PRICE_LIMIT_EXCEEDED")) {
+        setError("The market moved beyond the prepared price limit. No position was queued and your private note remains available. Refresh the market and prepare a new position.");
       } else if (message.includes("PERPS_RELAY_SIMULATION_FAILED")) {
         setError("The position did not pass the onchain preflight. No transaction was queued and your private note remains available. Refresh the market and try again.");
       } else {

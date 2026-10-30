@@ -9,7 +9,7 @@ import { resolveProtocolAddresses } from "@zkblast/sdk";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createPublicClient, getAddress, http, keccak256 } from "viem";
+import { createPublicClient, getAddress, http, keccak256, parseAbi } from "viem";
 import { z } from "zod";
 import { createApp } from "./app.js";
 import { AuthService } from "./auth-service.js";
@@ -137,6 +137,14 @@ const perpsService = new PerpsService(
     ? async ({ from, to, data }) => {
         await chainClient.call({ account: from, to, data });
       }
+    : undefined,
+  manifest.perps
+    ? async (oracleId) => chainClient.readContract({
+        address: getAddress(manifest.perps!.oracle),
+        abi: parseAbi(["function latestPrice(bytes32) view returns ((uint256 value,uint64 updatedAt) price)"]),
+        functionName: "latestPrice",
+        args: [oracleId],
+      })
     : undefined,
 );
 const swapService = new SwapService(

@@ -1,5 +1,6 @@
 const simulationErrorSelectors = new Map<string, string>([
   ["0xa1e56ace", "STALE_ORACLE_PRICE"],
+  ["0x5cffeeff", "PRICE_LIMIT_EXCEEDED"],
 ]);
 
 function findRevertSelector(value: unknown, visited = new Set<unknown>()): string | null {
