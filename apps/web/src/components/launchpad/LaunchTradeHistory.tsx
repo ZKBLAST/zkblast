@@ -26,6 +26,7 @@ export function LaunchTradeHistory({
       const result = await apiRequest<{ items: DbcTrade[] }>(
         webPublicConfig.apiUrl,
         `/v1/dbc/launches/${launchId}/trades?limit=50`,
+        { cache: "no-store" },
       );
       setItems(result.items);
     } catch {

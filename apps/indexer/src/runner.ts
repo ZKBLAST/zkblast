@@ -168,7 +168,10 @@ async function reconcileRecentDbcEvents(): Promise<void> {
   const head =
     (await client.getBlockNumber()) - BigInt(runner.INDEXER_CONFIRMATIONS);
   const deploymentBlock = BigInt(manifest.dbc.deploymentBlock);
-  const recentStart = head > 3_000n ? head - 3_000n : 0n;
+  // The long-range backfill remains available for recovery. The live runner only
+  // revisits the recent finalized window so swaps and fee accruals become visible
+  // without repeatedly scanning thousands of blocks.
+  const recentStart = head > 256n ? head - 256n : 0n;
   const fromBlock =
     recentStart > deploymentBlock ? recentStart : deploymentBlock;
   for (let from = fromBlock; from <= head; from += 2_000n) {
@@ -237,7 +240,7 @@ async function synchronize(): Promise<void> {
       await service.sync(startBlock, 1n);
     }
     const checkpoint = await repository.checkpoint(config.CHAIN_ID);
-    if (Date.now() - lastDbcSync >= 30_000) {
+    if (Date.now() - lastDbcSync >= 3_000) {
       await reconcileRecentDbcEvents();
       lastDbcSync = Date.now();
     }

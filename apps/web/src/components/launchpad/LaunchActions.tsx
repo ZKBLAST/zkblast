@@ -363,9 +363,6 @@ export function LaunchActions({
       setQuoteAt(0);
       setAmount("");
       onComplete();
-      window.setTimeout(onComplete, 4_000);
-      window.setTimeout(onComplete, 10_000);
-      window.setTimeout(onComplete, 20_000);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "TRADE_FAILED");
     } finally {
@@ -410,8 +407,6 @@ export function LaunchActions({
       });
       toast({ kind: "success", title: "Transaction confirmed" });
       onComplete();
-      window.setTimeout(onComplete, 4_000);
-      window.setTimeout(onComplete, 10_000);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "TRANSACTION_FAILED");
     } finally {

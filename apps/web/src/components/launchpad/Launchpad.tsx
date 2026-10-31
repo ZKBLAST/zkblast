@@ -7,7 +7,7 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatTokenAmount, type DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -40,7 +40,21 @@ export function Launchpad() {
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const [wizard, setWizard] = useState(false);
+  const liveRefreshTimers = useRef<number[]>([]);
+  const loadedOnce = useRef(false);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
+  const refreshRealtime = useCallback(() => {
+    liveRefreshTimers.current.forEach((timer) => window.clearTimeout(timer));
+    liveRefreshTimers.current = [];
+    for (let delay = 0; delay <= 36_000; delay += 2_000) {
+      liveRefreshTimers.current.push(window.setTimeout(refresh, delay));
+    }
+  }, [refresh]);
+  useEffect(
+    () => () =>
+      liveRefreshTimers.current.forEach((timer) => window.clearTimeout(timer)),
+    [],
+  );
   const completeLaunch = useCallback(
     (launch?: DbcLaunch) => {
       if (launch) {
@@ -57,21 +71,22 @@ export function Launchpad() {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
+    if (!loadedOnce.current) setLoading(true);
     setError("");
     void Promise.all([
       apiRequest<{ items: DbcTemplate[] }>(
         webPublicConfig.apiUrl,
         "/v1/dbc/templates?limit=100",
-        { signal: controller.signal },
+        { signal: controller.signal, cache: "no-store" },
       ),
       apiRequest<{ items: DbcLaunch[] }>(
         webPublicConfig.apiUrl,
         "/v1/dbc/launches?limit=100",
-        { signal: controller.signal },
+        { signal: controller.signal, cache: "no-store" },
       ),
       apiRequest<DbcAddresses>(webPublicConfig.apiUrl, "/v1/dbc/deployment", {
         signal: controller.signal,
+        cache: "no-store",
       }),
     ])
       .then(([templateResult, launchResult, deploymentResult]) => {
@@ -95,7 +110,10 @@ export function Launchpad() {
           );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          loadedOnce.current = true;
+          setLoading(false);
+        }
       });
     return () => controller.abort();
   }, [revision]);
@@ -330,7 +348,7 @@ export function Launchpad() {
             <LaunchActions
               launch={selected}
               deployment={deployment}
-              onComplete={refresh}
+              onComplete={refreshRealtime}
             />
           ) : (
             <aside className="border-l border-line p-5">

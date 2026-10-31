@@ -37,7 +37,7 @@ export function LaunchChart({
     void apiRequest<{ items: DbcCandle[] }>(
       webPublicConfig.apiUrl,
       `/v1/dbc/launches/${launchId}/candles?interval=${interval}&from=${from.toISOString()}&to=${to.toISOString()}&limit=2000`,
-      { signal: controller.signal },
+      { signal: controller.signal, cache: "no-store" },
     )
       .then((result) => setItems(result.items))
       .catch((reason) => {
