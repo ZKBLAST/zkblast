@@ -9,6 +9,7 @@
     "start": "node dist/runner.js",
     "sync:charts": "node --import tsx src/run-market-chart-sync.ts",
     "catchup": "node --import tsx src/run-fast-catchup.ts",
+    "backfill:dbc": "node --import tsx src/run-dbc-backfill.ts",
     "sync:private-v2": "node --import tsx src/run-private-v2-sync.ts",
     "backfill:testnet-market": "node --import tsx src/backfill-testnet-market.ts",
     "backfill:testnet-shielded": "node --import tsx src/backfill-testnet-shielded.ts",

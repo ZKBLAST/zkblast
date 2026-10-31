@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "environment": "testnet",
+  "chainId": 46630,
+  "simulatedChainId": 31337,
+  "referenceBlock": "145844932",
+  "planSha256": "070339ec0f8dcbfd5309dd36c4723b8b03fad06f6b4f8d86b8e94b7bec2305fb",
+  "transactionCount": 23,
+  "totalGasUsed": "18205881",
+  "gasPriceWei": "10000000",
+  "estimatedFeeETH": "0.00018205881",
+  "suggestedGasLimit": "22757352",
+  "suggestedGasPriceCapWei": "20000000",
+  "suggestedFeeCeilingETH": "0.00045514704",
+  "stages": [
+    {
+      "stage": "deploy-configRegistryImplementation",
+      "gasUsed": "2684274",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x63f6864f7185484faedb8ca1d8c94bf41e1b97b9878c0959b8408f389712317a"
+    },
+    {
+      "stage": "deploy-configRegistry",
+      "gasUsed": "206780",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xc9f5b004b8c77d1245c9d04a956a5c436d612cbf31942508fb67256c4efe82fe"
+    },
+    {
+      "stage": "deploy-launchTokenDeployer",
+      "gasUsed": "809850",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xd44fd806bbcabc988e66f500305215832dfff431d1112bfc5eb2e3850a06712f"
+    },
+    {
+      "stage": "deploy-virtualPoolDeployer",
+      "gasUsed": "4774128",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xb2994adf2c22039eeac38c0a8a4a74a5d4cd37dda42cc29f018259b2ac0c2916"
+    },
+    {
+      "stage": "deploy-launchFactoryImplementation",
+      "gasUsed": "1970025",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x7f61c29488ae46b9f3e0a14368099702e0b14066435d6062bb9be6803a808f62"
+    },
+    {
+      "stage": "deploy-launchFactory",
+      "gasUsed": "255261",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xbdbfa2fa6b6de90c41df2dbdc1cf94e506888b95c22f8b2813c3f8642d377000"
+    },
+    {
+      "stage": "deploy-launchpadRouterImplementation",
+      "gasUsed": "1302428",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x9359b319c6568854f2876fb6b439c14f847464d243b5122bf87fdd76f8c06f9f"
+    },
+    {
+      "stage": "deploy-launchpadRouter",
+      "gasUsed": "204712",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xcef135163b7461e48160c4958df957a5834e339a09308170eb98aeeb29d2023a"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrowImplementation",
+      "gasUsed": "1193450",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x6a168e5bc684f2f738928a3b1d60c2c175aaa1907b69ca3e9433269af250ca56"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrow",
+      "gasUsed": "182005",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xd190994b5cf2c316e439ae683db9d72ed275f9d25e5643a7f72e7de15ff4784b"
+    },
+    {
+      "stage": "deploy-graduationManagerImplementation",
+      "gasUsed": "2216114",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x14a67d275aaed74294c9d5222228d65d636fff680930988f395f05e3170b3886"
+    },
+    {
+      "stage": "deploy-graduationManager",
+      "gasUsed": "227345",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x442c8a601efd67bc93d0a86e633ab915065b52ddb9cf9e8588f7043b65b14f81"
+    },
+    {
+      "stage": "deploy-curveQuoter",
+      "gasUsed": "443781",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x3159464196293fa4bab46e021dac516d397013b580f3996463e13e8e2fbafc28"
+    },
+    {
+      "stage": "deploy-dammGraduationAdapter",
+      "gasUsed": "857181",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x8bd0138035960b06f2b806a93b063d04ee8947ce392b544386e13cfbf34aa797"
+    },
+    {
+      "stage": "configure-bindLaunchTokenDeployer",
+      "gasUsed": "44170",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xea86c3f650f4303890fd20eaa0679472dedf6a9c9df075a760680405a5d310d0"
+    },
+    {
+      "stage": "configure-bindVirtualPoolDeployer",
+      "gasUsed": "44148",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xb525c7e2eac2268557db0cd83a214e95a72fbea14ace5f1a01b9a810333feb65"
+    },
+    {
+      "stage": "configure-allowQuoteToken",
+      "gasUsed": "83527",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x73ea5ab17ae88a07b52fd2e28ddd2968b30155f6bf3cf92b9acd6f7e89b995b0"
+    },
+    {
+      "stage": "configure-authorizeFactory",
+      "gasUsed": "53832",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x7ac9cab0d7f3c4235d2ff237caebf6614683a7a1950d6e09aa9e6eb8e7913a0a"
+    },
+    {
+      "stage": "configure-bindGraduationManager",
+      "gasUsed": "51032",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x4374dc1d7f1eb0c191cc28a9392f86389abde1490141cd7b8b670bc2ae40dff3"
+    },
+    {
+      "stage": "configure-allowDammAdapter",
+      "gasUsed": "55362",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xf3aa3dce397e2a4380b76c69068b6aa25fa4d6b5b7aaea42a149a1cc935dc173"
+    },
+    {
+      "stage": "configure-authorizeGraduationManager",
+      "gasUsed": "53782",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x4e719dbb94e279eb9b2b0f1542d8e63fde5752b4d195d95b95992164924edd4c"
+    },
+    {
+      "stage": "configure-authorizeAdapterOnPoolFactory",
+      "gasUsed": "53730",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x1dc9d80f5a29bbb5dcaa03b2613082ab996df21181dba7a64480257a620774da"
+    },
+    {
+      "stage": "configure-createMvpTemplate",
+      "gasUsed": "438964",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xeb678dfead5d5c43c82dd557f55773fc636e5698e57fed8bf32a88921cf86ff6"
+    }
+  ],
+  "liveBroadcast": false
+}

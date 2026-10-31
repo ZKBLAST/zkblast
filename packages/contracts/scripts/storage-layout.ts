@@ -24,22 +24,45 @@ type Snapshot = Readonly<Record<string, StorageLayout>>;
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const v2 = process.argv.includes("--v2");
 const perps = process.argv.includes("--perps");
+const dbc = process.argv.includes("--dbc");
 const baselinePath = path.join(
   root,
   "storage-layout",
-  perps ? "baseline-perps.json" : v2 ? "baseline-v2.json" : "baseline.json",
+  dbc
+    ? "baseline-dbc.json"
+    : perps
+      ? "baseline-perps.json"
+      : v2
+        ? "baseline-v2.json"
+        : "baseline.json",
 );
-const contracts = perps
-  ? ["PerpMarketRegistry", "ChainlinkOracleAdapter", "FundingRateModule", "PerpEngine", "InsuranceFund", "LiquidityVaultUSDG", "ShieldedPerpAdapter"]
-  : v2
-    ? ["PrivateVaultV2"]
-  : ([
-      "PoolRegistry",
-      "PoolFactory",
-      "SwapRouter",
-      "PositionManager",
-      "ZKBlastVault",
-    ] as const);
+const contracts = dbc
+  ? [
+      "LaunchConfigRegistry",
+      "LaunchFactory",
+      "LaunchpadRouter",
+      "LPAllocationEscrow",
+      "GraduationManager",
+    ]
+  : perps
+    ? [
+        "PerpMarketRegistry",
+        "ChainlinkOracleAdapter",
+        "FundingRateModule",
+        "PerpEngine",
+        "InsuranceFund",
+        "LiquidityVaultUSDG",
+        "ShieldedPerpAdapter",
+      ]
+    : v2
+      ? ["PrivateVaultV2"]
+      : ([
+          "PoolRegistry",
+          "PoolFactory",
+          "SwapRouter",
+          "PositionManager",
+          "ZKBlastVault",
+        ] as const);
 
 async function currentSnapshot(): Promise<Snapshot> {
   return Object.fromEntries(

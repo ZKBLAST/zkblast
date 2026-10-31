@@ -8,6 +8,13 @@ export function explorerTransactionUrl(
   return `${explorerUrl.replace(/\/$/u, "")}/tx/${transactionHash}`;
 }
 
+export function explorerAddressUrl(
+  explorerUrl: string,
+  address: string,
+): string {
+  return `${explorerUrl.replace(/\/$/u, "")}/address/${address}`;
+}
+
 export * from "./adapters.js";
 export * from "./amounts.js";
 export * from "./calls.js";
@@ -15,6 +22,8 @@ export * from "./deployments.js";
 export * from "./errors.js";
 export * from "./quotes.js";
 export * from "./pool-creation.js";
+export * from "./dbc.js";
+export * from "./dbc-math.js";
 export * from "./shielded-batch-poc.js";
 export * from "./shielded-v2-terms.js";
 export * from "./shielded-v2-accounting.js";

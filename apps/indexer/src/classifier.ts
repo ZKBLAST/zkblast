@@ -1,6 +1,7 @@
 import type { ProtocolEventKind } from "./domain.js";
 
 const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
+  Transfer: "launch",
   PoolCreated: "pool",
   PoolRegistered: "pool",
   Swap: "swap",
@@ -43,6 +44,18 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   Redeemed: "liquidity",
   InsuranceFunded: "fee",
   InsuranceCovered: "fee",
+  LaunchTemplateCreated: "launch",
+  LaunchTemplateStatusUpdated: "launch",
+  TokenLaunched: "launch",
+  LaunchMetadataPublished: "launch",
+  CurveSwapExecuted: "launch",
+  FeeAccrued: "launch",
+  FeeClaimed: "launch",
+  LifecycleUpdated: "launch",
+  GraduationReady: "launch",
+  GraduationCompleted: "launch",
+  AllocationRegistered: "launch",
+  AllocationClaimed: "launch",
 };
 
 export function classifyProtocolEvent(

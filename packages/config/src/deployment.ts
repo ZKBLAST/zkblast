@@ -119,6 +119,21 @@ export const deploymentManifestSchema = z
       positionManager: addressSchema,
       poolQuoter: addressSchema,
     }),
+    dbc: z
+      .object({
+        abiVersion: z.literal(1),
+        deploymentBlock: z.number().int().nonnegative(),
+        configRegistry: addressSchema,
+        launchTokenDeployer: addressSchema.optional(),
+        virtualPoolDeployer: addressSchema.optional(),
+        launchFactory: addressSchema,
+        curveQuoter: addressSchema,
+        launchpadRouter: addressSchema,
+        graduationManager: addressSchema,
+        dammGraduationAdapter: addressSchema,
+        lpAllocationEscrow: addressSchema,
+      })
+      .optional(),
     shieldedV2: privateVaultV2ConfigSchema.optional(),
     perps: privatePerpsConfigSchema.optional(),
     shielded: z

@@ -9,6 +9,7 @@ import { installCheckpointGuard } from "./checkpoint-guard.js";
 import { reconcileUserActivity } from "./reconcile-user-activity.js";
 import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
 import { persistPerpsEvent } from "./persist-perps-event.js";
+import { persistDbcEvent } from "./persist-dbc-event.js";
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -20,16 +21,51 @@ export class PostgresIndexerRepository implements IndexerRepository {
     databaseUrl: string,
     schema: string,
     private readonly consumer = "protocol",
+    dbcContracts: readonly Address[] = [],
   ) {
     if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
     if (!/^(protocol|shielded-v2-[a-f0-9]{40})$/u.test(consumer))
       throw new Error("INVALID_INDEXER_CONSUMER");
     this.schema = schema;
+    this.dbcContracts = new Set(
+      dbcContracts.map((address) => address.toLowerCase()),
+    );
     this.sql = postgres(databaseUrl, {
       max: 1,
       prepare: false,
       idle_timeout: 10,
     });
+  }
+
+  private readonly dbcContracts: Set<string>;
+
+  async dbcLaunchTokenAddresses(): Promise<Address[]> {
+    const rows = await this.sql.unsafe<{ token_address: string }[]>(
+      `select token_address from ${this.schema}.dbc_launches order by created_block`,
+    );
+    return rows.map((row) => getAddress(row.token_address));
+  }
+
+  async backfillDbcEvents(events: BlockEnvelope["events"]): Promise<number> {
+    const blockDbcContracts = new Set(this.dbcContracts);
+    await this.sql.begin(async (transaction) => {
+      for (const event of events) {
+        await persistDbcEvent(
+          transaction,
+          this.schema,
+          event,
+          blockDbcContracts,
+        );
+        if (
+          event.eventName === "TokenLaunched" &&
+          typeof event.payload.token === "string"
+        ) {
+          blockDbcContracts.add(getAddress(event.payload.token).toLowerCase());
+        }
+      }
+    });
+    for (const contract of blockDbcContracts) this.dbcContracts.add(contract);
+    return events.length;
   }
 
   async checkpoint(chainId: number): Promise<IndexerCheckpoint | null> {
@@ -87,6 +123,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
       validatedBlock.hash.toLowerCase() !== checkpoint.blockHash.toLowerCase()
     )
       throw new Error("CHECKPOINT_HASH_MISMATCH");
+    const blockDbcContracts = new Set(this.dbcContracts);
     await this.sql.begin(async (transaction) => {
       await transaction.unsafe(
         `insert into ${this.schema}.indexed_blocks (chain_id, block_number, block_hash, parent_hash) values ($1,$2,$3,$4) on conflict (chain_id, block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
@@ -115,6 +152,18 @@ export class PostgresIndexerRepository implements IndexerRepository {
         const observation = transactionObservation(event);
         await persistPoolSwap(transaction, this.schema, event);
         await persistPerpsEvent(transaction, this.schema, event);
+        await persistDbcEvent(
+          transaction,
+          this.schema,
+          event,
+          blockDbcContracts,
+        );
+        if (
+          event.eventName === "TokenLaunched" &&
+          typeof event.payload.token === "string"
+        ) {
+          blockDbcContracts.add(getAddress(event.payload.token).toLowerCase());
+        }
         if (observation)
           await transaction.unsafe(
             `insert into ${this.schema}.transactions
@@ -146,6 +195,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         ],
       );
     });
+    for (const contract of blockDbcContracts) this.dbcContracts.add(contract);
   }
 
   async rewind(chainId: number, fromBlock: bigint): Promise<void> {
@@ -162,6 +212,32 @@ export class PostgresIndexerRepository implements IndexerRepository {
       await transaction.unsafe(
         `update ${this.schema}.perp_events set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.dbc_events set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `update ${this.schema}.dbc_swaps set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `delete from ${this.schema}.dbc_holder_balances`,
+      );
+      await transaction.unsafe(
+        `insert into ${this.schema}.dbc_holder_balances(launch_id,account,balance_raw,updated_block)
+         select l.launch_id,e.account,sum(e.delta),max(e.block_number) from (
+           select contract_address,lower(payload->>'to') account,(payload->>'value')::numeric delta,block_number
+           from ${this.schema}.dbc_events where canonical and event_name='Transfer' and payload->>'to' <> '0x0000000000000000000000000000000000000000'
+           union all
+           select contract_address,lower(payload->>'from') account,-(payload->>'value')::numeric delta,block_number
+           from ${this.schema}.dbc_events where canonical and event_name='Transfer' and payload->>'from' <> '0x0000000000000000000000000000000000000000'
+         ) e join ${this.schema}.dbc_launches l on l.token_address=e.contract_address
+         group by l.launch_id,e.account having sum(e.delta)>=0`,
+      );
+      await transaction.unsafe(
+        `delete from ${this.schema}.dbc_graduations where block_number >= $1`,
+        [fromBlock.toString()],
       );
       await transaction.unsafe(
         `update ${this.schema}.perp_oracle_prices set canonical=false where block_number >= $1`,

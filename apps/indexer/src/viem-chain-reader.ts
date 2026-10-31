@@ -29,7 +29,9 @@ function serializeArgs(
       return [
         key,
         JSON.stringify(value, (_nestedKey, nestedValue) =>
-          typeof nestedValue === "bigint" ? nestedValue.toString() : nestedValue,
+          typeof nestedValue === "bigint"
+            ? nestedValue.toString()
+            : nestedValue,
         ),
       ];
     }),
@@ -37,11 +39,14 @@ function serializeArgs(
 }
 
 export class ViemChainReader implements ChainReader {
+  private readonly trackedAddresses: Set<Address>;
   constructor(
     private readonly client: PublicClient,
     private readonly chainId: number,
-    private readonly addresses: readonly Address[],
-  ) {}
+    addresses: readonly Address[],
+  ) {
+    this.trackedAddresses = new Set(addresses);
+  }
   head(): Promise<bigint> {
     return this.client.getBlockNumber();
   }
@@ -54,43 +59,33 @@ export class ViemChainReader implements ChainReader {
       this.client.getBlock({ blockNumber }),
       suppliedLogs ??
         this.client.getLogs({
-          address: [...this.addresses],
+          address: [...this.trackedAddresses],
           fromBlock: blockNumber,
           toBlock: blockNumber,
         }),
     ]);
     const events: IndexedEvent[] = [];
-    for (const log of logs) {
-      try {
-        const decoded = decodeEventLog({
-          abi: combinedAbi,
-          data: log.data,
-          topics: log.topics,
-        });
-        const kind = classifyProtocolEvent(decoded.eventName);
-        if (
-          !kind ||
-          log.logIndex === null ||
-          log.transactionHash === null ||
-          log.blockHash === null
+    this.decodeLogs(logs, blockNumber, block.timestamp, events);
+    if (!suppliedLogs) {
+      const discovered = events
+        .filter((event) => event.eventName === "TokenLaunched")
+        .map((event) => event.payload.token)
+        .filter(
+          (token): token is Address =>
+            typeof token === "string" && /^0x[\da-f]{40}$/iu.test(token),
         )
-          continue;
-        events.push({
-          chainId: this.chainId,
-          blockNumber,
-          blockHash: log.blockHash,
-          transactionHash: log.transactionHash,
-          logIndex: log.logIndex,
-          contractAddress: log.address,
-          kind,
-          eventName: decoded.eventName,
-          payload: {
-            ...serializeArgs(decoded.args),
-            blockTimestamp: block.timestamp.toString(),
-          },
+        .filter((token) => !this.trackedAddresses.has(token));
+      if (discovered.length) {
+        discovered.forEach((token) => this.trackedAddresses.add(token));
+        const tokenLogs = await this.client.getLogs({
+          address: discovered,
+          fromBlock: blockNumber,
+          toBlock: blockNumber,
         });
-      } catch {
-        /* Unknown logs are outside the protocol surface. */
+        // Keep the factory events first. Token mint/transfer logs can precede
+        // TokenLaunched onchain, but the projection needs the launch row and
+        // token allowlist before it can account holder balances safely.
+        this.decodeLogs(tokenLogs, blockNumber, block.timestamp, events);
       }
     }
     const transactionHashes = [
@@ -140,5 +135,46 @@ export class ViemChainReader implements ChainReader {
       parentHash: block.parentHash,
       events,
     };
+  }
+
+  private decodeLogs(
+    logs: readonly Log[],
+    blockNumber: bigint,
+    blockTimestamp: bigint,
+    events: IndexedEvent[],
+  ): void {
+    for (const log of logs) {
+      try {
+        const decoded = decodeEventLog({
+          abi: combinedAbi,
+          data: log.data,
+          topics: log.topics,
+        });
+        const kind = classifyProtocolEvent(decoded.eventName);
+        if (
+          !kind ||
+          log.logIndex === null ||
+          log.transactionHash === null ||
+          log.blockHash === null
+        )
+          continue;
+        events.push({
+          chainId: this.chainId,
+          blockNumber,
+          blockHash: log.blockHash,
+          transactionHash: log.transactionHash,
+          logIndex: log.logIndex,
+          contractAddress: log.address,
+          kind,
+          eventName: decoded.eventName,
+          payload: {
+            ...serializeArgs(decoded.args),
+            blockTimestamp: blockTimestamp.toString(),
+          },
+        });
+      } catch {
+        /* Unknown logs are outside the protocol surface. */
+      }
+    }
   }
 }

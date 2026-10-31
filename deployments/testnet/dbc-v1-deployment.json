@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "environment": "testnet",
+  "chainId": 46630,
+  "referenceBlock": "145844932",
+  "planSha256": "070339ec0f8dcbfd5309dd36c4723b8b03fad06f6b4f8d86b8e94b7bec2305fb",
+  "transactionCount": 23,
+  "totalGasUsed": "18205881",
+  "gasPriceWei": "10000000",
+  "estimatedFeeETH": "0.00018205881",
+  "suggestedGasLimit": "22757352",
+  "suggestedGasPriceCapWei": "20000000",
+  "suggestedFeeCeilingETH": "0.00045514704",
+  "stages": [
+    {
+      "stage": "deploy-configRegistryImplementation",
+      "gasUsed": "2684274",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xa6049abc8ed6bc709d8e56f2f66caf70c62718493bee98eaacf83be63c2e5b77",
+      "blockNumber": "145848670",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-configRegistry",
+      "gasUsed": "206780",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x27a50f433bf8c35c5df36b3b34944ed51ab9e077db5a134dbcd6d120285dc202",
+      "blockNumber": "145848705",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-launchTokenDeployer",
+      "gasUsed": "809850",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x39280d082dcb5a199963864506449a822edda15574236c17826172e9ca3dbbc8",
+      "blockNumber": "145848711",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-virtualPoolDeployer",
+      "gasUsed": "4774128",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x4b7a5ce0fe221b539cb01023f2d41cb1c6e2b1c8faaa4a043e955c815ccff87d",
+      "blockNumber": "145848718",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-launchFactoryImplementation",
+      "gasUsed": "1970025",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x8748f5104ab15fe2834a9606a0704b60e70d2cd05fc78f394fc0b2d77895c77f",
+      "blockNumber": "145848724",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-launchFactory",
+      "gasUsed": "255261",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x14b0556badd130508b1e149ad5843270e946aa8f2fcccc6bf9922c0068ae3c1c",
+      "blockNumber": "145848730",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-launchpadRouterImplementation",
+      "gasUsed": "1302428",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x1bc84bf3bf634efaf0d39b9cfd8b40dcab89edc0db6bdc7c1bee3859271568a7",
+      "blockNumber": "145848737",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-launchpadRouter",
+      "gasUsed": "204712",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x3cdf010e11898219e379cdd32bc1a968759eeb270a8277248934eaa965d03600",
+      "blockNumber": "145848743",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrowImplementation",
+      "gasUsed": "1193450",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x69c170ec20a60c8c7e98df9ef7c474c913971e8e9b9143dd717e97848faf1ddb",
+      "blockNumber": "145848748",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrow",
+      "gasUsed": "182005",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x7bdd0e051bb2aadaf14a8a84355f95943a52244ef745a113aed27bb97fcf36b3",
+      "blockNumber": "145848751",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-graduationManagerImplementation",
+      "gasUsed": "2216114",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x29e0c689f7df9c7fa0757ce5b7a8167ebbe39b7ee72fe629822077925eb6ddfa",
+      "blockNumber": "145848789",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-graduationManager",
+      "gasUsed": "227345",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xe0e8cff840a3ca26295173140e8f65da782ff4152849b3dbd25308df73f67d3f",
+      "blockNumber": "145848796",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-curveQuoter",
+      "gasUsed": "443781",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xe1c3c5f94a3a841107f4178993e6752aa387e589fe32c3e925c9d1d6d82e7c85",
+      "blockNumber": "145848802",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "deploy-dammGraduationAdapter",
+      "gasUsed": "857181",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xa368faedcd69c10b2ce2196bc664be7b43d377fc4a562a412222a03d7fcd785f",
+      "blockNumber": "145848806",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-bindLaunchTokenDeployer",
+      "gasUsed": "44170",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x96057c9be5eb3cc4d9797ae5f055b15bcc62ab2b0b084cd691c15f96225782d5",
+      "blockNumber": "145848837",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-bindVirtualPoolDeployer",
+      "gasUsed": "44148",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xa43802317ae3e3b37f3046ea1d5f22a48012b529b52e92990fcab462404fb0be",
+      "blockNumber": "145848841",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-allowQuoteToken",
+      "gasUsed": "83527",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xa02b4c9d4114899ee23b59c425dc3be8faa24e1f188990b627212d01371d20aa",
+      "blockNumber": "145848848",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-authorizeFactory",
+      "gasUsed": "53832",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x38d1046952fd6f850d232b4727c5034cc91e62916d5d1c8eea9d80f1e68127e9",
+      "blockNumber": "145848855",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-bindGraduationManager",
+      "gasUsed": "51032",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x14be9059bf6073f7d49e88f11891d57afc2b4dda40e4fc0de283078dbb1a3272",
+      "blockNumber": "145848860",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-allowDammAdapter",
+      "gasUsed": "55362",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x6a447cf112498068c726b505fe283bf9784cc62849b8da3c77ccdd8020290f54",
+      "blockNumber": "145848875",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-authorizeGraduationManager",
+      "gasUsed": "53782",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0x2280a918b2d623f52a0899dd4cffdd5d947f6b86d286f87add0e866f8196fb9b",
+      "blockNumber": "145848890",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-authorizeAdapterOnPoolFactory",
+      "gasUsed": "53730",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xe6ddb41fe95b22ebcc33e1baf0f1ec6635f4d1c6290583aa0f5295d06ff662ea",
+      "blockNumber": "145848927",
+      "effectiveGasPriceWei": "10000000"
+    },
+    {
+      "stage": "configure-createMvpTemplate",
+      "gasUsed": "438964",
+      "fundingAccount": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+      "transactionHash": "0xc31a86753c5da67799db30f255b0b2968b382e565050b1c097dd83a56eef3c41",
+      "blockNumber": "145848935",
+      "effectiveGasPriceWei": "10000000"
+    }
+  ],
+  "totalFeeWei": "182058810000000",
+  "liveBroadcast": true,
+  "verification": {
+    "verifiedAt": "2026-10-31T08:57:52.425Z",
+    "chainId": 46630,
+    "referenceBlock": "145850026",
+    "planSha256": "070339ec0f8dcbfd5309dd36c4723b8b03fad06f6b4f8d86b8e94b7bec2305fb",
+    "contracts": {
+      "configRegistryImplementation": {
+        "address": "0x2152B11d119DC7360D9e13a69f6D4D6E2225dE3C",
+        "runtimeBytecodeHash": "0x50c45c9fa2991c77f1cbc1cb44b4aff8245efa619a09cee752fce4347018ec0c",
+        "runtimeBytecodeBytes": 12063
+      },
+      "configRegistry": {
+        "address": "0x04E92EA7e4ba5532d57af77C4BeBba562b443841",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "launchTokenDeployer": {
+        "address": "0xAcAC1D7c332937a9463Af83019C5dFd8e87ba2ce",
+        "runtimeBytecodeHash": "0x333d86c611be075dc376d81fcc0d3c07203d3ae7ba8fb63a91fed0624436b8bd",
+        "runtimeBytecodeBytes": 3492
+      },
+      "virtualPoolDeployer": {
+        "address": "0x1ed7f7CCE4DfE57F23CDEAE70dc5A872423f2590",
+        "runtimeBytecodeHash": "0xcb4a02072b8dc7c9dc43301cc08350572f10c9c35ffd518e56f20d75923574a6",
+        "runtimeBytecodeBytes": 21874
+      },
+      "launchFactoryImplementation": {
+        "address": "0xd93c03432bFfBfFBfb2bfB632939f80842b134E4",
+        "runtimeBytecodeHash": "0xcb27a95af6b2b5731373962b07ff465b67ecefb35c868223992d1ddd73836ada",
+        "runtimeBytecodeBytes": 8758
+      },
+      "launchFactory": {
+        "address": "0x83dc9FE5eDF7FCC658faF42148A191ce1D6Eca5B",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "launchpadRouterImplementation": {
+        "address": "0xbe0704298f2338F70928e9F55E06405190E5907D",
+        "runtimeBytecodeHash": "0x8cdff382e3c94ea04c66918ae965747786ce7d5ca77c957a88abd0f8d00b0c39",
+        "runtimeBytecodeBytes": 5671
+      },
+      "launchpadRouter": {
+        "address": "0x7e905d393B498d5d62A7C916759982F5b09536c8",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "lpAllocationEscrowImplementation": {
+        "address": "0x8a1EACbB2B767EB27BB28237fAc582F8616542CB",
+        "runtimeBytecodeHash": "0xaacb7b9c15b3f96e6590128c55374f7b8fe32ae1b6ea108f3e09667fd4766add",
+        "runtimeBytecodeBytes": 5168
+      },
+      "lpAllocationEscrow": {
+        "address": "0xcBbE14b6AD160a28029Dd5Ab17824Ef05419B11D",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "graduationManagerImplementation": {
+        "address": "0xA9D054D4DCa712fb97bE7884E03781419573A4B3",
+        "runtimeBytecodeHash": "0x3937429103c50ffce9160d2e869eb49dd0a22678884644e4beae5f0cd0774b1b",
+        "runtimeBytecodeBytes": 9896
+      },
+      "graduationManager": {
+        "address": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "curveQuoter": {
+        "address": "0x37f3D4c50EB42b5140BF8E038D472953c82CFa11",
+        "runtimeBytecodeHash": "0x1d9b0e8c261c77aad443f74b2a040ea49801c59e40d06cb9c0d97dded1e0e8e3",
+        "runtimeBytecodeBytes": 1806
+      },
+      "dammGraduationAdapter": {
+        "address": "0xb43d74774B7045d7754012e18F80190D65d7E260",
+        "runtimeBytecodeHash": "0xd95bd319acef763dd2d431a28e2209eb14af0de4b9473c11b429e820c7519a3f",
+        "runtimeBytecodeBytes": 3703
+      }
+    },
+    "proxySlots": {
+      "configRegistry": {
+        "implementation": "0x2152B11d119DC7360D9e13a69f6D4D6E2225dE3C"
+      },
+      "launchFactory": {
+        "implementation": "0xd93c03432bFfBfFBfb2bfB632939f80842b134E4"
+      },
+      "launchpadRouter": {
+        "implementation": "0xbe0704298f2338F70928e9F55E06405190E5907D"
+      },
+      "lpAllocationEscrow": {
+        "implementation": "0x8a1EACbB2B767EB27BB28237fAc582F8616542CB"
+      },
+      "graduationManager": {
+        "implementation": "0xA9D054D4DCa712fb97bE7884E03781419573A4B3"
+      }
+    },
+    "checks": {
+      "quoteTokenAllowed": true,
+      "factoryAuthorized": true,
+      "tokenDeployerFactory": "0x83dc9FE5eDF7FCC658faF42148A191ce1D6Eca5B",
+      "poolDeployerFactory": "0x83dc9FE5eDF7FCC658faF42148A191ce1D6Eca5B",
+      "graduationManager": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+      "adapterAllowed": true,
+      "managerAuthorized": true,
+      "templateCount": "1"
+    },
+    "status": "verified-onchain",
+    "sourceVerification": "waived-testnet-owner-approved"
+  }
+}

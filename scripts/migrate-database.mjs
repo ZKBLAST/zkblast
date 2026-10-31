@@ -58,6 +58,16 @@ const expectedProtocolTables = [
   "transactions",
 ];
 const expectedEventTables = ["indexed_blocks", "protocol_events"];
+const expectedDbcTables = [
+  "dbc_events",
+  "dbc_graduations",
+  "dbc_holder_balances",
+  "dbc_launches",
+  "dbc_lp_allocations",
+  "dbc_monitoring",
+  "dbc_swaps",
+  "dbc_templates",
+];
 const expectedExternalMarketTables = [
   "external_market_curation_audit",
   "external_market_pairs",
@@ -97,6 +107,24 @@ const requiredColumns = {
     "pool_identifier",
     "quote_address",
     "route_status",
+  ],
+  dbc_launches: [
+    "launch_id",
+    "template_id",
+    "token_address",
+    "virtual_pool",
+    "quote_token",
+    "lifecycle",
+    "created_block",
+  ],
+  dbc_holder_balances: ["launch_id", "account", "balance_raw", "updated_block"],
+  dbc_swaps: [
+    "chain_id",
+    "transaction_hash",
+    "log_index",
+    "launch_id",
+    "price_x18",
+    "canonical",
   ],
 };
 
@@ -163,6 +191,7 @@ async function verifyDatabase() {
     ...expectedTables,
     ...expectedProtocolTables,
     ...expectedEventTables,
+    ...expectedDbcTables,
     ...expectedExternalMarketTables,
   ].sort();
   const tables = await sql`

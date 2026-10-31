@@ -49,6 +49,7 @@ export async function prepareSafeOperation(
     safe: Address;
     to: Address;
     data: Hex;
+    operation?: 0 | 1;
     relayer: Address | Account;
   },
 ) {
@@ -89,7 +90,7 @@ export async function prepareSafeOperation(
     to: input.to,
     value: 0n,
     data: input.data,
-    operation: 0,
+    operation: input.operation ?? 0,
     safeTxGas: 0n,
     baseGas: 0n,
     gasPrice: 0n,
@@ -103,7 +104,7 @@ export async function prepareSafeOperation(
     message.to,
     0n,
     message.data,
-    0,
+    message.operation,
     0n,
     0n,
     0n,

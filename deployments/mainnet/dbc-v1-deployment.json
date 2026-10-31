@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": "102453826",
+  "planSha256": "4a775b6d453c311c88e2b27dbc90fcc9aabeec594e9970781ba9eba0e285859c",
+  "transactionCount": 15,
+  "actionCount": 23,
+  "totalGasUsed": "18128442",
+  "gasPriceWei": "20096000",
+  "estimatedFeeETH": "0.000364309170432",
+  "suggestedGasLimit": "22660553",
+  "suggestedGasPriceCapWei": "40192000",
+  "suggestedFeeCeilingETH": "0.000910772946176",
+  "stages": [
+    {
+      "stage": "deploy-configRegistryImplementation",
+      "gasUsed": "2689895",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x3c1973956006e70d9b47bac16a9446803d5a9cee3d2b2bdca4671abc344fe037",
+      "blockNumber": "102458621",
+      "effectiveGasPriceWei": "20058000"
+    },
+    {
+      "stage": "deploy-configRegistry",
+      "gasUsed": "207432",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x887e189406afbb4c3702951360d0edc164cc11851476f8fb5b91faa00518419b",
+      "blockNumber": "102458670",
+      "effectiveGasPriceWei": "20044000"
+    },
+    {
+      "stage": "deploy-launchTokenDeployer",
+      "gasUsed": "811811",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xa4fc3db46180d4786cfe188fe568e161fa3249b22b1c2b8fd2d6c0aef402a1bd",
+      "blockNumber": "102458677",
+      "effectiveGasPriceWei": "20064000"
+    },
+    {
+      "stage": "deploy-virtualPoolDeployer",
+      "gasUsed": "4782828",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xdefc5b10fa78d537bbefc9b800f3bda32f696a38164052d7b086993c646fcb59",
+      "blockNumber": "102458688",
+      "effectiveGasPriceWei": "20136000"
+    },
+    {
+      "stage": "deploy-launchFactoryImplementation",
+      "gasUsed": "1974106",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x7a8cba947700cd7b68e7125f9a7f5298fa091a28d80bd43c286ea26dfc998bbf",
+      "blockNumber": "102458732",
+      "effectiveGasPriceWei": "20062000"
+    },
+    {
+      "stage": "deploy-launchFactory",
+      "gasUsed": "255970",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x260b0ab89f7d70cb07c385b6b5b5348a006ec1945d55661b9bf3854ffd4cb6db",
+      "blockNumber": "102458776",
+      "effectiveGasPriceWei": "20018000"
+    },
+    {
+      "stage": "deploy-launchpadRouterImplementation",
+      "gasUsed": "1304958",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x5afba75923c6382a6b475a3f635076d58171ce6cf422f8d8c87672eb82a2eed4",
+      "blockNumber": "102458782",
+      "effectiveGasPriceWei": "20080000"
+    },
+    {
+      "stage": "deploy-launchpadRouter",
+      "gasUsed": "205384",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x6c14753641232bcf7dedd2e974960365f408d485324761e1b20a34b47763d022",
+      "blockNumber": "102458827",
+      "effectiveGasPriceWei": "20016000"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrowImplementation",
+      "gasUsed": "1196113",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xb7e8388b2d5f732bd8fe6321cdc6755f7429098403d29d1b38163242c88e51f7",
+      "blockNumber": "102458872",
+      "effectiveGasPriceWei": "20002000"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrow",
+      "gasUsed": "182661",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xb55793c52c27f3d1adeed722ed7524671baa5e0e80fd94ad0ce331252d6d7505",
+      "blockNumber": "102458916",
+      "effectiveGasPriceWei": "20054000"
+    },
+    {
+      "stage": "deploy-graduationManagerImplementation",
+      "gasUsed": "2220576",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xcf1595b7773d6607c4514bc57e6e5f695c79004443a2ca60eb96d54a8dbce88b",
+      "blockNumber": "102458924",
+      "effectiveGasPriceWei": "20054000"
+    },
+    {
+      "stage": "deploy-graduationManager",
+      "gasUsed": "228018",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x2a964a2d62ffaabba6d2a2831a3d0453d1d30d48a1184f3b8a31e9099de87257",
+      "blockNumber": "102458953",
+      "effectiveGasPriceWei": "20180000"
+    },
+    {
+      "stage": "deploy-curveQuoter",
+      "gasUsed": "444708",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x8cdeaad912cf42858eb759c6a65003d8981a6c7f6e03f52af6ccfac33c5c33f0",
+      "blockNumber": "102458960",
+      "effectiveGasPriceWei": "20184000"
+    },
+    {
+      "stage": "deploy-dammGraduationAdapter",
+      "gasUsed": "859117",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xe5cef025a62a7a11457d3b91b145da65452715e8a536102b9f72d500f9ce8d87",
+      "blockNumber": "102458966",
+      "effectiveGasPriceWei": "20006000"
+    },
+    {
+      "stage": "configure-safe-multisend",
+      "gasUsed": "764865",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x1b95e1f852a109bc335aee232117e50e0ac915e07b14da0bece840f62303426d",
+      "blockNumber": "102459014",
+      "effectiveGasPriceWei": "20008000"
+    }
+  ],
+  "totalFeeWei": "363937396404000",
+  "liveBroadcast": true,
+  "verification": {
+    "verifiedAt": "2026-10-31T09:42:37.803Z",
+    "chainId": 4663,
+    "referenceBlock": "102459403",
+    "planSha256": "4a775b6d453c311c88e2b27dbc90fcc9aabeec594e9970781ba9eba0e285859c",
+    "contracts": {
+      "configRegistryImplementation": {
+        "address": "0x4b9dFe3668127C2E38007107a3865AC360320C50",
+        "runtimeBytecodeHash": "0x787a225aa5a451f1a91b951e1e93885fe0d9cd0e4aeca5c220ebd3cec5201a3f",
+        "runtimeBytecodeBytes": 12063
+      },
+      "configRegistry": {
+        "address": "0xd680c010873257f05EAAbdde583b2d6DE4FA6e33",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "launchTokenDeployer": {
+        "address": "0x763290A45dde9527e2713e41231bB02b0391106f",
+        "runtimeBytecodeHash": "0xb9e663c8889dac68d37aa4d996f9d1fb5b2a0c11740df0edf2548cf8f3031a3d",
+        "runtimeBytecodeBytes": 3492
+      },
+      "virtualPoolDeployer": {
+        "address": "0xBE32DBc3f0f758B0b51F510A695DEa5Ed8d211c4",
+        "runtimeBytecodeHash": "0x80f072a7ed70a47337b85ab5b004e088743849b5c022a5763a64d8e512dbcd34",
+        "runtimeBytecodeBytes": 21874
+      },
+      "launchFactoryImplementation": {
+        "address": "0xD03453f53d57607f5DE6C84A017455c700F7E334",
+        "runtimeBytecodeHash": "0xfb6149341c0f8c3df5033f71e73d48a8be88723e69d55945e22bd709edf679c5",
+        "runtimeBytecodeBytes": 8758
+      },
+      "launchFactory": {
+        "address": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "launchpadRouterImplementation": {
+        "address": "0xBb234764D0cb19293790217E74690256b9638C07",
+        "runtimeBytecodeHash": "0xa511148008eaf2a12d40ad197a7c1ce99e99b58ec3a3c80e33511e981742004f",
+        "runtimeBytecodeBytes": 5671
+      },
+      "launchpadRouter": {
+        "address": "0x6d208744Ff0Ec74b04Bb76576b32A8A2ccB9f181",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "lpAllocationEscrowImplementation": {
+        "address": "0xA92Eb8569b48F7d0e428ff0bB24aEb7ad31d5ED4",
+        "runtimeBytecodeHash": "0x3ab476e2e2e5cf1b995675210be945092050439ef03f6543a696ce51be24d5ae",
+        "runtimeBytecodeBytes": 5168
+      },
+      "lpAllocationEscrow": {
+        "address": "0x13A41EEE494b198d8F5E428283a0A274699C9b60",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "graduationManagerImplementation": {
+        "address": "0xe201031aEc35ac6bFb5280d8B697002e9Fb706AD",
+        "runtimeBytecodeHash": "0x03fc97e20d4517ae209064eb538dd1b7585fb9d2e942d911ccf3ca42eb7bbef5",
+        "runtimeBytecodeBytes": 9896
+      },
+      "graduationManager": {
+        "address": "0x7DD70C9C9DFA592a4d1617F6cb2e8DB816eCd37c",
+        "runtimeBytecodeHash": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+        "runtimeBytecodeBytes": 97
+      },
+      "curveQuoter": {
+        "address": "0x9327DA0628a441463C7101eFBc02d37E01585e21",
+        "runtimeBytecodeHash": "0x1d9b0e8c261c77aad443f74b2a040ea49801c59e40d06cb9c0d97dded1e0e8e3",
+        "runtimeBytecodeBytes": 1806
+      },
+      "dammGraduationAdapter": {
+        "address": "0xC8A115392EF415738a21C918b02Eff95970FDd89",
+        "runtimeBytecodeHash": "0x22b55e663849630e941bff69abf84d2b72becbd5a062db5847d3ffc8729f67bd",
+        "runtimeBytecodeBytes": 3703
+      }
+    },
+    "proxySlots": {
+      "configRegistry": {
+        "implementation": "0x4b9dFe3668127C2E38007107a3865AC360320C50"
+      },
+      "launchFactory": {
+        "implementation": "0xD03453f53d57607f5DE6C84A017455c700F7E334"
+      },
+      "launchpadRouter": {
+        "implementation": "0xBb234764D0cb19293790217E74690256b9638C07"
+      },
+      "lpAllocationEscrow": {
+        "implementation": "0xA92Eb8569b48F7d0e428ff0bB24aEb7ad31d5ED4"
+      },
+      "graduationManager": {
+        "implementation": "0xe201031aEc35ac6bFb5280d8B697002e9Fb706AD"
+      }
+    },
+    "checks": {
+      "quoteTokenAllowed": true,
+      "factoryAuthorized": true,
+      "tokenDeployerFactory": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+      "poolDeployerFactory": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+      "graduationManager": "0x7DD70C9C9DFA592a4d1617F6cb2e8DB816eCd37c",
+      "adapterAllowed": true,
+      "managerAuthorized": true,
+      "templateCount": "1"
+    },
+    "status": "verified-onchain",
+    "sourceVerification": "pending-mandatory"
+  }
+}

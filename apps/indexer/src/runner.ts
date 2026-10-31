@@ -50,6 +50,17 @@ const configuredPerpsAddresses = manifest.perps
       manifest.perps.shieldedAdapter,
     ]
   : [];
+const configuredDbcAddresses = manifest.dbc
+  ? [
+      manifest.dbc.configRegistry,
+      manifest.dbc.launchFactory,
+      manifest.dbc.curveQuoter,
+      manifest.dbc.launchpadRouter,
+      manifest.dbc.graduationManager,
+      manifest.dbc.dammGraduationAdapter,
+      manifest.dbc.lpAllocationEscrow,
+    ]
+  : [];
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -60,6 +71,7 @@ const addresses = [
     ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
     : []),
   ...configuredPerpsAddresses,
+  ...configuredDbcAddresses,
 ]
   .map(getAddress)
   .filter((address, index, all) => all.indexOf(address) === index);
@@ -70,11 +82,16 @@ const client = createPublicClient({
 const repository = new PostgresIndexerRepository(
   runner.SUPABASE_DIRECT_DATABASE_URL,
   config.SUPABASE_SCHEMA,
+  "protocol",
+  configuredDbcAddresses.map(getAddress),
 );
+const trackedLaunchTokens = manifest.dbc
+  ? await repository.dbcLaunchTokenAddresses()
+  : [];
 const service = new IndexerService(
   config.CHAIN_ID,
   BigInt(runner.INDEXER_CONFIRMATIONS),
-  new ViemChainReader(client, config.CHAIN_ID, addresses),
+  new ViemChainReader(client, config.CHAIN_ID, [...addresses, ...trackedLaunchTokens]),
   repository,
 );
 await repository.enableCheckpointGuard();

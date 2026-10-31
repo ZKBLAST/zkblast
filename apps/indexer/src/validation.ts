@@ -39,6 +39,7 @@ const eventSchema = z
       "private_intent",
       "root",
       "receipt",
+      "launch",
     ]),
     eventName: z.string().min(1).max(128),
     payload: z.record(z.string().min(1).max(128), payloadValue),

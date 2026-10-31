@@ -1,11 +1,11 @@
-import { perpEngineAbi, poolRegistryAbi, shieldedPerpAdapterAbi } from "@zkblast/abi";
+import { launchConfigRegistryAbi, perpEngineAbi, poolRegistryAbi, shieldedPerpAdapterAbi, virtualPoolAbi } from "@zkblast/abi";
 import { loadServerConfig } from "@zkblast/config";
 import {
   loadDeploymentManifestFile,
   verifyPrivateV2Deployment,
   type PrivateV2RpcRequest,
 } from "@zkblast/config/node";
-import { resolveProtocolAddresses } from "@zkblast/sdk";
+import { resolveDbcAddresses, resolveProtocolAddresses } from "@zkblast/sdk";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,6 +25,8 @@ import { ExternalMarketService } from "./external-market-service.js";
 import { TradeReceiptService } from "./trade-receipt-service.js";
 import { PoolCreationService } from "./pool-creation-service.js";
 import { PerpsService } from "./perps-service.js";
+import { DbcService } from "./dbc-service.js";
+import { PostgresDbcReadStore } from "./postgres-dbc-read-store.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -83,6 +85,29 @@ const protocolAddresses = resolveProtocolAddresses(manifest, {
   environment: serverConfig.APP_ENV,
   chainId: serverConfig.CHAIN_ID,
 });
+const dbcAddresses = manifest.dbc
+  ? resolveDbcAddresses(manifest, { environment: serverConfig.APP_ENV, chainId: serverConfig.CHAIN_ID })
+  : undefined;
+const dbcService = dbcAddresses
+  ? new DbcService(
+      new PostgresDbcReadStore(directDatabaseUrl, serverConfig.SUPABASE_SCHEMA),
+      {
+        quote: ({ pool, side, amountRaw }) => chainClient.readContract({
+          address: pool,
+          abi: virtualPoolAbi,
+          functionName: side === "buy" ? "quoteBuyExactInput" : "quoteSellExactInput",
+          args: [amountRaw],
+        }),
+        templateEconomics: (templateId) => chainClient.readContract({
+          address: dbcAddresses.configRegistry,
+          abi: launchConfigRegistryAbi,
+          functionName: "templateEconomics",
+          args: [templateId],
+        }),
+      },
+      dbcAddresses,
+    )
+  : undefined;
 const perpVaultDeployment = Object.values(manifest.contracts).find(
   (contract) => contract.contractName === "LiquidityVaultUSDG",
 );
@@ -297,6 +322,7 @@ const app = createApp(
     ...(shieldedV2Service ? { shieldedV2Service } : {}),
     poolCreationService,
     perpsService,
+    ...(dbcService ? { dbcService } : {}),
   },
 );
 

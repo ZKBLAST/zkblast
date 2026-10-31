@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "simulatedChainId": 31337,
+  "referenceBlock": "102453826",
+  "planSha256": "4a775b6d453c311c88e2b27dbc90fcc9aabeec594e9970781ba9eba0e285859c",
+  "transactionCount": 23,
+  "totalGasUsed": "18205773",
+  "gasPriceWei": "20074000",
+  "estimatedFeeETH": "0.000365462687202",
+  "suggestedGasLimit": "22757217",
+  "suggestedGasPriceCapWei": "40148000",
+  "suggestedFeeCeilingETH": "0.000913656748116",
+  "stages": [
+    {
+      "stage": "deploy-configRegistryImplementation",
+      "gasUsed": "2684274",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xbe1cf6c6f99930e2ea6b38c02c1132a827dccafcc1fd87200bab711cf75ea7bf",
+      "blockNumber": "102453827",
+      "effectiveGasPriceWei": "1017519251"
+    },
+    {
+      "stage": "deploy-configRegistry",
+      "gasUsed": "206768",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x47e3ccf39cbdff49a1f7b319ba60fa5ff1d31d710916b4248e43ed3c333338e6",
+      "blockNumber": "102453828",
+      "effectiveGasPriceWei": "1015329345"
+    },
+    {
+      "stage": "deploy-launchTokenDeployer",
+      "gasUsed": "809850",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x8340aa73159531cd4689e962d1b0834c5e527c8e06aa0971a9a068aa5ac00c7a",
+      "blockNumber": "102453829",
+      "effectiveGasPriceWei": "1013413177"
+    },
+    {
+      "stage": "deploy-virtualPoolDeployer",
+      "gasUsed": "4774128",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x542381350f546efdb2c1307ca4305db8313935f4b3c5b4f8db0eed26feddd3be",
+      "blockNumber": "102453830",
+      "effectiveGasPriceWei": "1011736530"
+    },
+    {
+      "stage": "deploy-launchFactoryImplementation",
+      "gasUsed": "1970025",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x59377421f6fc9130c75ef7b6922eefde047e3e6d0e3da9fb14fd1cf576490e5f",
+      "blockNumber": "102453831",
+      "effectiveGasPriceWei": "1010269464"
+    },
+    {
+      "stage": "deploy-launchFactory",
+      "gasUsed": "255249",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x5092bceebcdd679b7b9fb4ed6015f857d7319d9589688181be6857d476ca07c1",
+      "blockNumber": "102453832",
+      "effectiveGasPriceWei": "1008985782"
+    },
+    {
+      "stage": "deploy-launchpadRouterImplementation",
+      "gasUsed": "1302428",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xc6d94f4588f7aea9f878b3cc39c40946cf2b5de46962d0782f1bd0a988ce6c64",
+      "blockNumber": "102453833",
+      "effectiveGasPriceWei": "1007862560"
+    },
+    {
+      "stage": "deploy-launchpadRouter",
+      "gasUsed": "204700",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x0d2c6c6ab5d616a06158fcac809dd2cef2930b4f369efaa3037750f05cfe6ae0",
+      "blockNumber": "102453834",
+      "effectiveGasPriceWei": "1006879741"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrowImplementation",
+      "gasUsed": "1193450",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x2cb610100d4dd182699c72b20f5b002f1be5a6e2865d1e910b4ec4c820379e93",
+      "blockNumber": "102453835",
+      "effectiveGasPriceWei": "1006019774"
+    },
+    {
+      "stage": "deploy-lpAllocationEscrow",
+      "gasUsed": "182005",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x3826d0bc6550b08c10ef62a0791d2619cb5c052da1a4639e70aaf6941c7673c8",
+      "blockNumber": "102453836",
+      "effectiveGasPriceWei": "1005267303"
+    },
+    {
+      "stage": "deploy-graduationManagerImplementation",
+      "gasUsed": "2216114",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xa437965a38118866f81b72d6c4216767e3345f4f53f4014c4108fe0b7688b659",
+      "blockNumber": "102453837",
+      "effectiveGasPriceWei": "1004608891"
+    },
+    {
+      "stage": "deploy-graduationManager",
+      "gasUsed": "227321",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xfa3c12cb5ab731fdd24eb9d3c7d2f6ad26d676d2dd6dbceff94be74142500bbe",
+      "blockNumber": "102453838",
+      "effectiveGasPriceWei": "1004032780"
+    },
+    {
+      "stage": "deploy-curveQuoter",
+      "gasUsed": "443781",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0xca0055899bdf2cbc4e9df01de365e18a7bade867b8870f74e9e03ca172e38c91",
+      "blockNumber": "102453839",
+      "effectiveGasPriceWei": "1003528683"
+    },
+    {
+      "stage": "deploy-dammGraduationAdapter",
+      "gasUsed": "857193",
+      "fundingAccount": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "transactionHash": "0x21ce335dbe6bf0a73be7e6a450040c40e71392d1ece2ac587a5029934c1a7392",
+      "blockNumber": "102453840",
+      "effectiveGasPriceWei": "1003087598"
+    },
+    {
+      "stage": "configure-bindLaunchTokenDeployer",
+      "gasUsed": "44158",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0xf21f357497bbd215ba0888dbc467bd98001327e24c6df4d865e4e6efe9a96f44",
+      "blockNumber": "102453841",
+      "effectiveGasPriceWei": "1002701649"
+    },
+    {
+      "stage": "configure-bindVirtualPoolDeployer",
+      "gasUsed": "44136",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x43d5b30f10cde6dda8fb6cdfef8b2a92b8d4239bde7f0ef6a59cc2acc3cffd46",
+      "blockNumber": "102453842",
+      "effectiveGasPriceWei": "1002363943"
+    },
+    {
+      "stage": "configure-allowQuoteToken",
+      "gasUsed": "83515",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0xd51d33150fef3e7a29deb11ee407c2ddab2378a403cf737c640b736a7e35405f",
+      "blockNumber": "102453843",
+      "effectiveGasPriceWei": "1002068451"
+    },
+    {
+      "stage": "configure-authorizeFactory",
+      "gasUsed": "53820",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x32c9e2a52f34ad8963a1e864f962a678a32c11b4667ebff6068f24eb1d934847",
+      "blockNumber": "102453844",
+      "effectiveGasPriceWei": "1001809895"
+    },
+    {
+      "stage": "configure-bindGraduationManager",
+      "gasUsed": "51032",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x0615a65c5afb6e5f4abaaff15afe5ac163f2803d6a14648ad0056ae1f838ccb6",
+      "blockNumber": "102453845",
+      "effectiveGasPriceWei": "1001583659"
+    },
+    {
+      "stage": "configure-allowDammAdapter",
+      "gasUsed": "55362",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x46a5eaa6b66d87493d73076494238117cf8d805aef0b98f676b60f47174fb995",
+      "blockNumber": "102453846",
+      "effectiveGasPriceWei": "1001385702"
+    },
+    {
+      "stage": "configure-authorizeGraduationManager",
+      "gasUsed": "53782",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x7ac30e6cdcfe4d887ae2a0e52d0bbcd0d2bb3850760f700103a2f2fbd5363f00",
+      "blockNumber": "102453847",
+      "effectiveGasPriceWei": "1001212490"
+    },
+    {
+      "stage": "configure-authorizeAdapterOnPoolFactory",
+      "gasUsed": "53730",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0xf9ad3c747656e5d2e4a3c5272e1d7662fe01b758ca4c9e11fb4fb7b8076900ec",
+      "blockNumber": "102453848",
+      "effectiveGasPriceWei": "1001060929"
+    },
+    {
+      "stage": "configure-createMvpTemplate",
+      "gasUsed": "438952",
+      "fundingAccount": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "transactionHash": "0x37810d62b64c6c62e64b4110547521ead91e80aed8163b9e7cde61af0319487d",
+      "blockNumber": "102453849",
+      "effectiveGasPriceWei": "1000928313"
+    }
+  ],
+  "totalFeeWei": "18381704048756821",
+  "liveBroadcast": false
+}

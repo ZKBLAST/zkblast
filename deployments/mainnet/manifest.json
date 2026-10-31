@@ -829,5 +829,18 @@
       "address": "0x44D204AfC9fC75607721007303D2Ce39417510d9",
       "feeRaw": "1000"
     }
+  },
+  "dbc": {
+    "abiVersion": 1,
+    "deploymentBlock": 102458621,
+    "configRegistry": "0xd680c010873257f05EAAbdde583b2d6DE4FA6e33",
+    "launchTokenDeployer": "0x763290A45dde9527e2713e41231bB02b0391106f",
+    "virtualPoolDeployer": "0xBE32DBc3f0f758B0b51F510A695DEa5Ed8d211c4",
+    "launchFactory": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+    "curveQuoter": "0x9327DA0628a441463C7101eFBc02d37E01585e21",
+    "launchpadRouter": "0x6d208744Ff0Ec74b04Bb76576b32A8A2ccB9f181",
+    "graduationManager": "0x7DD70C9C9DFA592a4d1617F6cb2e8DB816eCd37c",
+    "dammGraduationAdapter": "0xC8A115392EF415738a21C918b02Eff95970FDd89",
+    "lpAllocationEscrow": "0x13A41EEE494b198d8F5E428283a0A274699C9b60"
   }
 }

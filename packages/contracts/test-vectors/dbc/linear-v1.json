@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "scale": "1000000000000000000",
+  "curve": {
+    "initialPriceX18": "1000000000000000000",
+    "slopeX18": "100000000000000000",
+    "saleCapacityX18": "100000000000000000000"
+  },
+  "vectors": [
+    {
+      "name": "first-base-token",
+      "soldX18": "0",
+      "baseAmountX18": "1000000000000000000",
+      "quoteUpX18": "1050000000000000000",
+      "quoteDownX18": "1050000000000000000"
+    },
+    {
+      "name": "later-base-token",
+      "soldX18": "2000000000000000000",
+      "baseAmountX18": "1000000000000000000",
+      "quoteUpX18": "1250000000000000000",
+      "quoteDownX18": "1250000000000000000"
+    },
+    {
+      "name": "three-base-tokens",
+      "soldX18": "0",
+      "baseAmountX18": "3000000000000000000",
+      "quoteUpX18": "3450000000000000000",
+      "quoteDownX18": "3450000000000000000"
+    },
+    {
+      "name": "one-normalized-unit",
+      "soldX18": "0",
+      "baseAmountX18": "1",
+      "quoteUpX18": "1",
+      "quoteDownX18": "1"
+    },
+    {
+      "name": "final-base-token",
+      "soldX18": "99000000000000000000",
+      "baseAmountX18": "1000000000000000000",
+      "quoteUpX18": "10950000000000000000",
+      "quoteDownX18": "10950000000000000000"
+    }
+  ]
+}

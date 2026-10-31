@@ -9,3 +9,5 @@ export * from "./transaction-reconciliation.js";
 export * from "./perps-projection.js";
 export * from "./persist-perps-event.js";
 export * from "./perps-state-sync.js";
+export * from "./dbc-projection.js";
+export * from "./persist-dbc-event.js";

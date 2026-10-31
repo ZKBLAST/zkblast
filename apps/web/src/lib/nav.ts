@@ -7,6 +7,7 @@ export type NavItem = Readonly<{
 export const nav: readonly NavItem[] = [
   { href: "/trade", label: "Pools" },
   { href: "/trade?mode=perps", label: "Perps", mode: "perps" },
+  { href: "/launch", label: "Launch" },
   { href: "/analytics", label: "Analytics" },
   { href: "/docs", label: "Docs" },
 ];

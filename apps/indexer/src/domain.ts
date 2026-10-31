@@ -9,7 +9,8 @@ export type ProtocolEventKind =
   | "commitment"
   | "private_intent"
   | "root"
-  | "receipt";
+  | "receipt"
+  | "launch";
 export type IndexedEvent = Readonly<{
   chainId: number;
   blockNumber: bigint;

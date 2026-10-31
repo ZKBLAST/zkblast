@@ -26,6 +26,8 @@ import type { ExternalMarketService } from "./external-market-service.js";
 import type { TradeReceiptService } from "./trade-receipt-service.js";
 import type { PoolCreationService } from "./pool-creation-service.js";
 import { createPoolCreationRouter } from "./pool-creation-router.js";
+import { createDbcRouter } from "./dbc-router.js";
+import type { DbcService } from "./dbc-service.js";
 import { createPerpsRouter } from "./perps-router.js";
 import type { PerpsService } from "./perps-service.js";
 
@@ -165,6 +167,7 @@ export function createApp(
     tradeReceiptService?: TradeReceiptService;
     poolCreationService?: PoolCreationService;
     perpsService?: PerpsService;
+    dbcService?: DbcService;
   }> = {},
 ) {
   const app = express();
@@ -268,6 +271,9 @@ export function createApp(
   }
   if (dependencies.perpsService) {
     app.use("/v1/perps", createPerpsRouter(dependencies.perpsService));
+  }
+  if (dependencies.dbcService) {
+    app.use("/v1/dbc", createDbcRouter(dependencies.dbcService));
   }
 
   app.use((_request, response) => {

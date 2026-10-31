@@ -55,6 +55,37 @@ export const docs: { group: string; sections: DocSection[] }[] = [
     ],
   },
   {
+    group: "Launchpad",
+    sections: [
+      {
+        id: "curve-launches",
+        title: "Dynamic bonding curve launches",
+        body: [
+          "Launch uses governance-approved templates. A template fixes the quote asset, token inventory, curve, trade fee, graduation threshold, DAMM fee tier, terminal-price tolerance and LP allocation policy before a token is created.",
+          {
+            list: [
+              "Create Launch guides you through the template, token metadata, recipient and final wallet confirmation.",
+              "Buy and sell quotes come from the active virtual pool. Refresh a quote whenever its deadline or market context changes.",
+              "The progress bar is calculated from real net quote reserves against the onchain graduation threshold.",
+              "Recorded OHLCV contains validated curve swaps only; an empty period has no manufactured volume.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "curve-graduation",
+        title: "Graduation and LP allocation",
+        body: [
+          "At the exact threshold, curve trading freezes. Any account may trigger the configured migration, but the caller cannot change its DAMM pair, fee tier, price tolerance, minimum shares or asset recipients.",
+          "Destination LP shares are recorded in escrow. Creator and protocol allocations can only be claimed by their configured recipients, and creator claims respect the onchain unlock time.",
+          {
+            note: "A graduation or claim button prepares the canonical contract call. Your wallet simulation remains authoritative; verify the network, amounts and destination before signing.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     group: "Shielded lane",
     sections: [
       {
