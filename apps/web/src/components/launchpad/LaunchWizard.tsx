@@ -1,20 +1,14 @@
 "use client";
 import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import {
-  decodeFunctionResult,
-  encodeAbiParameters,
-  encodeFunctionData,
-  getAddress,
-  keccak256,
-} from "viem";
+import { decodeEventLog, getAddress } from "viem";
 import {
   formatTokenAmount,
   minimumAmountOut,
   parseTokenAmount,
   type DbcAddresses,
 } from "@zkblast/sdk";
-import { launchFactoryAbi } from "@zkblast/abi";
+import { dbcEventsAbi } from "@zkblast/abi";
 import { Modal } from "@/components/ui/Modal";
 import {
   executeDbcTransactions,
@@ -141,7 +135,7 @@ export function LaunchWizard({
         metadataUri: metadata.metadataUri,
         creatorTokenRecipient: getAddress(walletRecipient),
       });
-      await executeDbcTransactions({
+      const createHash = await executeDbcTransactions({
         provider: window.ethereum,
         account: address,
         chainId: config.chainId,
@@ -150,45 +144,45 @@ export function LaunchWizard({
         onStatus: setStatus,
       });
       launchCreated = true;
+      onClose();
+      onComplete();
+      window.setTimeout(onComplete, 4_000);
+      window.setTimeout(onComplete, 10_000);
+      window.setTimeout(onComplete, 20_000);
+      window.setTimeout(onComplete, 35_000);
       if (initialBuyRaw > 0n && economics) {
-        const launchId = keccak256(
-          encodeAbiParameters(
-            [
-              { type: "uint256" },
-              { type: "address" },
-              { type: "address" },
-              { type: "uint256" },
-              { type: "bytes32" },
-            ],
-            [
-              BigInt(config.chainId),
-              getAddress(deployment.launchFactory),
-              getAddress(address),
-              BigInt(selected.template_id),
-              salt,
-            ],
-          ),
-        );
         setStatus("preparing initial buy");
-        const launchCall = client.launch(launchId);
-        const rawLaunch = (await window.ethereum.request({
-          method: "eth_call",
-          params: [
-            {
-              to: deployment.launchFactory,
-              data: encodeFunctionData(
-                launchCall as Parameters<typeof encodeFunctionData>[0],
-              ),
-            },
-            "latest",
-          ],
-        })) as `0x${string}`;
-        const record = decodeFunctionResult({
-          abi: launchFactoryAbi,
-          functionName: "launches",
-          data: rawLaunch,
-        });
-        const pool = getAddress(record[2]);
+        const receipt = (await window.ethereum.request({
+          method: "eth_getTransactionReceipt",
+          params: [createHash],
+        })) as {
+          logs?: readonly Readonly<{
+            address: string;
+            data: `0x${string}`;
+            topics: [] | [`0x${string}`, ...`0x${string}`[]];
+          }>[];
+        } | null;
+        const launched = receipt?.logs
+          ?.filter(
+            (log) =>
+              log.address.toLowerCase() ===
+              deployment.launchFactory.toLowerCase(),
+          )
+          .map((log) => {
+            try {
+              return decodeEventLog({
+                abi: dbcEventsAbi,
+                data: log.data,
+                topics: log.topics,
+              });
+            } catch {
+              return null;
+            }
+          })
+          .find((event) => event?.eventName === "TokenLaunched");
+        if (!launched || launched.eventName !== "TokenLaunched")
+          throw new Error("INITIAL_BUY_POOL_NOT_FOUND");
+        const pool = getAddress(launched.args.virtualPool);
         const quote = await apiRequest<DbcQuoteResponse>(
           webPublicConfig.apiUrl,
           "/v1/dbc/quote",
@@ -241,9 +235,6 @@ export function LaunchWizard({
             : "The indexer will publish the new curve market after finality.",
       });
       onComplete();
-      window.setTimeout(onComplete, 4_000);
-      window.setTimeout(onComplete, 10_000);
-      onClose();
     } catch (error) {
       if (launchCreated) {
         const reason =
@@ -254,8 +245,6 @@ export function LaunchWizard({
           body: `Initial buy was not completed (${reason}). You can buy from the launch market after indexing.`,
         });
         onComplete();
-        window.setTimeout(onComplete, 4_000);
-        onClose();
         return;
       }
       setStatus(error instanceof Error ? error.message : "LAUNCH_FAILED");
