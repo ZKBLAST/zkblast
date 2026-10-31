@@ -56,6 +56,7 @@ export function LaunchActions({
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [balanceRaw, setBalanceRaw] = useState<bigint | null>(null);
   const [allowanceRaw, setAllowanceRaw] = useState<bigint | null>(null);
+  const [executableMaxRaw, setExecutableMaxRaw] = useState<bigint | null>(null);
   const symbol = launch.symbol ?? "TOKEN";
   const tokenLogoUrl =
     launch.has_logo && launch.metadata_id
@@ -67,7 +68,11 @@ export function LaunchActions({
     setQuote(null);
     setQuoteAt(0);
     setAmount("");
+    setExecutableMaxRaw(null);
   }, [launch.launch_id, side]);
+  useEffect(() => {
+    setExecutableMaxRaw(null);
+  }, [launch.base_sold_raw, launch.real_quote_reserve_raw]);
   useEffect(() => {
     if (launch.lifecycle !== 4) {
       setGraduation(null);
@@ -155,6 +160,7 @@ export function LaunchActions({
     address,
     launch.quote_token,
     launch.token_address,
+    launch.updated_block,
     launch.virtual_pool,
     side,
   ]);
@@ -272,6 +278,7 @@ export function LaunchActions({
           else high = middle - 1n;
         }
         raw = low;
+        setExecutableMaxRaw(low);
         setStatus("");
       } catch (error) {
         setStatus(
@@ -356,9 +363,6 @@ export function LaunchActions({
       setQuoteAt(0);
       setAmount("");
       onComplete();
-      window.setTimeout(onComplete, 4_000);
-      window.setTimeout(onComplete, 10_000);
-      window.setTimeout(onComplete, 20_000);
       window.setTimeout(onComplete, 4_000);
       window.setTimeout(onComplete, 10_000);
       window.setTimeout(onComplete, 20_000);
@@ -675,13 +679,33 @@ export function LaunchActions({
         {tab === "trade" && address && (
           <div className="mt-4 grid grid-cols-2 gap-px bg-line text-[10px]">
             <Metric
-              label="Balance"
+              label="Wallet balance"
               value={
                 balanceRaw === null
                   ? "Unavailable"
                   : `${formatTokenAmount(balanceRaw, inputDecimals)} ${side === "buy" ? "USDG" : symbol}`
               }
             />
+            {side === "sell" && (
+              <>
+                <Metric
+                  label="Curve capacity"
+                  value={
+                    spendableRaw === null
+                      ? "Unavailable"
+                      : `${formatTokenAmount(spendableRaw, 18)} ${symbol}`
+                  }
+                />
+                <Metric
+                  label="Executable MAX"
+                  value={
+                    executableMaxRaw === null
+                      ? "Press MAX to calculate"
+                      : `${formatTokenAmount(executableMaxRaw, 18)} ${symbol}`
+                  }
+                />
+              </>
+            )}
             <Metric
               label="Allowance"
               value={
