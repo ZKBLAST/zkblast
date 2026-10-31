@@ -158,6 +158,7 @@ const perpsState = new PerpsStateSynchronizer(
 );
 let syncing = false;
 let lastActivitySync = 0;
+let lastDbcSync = 0;
 
 async function reconcileRecentDbcEvents(): Promise<void> {
   if (!manifest.dbc) return;
@@ -236,6 +237,10 @@ async function synchronize(): Promise<void> {
       await service.sync(startBlock, 1n);
     }
     const checkpoint = await repository.checkpoint(config.CHAIN_ID);
+    if (Date.now() - lastDbcSync >= 30_000) {
+      await reconcileRecentDbcEvents();
+      lastDbcSync = Date.now();
+    }
     if (Date.now() - lastActivitySync >= 30000) {
       await repository.reconcilePools(
         client,
@@ -249,7 +254,6 @@ async function synchronize(): Promise<void> {
         getAddress(manifest.integration.positionManager),
         BigInt(runner.INDEXER_CONFIRMATIONS),
       );
-      await reconcileRecentDbcEvents();
       await perpsState.synchronize();
       lastActivitySync = Date.now();
     }
