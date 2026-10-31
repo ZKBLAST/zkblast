@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { redact } from "@zkblast/observability";
-import { createPublicClient, getAddress, http } from "viem";
+import { createPublicClient, getAddress, http, type Log } from "viem";
 import { z } from "zod";
 import { IndexerService } from "./indexer-service.js";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
@@ -89,13 +89,14 @@ const trackedLaunchContracts = manifest.dbc
   ? await repository.dbcLaunchContractAddresses()
   : [];
 repository.trackDbcContracts(trackedLaunchContracts);
+const chainReader = new ViemChainReader(client, config.CHAIN_ID, [
+  ...addresses,
+  ...trackedLaunchContracts,
+]);
 const service = new IndexerService(
   config.CHAIN_ID,
   BigInt(runner.INDEXER_CONFIRMATIONS),
-  new ViemChainReader(client, config.CHAIN_ID, [
-    ...addresses,
-    ...trackedLaunchContracts,
-  ]),
+  chainReader,
   repository,
 );
 await repository.enableCheckpointGuard();
@@ -158,6 +159,40 @@ const perpsState = new PerpsStateSynchronizer(
 let syncing = false;
 let lastActivitySync = 0;
 
+async function reconcileRecentDbcEvents(): Promise<void> {
+  if (!manifest.dbc) return;
+  const dynamicContracts = await repository.dbcLaunchContractAddresses();
+  if (dynamicContracts.length === 0) return;
+  repository.trackDbcContracts(dynamicContracts);
+  const head =
+    (await client.getBlockNumber()) - BigInt(runner.INDEXER_CONFIRMATIONS);
+  const deploymentBlock = BigInt(manifest.dbc.deploymentBlock);
+  const recentStart = head > 3_000n ? head - 3_000n : 0n;
+  const fromBlock =
+    recentStart > deploymentBlock ? recentStart : deploymentBlock;
+  for (let from = fromBlock; from <= head; from += 2_000n) {
+    const to = from + 1_999n > head ? head : from + 1_999n;
+    const logs = await client.getLogs({
+      address: dynamicContracts,
+      fromBlock: from,
+      toBlock: to,
+    });
+    const grouped = new Map<bigint, Log[]>();
+    for (const log of logs) {
+      if (log.blockNumber === null) continue;
+      const blockLogs = grouped.get(log.blockNumber) ?? [];
+      blockLogs.push(log);
+      grouped.set(log.blockNumber, blockLogs);
+    }
+    for (const [blockNumber, blockLogs] of [...grouped].sort(([a], [b]) =>
+      a < b ? -1 : 1,
+    )) {
+      const block = await chainReader.block(blockNumber, blockLogs);
+      await repository.backfillDbcEvents(block.events);
+    }
+  }
+}
+
 async function synchronize(): Promise<void> {
   if (syncing) return;
   syncing = true;
@@ -214,6 +249,7 @@ async function synchronize(): Promise<void> {
         getAddress(manifest.integration.positionManager),
         BigInt(runner.INDEXER_CONFIRMATIONS),
       );
+      await reconcileRecentDbcEvents();
       await perpsState.synchronize();
       lastActivitySync = Date.now();
     }
