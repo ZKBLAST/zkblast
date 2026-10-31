@@ -29,6 +29,9 @@ const logoUrl = (launch: DbcLaunch) =>
 export function Launchpad() {
   const [templates, setTemplates] = useState<readonly DbcTemplate[]>([]);
   const [launches, setLaunches] = useState<readonly DbcLaunch[]>([]);
+  const [pendingLaunches, setPendingLaunches] = useState<readonly DbcLaunch[]>(
+    [],
+  );
   const [deployment, setDeployment] = useState<DbcAddresses | null>(null);
   const [selectedId, setSelectedId] = useState("");
   const [search, setSearch] = useState("");
@@ -38,6 +41,19 @@ export function Launchpad() {
   const [revision, setRevision] = useState(0);
   const [wizard, setWizard] = useState(false);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
+  const completeLaunch = useCallback(
+    (launch?: DbcLaunch) => {
+      if (launch) {
+        setPendingLaunches((current) => [
+          launch,
+          ...current.filter((item) => item.launch_id !== launch.launch_id),
+        ]);
+        setSelectedId(launch.launch_id);
+      }
+      refresh();
+    },
+    [refresh],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -61,6 +77,12 @@ export function Launchpad() {
       .then(([templateResult, launchResult, deploymentResult]) => {
         setTemplates(templateResult.items);
         setLaunches(launchResult.items);
+        const indexedIds = new Set(
+          launchResult.items.map((item) => item.launch_id),
+        );
+        setPendingLaunches((current) =>
+          current.filter((item) => !indexedIds.has(item.launch_id)),
+        );
         setDeployment(deploymentResult);
         setSelectedId(
           (current) => current || launchResult.items[0]?.launch_id || "",
@@ -78,9 +100,19 @@ export function Launchpad() {
     return () => controller.abort();
   }, [revision]);
 
+  const allLaunches = useMemo(
+    () => [
+      ...pendingLaunches.filter(
+        (pending) =>
+          !launches.some((item) => item.launch_id === pending.launch_id),
+      ),
+      ...launches,
+    ],
+    [launches, pendingLaunches],
+  );
   const visible = useMemo(
     () =>
-      launches
+      allLaunches
         .filter((item) =>
           `${item.name ?? ""} ${item.symbol ?? ""} ${item.token_address}`
             .toLowerCase()
@@ -95,10 +127,10 @@ export function Launchpad() {
                 )
               : Number(BigInt(b.updated_block) - BigInt(a.updated_block)),
         ),
-    [launches, search, sort],
+    [allLaunches, search, sort],
   );
   const selected =
-    launches.find((item) => item.launch_id === selectedId) ??
+    allLaunches.find((item) => item.launch_id === selectedId) ??
     visible[0] ??
     null;
 
@@ -317,7 +349,7 @@ export function Launchpad() {
           onClose={() => setWizard(false)}
           templates={templates}
           deployment={deployment}
-          onComplete={refresh}
+          onComplete={completeLaunch}
         />
       )}
     </main>

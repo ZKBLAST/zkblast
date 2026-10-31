@@ -21,7 +21,7 @@ import {
 import { useApp } from "@/components/shell/AppProvider";
 import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
-import type { DbcTemplate, TemplateEconomics } from "./types";
+import type { DbcLaunch, DbcTemplate, TemplateEconomics } from "./types";
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
 
 export function LaunchWizard({
@@ -35,7 +35,7 @@ export function LaunchWizard({
   onClose: () => void;
   templates: readonly DbcTemplate[];
   deployment: DbcAddresses;
-  onComplete: () => void;
+  onComplete: (launch?: DbcLaunch) => void;
 }>) {
   const { address, config, connect, toast } = useApp();
   const [step, setStep] = useState(0);
@@ -112,19 +112,19 @@ export function LaunchWizard({
     setStatus("preparing");
     let launchCreated = false;
     try {
-      const metadata = await apiRequest<{ metadataUri: string }>(
-        webPublicConfig.apiUrl,
-        "/v1/dbc/metadata",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            websiteUrl,
-            xUrl,
-            logoMime: logo?.mime ?? null,
-            logoBase64: logo?.base64 ?? null,
-          }),
-        },
-      );
+      const metadata = await apiRequest<{
+        metadataId: string;
+        metadataUri: string;
+        logoUrl: string | null;
+      }>(webPublicConfig.apiUrl, "/v1/dbc/metadata", {
+        method: "POST",
+        body: JSON.stringify({
+          websiteUrl,
+          xUrl,
+          logoMime: logo?.mime ?? null,
+          logoBase64: logo?.base64 ?? null,
+        }),
+      });
       const client = dbcClient(deployment);
       const salt = bytes32Salt();
       const call = client.createLaunch({
@@ -144,42 +144,77 @@ export function LaunchWizard({
         onStatus: setStatus,
       });
       launchCreated = true;
+      const receipt = (await window.ethereum.request({
+        method: "eth_getTransactionReceipt",
+        params: [createHash],
+      })) as {
+        blockNumber?: string;
+        logs?: readonly Readonly<{
+          address: string;
+          data: `0x${string}`;
+          topics: [] | [`0x${string}`, ...`0x${string}`[]];
+        }>[];
+      } | null;
+      const launched = receipt?.logs
+        ?.filter(
+          (log) =>
+            log.address.toLowerCase() ===
+            deployment.launchFactory.toLowerCase(),
+        )
+        .map((log) => {
+          try {
+            return decodeEventLog({
+              abi: dbcEventsAbi,
+              data: log.data,
+              topics: log.topics,
+            });
+          } catch {
+            return null;
+          }
+        })
+        .find((event) => event?.eventName === "TokenLaunched");
+      const blockNumber = receipt?.blockNumber
+        ? BigInt(receipt.blockNumber).toString()
+        : "0";
+      const optimisticLaunch: DbcLaunch | undefined =
+        launched?.eventName === "TokenLaunched"
+          ? {
+              launch_id: launched.args.launchId,
+              template_id: launched.args.templateId.toString(),
+              creator: getAddress(address),
+              token_address: getAddress(launched.args.token),
+              virtual_pool: getAddress(launched.args.virtualPool),
+              quote_token: getAddress(launched.args.quoteToken),
+              name: name.trim(),
+              symbol: symbol.trim().toUpperCase(),
+              metadata_uri: metadata.metadataUri,
+              metadata_id: metadata.metadataId,
+              website_url: websiteUrl || null,
+              x_url: xUrl || null,
+              has_logo: Boolean(metadata.logoUrl),
+              lifecycle: 1,
+              real_quote_reserve_raw: "0",
+              base_sold_raw: "0",
+              graduation_threshold_raw:
+                launched.args.graduationThresholdRaw.toString(),
+              progress_bps: 0,
+              created_block: blockNumber,
+              updated_block: blockNumber,
+              volume_raw: "0",
+              trade_count: 0,
+              holder_count: 0,
+              creator_claimable_raw: "0",
+              protocol_claimable_raw: "0",
+            }
+          : undefined;
       onClose();
-      onComplete();
+      onComplete(optimisticLaunch);
       window.setTimeout(onComplete, 4_000);
       window.setTimeout(onComplete, 10_000);
       window.setTimeout(onComplete, 20_000);
       window.setTimeout(onComplete, 35_000);
       if (initialBuyRaw > 0n && economics) {
         setStatus("preparing initial buy");
-        const receipt = (await window.ethereum.request({
-          method: "eth_getTransactionReceipt",
-          params: [createHash],
-        })) as {
-          logs?: readonly Readonly<{
-            address: string;
-            data: `0x${string}`;
-            topics: [] | [`0x${string}`, ...`0x${string}`[]];
-          }>[];
-        } | null;
-        const launched = receipt?.logs
-          ?.filter(
-            (log) =>
-              log.address.toLowerCase() ===
-              deployment.launchFactory.toLowerCase(),
-          )
-          .map((log) => {
-            try {
-              return decodeEventLog({
-                abi: dbcEventsAbi,
-                data: log.data,
-                topics: log.topics,
-              });
-            } catch {
-              return null;
-            }
-          })
-          .find((event) => event?.eventName === "TokenLaunched");
         if (!launched || launched.eventName !== "TokenLaunched")
           throw new Error("INITIAL_BUY_POOL_NOT_FOUND");
         const pool = getAddress(launched.args.virtualPool);
