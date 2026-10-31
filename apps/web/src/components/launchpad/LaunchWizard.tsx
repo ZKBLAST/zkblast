@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, ArrowRight, Check, Rocket } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getAddress } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
@@ -15,6 +15,7 @@ import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import { formatTokenAmount } from "@zkblast/sdk";
 import type { DbcTemplate, TemplateEconomics } from "./types";
+import { prepareLaunchLogo } from "@/lib/launch-metadata";
 
 export function LaunchWizard({
   open,
@@ -36,7 +37,14 @@ export function LaunchWizard({
   );
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
-  const [metadataUri, setMetadataUri] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [xUrl, setXUrl] = useState("");
+  const [logo, setLogo] = useState<{
+    mime: "image/webp";
+    base64: string;
+    previewUrl: string;
+  } | null>(null);
+  const [logoStatus, setLogoStatus] = useState("");
   const [recipient, setRecipient] = useState("");
   const [status, setStatus] = useState("");
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
@@ -65,8 +73,9 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [templateId]);
-  const validMetadata =
-    /^ipfs:\/\/.+/u.test(metadataUri) || /^https:\/\/.+/u.test(metadataUri);
+  const validWebsite = !websiteUrl || /^https:\/\/.+/u.test(websiteUrl);
+  const validX =
+    !xUrl || /^https:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/.+/iu.test(xUrl);
   const canContinue =
     step === 0
       ? Boolean(selected)
@@ -74,7 +83,8 @@ export function LaunchWizard({
         ? name.trim().length > 0 &&
           symbol.trim().length > 0 &&
           symbol.length <= 12 &&
-          validMetadata &&
+          validWebsite &&
+          validX &&
           /^0x[\da-f]{40}$/iu.test(walletRecipient)
         : true;
   async function submit() {
@@ -82,12 +92,25 @@ export function LaunchWizard({
     if (!window.ethereum || !config || !selected) return;
     setStatus("preparing");
     try {
+      const metadata = await apiRequest<{ metadataUri: string }>(
+        webPublicConfig.apiUrl,
+        "/v1/dbc/metadata",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            websiteUrl,
+            xUrl,
+            logoMime: logo?.mime ?? null,
+            logoBase64: logo?.base64 ?? null,
+          }),
+        },
+      );
       const call = dbcClient(deployment).createLaunch({
         templateId: BigInt(selected.template_id),
         salt: bytes32Salt(),
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
-        metadataUri,
+        metadataUri: metadata.metadataUri,
         creatorTokenRecipient: getAddress(walletRecipient),
       });
       await executeDbcTransactions({
@@ -206,12 +229,71 @@ export function LaunchWizard({
             placeholder="TOKEN"
           />
           <div className="sm:col-span-2">
-            <Field
-              label="Metadata URI"
-              value={metadataUri}
-              onChange={setMetadataUri}
-              placeholder="ipfs://…"
-            />
+            <span className="label">Token logo</span>
+            <label className="mt-2 flex min-h-24 cursor-pointer items-center gap-4 border border-dashed border-line bg-bg p-3 hover:border-lime/60">
+              {logo ? (
+                <img
+                  src={logo.previewUrl}
+                  alt="Token logo preview"
+                  className="size-16 rounded-full bg-white object-cover"
+                />
+              ) : (
+                <span className="grid size-16 place-items-center rounded-full border border-line">
+                  <ImagePlus className="size-5 text-muted" />
+                </span>
+              )}
+              <span className="min-w-0 text-xs text-muted">
+                <span className="block text-fg">
+                  {logo ? "Replace logo" : "Upload logo"}
+                </span>
+                <span className="mt-1 block">
+                  PNG, JPG or WebP · automatically optimized
+                </span>
+                {logoStatus && (
+                  <span className="mt-1 block text-danger">{logoStatus}</span>
+                )}
+              </span>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  setLogoStatus("Optimizing…");
+                  void prepareLaunchLogo(file)
+                    .then((next) => {
+                      if (logo) URL.revokeObjectURL(logo.previewUrl);
+                      setLogo(next);
+                      setLogoStatus("");
+                    })
+                    .catch((error) =>
+                      setLogoStatus(
+                        error instanceof Error ? error.message : "LOGO_FAILED",
+                      ),
+                    );
+                }}
+              />
+            </label>
+          </div>
+          <Field
+            label="Website"
+            value={websiteUrl}
+            onChange={setWebsiteUrl}
+            placeholder="https://project.example"
+          />
+          <Field
+            label="X profile"
+            value={xUrl}
+            onChange={setXUrl}
+            placeholder="https://x.com/project"
+          />
+          <div className="sm:col-span-2">
+            {!validWebsite || !validX ? (
+              <p className="text-xs text-danger">
+                Use a valid HTTPS website and X profile URL.
+              </p>
+            ) : null}
           </div>
           <div className="sm:col-span-2">
             <Field
@@ -264,7 +346,9 @@ export function LaunchWizard({
               }
             />
             <Review label="Recipient" value={walletRecipient} />
-            <Review label="Metadata" value={metadataUri} />
+            <Review label="Website" value={websiteUrl || "Not provided"} />
+            <Review label="X profile" value={xUrl || "Not provided"} />
+            <Review label="Logo" value={logo ? "Ready" : "Not provided"} />
           </div>
           <p className="text-xs leading-5 text-muted">
             Your wallet creates the token and virtual pool atomically. Review

@@ -1,5 +1,21 @@
 import type { Address } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
+import { z } from "zod";
+
+const templateEconomicsSchema = z.tuple([
+  z.string(),
+  z.bigint(),
+  z.bigint(),
+  z.bigint(),
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+]);
 
 export type DbcPage = Readonly<{ limit: number; cursor?: string | undefined }>;
 export type DbcCandleQuery = Readonly<{
@@ -8,16 +24,26 @@ export type DbcCandleQuery = Readonly<{
   to: Date;
   limit: number;
 }>;
+export type DbcLaunchMetadata = Readonly<{
+  metadataId: string;
+  metadataUri: string;
+  websiteUrl: string | null;
+  xUrl: string | null;
+  logoMime: "image/png" | "image/jpeg" | "image/webp" | null;
+  logoBytes: Buffer | null;
+}>;
 export interface DbcReadStore {
   templates(page: DbcPage): Promise<readonly unknown[]>;
   launches(
     page: DbcPage &
       Readonly<{ search?: string | undefined; lifecycle?: number | undefined }>,
   ): Promise<readonly unknown[]>;
-  launch(launchId: string): Promise<unknown | null>;
+  launch(launchId: string): Promise<unknown>;
   trades(launchId: string, page: DbcPage): Promise<readonly unknown[]>;
   candles(launchId: string, query: DbcCandleQuery): Promise<readonly unknown[]>;
-  graduation(launchId: string): Promise<unknown | null>;
+  graduation(launchId: string): Promise<unknown>;
+  saveMetadata(input: DbcLaunchMetadata): Promise<void>;
+  metadata(metadataId: string): Promise<DbcLaunchMetadata | null>;
 }
 export interface DbcQuoteReader {
   quote(
@@ -53,13 +79,20 @@ export class DbcService {
   graduation(launchId: string) {
     return this.store.graduation(launchId);
   }
+  saveMetadata(input: DbcLaunchMetadata) {
+    return this.store.saveMetadata(input);
+  }
+  metadata(metadataId: string) {
+    return this.store.metadata(metadataId);
+  }
   quote(pool: Address, side: "buy" | "sell", amountRaw: bigint) {
     return this.quoteReader.quote({ pool, side, amountRaw });
   }
   async templateEconomics(templateId: bigint) {
-    const result = await this.quoteReader.templateEconomics(templateId);
-    if (!Array.isArray(result) || result.length !== 12)
-      throw new Error("DBC_TEMPLATE_ECONOMICS_INVALID");
+    const parsed = templateEconomicsSchema.safeParse(
+      await this.quoteReader.templateEconomics(templateId),
+    );
+    if (!parsed.success) throw new Error("DBC_TEMPLATE_ECONOMICS_INVALID");
     const [
       quoteToken,
       totalSupplyRaw,
@@ -73,7 +106,7 @@ export class DbcService {
       protocolFeeShareBps,
       creatorLpShareBps,
       creatorLockSeconds,
-    ] = result;
+    ] = parsed.data;
     return {
       quoteToken,
       totalSupplyRaw,

@@ -37,6 +37,10 @@ export type DbcLaunch = Readonly<{
   name: string | null;
   symbol: string | null;
   metadata_uri: string | null;
+  metadata_id?: string | null;
+  website_url?: string | null;
+  x_url?: string | null;
+  has_logo?: boolean;
   lifecycle: number;
   real_quote_reserve_raw: string;
   base_sold_raw: string;

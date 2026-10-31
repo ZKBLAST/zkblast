@@ -14,6 +14,8 @@ const store: DbcReadStore = {
   trades: async () => [],
   candles: async () => [],
   graduation: async () => null,
+  saveMetadata: async () => undefined,
+  metadata: async () => null,
 };
 const service = new DbcService(
   store,

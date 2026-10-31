@@ -7,7 +7,7 @@ import {
   GraduationCap,
   LoaderCircle,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   decodeFunctionResult,
   encodeFunctionData,
@@ -15,7 +15,7 @@ import {
   getAddress,
 } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
-import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
+import { AssetLogo } from "@/components/markets/AssetLogo";
 import { useApp } from "@/components/shell/AppProvider";
 import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
@@ -57,6 +57,10 @@ export function LaunchActions({
   const [balanceRaw, setBalanceRaw] = useState<bigint | null>(null);
   const [allowanceRaw, setAllowanceRaw] = useState<bigint | null>(null);
   const symbol = launch.symbol ?? "TOKEN";
+  const tokenLogoUrl =
+    launch.has_logo && launch.metadata_id
+      ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+      : `/asset-logo/${symbol}`;
   const inputDecimals = side === "buy" ? 6 : 18;
   const outputDecimals = side === "buy" ? 18 : 6;
   useEffect(() => {
@@ -131,10 +135,7 @@ export function LaunchActions({
         data: result as `0x${string}`,
       });
     }
-    void Promise.all([
-      readBalance(),
-      readAllowance(),
-    ])
+    void Promise.all([readBalance(), readAllowance()])
       .then(([balance, allowance]) => {
         if (!cancelled) {
           setBalanceRaw(balance);
@@ -187,35 +188,52 @@ export function LaunchActions({
         averageX18,
     );
   }, [amountRaw, outputRaw, quote, side]);
-  async function getQuote() {
-    try {
-      const raw = parseTokenAmount(amount, inputDecimals);
-      if (raw <= 0n) throw new Error("INVALID_AMOUNT");
-      if (balanceRaw !== null && raw > balanceRaw)
-        throw new Error("INSUFFICIENT_TOKEN_BALANCE");
-      setBusy(true);
-      setStatus("Requesting fresh quote");
-      const result = await apiRequest<DbcQuoteResponse>(
-        webPublicConfig.apiUrl,
-        "/v1/dbc/quote",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            pool: launch.virtual_pool,
-            side,
-            amountRaw: raw.toString(),
-          }),
-        },
-      );
-      setQuote(result);
-      setQuoteAt(Date.now());
-      setStatus("");
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : "QUOTE_FAILED");
-    } finally {
-      setBusy(false);
-    }
-  }
+  const getQuote = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        const raw = parseTokenAmount(amount, inputDecimals);
+        if (raw <= 0n) throw new Error("INVALID_AMOUNT");
+        if (balanceRaw !== null && raw > balanceRaw)
+          throw new Error("INSUFFICIENT_TOKEN_BALANCE");
+        setBusy(true);
+        setStatus("Requesting fresh quote");
+        const result = await apiRequest<DbcQuoteResponse>(
+          webPublicConfig.apiUrl,
+          "/v1/dbc/quote",
+          {
+            method: "POST",
+            signal,
+            body: JSON.stringify({
+              pool: launch.virtual_pool,
+              side,
+              amountRaw: raw.toString(),
+            }),
+          },
+        );
+        setQuote(result);
+        setQuoteAt(Date.now());
+        setStatus("");
+      } catch (error) {
+        if (signal?.aborted) return;
+        setStatus(error instanceof Error ? error.message : "QUOTE_FAILED");
+      } finally {
+        if (!signal?.aborted) setBusy(false);
+      }
+    },
+    [amount, balanceRaw, inputDecimals, launch.virtual_pool, side],
+  );
+  useEffect(() => {
+    if (!amount || amountRaw <= 0n || launch.lifecycle !== 1) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(
+      () => void getQuote(controller.signal),
+      400,
+    );
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [amount, amountRaw, getQuote, launch.lifecycle]);
   async function executeTrade() {
     if (!address) return connect();
     if (!window.ethereum || !config || !quote || !outputRaw) return;
@@ -352,7 +370,10 @@ export function LaunchActions({
           <>
             <p className="label">Public curve execution</p>
             <div className="mt-3 flex items-center gap-3">
-              <ProtocolPairLogo base={symbol} quote="USDG" markets={[]} />
+              <div className="flex -space-x-2">
+                <AssetLogo url={tokenLogoUrl} label={symbol} />
+                <AssetLogo url="/asset-logo/USDG" label="USDG" />
+              </div>
               <div>
                 <p className="font-mono text-sm">{symbol}/USDG</p>
                 <p className="text-xs text-muted">
@@ -384,6 +405,7 @@ export function LaunchActions({
                 onChange={(event) => {
                   setAmount(event.target.value);
                   setQuote(null);
+                  setStatus("");
                 }}
                 inputMode="decimal"
                 placeholder="0.0"
@@ -426,7 +448,9 @@ export function LaunchActions({
                   ? "Curve trading closed"
                   : quote
                     ? `Confirm ${side}`
-                    : "Get quote"}
+                    : busy
+                      ? "Calculating quote"
+                      : "Refresh quote"}
             </button>
           </>
         )}

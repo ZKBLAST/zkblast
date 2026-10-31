@@ -1,5 +1,12 @@
 "use client";
-import { ArrowUpDown, Plus, Search, ShieldCheck } from "lucide-react";
+import {
+  ArrowUpDown,
+  AtSign,
+  Globe,
+  Plus,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
@@ -12,15 +19,305 @@ import { LaunchChart } from "./LaunchChart";
 import { LaunchWizard } from "./LaunchWizard";
 import type { DbcLaunch, DbcTemplate } from "./types";
 
-const lifecycle=["Draft","Active","Paused","Ready","Graduated"] as const;
-export function Launchpad(){const [templates,setTemplates]=useState<readonly DbcTemplate[]>([]);const [launches,setLaunches]=useState<readonly DbcLaunch[]>([]);const [deployment,setDeployment]=useState<DbcAddresses|null>(null);const [selectedId,setSelectedId]=useState("");const [search,setSearch]=useState("");const [sort,setSort]=useState<"recent"|"progress"|"volume">("recent");const [loading,setLoading]=useState(true);const [error,setError]=useState("");const [revision,setRevision]=useState(0);const [wizard,setWizard]=useState(false);
-  const refresh=useCallback(()=>setRevision((value)=>value+1),[]);
-  useEffect(()=>{const controller=new AbortController();setLoading(true);setError("");void Promise.all([apiRequest<{items:DbcTemplate[]}>(webPublicConfig.apiUrl,"/v1/dbc/templates?limit=100",{signal:controller.signal}),apiRequest<{items:DbcLaunch[]}>(webPublicConfig.apiUrl,"/v1/dbc/launches?limit=100",{signal:controller.signal}),apiRequest<DbcAddresses>(webPublicConfig.apiUrl,"/v1/dbc/deployment",{signal:controller.signal})]).then(([templateResult,launchResult,deploymentResult])=>{setTemplates(templateResult.items);setLaunches(launchResult.items);setDeployment(deploymentResult);setSelectedId((current)=>current||launchResult.items[0]?.launch_id||"");}).catch((reason)=>{if(!controller.signal.aborted)setError(reason instanceof Error?reason.message:"DBC_UNAVAILABLE")}).finally(()=>{if(!controller.signal.aborted)setLoading(false)});return()=>controller.abort();},[revision]);
-  const visible=useMemo(()=>launches.filter((item)=>`${item.name??""} ${item.symbol??""} ${item.token_address}`.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>sort==="progress"?b.progress_bps-a.progress_bps:sort==="volume"?Number(BigInt(b.volume_raw??"0")-BigInt(a.volume_raw??"0")):Number(BigInt(b.updated_block)-BigInt(a.updated_block))),[launches,search,sort]);
-  const selected=launches.find((item)=>item.launch_id===selectedId)??visible[0]??null;
-  return <main id="main" className="mx-auto min-h-screen max-w-[1480px] px-3 pb-14 pt-[calc(var(--header-h)+1rem)] sm:px-5"><div className="flex flex-wrap items-end justify-between gap-4 py-4"><div><p className="label">Dynamic bonding curves</p><h1 className="mt-2 text-2xl tracking-wide sm:text-3xl">Launch</h1><p className="mt-2 max-w-2xl text-sm text-muted">Create and trade governed curve markets, then follow their liquidity into ZKBLAST DAMM.</p></div><button disabled={!deployment} onClick={()=>setWizard(true)} className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"><Plus className="size-4"/>Create launch</button></div>
-    {error&&!loading?<div className="panel ticks p-6"><p className="text-danger">Launchpad data unavailable · {error}</p><button onClick={refresh} className="mt-4 border border-line px-4 py-2 text-xs">Retry</button></div>:<div className="panel ticks grid min-h-[46rem] overflow-hidden xl:grid-cols-[18rem_minmax(0,1fr)_23rem]"><aside className="min-w-0 border-b border-line xl:border-b-0 xl:border-r"><div className="flex items-center justify-between border-b border-line px-4 py-3"><span className="label">Curve markets</span><span className="font-mono text-[10px] text-muted">{visible.length}</span></div><div className="grid gap-2 p-3 sm:grid-cols-[1fr_auto] xl:grid-cols-1"><label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60"><Search className="size-4 text-muted"/><input value={search} onChange={(event)=>setSearch(event.target.value)} placeholder="Search launches" className="min-w-0 flex-1 bg-transparent text-sm outline-none"/></label><label className="flex h-11 items-center gap-2 border border-line bg-bg px-3"><ArrowUpDown className="size-4 text-muted"/><select value={sort} onChange={(event)=>setSort(event.target.value as typeof sort)} className="w-full bg-transparent text-xs outline-none"><option value="recent">Recent</option><option value="progress">Progress</option><option value="volume">Volume</option></select></label></div><div className="max-h-[30rem] overflow-y-auto px-2 pb-3 xl:max-h-[38rem]" data-lenis-prevent>{loading?Array.from({length:7},(_,index)=><Skeleton key={index} className="mb-2 h-20"/>):visible.map((item)=><button key={item.launch_id} onClick={()=>setSelectedId(item.launch_id)} className={`mb-1 flex w-full items-center gap-3 border p-3 text-left ${selected?.launch_id===item.launch_id?"border-lime bg-white/[.04]":"border-transparent hover:border-line"}`}><AssetLogo url={`/asset-logo/${item.symbol??""}`} label={item.symbol??"Launch token"}/><span className="min-w-0 flex-1"><span className="block truncate font-mono text-xs">{item.symbol??shortHex(item.token_address)}/USDG</span><span className="mt-1 block text-[10px] text-muted">{lifecycle[item.lifecycle]} · {(item.progress_bps/100).toFixed(1)}%</span><span className="mt-2 block h-1 bg-raised"><span className="block h-full bg-lime" style={{width:`${Math.min(100,item.progress_bps/100)}%`}}/></span></span></button>)}</div></aside>
-      <section className="min-w-0 border-b border-line xl:border-b-0">{selected?<><div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4 sm:p-5"><div className="flex min-w-0 items-center gap-3"><AssetLogo url={`/asset-logo/${selected.symbol??""}`} label={selected.symbol??"Token"}/><div className="min-w-0"><h2 className="truncate font-mono text-lg">{selected.name??selected.symbol??"Launch"}</h2><p className="mt-1 font-mono text-[10px] text-muted">{shortHex(selected.token_address)} · Template {selected.template_id}</p></div></div><span className="flex items-center gap-2 border border-line px-3 py-2 font-mono text-[10px] uppercase"><ShieldCheck className="size-3.5 text-lime"/>{lifecycle[selected.lifecycle]}</span></div><LaunchChart launchId={selected.launch_id} symbol={selected.symbol??"TOKEN"}/><div className="grid border-t border-line sm:grid-cols-4"><Metric label="Curve reserve" value={selected.real_quote_reserve_raw}/><Metric label="Recorded volume" value={selected.volume_raw??"0"}/><Metric label="Trades" value={String(selected.trade_count??0)}/><Metric label="Holders" value={String(selected.holder_count??0)}/></div></>:<div className="grid min-h-[36rem] place-items-center text-sm text-muted">No indexed launches.</div>}</section>{selected&&deployment?<LaunchActions launch={selected} deployment={deployment} onComplete={refresh}/>:<aside className="border-l border-line p-5">{loading?<Skeleton className="h-96"/>:<p className="text-sm text-muted">Select an indexed launch.</p>}</aside>}</div>}
-    {deployment&&<LaunchWizard open={wizard} onClose={()=>setWizard(false)} templates={templates} deployment={deployment} onComplete={refresh}/>}</main>;
+const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
+const logoUrl = (launch: DbcLaunch) =>
+  launch.has_logo && launch.metadata_id
+    ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+    : `/asset-logo/${launch.symbol ?? ""}`;
+
+export function Launchpad() {
+  const [templates, setTemplates] = useState<readonly DbcTemplate[]>([]);
+  const [launches, setLaunches] = useState<readonly DbcLaunch[]>([]);
+  const [deployment, setDeployment] = useState<DbcAddresses | null>(null);
+  const [selectedId, setSelectedId] = useState("");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"recent" | "progress" | "volume">("recent");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
+  const [wizard, setWizard] = useState(false);
+  const refresh = useCallback(() => setRevision((value) => value + 1), []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    void Promise.all([
+      apiRequest<{ items: DbcTemplate[] }>(
+        webPublicConfig.apiUrl,
+        "/v1/dbc/templates?limit=100",
+        { signal: controller.signal },
+      ),
+      apiRequest<{ items: DbcLaunch[] }>(
+        webPublicConfig.apiUrl,
+        "/v1/dbc/launches?limit=100",
+        { signal: controller.signal },
+      ),
+      apiRequest<DbcAddresses>(webPublicConfig.apiUrl, "/v1/dbc/deployment", {
+        signal: controller.signal,
+      }),
+    ])
+      .then(([templateResult, launchResult, deploymentResult]) => {
+        setTemplates(templateResult.items);
+        setLaunches(launchResult.items);
+        setDeployment(deploymentResult);
+        setSelectedId(
+          (current) => current || launchResult.items[0]?.launch_id || "",
+        );
+      })
+      .catch((reason: unknown) => {
+        if (!controller.signal.aborted)
+          setError(
+            reason instanceof Error ? reason.message : "DBC_UNAVAILABLE",
+          );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [revision]);
+
+  const visible = useMemo(
+    () =>
+      launches
+        .filter((item) =>
+          `${item.name ?? ""} ${item.symbol ?? ""} ${item.token_address}`
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+        )
+        .sort((a, b) =>
+          sort === "progress"
+            ? b.progress_bps - a.progress_bps
+            : sort === "volume"
+              ? Number(
+                  BigInt(b.volume_raw ?? "0") - BigInt(a.volume_raw ?? "0"),
+                )
+              : Number(BigInt(b.updated_block) - BigInt(a.updated_block)),
+        ),
+    [launches, search, sort],
+  );
+  const selected =
+    launches.find((item) => item.launch_id === selectedId) ??
+    visible[0] ??
+    null;
+
+  return (
+    <main
+      id="main"
+      className="mx-auto min-h-screen max-w-[1480px] px-3 pb-14 pt-[calc(var(--header-h)+1rem)] sm:px-5"
+    >
+      <div className="flex flex-wrap items-end justify-between gap-4 py-4">
+        <div>
+          <p className="label">Dynamic bonding curves</p>
+          <h1 className="mt-2 text-2xl tracking-wide sm:text-3xl">Launch</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted">
+            Create and trade governed curve markets, then follow their liquidity
+            into ZKBLAST DAMM.
+          </p>
+        </div>
+        <button
+          disabled={!deployment}
+          onClick={() => setWizard(true)}
+          className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
+        >
+          <Plus className="size-4" />
+          Create launch
+        </button>
+      </div>
+      {error && !loading ? (
+        <div className="panel ticks p-6">
+          <p className="text-danger">Launchpad data unavailable · {error}</p>
+          <button
+            onClick={refresh}
+            className="mt-4 border border-line px-4 py-2 text-xs"
+          >
+            Retry
+          </button>
+        </div>
+      ) : (
+        <div className="panel ticks grid min-h-[46rem] overflow-hidden xl:grid-cols-[18rem_minmax(0,1fr)_23rem]">
+          <aside className="min-w-0 border-b border-line xl:border-b-0 xl:border-r">
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <span className="label">Curve markets</span>
+              <span className="font-mono text-[10px] text-muted">
+                {visible.length}
+              </span>
+            </div>
+            <div className="grid gap-2 p-3 sm:grid-cols-[1fr_auto] xl:grid-cols-1">
+              <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60">
+                <Search className="size-4 text-muted" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search launches"
+                  className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                />
+              </label>
+              <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3">
+                <ArrowUpDown className="size-4 text-muted" />
+                <select
+                  value={sort}
+                  onChange={(event) =>
+                    setSort(event.target.value as typeof sort)
+                  }
+                  className="w-full bg-transparent text-xs outline-none"
+                >
+                  <option value="recent">Recent</option>
+                  <option value="progress">Progress</option>
+                  <option value="volume">Volume</option>
+                </select>
+              </label>
+            </div>
+            <div
+              className="max-h-[30rem] overflow-y-auto px-2 pb-3 xl:max-h-[38rem]"
+              data-lenis-prevent
+            >
+              {loading
+                ? Array.from({ length: 7 }, (_, index) => (
+                    <Skeleton key={index} className="mb-2 h-20" />
+                  ))
+                : visible.map((item) => (
+                    <button
+                      key={item.launch_id}
+                      onClick={() => setSelectedId(item.launch_id)}
+                      className={`mb-1 flex w-full items-center gap-3 border p-3 text-left ${selected?.launch_id === item.launch_id ? "border-lime bg-white/[.04]" : "border-transparent hover:border-line"}`}
+                    >
+                      <AssetLogo
+                        url={logoUrl(item)}
+                        label={item.symbol ?? "Launch token"}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-mono text-xs">
+                          {item.symbol ?? shortHex(item.token_address)}/USDG
+                        </span>
+                        <span className="mt-1 block text-[10px] text-muted">
+                          {lifecycle[item.lifecycle]} ·{" "}
+                          {(item.progress_bps / 100).toFixed(1)}%
+                        </span>
+                        <span className="mt-2 block h-1 bg-raised">
+                          <span
+                            className="block h-full bg-lime"
+                            style={{
+                              width: `${Math.min(100, item.progress_bps / 100)}%`,
+                            }}
+                          />
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+            </div>
+          </aside>
+          <section className="min-w-0 border-b border-line xl:border-b-0">
+            {selected ? (
+              <>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4 sm:p-5">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <AssetLogo
+                      url={logoUrl(selected)}
+                      label={selected.symbol ?? "Token"}
+                    />
+                    <div className="min-w-0">
+                      <h2 className="truncate font-mono text-lg">
+                        {selected.name ?? selected.symbol ?? "Launch"}
+                      </h2>
+                      <p className="mt-1 font-mono text-[10px] text-muted">
+                        {shortHex(selected.token_address)} · Template{" "}
+                        {selected.template_id}
+                      </p>
+                      <div className="mt-2 flex gap-3">
+                        {selected.website_url && (
+                          <a
+                            href={selected.website_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1 text-[10px] text-muted hover:text-fg"
+                          >
+                            <Globe className="size-3" />
+                            Website
+                          </a>
+                        )}
+                        {selected.x_url && (
+                          <a
+                            href={selected.x_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-1 text-[10px] text-muted hover:text-fg"
+                          >
+                            <AtSign className="size-3" />X
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="flex items-center gap-2 border border-line px-3 py-2 font-mono text-[10px] uppercase">
+                    <ShieldCheck className="size-3.5 text-lime" />
+                    {lifecycle[selected.lifecycle]}
+                  </span>
+                </div>
+                <LaunchChart
+                  launchId={selected.launch_id}
+                  symbol={selected.symbol ?? "TOKEN"}
+                />
+                <div className="grid border-t border-line sm:grid-cols-4">
+                  <Metric
+                    label="Curve reserve"
+                    value={selected.real_quote_reserve_raw}
+                  />
+                  <Metric
+                    label="Recorded volume"
+                    value={selected.volume_raw ?? "0"}
+                  />
+                  <Metric
+                    label="Trades"
+                    value={String(selected.trade_count ?? 0)}
+                  />
+                  <Metric
+                    label="Holders"
+                    value={String(selected.holder_count ?? 0)}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="grid min-h-[36rem] place-items-center text-sm text-muted">
+                No indexed launches.
+              </div>
+            )}
+          </section>
+          {selected && deployment ? (
+            <LaunchActions
+              launch={selected}
+              deployment={deployment}
+              onComplete={refresh}
+            />
+          ) : (
+            <aside className="border-l border-line p-5">
+              {loading ? (
+                <Skeleton className="h-96" />
+              ) : (
+                <p className="text-sm text-muted">Select an indexed launch.</p>
+              )}
+            </aside>
+          )}
+        </div>
+      )}
+      {deployment && (
+        <LaunchWizard
+          open={wizard}
+          onClose={() => setWizard(false)}
+          templates={templates}
+          deployment={deployment}
+          onComplete={refresh}
+        />
+      )}
+    </main>
+  );
 }
-function Metric({label,value}:{label:string;value:string}){return <div className="border-b border-line p-4 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"><p className="label">{label}</p><p className="mt-2 break-all font-mono text-sm">{value}</p></div>}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border-b border-line p-4 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      <p className="label">{label}</p>
+      <p className="mt-2 break-all font-mono text-sm">{value}</p>
+    </div>
+  );
+}
