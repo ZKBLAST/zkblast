@@ -1,19 +1,32 @@
 "use client";
 import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { getAddress } from "viem";
-import type { DbcAddresses } from "@zkblast/sdk";
+import {
+  decodeFunctionResult,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAddress,
+  keccak256,
+} from "viem";
+import {
+  formatTokenAmount,
+  minimumAmountOut,
+  parseTokenAmount,
+  type DbcAddresses,
+} from "@zkblast/sdk";
+import { launchFactoryAbi } from "@zkblast/abi";
 import { Modal } from "@/components/ui/Modal";
 import {
   executeDbcTransactions,
   contractCallTransaction,
   dbcClient,
   bytes32Salt,
+  approvalTransaction,
+  type DbcQuoteResponse,
 } from "@/lib/dbc-transactions";
 import { useApp } from "@/components/shell/AppProvider";
 import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
-import { formatTokenAmount } from "@zkblast/sdk";
 import type { DbcTemplate, TemplateEconomics } from "./types";
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
 
@@ -46,6 +59,7 @@ export function LaunchWizard({
   } | null>(null);
   const [logoStatus, setLogoStatus] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [initialBuy, setInitialBuy] = useState("");
   const [status, setStatus] = useState("");
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [economicsLoading, setEconomicsLoading] = useState(false);
@@ -76,6 +90,16 @@ export function LaunchWizard({
   const validWebsite = !websiteUrl || /^https:\/\/.+/u.test(websiteUrl);
   const validX =
     !xUrl || /^https:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/.+/iu.test(xUrl);
+  const initialBuyRaw = useMemo(() => {
+    try {
+      return initialBuy ? parseTokenAmount(initialBuy, 6) : 0n;
+    } catch {
+      return -1n;
+    }
+  }, [initialBuy]);
+  const validInitialBuy =
+    initialBuyRaw >= 0n &&
+    (!economics || initialBuyRaw <= BigInt(economics.graduationThresholdRaw));
   const canContinue =
     step === 0
       ? Boolean(selected)
@@ -85,12 +109,14 @@ export function LaunchWizard({
           symbol.length <= 12 &&
           validWebsite &&
           validX &&
+          validInitialBuy &&
           /^0x[\da-f]{40}$/iu.test(walletRecipient)
         : true;
   async function submit() {
     if (!address) return connect();
     if (!window.ethereum || !config || !selected) return;
     setStatus("preparing");
+    let launchCreated = false;
     try {
       const metadata = await apiRequest<{ metadataUri: string }>(
         webPublicConfig.apiUrl,
@@ -105,9 +131,11 @@ export function LaunchWizard({
           }),
         },
       );
-      const call = dbcClient(deployment).createLaunch({
+      const client = dbcClient(deployment);
+      const salt = bytes32Salt();
+      const call = client.createLaunch({
         templateId: BigInt(selected.template_id),
-        salt: bytes32Salt(),
+        salt,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
         metadataUri: metadata.metadataUri,
@@ -121,14 +149,115 @@ export function LaunchWizard({
         action: "Token launch",
         onStatus: setStatus,
       });
+      launchCreated = true;
+      if (initialBuyRaw > 0n && economics) {
+        const launchId = keccak256(
+          encodeAbiParameters(
+            [
+              { type: "uint256" },
+              { type: "address" },
+              { type: "address" },
+              { type: "uint256" },
+              { type: "bytes32" },
+            ],
+            [
+              BigInt(config.chainId),
+              getAddress(deployment.launchFactory),
+              getAddress(address),
+              BigInt(selected.template_id),
+              salt,
+            ],
+          ),
+        );
+        setStatus("preparing initial buy");
+        const launchCall = client.launch(launchId);
+        const rawLaunch = (await window.ethereum.request({
+          method: "eth_call",
+          params: [
+            {
+              to: deployment.launchFactory,
+              data: encodeFunctionData(
+                launchCall as Parameters<typeof encodeFunctionData>[0],
+              ),
+            },
+            "latest",
+          ],
+        })) as `0x${string}`;
+        const record = decodeFunctionResult({
+          abi: launchFactoryAbi,
+          functionName: "launches",
+          data: rawLaunch,
+        });
+        const pool = getAddress(record[2]);
+        const quote = await apiRequest<DbcQuoteResponse>(
+          webPublicConfig.apiUrl,
+          "/v1/dbc/quote",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              pool,
+              side: "buy",
+              amountRaw: initialBuyRaw.toString(),
+            }),
+          },
+        );
+        if (!quote.baseOutRaw) throw new Error("INITIAL_BUY_QUOTE_INVALID");
+        const deadline = BigInt(Math.floor(Date.now() / 1_000) + 900);
+        await executeDbcTransactions({
+          provider: window.ethereum,
+          account: address,
+          chainId: config.chainId,
+          calls: [
+            approvalTransaction(
+              getAddress(economics.quoteToken),
+              pool,
+              initialBuyRaw,
+            ),
+            contractCallTransaction(
+              client.buyExactInput({
+                pool,
+                grossQuoteInRaw: initialBuyRaw,
+                minimumBaseOutRaw: minimumAmountOut(
+                  BigInt(quote.baseOutRaw),
+                  100,
+                ),
+                maximumPriceX18:
+                  (BigInt(quote.finalPriceX18) * 10_100n) / 10_000n,
+                recipient: getAddress(walletRecipient),
+                deadline,
+              }),
+            ),
+          ],
+          action: "Initial curve buy",
+          onStatus: setStatus,
+        });
+      }
       toast({
         kind: "success",
         title: "Launch created",
-        body: "The indexer will publish the new curve market after finality.",
+        body:
+          initialBuyRaw > 0n
+            ? "Launch and initial buy confirmed. Market data will appear after finality."
+            : "The indexer will publish the new curve market after finality.",
       });
       onComplete();
+      window.setTimeout(onComplete, 4_000);
+      window.setTimeout(onComplete, 10_000);
       onClose();
     } catch (error) {
+      if (launchCreated) {
+        const reason =
+          error instanceof Error ? error.message : "INITIAL_BUY_FAILED";
+        toast({
+          kind: "success",
+          title: "Launch created",
+          body: `Initial buy was not completed (${reason}). You can buy from the launch market after indexing.`,
+        });
+        onComplete();
+        window.setTimeout(onComplete, 4_000);
+        onClose();
+        return;
+      }
       setStatus(error instanceof Error ? error.message : "LAUNCH_FAILED");
     }
   }
@@ -303,6 +432,23 @@ export function LaunchWizard({
               placeholder="0x…"
             />
           </div>
+          <div className="sm:col-span-2">
+            <Field
+              label="Initial buy · optional (USDG)"
+              value={initialBuy}
+              onChange={setInitialBuy}
+              placeholder="0.01"
+            />
+            <p className="mt-2 text-[11px] leading-5 text-muted">
+              After launch creation, your wallet approves USDG and performs the
+              first curve buy. Leave empty to create without buying.
+            </p>
+            {!validInitialBuy && (
+              <p className="mt-1 text-xs text-danger">
+                Enter a valid USDG amount within the graduation threshold.
+              </p>
+            )}
+          </div>
         </div>
       )}
       {step === 2 && (
@@ -349,10 +495,15 @@ export function LaunchWizard({
             <Review label="Website" value={websiteUrl || "Not provided"} />
             <Review label="X profile" value={xUrl || "Not provided"} />
             <Review label="Logo" value={logo ? "Ready" : "Not provided"} />
+            <Review
+              label="Initial buy"
+              value={initialBuyRaw > 0n ? `${initialBuy} USDG` : "None"}
+            />
           </div>
           <p className="text-xs leading-5 text-muted">
-            Your wallet creates the token and virtual pool atomically. Review
-            the wallet simulation before signing.
+            Your wallet creates the token and virtual pool atomically. If an
+            initial buy is set, approval and buy follow as separate wallet
+            confirmations so every onchain action remains visible.
           </p>
           <button
             disabled={!economics || (Boolean(status) && status !== "confirmed")}
