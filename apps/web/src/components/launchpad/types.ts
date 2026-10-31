@@ -51,6 +51,8 @@ export type DbcLaunch = Readonly<{
   volume_raw?: string;
   trade_count?: number;
   holder_count?: number;
+  creator_claimable_raw?: string;
+  protocol_claimable_raw?: string;
 }>;
 export type DbcCandle = Readonly<{
   bucket: string;
@@ -61,6 +63,19 @@ export type DbcCandle = Readonly<{
   base_volume_raw: string;
   quote_volume_raw: string;
   trades: number;
+}>;
+export type DbcTrade = Readonly<{
+  transaction_hash: string;
+  log_index: number;
+  trader: string;
+  recipient: string;
+  is_buy: boolean;
+  quote_amount_raw: string;
+  base_amount_raw: string;
+  fee_raw: string;
+  price_x18: string;
+  block_number: string;
+  observed_at: string;
 }>;
 export type DbcGraduation = Readonly<{
   migration_id: string;

@@ -88,6 +88,7 @@ const repository = new PostgresIndexerRepository(
 const trackedLaunchContracts = manifest.dbc
   ? await repository.dbcLaunchContractAddresses()
   : [];
+repository.trackDbcContracts(trackedLaunchContracts);
 const service = new IndexerService(
   config.CHAIN_ID,
   BigInt(runner.INDEXER_CONFIRMATIONS),

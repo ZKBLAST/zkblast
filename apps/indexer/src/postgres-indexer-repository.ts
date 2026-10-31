@@ -39,6 +39,12 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   private readonly dbcContracts: Set<string>;
 
+  trackDbcContracts(addresses: readonly Address[]): void {
+    for (const address of addresses) {
+      this.dbcContracts.add(getAddress(address).toLowerCase());
+    }
+  }
+
   async dbcLaunchContractAddresses(): Promise<Address[]> {
     const rows = await this.sql.unsafe<
       { token_address: string; virtual_pool: string }[]

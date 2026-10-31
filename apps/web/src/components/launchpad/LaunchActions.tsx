@@ -175,6 +175,12 @@ export function LaunchActions({
       return 0n;
     }
   }, [amount, inputDecimals]);
+  const spendableRaw = useMemo(() => {
+    if (balanceRaw === null) return null;
+    if (side === "buy") return balanceRaw;
+    const curveSellable = BigInt(launch.base_sold_raw);
+    return balanceRaw < curveSellable ? balanceRaw : curveSellable;
+  }, [balanceRaw, launch.base_sold_raw, side]);
   const priceImpactBps = useMemo(() => {
     if (!quote || !outputRaw || amountRaw === 0n) return null;
     const quoteRaw = side === "buy" ? amountRaw : BigInt(outputRaw);
@@ -193,8 +199,12 @@ export function LaunchActions({
       try {
         const raw = parseTokenAmount(amount, inputDecimals);
         if (raw <= 0n) throw new Error("INVALID_AMOUNT");
-        if (balanceRaw !== null && raw > balanceRaw)
-          throw new Error("INSUFFICIENT_TOKEN_BALANCE");
+        if (spendableRaw !== null && raw > spendableRaw)
+          throw new Error(
+            side === "sell"
+              ? "AMOUNT_EXCEEDS_CURVE_SELLABLE_BALANCE"
+              : "INSUFFICIENT_TOKEN_BALANCE",
+          );
         setBusy(true);
         setStatus("Requesting fresh quote");
         const result = await apiRequest<DbcQuoteResponse>(
@@ -220,7 +230,7 @@ export function LaunchActions({
         if (!signal?.aborted) setBusy(false);
       }
     },
-    [amount, balanceRaw, inputDecimals, launch.virtual_pool, side],
+    [amount, inputDecimals, launch.virtual_pool, side, spendableRaw],
   );
   useEffect(() => {
     if (!amount || amountRaw <= 0n || launch.lifecycle !== 1) return;
@@ -234,6 +244,46 @@ export function LaunchActions({
       controller.abort();
     };
   }, [amount, amountRaw, getQuote, launch.lifecycle]);
+  async function applyPercentage(percent: number) {
+    if (spendableRaw === null) return;
+    let raw = (spendableRaw * BigInt(percent)) / 100n;
+    if (side === "sell" && percent === 100 && raw > 0n) {
+      setBusy(true);
+      setStatus("Calculating maximum executable sell");
+      try {
+        let low = 0n;
+        let high = raw;
+        const reserve = BigInt(launch.real_quote_reserve_raw);
+        for (let index = 0; index < 12 && low < high; index++) {
+          const middle = (low + high + 1n) / 2n;
+          const result = await apiRequest<DbcQuoteResponse>(
+            webPublicConfig.apiUrl,
+            "/v1/dbc/quote",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                pool: launch.virtual_pool,
+                side: "sell",
+                amountRaw: middle.toString(),
+              }),
+            },
+          );
+          if (BigInt(result.grossQuoteOutRaw ?? "0") <= reserve) low = middle;
+          else high = middle - 1n;
+        }
+        raw = low;
+        setStatus("");
+      } catch (error) {
+        setStatus(
+          error instanceof Error ? error.message : "MAX_SELL_QUOTE_FAILED",
+        );
+      } finally {
+        setBusy(false);
+      }
+    }
+    setAmount(formatTokenAmount(raw, inputDecimals));
+    setQuote(null);
+  }
   async function executeTrade() {
     if (!address) return connect();
     if (!window.ethereum || !config || !quote || !outputRaw) return;
@@ -244,8 +294,12 @@ export function LaunchActions({
       const client = dbcClient(deployment);
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 900);
       const raw = parseTokenAmount(amount, inputDecimals);
-      if (balanceRaw !== null && raw > balanceRaw)
-        throw new Error("INSUFFICIENT_TOKEN_BALANCE");
+      if (spendableRaw !== null && raw > spendableRaw)
+        throw new Error(
+          side === "sell"
+            ? "AMOUNT_EXCEEDS_CURVE_SELLABLE_BALANCE"
+            : "INSUFFICIENT_TOKEN_BALANCE",
+        );
       const minimum = minimumAmountOut(BigInt(outputRaw), slippage);
       const tokenIn = getAddress(
         side === "buy" ? launch.quote_token : launch.token_address,
@@ -302,6 +356,12 @@ export function LaunchActions({
       setQuoteAt(0);
       setAmount("");
       onComplete();
+      window.setTimeout(onComplete, 4_000);
+      window.setTimeout(onComplete, 10_000);
+      window.setTimeout(onComplete, 20_000);
+      window.setTimeout(onComplete, 4_000);
+      window.setTimeout(onComplete, 10_000);
+      window.setTimeout(onComplete, 20_000);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "TRADE_FAILED");
     } finally {
@@ -346,6 +406,8 @@ export function LaunchActions({
       });
       toast({ kind: "success", title: "Transaction confirmed" });
       onComplete();
+      window.setTimeout(onComplete, 4_000);
+      window.setTimeout(onComplete, 10_000);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "TRANSACTION_FAILED");
     } finally {
@@ -411,6 +473,28 @@ export function LaunchActions({
                 placeholder="0.0"
                 className="mt-2 h-14 w-full border border-line bg-bg px-3 font-mono text-lg outline-none focus:border-lime/70"
               />
+              <span className="mt-2 grid grid-cols-4 gap-2">
+                {[25, 50, 75, 100].map((percent) => (
+                  <button
+                    key={percent}
+                    type="button"
+                    disabled={spendableRaw === null || spendableRaw === 0n}
+                    onClick={() => void applyPercentage(percent)}
+                    className="border border-line py-2 font-mono text-[10px] text-muted hover:border-lime/60 hover:text-fg disabled:opacity-30"
+                  >
+                    {percent === 100 ? "MAX" : `${percent}%`}
+                  </button>
+                ))}
+              </span>
+              {side === "sell" &&
+                balanceRaw !== null &&
+                spendableRaw !== null &&
+                balanceRaw > spendableRaw && (
+                  <span className="mt-2 block text-[10px] leading-4 text-muted">
+                    MAX follows current curve demand. Creator allocation cannot
+                    be sold before matching curve demand exists.
+                  </span>
+                )}
             </label>
             <div className="my-3 grid place-items-center">
               <ArrowDownUp className="size-4 text-muted" />
@@ -537,18 +621,35 @@ export function LaunchActions({
             )}
             <div className="mt-5 grid gap-2">
               <button
-                disabled={busy}
+                disabled={
+                  busy ||
+                  !address ||
+                  address.toLowerCase() !== launch.creator.toLowerCase() ||
+                  BigInt(launch.creator_claimable_raw ?? "0") === 0n
+                }
                 onClick={() => void executeSimple("creatorFee")}
                 className="border border-line p-3 text-left text-xs hover:border-lime/60"
               >
-                Claim creator fees
+                Claim creator fees ·{" "}
+                {formatTokenAmount(
+                  BigInt(launch.creator_claimable_raw ?? "0"),
+                  6,
+                )}{" "}
+                USDG
               </button>
               <button
-                disabled={busy}
+                disabled={
+                  busy || BigInt(launch.protocol_claimable_raw ?? "0") === 0n
+                }
                 onClick={() => void executeSimple("protocolFee")}
                 className="border border-line p-3 text-left text-xs hover:border-lime/60"
               >
-                Claim protocol fees
+                Trigger protocol payout ·{" "}
+                {formatTokenAmount(
+                  BigInt(launch.protocol_claimable_raw ?? "0"),
+                  6,
+                )}{" "}
+                USDG
               </button>
               {graduation?.allocations.map((allocation) => (
                 <button

@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { DbcAddresses } from "@zkblast/sdk";
+import { formatTokenAmount, type DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { apiRequest } from "@/lib/api-client";
@@ -17,6 +17,7 @@ import { shortHex } from "@/lib/format";
 import { LaunchActions } from "./LaunchActions";
 import { LaunchChart } from "./LaunchChart";
 import { LaunchWizard } from "./LaunchWizard";
+import { LaunchTradeHistory } from "./LaunchTradeHistory";
 import type { DbcLaunch, DbcTemplate } from "./types";
 
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
@@ -257,15 +258,16 @@ export function Launchpad() {
                 <LaunchChart
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
+                  refreshKey={selected.updated_block}
                 />
-                <div className="grid border-t border-line sm:grid-cols-4">
+                <div className="grid border-t border-line sm:grid-cols-5">
                   <Metric
                     label="Curve reserve"
-                    value={selected.real_quote_reserve_raw}
+                    value={`${formatTokenAmount(BigInt(selected.real_quote_reserve_raw), 6)} USDG`}
                   />
                   <Metric
                     label="Recorded volume"
-                    value={selected.volume_raw ?? "0"}
+                    value={`${formatTokenAmount(BigInt(selected.volume_raw ?? "0"), 6)} USDG`}
                   />
                   <Metric
                     label="Trades"
@@ -275,7 +277,16 @@ export function Launchpad() {
                     label="Holders"
                     value={String(selected.holder_count ?? 0)}
                   />
+                  <Metric
+                    label="Curve sold"
+                    value={`${formatTokenAmount(BigInt(selected.base_sold_raw), 18)} ${selected.symbol ?? "TOKEN"}`}
+                  />
                 </div>
+                <LaunchTradeHistory
+                  launchId={selected.launch_id}
+                  symbol={selected.symbol ?? "TOKEN"}
+                  refreshKey={selected.updated_block}
+                />
               </>
             ) : (
               <div className="grid min-h-[36rem] place-items-center text-sm text-muted">

@@ -40,6 +40,7 @@ const repository = new PostgresIndexerRepository(
   addresses,
 );
 const existing = await repository.dbcLaunchContractAddresses();
+repository.trackDbcContracts(existing);
 const reader = new ViemChainReader(client, config.CHAIN_ID, [
   ...addresses,
   ...existing,
