@@ -85,13 +85,16 @@ const repository = new PostgresIndexerRepository(
   "protocol",
   configuredDbcAddresses.map(getAddress),
 );
-const trackedLaunchTokens = manifest.dbc
-  ? await repository.dbcLaunchTokenAddresses()
+const trackedLaunchContracts = manifest.dbc
+  ? await repository.dbcLaunchContractAddresses()
   : [];
 const service = new IndexerService(
   config.CHAIN_ID,
   BigInt(runner.INDEXER_CONFIRMATIONS),
-  new ViemChainReader(client, config.CHAIN_ID, [...addresses, ...trackedLaunchTokens]),
+  new ViemChainReader(client, config.CHAIN_ID, [
+    ...addresses,
+    ...trackedLaunchContracts,
+  ]),
   repository,
 );
 await repository.enableCheckpointGuard();
@@ -162,6 +165,12 @@ async function synchronize(): Promise<void> {
     const pools = await repository.registeredPoolAddresses(config.CHAIN_ID);
     for (const pool of pools) {
       if (!addresses.includes(pool)) addresses.push(pool);
+    }
+    if (manifest.dbc) {
+      const launchContracts = await repository.dbcLaunchContractAddresses();
+      for (const contract of launchContracts) {
+        if (!addresses.includes(contract)) addresses.push(contract);
+      }
     }
     const startBlock = BigInt(
       Math.min(

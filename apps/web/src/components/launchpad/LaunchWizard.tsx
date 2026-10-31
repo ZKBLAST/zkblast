@@ -1,7 +1,7 @@
 "use client";
 import { ArrowLeft, ArrowRight, Check, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { getAddress, type Address } from "viem";
+import { getAddress } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -88,7 +88,7 @@ export function LaunchWizard({
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
         metadataUri,
-        creatorTokenRecipient: getAddress(walletRecipient) as Address,
+        creatorTokenRecipient: getAddress(walletRecipient),
       });
       await executeDbcTransactions({
         provider: window.ethereum,

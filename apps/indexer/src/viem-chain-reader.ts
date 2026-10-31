@@ -28,7 +28,7 @@ function serializeArgs(
         return [key, value];
       return [
         key,
-        JSON.stringify(value, (_nestedKey, nestedValue) =>
+        JSON.stringify(value, (_nestedKey, nestedValue: unknown) =>
           typeof nestedValue === "bigint"
             ? nestedValue.toString()
             : nestedValue,
@@ -69,7 +69,10 @@ export class ViemChainReader implements ChainReader {
     if (!suppliedLogs) {
       const discovered = events
         .filter((event) => event.eventName === "TokenLaunched")
-        .map((event) => event.payload.token)
+        .flatMap((event) => [
+          event.payload.token,
+          event.payload.virtualPool,
+        ])
         .filter(
           (token): token is Address =>
             typeof token === "string" && /^0x[\da-f]{40}$/iu.test(token),

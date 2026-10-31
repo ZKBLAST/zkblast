@@ -39,11 +39,16 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   private readonly dbcContracts: Set<string>;
 
-  async dbcLaunchTokenAddresses(): Promise<Address[]> {
-    const rows = await this.sql.unsafe<{ token_address: string }[]>(
-      `select token_address from ${this.schema}.dbc_launches order by created_block`,
+  async dbcLaunchContractAddresses(): Promise<Address[]> {
+    const rows = await this.sql.unsafe<
+      { token_address: string; virtual_pool: string }[]
+    >(
+      `select token_address, virtual_pool from ${this.schema}.dbc_launches order by created_block`,
     );
-    return rows.map((row) => getAddress(row.token_address));
+    return rows
+      .flatMap((row) => [row.token_address, row.virtual_pool])
+      .map(getAddress)
+      .filter((address, index, all) => all.indexOf(address) === index);
   }
 
   async backfillDbcEvents(events: BlockEnvelope["events"]): Promise<number> {
@@ -61,6 +66,11 @@ export class PostgresIndexerRepository implements IndexerRepository {
           typeof event.payload.token === "string"
         ) {
           blockDbcContracts.add(getAddress(event.payload.token).toLowerCase());
+          if (typeof event.payload.virtualPool === "string") {
+            blockDbcContracts.add(
+              getAddress(event.payload.virtualPool).toLowerCase(),
+            );
+          }
         }
       }
     });
@@ -163,6 +173,11 @@ export class PostgresIndexerRepository implements IndexerRepository {
           typeof event.payload.token === "string"
         ) {
           blockDbcContracts.add(getAddress(event.payload.token).toLowerCase());
+          if (typeof event.payload.virtualPool === "string") {
+            blockDbcContracts.add(
+              getAddress(event.payload.virtualPool).toLowerCase(),
+            );
+          }
         }
         if (observation)
           await transaction.unsafe(

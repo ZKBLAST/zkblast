@@ -1,4 +1,4 @@
-import { getAddress, isHash, type Address, type Hex } from "viem";
+import { getAddress, isHash, type Hex } from "viem";
 import type { IndexedEvent } from "./domain.js";
 
 export const dbcEventNames = new Set([

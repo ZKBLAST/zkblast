@@ -13,7 +13,6 @@ import {
   encodeFunctionData,
   erc20Abi,
   getAddress,
-  type Address,
 } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
@@ -100,28 +99,41 @@ export function LaunchActions({
     );
     const owner = getAddress(address);
     const pool = getAddress(launch.virtual_pool);
-    async function read(
-      functionName: "balanceOf" | "allowance",
-      args: readonly Address[],
-    ) {
-      const data = encodeFunctionData({
-        abi: erc20Abi,
-        functionName,
-        args,
-      } as never);
-      const result = await window.ethereum!.request({
+    async function callToken(data: `0x${string}`) {
+      return window.ethereum!.request({
         method: "eth_call",
         params: [{ to: token, data }, "latest"],
       });
+    }
+    async function readBalance() {
+      const data = encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [owner],
+      });
+      const result = await callToken(data);
       return decodeFunctionResult({
         abi: erc20Abi,
-        functionName,
+        functionName: "balanceOf",
         data: result as `0x${string}`,
-      } as never) as bigint;
+      });
+    }
+    async function readAllowance() {
+      const data = encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [owner, pool],
+      });
+      const result = await callToken(data);
+      return decodeFunctionResult({
+        abi: erc20Abi,
+        functionName: "allowance",
+        data: result as `0x${string}`,
+      });
     }
     void Promise.all([
-      read("balanceOf", [owner]),
-      read("allowance", [owner, pool]),
+      readBalance(),
+      readAllowance(),
     ])
       .then(([balance, allowance]) => {
         if (!cancelled) {
@@ -219,7 +231,7 @@ export function LaunchActions({
       const minimum = minimumAmountOut(BigInt(outputRaw), slippage);
       const tokenIn = getAddress(
         side === "buy" ? launch.quote_token : launch.token_address,
-      ) as Address;
+      );
       const calls =
         allowanceRaw !== null && allowanceRaw >= raw
           ? []
