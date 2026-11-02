@@ -55,6 +55,7 @@ export function Launchpad() {
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const [wizard, setWizard] = useState(false);
+  const [wizardLaunchpadId, setWizardLaunchpadId] = useState<string | null>(null);
   const [pendingLaunchpads, setPendingLaunchpads] = useState<
     readonly PendingLaunchpad[]
   >([]);
@@ -245,7 +246,10 @@ export function Launchpad() {
         {view === "markets" && (
           <button
             disabled={!deployment}
-            onClick={() => setWizard(true)}
+            onClick={() => {
+              setWizardLaunchpadId(null);
+              setWizard(true);
+            }}
             className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
           >
             <Plus className="size-4" />
@@ -294,6 +298,10 @@ export function Launchpad() {
           pendingLaunchpads={pendingLaunchpads}
           loading={loading}
           onBuild={() => selectView("build")}
+          onCreateToken={(launchpadId) => {
+            setWizardLaunchpadId(launchpadId);
+            setWizard(true);
+          }}
           onRefresh={refresh}
           onRetryPending={(item) => void retryPendingLaunchpad(item)}
         />
@@ -505,9 +513,13 @@ export function Launchpad() {
       {deployment && (
         <LaunchWizard
           open={wizard}
-          onClose={() => setWizard(false)}
+          onClose={() => {
+            setWizard(false);
+            setWizardLaunchpadId(null);
+          }}
           templates={templates}
           deployment={deployment}
+          launchpadId={wizardLaunchpadId ?? undefined}
           onComplete={completeLaunch}
         />
       )}

@@ -1,12 +1,14 @@
 "use client";
 import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { decodeEventLog, getAddress } from "viem";
+import { decodeEventLog, getAddress, zeroAddress } from "viem";
 import {
   formatTokenAmount,
+  LaunchpadClient,
   minimumAmountOut,
   parseTokenAmount,
   type DbcAddresses,
+  type LaunchpadAddresses,
 } from "@zkblast/sdk";
 import { dbcEventsAbi } from "@zkblast/abi";
 import { Modal } from "@/components/ui/Modal";
@@ -38,12 +40,14 @@ export function LaunchWizard({
   onClose,
   templates,
   deployment,
+  launchpadId,
   onComplete,
 }: Readonly<{
   open: boolean;
   onClose: () => void;
   templates: readonly DbcTemplate[];
   deployment: DbcAddresses;
+  launchpadId?: string | undefined;
   onComplete: (launch?: DbcLaunch) => void;
 }>) {
   const { address, config, connect, toast } = useApp();
@@ -68,6 +72,8 @@ export function LaunchWizard({
   const [economicsLoading, setEconomicsLoading] = useState(false);
   const [pendingInitialBuy, setPendingInitialBuy] =
     useState<PendingInitialBuy | null>(null);
+  const [launchpadConfiguration, setLaunchpadConfiguration] =
+    useState<LaunchpadAddresses | null>(null);
   const [initialBuyBusy, setInitialBuyBusy] = useState(false);
   const [initialBuyStatus, setInitialBuyStatus] = useState("");
   const selected = useMemo(
@@ -94,6 +100,21 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [templateId]);
+  useEffect(() => {
+    if (!open || !launchpadId) {
+      setLaunchpadConfiguration(null);
+      return;
+    }
+    const controller = new AbortController();
+    void apiRequest<LaunchpadAddresses>(
+      webPublicConfig.apiUrl,
+      "/v1/launchpads/configuration",
+      { signal: controller.signal, cache: "no-store" },
+    )
+      .then(setLaunchpadConfiguration)
+      .catch(() => setLaunchpadConfiguration(null));
+    return () => controller.abort();
+  }, [launchpadId, open]);
   const validWebsite = !websiteUrl || /^https:\/\/.+/u.test(websiteUrl);
   const validX =
     !xUrl || /^https:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/.+/iu.test(xUrl);
@@ -138,16 +159,24 @@ export function LaunchWizard({
           logoBase64: logo?.base64 ?? null,
         }),
       });
-      const client = dbcClient(deployment);
       const salt = bytes32Salt();
-      const call = client.createLaunch({
+      if (launchpadId && !launchpadConfiguration)
+        throw new Error("LAUNCHPAD_CONFIGURATION_UNAVAILABLE");
+      const launchRequest = {
         templateId: BigInt(selected.template_id),
         salt,
         name: name.trim(),
         symbol: symbol.trim().toUpperCase(),
         metadataUri: metadata.metadataUri,
         creatorTokenRecipient: getAddress(walletRecipient),
-      });
+      } as const;
+      const call = launchpadId
+        ? new LaunchpadClient(launchpadConfiguration!).createToken({
+            launchpadId: BigInt(launchpadId),
+            ...launchRequest,
+            referralRecipient: zeroAddress,
+          })
+        : dbcClient(deployment).createLaunch(launchRequest);
       const createHash = await executeDbcTransactions({
         provider: window.ethereum,
         account: address,
@@ -218,6 +247,8 @@ export function LaunchWizard({
               holder_count: 0,
               creator_claimable_raw: "0",
               protocol_claimable_raw: "0",
+              launchpad_bound: Boolean(launchpadId),
+              launchpad_id: launchpadId ?? null,
             }
           : undefined;
       onClose();
@@ -354,7 +385,7 @@ export function LaunchWizard({
       <Modal
         open={open}
         onClose={onClose}
-        title="Create a curve launch"
+        title={launchpadId ? `Create token in launchpad ${launchpadId}` : "Create a curve launch"}
         width="max-w-2xl"
       >
         <div className="mb-5 grid grid-cols-3 gap-2">

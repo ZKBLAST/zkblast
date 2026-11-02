@@ -44,6 +44,7 @@ export function LaunchpadOwnerDashboard({
   pendingLaunchpads,
   loading,
   onBuild,
+  onCreateToken,
   onRefresh,
   onRetryPending,
 }: Readonly<{
@@ -51,6 +52,7 @@ export function LaunchpadOwnerDashboard({
   pendingLaunchpads: readonly PendingLaunchpad[];
   loading: boolean;
   onBuild: () => void;
+  onCreateToken: (launchpadId: string) => void;
   onRefresh: () => void;
   onRetryPending: (item: PendingLaunchpad) => void;
 }>) {
@@ -291,6 +293,12 @@ export function LaunchpadOwnerDashboard({
                   >
                     Open launchpad <ExternalLink className="size-3" />
                   </a>
+                  <button
+                    onClick={() => onCreateToken(record.launchpadId)}
+                    className="mt-4 flex items-center gap-2 bg-lime px-4 py-2 font-mono text-[10px] uppercase text-lime-ink"
+                  >
+                    <Plus className="size-3" /> Create token
+                  </button>
                 </article>
               ))}
           </div>
@@ -407,6 +415,12 @@ export function LaunchpadOwnerDashboard({
                 </dl>
                 {launch.launchpad_id && (
                   <div className="mt-5 flex flex-wrap gap-4">
+                    <button
+                      onClick={() => onCreateToken(launch.launchpad_id!)}
+                      className="flex items-center gap-2 text-xs text-lime hover:text-fg"
+                    >
+                      <Plus className="size-3" /> Create token
+                    </button>
                     <a
                       href={`/launch?launchpad=${launch.launchpad_id}`}
                       className="flex items-center gap-2 text-xs text-muted hover:text-fg"
