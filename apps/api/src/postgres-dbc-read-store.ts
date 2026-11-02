@@ -48,8 +48,7 @@ export class PostgresDbcReadStore implements DbcReadStore {
       l.launchpad_bound,l.launchpad_id,l.fee_snapshot_id,l.binding_schema_version,l.launchpad_treasury,
       l.launchpad_config_preset_id,l.launchpad_config_hash,l.graduation_destination,
       m.metadata_id,m.website_url,m.x_url,(m.logo_bytes is not null) has_logo,
-      real_quote_reserve_raw::text,base_sold_raw::text,graduation_threshold_raw::text,created_block,updated_block,
-      m.metadata_id,m.website_url,m.x_url,(m.logo_bytes is not null) has_logo,
+      l.real_quote_reserve_raw::text,l.base_sold_raw::text,l.graduation_threshold_raw::text,l.created_block,l.updated_block,
       coalesce((select sum(s.quote_amount_raw)::text from ${this.schema}.dbc_swaps s where s.launch_id=l.launch_id and s.canonical),'0') volume_raw,
       coalesce((select count(*)::integer from ${this.schema}.dbc_swaps s where s.launch_id=l.launch_id and s.canonical),0) trade_count,
       coalesce((select count(*)::integer from ${this.schema}.dbc_holder_balances h where h.launch_id=l.launch_id and h.balance_raw>0),0) holder_count,
@@ -63,7 +62,7 @@ export class PostgresDbcReadStore implements DbcReadStore {
       )::text protocol_claimable_raw,
       ga.migration_id graduation_migration_id,ga.status graduation_status,ga.attempts graduation_attempts,
       ga.failure_hash graduation_failure_hash,ga.transaction_hash graduation_transaction_hash,
-      case when graduation_threshold_raw is null then 0 else least(10000,floor(real_quote_reserve_raw*10000/graduation_threshold_raw))::integer end progress_bps
+      case when l.graduation_threshold_raw is null then 0 else least(10000,floor(l.real_quote_reserve_raw*10000/l.graduation_threshold_raw))::integer end progress_bps
       from ${this.schema}.dbc_launches l left join ${this.schema}.dbc_launch_metadata m on m.metadata_uri=l.metadata_uri
       left join ${this.schema}.dbc_graduation_attempts ga on ga.launch_id=l.launch_id where ($1::text is null or l.launch_id < $1)
       and ($2::integer is null or lifecycle=$2) and ($3::text is null or name ilike '%'||$3||'%' or symbol ilike '%'||$3||'%')
