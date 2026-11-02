@@ -147,9 +147,20 @@ export async function fastCatchup(input: {
         blockHash: block.hash,
         finalizedBlock: block.number,
       };
-      await repository.applyBlock(block, next);
-      checkpoint = next;
-      events += block.events.length;
+      try {
+        await repository.applyBlock(block, next);
+        checkpoint = next;
+        events += block.events.length;
+      } catch (error) {
+        const staleCheckpoint =
+          error instanceof Error
+          && (error.message.includes("STALE_INDEXER_CHECKPOINT")
+            || "code" in error && error.code === "40001");
+        if (!staleCheckpoint) throw error;
+        const latest = await repository.checkpoint(chainId);
+        if (!latest || latest.blockNumber < block.number) throw error;
+        checkpoint = latest;
+      }
     }
     processed += Number(to - from + 1n);
     if (checkpoint) input.onProgress?.(checkpoint, finalized);
