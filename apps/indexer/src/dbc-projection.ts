@@ -79,8 +79,10 @@ function text(event: IndexedEvent, key: string): string {
   return value;
 }
 function uint(event: IndexedEvent, key: string): bigint {
-  const value = text(event, key);
-  if (!/^\d+$/u.test(value))
+  const value = event.payload[key];
+  if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0)
+    return BigInt(value);
+  if (typeof value !== "string" || !/^\d+$/u.test(value))
     throw new Error(`INVALID_DBC_${key.toUpperCase()}`);
   return BigInt(value);
 }

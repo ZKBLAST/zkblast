@@ -28,6 +28,7 @@ export async function fastCatchup(input: {
   chunkSize?: bigint;
   maximumBlocks?: bigint;
   onProgress?: (checkpoint: IndexerCheckpoint, finalized: bigint) => void;
+  onDiscoveredLaunchContracts?: (addresses: readonly Address[]) => void;
 }) {
   const { client, repository, chainId, addresses } = input;
   if ((await client.getChainId()) !== chainId)
@@ -73,6 +74,7 @@ export async function fastCatchup(input: {
     });
     // Discover pools created during a scanned range before capturing their same-range activity.
     const discovered: Address[] = [];
+    const discoveredLaunchContracts: Address[] = [];
     for (const log of logs) {
       try {
         const decoded = decodeEventLog({
@@ -80,6 +82,24 @@ export async function fastCatchup(input: {
           data: log.data,
           topics: log.topics,
         });
+        if (decoded.eventName === "TokenLaunched") {
+          const args = decoded.args as { token: Address; virtualPool: Address };
+          for (const candidate of [
+            getAddress(args.token),
+            getAddress(args.virtualPool),
+          ]) {
+            if (
+              !addresses.some(
+                (address) => address.toLowerCase() === candidate.toLowerCase(),
+              ) &&
+              !discoveredLaunchContracts.some(
+                (address) => address.toLowerCase() === candidate.toLowerCase(),
+              )
+            )
+              discoveredLaunchContracts.push(candidate);
+          }
+          continue;
+        }
         if (decoded.eventName !== "PoolCreated") continue;
         const pool = getAddress(
           String((decoded.args as { pool: Address }).pool),
@@ -93,6 +113,19 @@ export async function fastCatchup(input: {
           discovered.push(pool);
       } catch {
         /* Unrelated or unsupported events are not projected. */
+      }
+    }
+    if (discoveredLaunchContracts.length > 0) {
+      input.onDiscoveredLaunchContracts?.(discoveredLaunchContracts);
+      for (const contract of discoveredLaunchContracts) {
+        addresses.push(contract);
+        logs.push(
+          ...(await client.getLogs({
+            address: contract,
+            fromBlock: from,
+            toBlock: to,
+          })),
+        );
       }
     }
     for (const pool of discovered) {
@@ -153,9 +186,9 @@ export async function fastCatchup(input: {
         events += block.events.length;
       } catch (error) {
         const staleCheckpoint =
-          error instanceof Error
-          && (error.message.includes("STALE_INDEXER_CHECKPOINT")
-            || "code" in error && error.code === "40001");
+          error instanceof Error &&
+          (error.message.includes("STALE_INDEXER_CHECKPOINT") ||
+            ("code" in error && error.code === "40001"));
         if (!staleCheckpoint) throw error;
         const latest = await repository.checkpoint(chainId);
         if (!latest || latest.blockNumber < block.number) throw error;

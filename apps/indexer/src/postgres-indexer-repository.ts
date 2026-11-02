@@ -76,8 +76,17 @@ export class PostgresIndexerRepository implements IndexerRepository {
 
   async backfillDbcEvents(events: BlockEnvelope["events"]): Promise<number> {
     const blockDbcContracts = new Set(this.dbcContracts);
+    const projectionEvents = [...events].sort((left, right) => {
+      const priority = (eventName: string) =>
+        eventName === "TokenLaunched"
+          ? -1
+          : eventName === "AllocationRegistered"
+            ? 1
+            : 0;
+      return priority(left.eventName) - priority(right.eventName);
+    });
     await this.sql.begin(async (transaction) => {
-      for (const event of events) {
+      for (const event of projectionEvents) {
         await persistDbcEvent(
           transaction,
           this.schema,
@@ -158,6 +167,8 @@ export class PostgresIndexerRepository implements IndexerRepository {
       throw new Error("CHECKPOINT_HASH_MISMATCH");
     const blockDbcContracts = new Set(this.dbcContracts);
     await this.sql.begin(async (transaction) => {
+      const deferredDbcEvents: Array<(typeof validatedBlock.events)[number]> =
+        [];
       await transaction.unsafe(
         `insert into ${this.schema}.indexed_blocks (chain_id, block_number, block_hash, parent_hash) values ($1,$2,$3,$4) on conflict (chain_id, block_number) do update set block_hash=excluded.block_hash,parent_hash=excluded.parent_hash`,
         [
@@ -185,12 +196,15 @@ export class PostgresIndexerRepository implements IndexerRepository {
         const observation = transactionObservation(event);
         await persistPoolSwap(transaction, this.schema, event);
         await persistPerpsEvent(transaction, this.schema, event);
-        await persistDbcEvent(
-          transaction,
-          this.schema,
-          event,
-          blockDbcContracts,
-        );
+        if (event.eventName === "AllocationRegistered")
+          deferredDbcEvents.push(event);
+        else
+          await persistDbcEvent(
+            transaction,
+            this.schema,
+            event,
+            blockDbcContracts,
+          );
         if (
           event.eventName === "TokenLaunched" &&
           typeof event.payload.token === "string"
@@ -222,6 +236,13 @@ export class PostgresIndexerRepository implements IndexerRepository {
             ],
           );
       }
+      for (const event of deferredDbcEvents)
+        await persistDbcEvent(
+          transaction,
+          this.schema,
+          event,
+          blockDbcContracts,
+        );
       await transaction.unsafe(
         `insert into ${this.schema}.ingestion_checkpoints (consumer,chain_id,last_processed_block,last_processed_hash,finalized_block) values ($5,$1,$2,$3,$4) on conflict (consumer,chain_id) do update set last_processed_block=excluded.last_processed_block,last_processed_hash=excluded.last_processed_hash,finalized_block=excluded.finalized_block,updated_at=now()`,
         [
@@ -255,36 +276,47 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `update ${this.schema}.dbc_events set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
-      const launchpadEvents = await transaction.unsafe<{
-        chain_id: number;
-        transaction_hash: `0x${string}`;
-        log_index: number;
-        block_number: string;
-        block_hash: `0x${string}`;
-        contract_address: Address;
-        event_name: string;
-        payload: IndexedEvent["payload"];
-      }[]>(
+      const launchpadEvents = await transaction.unsafe<
+        {
+          chain_id: number;
+          transaction_hash: `0x${string}`;
+          log_index: number;
+          block_number: string;
+          block_hash: `0x${string}`;
+          contract_address: Address;
+          event_name: string;
+          payload: IndexedEvent["payload"];
+        }[]
+      >(
         `select chain_id,transaction_hash,log_index,block_number::text,block_hash,contract_address,event_name,payload
          from ${this.schema}.dbc_events where chain_id=$1 and canonical and event_name=any($2::text[])
          order by block_number,log_index`,
         [chainId, launchpadProjectionEvents],
       );
-      await transaction.unsafe(`delete from ${this.schema}.launchpads where chain_id=$1`, [chainId]);
+      await transaction.unsafe(
+        `delete from ${this.schema}.launchpads where chain_id=$1`,
+        [chainId],
+      );
       const replayContracts = new Set(this.dbcContracts);
-      for (const row of launchpadEvents) replayContracts.add(row.contract_address.toLowerCase());
+      for (const row of launchpadEvents)
+        replayContracts.add(row.contract_address.toLowerCase());
       for (const row of launchpadEvents) {
-        await persistDbcEvent(transaction, this.schema, {
-          chainId: row.chain_id,
-          transactionHash: row.transaction_hash,
-          logIndex: row.log_index,
-          blockNumber: BigInt(row.block_number),
-          blockHash: row.block_hash,
-          contractAddress: getAddress(row.contract_address),
-          kind: "launch",
-          eventName: row.event_name,
-          payload: row.payload,
-        }, replayContracts);
+        await persistDbcEvent(
+          transaction,
+          this.schema,
+          {
+            chainId: row.chain_id,
+            transactionHash: row.transaction_hash,
+            logIndex: row.log_index,
+            blockNumber: BigInt(row.block_number),
+            blockHash: row.block_hash,
+            contractAddress: getAddress(row.contract_address),
+            kind: "launch",
+            eventName: row.event_name,
+            payload: row.payload,
+          },
+          replayContracts,
+        );
       }
       await transaction.unsafe(
         `update ${this.schema}.dbc_swaps set canonical=false where chain_id=$1 and block_number >= $2`,

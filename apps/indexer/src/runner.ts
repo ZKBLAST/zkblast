@@ -243,6 +243,8 @@ async function synchronize(): Promise<void> {
         confirmations: BigInt(runner.INDEXER_CONFIRMATIONS),
         chunkSize: runner.INDEXER_CATCHUP_CHUNK_SIZE,
         maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,
+        onDiscoveredLaunchContracts: (contracts) =>
+          repository.trackDbcContracts(contracts),
       });
     } catch (error) {
       if (

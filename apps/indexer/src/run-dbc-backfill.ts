@@ -2,7 +2,15 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
-import { createPublicClient, getAddress, http, type Log } from "viem";
+import { protocolAbis } from "@zkblast/abi";
+import {
+  createPublicClient,
+  decodeEventLog,
+  getAddress,
+  http,
+  type Address,
+  type Log,
+} from "viem";
 import { z } from "zod";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 import { ViemChainReader } from "./viem-chain-reader.js";
@@ -11,6 +19,7 @@ const runtime = z
   .object({
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
     INDEXER_CONFIRMATIONS: z.coerce.number().int().min(1).default(5),
+    DBC_BACKFILL_FROM_BLOCK: z.coerce.bigint().min(0n).optional(),
   })
   .parse(process.env);
 const config = loadServerConfig(process.env);
@@ -48,6 +57,7 @@ const repository = new PostgresIndexerRepository(
 );
 const existing = await repository.dbcLaunchContractAddresses();
 repository.trackDbcContracts(existing);
+const tracked = new Set<Address>([...addresses, ...existing]);
 const reader = new ViemChainReader(client, config.CHAIN_ID, [
   ...addresses,
   ...existing,
@@ -56,17 +66,49 @@ const head =
   (await client.getBlockNumber()) - BigInt(runtime.INDEXER_CONFIRMATIONS);
 let events = 0,
   blocks = 0;
-for (
-  let from = BigInt(manifest.dbc.deploymentBlock);
-  from <= head;
-  from += 2_000n
-) {
+const backfillFrom =
+  runtime.DBC_BACKFILL_FROM_BLOCK ?? BigInt(manifest.dbc.deploymentBlock);
+for (let from = backfillFrom; from <= head; from += 2_000n) {
   const to = from + 1_999n > head ? head : from + 1_999n;
   const logs = await client.getLogs({
-    address: [...addresses, ...existing],
+    address: [...tracked],
     fromBlock: from,
     toBlock: to,
   });
+  const discovered: Address[] = [];
+  for (const log of logs) {
+    try {
+      const decoded = decodeEventLog({
+        abi: Object.values(protocolAbis).flat(),
+        data: log.data,
+        topics: log.topics,
+      });
+      if (decoded.eventName !== "TokenLaunched") continue;
+      const args = decoded.args as { token: Address; virtualPool: Address };
+      for (const candidate of [
+        getAddress(args.token),
+        getAddress(args.virtualPool),
+      ]) {
+        if (!tracked.has(candidate)) {
+          tracked.add(candidate);
+          discovered.push(candidate);
+        }
+      }
+    } catch {
+      // Events outside the launch surface are ignored by this focused backfill.
+    }
+  }
+  if (discovered.length > 0) {
+    repository.trackDbcContracts(discovered);
+    for (const contract of discovered)
+      logs.push(
+        ...(await client.getLogs({
+          address: contract,
+          fromBlock: from,
+          toBlock: to,
+        })),
+      );
+  }
   const grouped = new Map<bigint, Log[]>();
   for (const log of logs) {
     if (log.blockNumber === null) continue;
@@ -87,7 +129,7 @@ console.log(
     {
       environment: config.APP_ENV,
       chainId: config.CHAIN_ID,
-      fromBlock: manifest.dbc.deploymentBlock,
+      fromBlock: backfillFrom.toString(),
       toBlock: head.toString(),
       eventBlocks: blocks,
       events,

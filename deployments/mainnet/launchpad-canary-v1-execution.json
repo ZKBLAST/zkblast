@@ -1,0 +1,97 @@
+{
+  "transactions": [
+    {
+      "stage": "create-launchpad",
+      "hash": "0xf6c3b2aaef910c7e780a01cefd04403f848c3792ef1a183c2eb2660ee50248a9",
+      "blockNumber": "103915386",
+      "gasUsed": "252207",
+      "feeWei": "5067847458000"
+    },
+    {
+      "stage": "configure-fee-policy",
+      "hash": "0x907f7144fe6f6e80012684954cc0b8646623142ecc42e24c8b0da7332198d7ac",
+      "blockNumber": "103915391",
+      "gasUsed": "134245",
+      "feeWei": "2687316410000"
+    },
+    {
+      "stage": "create-bound-token",
+      "hash": "0x7f7fb78726630d5e2f2b5f44d65cc550a061fc59b3eb86757386cff1a09a9046",
+      "blockNumber": "103915397",
+      "gasUsed": "5679688",
+      "feeWei": "114332119440000"
+    },
+    {
+      "stage": "approve-usdg",
+      "hash": "0xed2a19ccd6486c8d3c84ee43992efaaa026a2b7bd1acf9224d5ba07d88df1fc1",
+      "blockNumber": "103915402",
+      "gasUsed": "57976",
+      "feeWei": "1163346416000"
+    },
+    {
+      "stage": "buy-probe",
+      "hash": "0xe54df8ed774692882e664a0bc8612a051fe0be2fd1c466cb31783afd2727dcc1",
+      "blockNumber": "103915407",
+      "gasUsed": "315823",
+      "feeWei": "6374571432000"
+    },
+    {
+      "stage": "approve-token",
+      "hash": "0x23c73d0b067103a4a8c4ba8b1a818bf12a1c538330bc07f3fc67322740a1bad0",
+      "blockNumber": "103915413",
+      "gasUsed": "46198",
+      "feeWei": "926547088000"
+    },
+    {
+      "stage": "sell-probe",
+      "hash": "0x348128599f07b04cd5c9ba40cfe186a9d86f478b78cb4b47311a6c984b3da080",
+      "blockNumber": "103915418",
+      "gasUsed": "206557",
+      "feeWei": "4131140000000"
+    },
+    {
+      "stage": "buy-to-threshold",
+      "hash": "0x2b5ed2484dfe36115503682240d3a707ce5cdaf60a59f6682dad98f2afc5a3e3",
+      "blockNumber": "103915424",
+      "gasUsed": "234472",
+      "feeWei": "4708197760000"
+    },
+    {
+      "stage": "collect-trade-fees",
+      "hash": "0x190dee6acf9f226e1d80c3e3bf3273d4742d9c09a291e0b60ea7cef0f0335aae",
+      "blockNumber": "103915429",
+      "gasUsed": "361796",
+      "feeWei": "7247497472000"
+    },
+    {
+      "stage": "claim-revenue",
+      "hash": "0x6a6c38c64080b001c72e112a9edf1e6ac92b31792a6010866425859f9a4b22d9",
+      "blockNumber": "103915434",
+      "gasUsed": "83228",
+      "feeWei": "1690693592000"
+    },
+    {
+      "stage": "graduate-damm",
+      "hash": "0x5a069022e641195ae41c717bd8d2591feaf1d9bda7d2420df26d28e259c881bf",
+      "blockNumber": "103915440",
+      "gasUsed": "2233486",
+      "feeWei": "44750125496000"
+    }
+  ],
+  "status": "complete",
+  "grossUsdgSpentRaw": "1008021",
+  "launchpadId": "1",
+  "launchId": "0x3a596648e8006f4635fe51fe1fb79a9667f234eeb9b8a78d434003ab62c1c96d",
+  "token": "0x18EB9D07f586fc89F07450467Df3c295bB58b577",
+  "pool": "0xE26Fab0aD0A9f3f7B48c04f1b2CDfF6A34432492",
+  "feeSnapshotId": "0xfeb0c3e3b8ebaa933d8caf452efd3208dca0fa371cdf9c759bc60bc57fa10c60",
+  "migrationId": "0x45301bcf45da24460fce13445892b998e7d97623fb2cac3956410a2e7f8798f7",
+  "destinationPool": "0x2642C4792E7292DD7DC1fBC16e757248afF64480",
+  "creatorLpUnlockAt": "1793591547",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "approvedGasCapEth": "0.00035",
+  "approvedUsdgCap": "1.01",
+  "totalFeeWei": "193079402564000",
+  "totalFeeEth": "0.000193079402564"
+}

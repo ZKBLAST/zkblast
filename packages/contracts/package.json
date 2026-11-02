@@ -66,6 +66,7 @@
     "plan:dbc:launchpad-compatibility:mainnet": "node --import tsx scripts/prepare-dbc-launchpad-compatibility-mainnet.ts",
     "simulate:dbc:launchpad-compatibility:mainnet": "node --import tsx scripts/simulate-dbc-launchpad-compatibility-mainnet.ts",
     "execute:dbc:launchpad-compatibility:mainnet": "node --import tsx scripts/execute-dbc-launchpad-compatibility-mainnet.ts --cap-eth=0.00037",
+    "execute:launchpad:canary:mainnet": "node --import tsx scripts/execute-launchpad-canary-mainnet.ts --cap-eth=0.00035 --cap-usdg=1.01",
     "plan:dbc:dlmm:testnet": "node --import tsx scripts/prepare-dbc-dlmm-testnet.ts",
     "execute:dbc:dlmm:testnet": "node --import tsx scripts/execute-dbc-dlmm-testnet.ts --cap-eth=0.00022",
     "plan:dbc:dlmm:canary:testnet": "node --import tsx scripts/prepare-dbc-dlmm-canary-testnet.ts",

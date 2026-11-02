@@ -67,11 +67,39 @@ async function main() {
             manifest.launchpad.tokenFactory,
           ]
         : []),
+      ...(manifest.dbc
+        ? Object.values(manifest.dbc).filter(
+            (value): value is string =>
+              typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
+          )
+        : []),
       ...(manifest.shielded
         ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
         : []),
       ...(await repository.registeredPoolAddresses(config.CHAIN_ID)),
-    ].filter((address): address is string => typeof address === "string").map(getAddress);
+      ...(await repository.dbcLaunchContractAddresses()),
+    ]
+      .filter((address): address is string => typeof address === "string")
+      .map(getAddress);
+    repository.trackDbcContracts([
+      ...(manifest.dbc
+        ? Object.values(manifest.dbc)
+            .filter(
+              (value): value is string =>
+                typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
+            )
+            .map(getAddress)
+        : []),
+      ...(manifest.launchpad
+        ? Object.values(manifest.launchpad)
+            .filter(
+              (value): value is string =>
+                typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
+            )
+            .map(getAddress)
+        : []),
+      ...(await repository.dbcLaunchContractAddresses()),
+    ]);
     let lastReported = 0;
     const result = process.argv.includes("--activity-only")
       ? {}
@@ -90,6 +118,8 @@ async function main() {
           chunkSize: settings.INDEXER_CATCHUP_CHUNK_SIZE,
           confirmations: settings.INDEXER_CONFIRMATIONS,
           maximumBlocks: settings.INDEXER_CATCHUP_MAX_BLOCKS,
+          onDiscoveredLaunchContracts: (contracts) =>
+            repository.trackDbcContracts(contracts),
           onProgress: (checkpoint, finalized) => {
             if (Date.now() - lastReported < 15000) return;
             lastReported = Date.now();
@@ -128,6 +158,19 @@ async function main() {
   }
 }
 main().catch((error) => {
+  const databaseError = error as {
+    code?: unknown;
+    constraint_name?: unknown;
+    table_name?: unknown;
+    column_name?: unknown;
+  };
+  const diagnosticMessage =
+    error instanceof Error
+      ? error.message
+          .replace(/postgres(?:ql)?:\/\/[^\s]+/giu, "[database-url-redacted]")
+          .replace(/https?:\/\/[^\s]+/giu, "[url-redacted]")
+          .slice(0, 500)
+      : null;
   console.error(
     JSON.stringify({
       service: "fast-catchup",
@@ -136,6 +179,22 @@ main().catch((error) => {
         error instanceof Error && /^[A-Z_]{4,80}$/u.test(error.message)
           ? error.message
           : "CATCHUP_FAILED",
+      databaseCode:
+        typeof databaseError?.code === "string" ? databaseError.code : null,
+      constraint:
+        typeof databaseError?.constraint_name === "string"
+          ? databaseError.constraint_name
+          : null,
+      table:
+        typeof databaseError?.table_name === "string"
+          ? databaseError.table_name
+          : null,
+      column:
+        typeof databaseError?.column_name === "string"
+          ? databaseError.column_name
+          : null,
+      errorName: error instanceof Error ? error.name : null,
+      diagnosticMessage,
     }),
   );
   process.exitCode = 1;

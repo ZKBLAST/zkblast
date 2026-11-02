@@ -74,7 +74,18 @@ export async function persistDbcEvent(
        operator_address=excluded.operator_address,metadata_hash=excluded.metadata_hash,slug_commitment=excluded.slug_commitment,
        config_preset_id=excluded.config_preset_id,version=excluded.version,status=excluded.status,updated_block=excluded.updated_block,
        transaction_hash=excluded.transaction_hash,updated_at=now()`,
-      [event.chainId,value(event,"launchpadId"),owner,value(event,"treasury"),value(event,"metadataHash"),value(event,"slugCommitment"),value(event,"configPresetId"),value(event,"version"),event.blockNumber.toString(),event.transactionHash.toLowerCase()],
+      [
+        event.chainId,
+        value(event, "launchpadId"),
+        owner,
+        value(event, "treasury"),
+        value(event, "metadataHash"),
+        value(event, "slugCommitment"),
+        value(event, "configPresetId"),
+        value(event, "version"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
     );
     return true;
   }
@@ -84,39 +95,145 @@ export async function persistDbcEvent(
        values($1,$2,$3,$4,$5,$6,$7,$8) on conflict(chain_id,launchpad_id,version) do update set
        previous_metadata_hash=excluded.previous_metadata_hash,metadata_hash=excluded.metadata_hash,transaction_hash=excluded.transaction_hash,
        block_number=excluded.block_number,observed_at=excluded.observed_at`,
-      [event.chainId,value(event,"launchpadId"),value(event,"version"),value(event,"previousMetadataHash"),value(event,"metadataHash"),event.transactionHash.toLowerCase(),event.blockNumber.toString(),observedAt],
+      [
+        event.chainId,
+        value(event, "launchpadId"),
+        value(event, "version"),
+        value(event, "previousMetadataHash"),
+        value(event, "metadataHash"),
+        event.transactionHash.toLowerCase(),
+        event.blockNumber.toString(),
+        observedAt,
+      ],
     );
     await sql.unsafe(
       `update ${schema}.launchpads set metadata_hash=$3,version=$4,updated_block=$5,transaction_hash=$6,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
-      [event.chainId,value(event,"launchpadId"),value(event,"metadataHash"),value(event,"version"),event.blockNumber.toString(),event.transactionHash.toLowerCase()],
+      [
+        event.chainId,
+        value(event, "launchpadId"),
+        value(event, "metadataHash"),
+        value(event, "version"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
     );
     return true;
   }
-  const launchpadId = typeof event.payload.launchpadId === "string" ? value(event,"launchpadId") : null;
+  const launchpadId =
+    typeof event.payload.launchpadId === "string"
+      ? value(event, "launchpadId")
+      : null;
   if (launchpadId && event.eventName === "LaunchpadOperatorUpdated")
-    await sql.unsafe(`update ${schema}.launchpads set operator_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"operator"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set operator_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "operator"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadOwnerProposed")
-    await sql.unsafe(`update ${schema}.launchpads set pending_owner_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"pendingOwner"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set pending_owner_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "pendingOwner"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadOwnerProposalCancelled")
-    await sql.unsafe(`update ${schema}.launchpads set pending_owner_address=null,updated_block=$3,transaction_hash=$4,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set pending_owner_address=null,updated_block=$3,transaction_hash=$4,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadOwnerAccepted")
-    await sql.unsafe(`update ${schema}.launchpads set owner_address=$3,pending_owner_address=null,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"owner"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set owner_address=$3,pending_owner_address=null,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "owner"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadTreasuryProposed")
-    await sql.unsafe(`update ${schema}.launchpads set pending_treasury_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"pendingTreasury"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set pending_treasury_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "pendingTreasury"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadTreasuryProposalCancelled")
-    await sql.unsafe(`update ${schema}.launchpads set pending_treasury_address=null,updated_block=$3,transaction_hash=$4,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set pending_treasury_address=null,updated_block=$3,transaction_hash=$4,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadTreasuryAccepted")
-    await sql.unsafe(`update ${schema}.launchpads set treasury_address=$3,pending_treasury_address=null,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"treasury"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set treasury_address=$3,pending_treasury_address=null,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "treasury"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadStatusUpdated")
-    await sql.unsafe(`update ${schema}.launchpads set status=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,[event.chainId,launchpadId,value(event,"status"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpads set status=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and launchpad_id=$2`,
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "status"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (launchpadId && event.eventName === "LaunchpadFeePolicyUpdated") {
     const shares = event.payload.shares;
     if (typeof shares !== "string") throw new Error("INVALID_DBC_SHARES");
-    const parsed = JSON.parse(shares) as Record<string,string>;
-    const share = (key: string) => {
-      const amount = parsed[key];
-      if (!amount || !/^\d+$/u.test(amount)) throw new Error("INVALID_DBC_SHARES");
-      return amount;
+    const parsed = JSON.parse(shares) as unknown;
+    const shareKeys = [
+      "protocolShareBps",
+      "operatorShareBps",
+      "creatorShareBps",
+      "referralShareBps",
+    ] as const;
+    const share = (key: (typeof shareKeys)[number]) => {
+      const index = shareKeys.indexOf(key);
+      const amount = Array.isArray(parsed)
+        ? parsed[index]
+        : parsed && typeof parsed === "object"
+          ? (parsed as Record<string, unknown>)[key]
+          : undefined;
+      if (
+        typeof amount === "number" &&
+        Number.isSafeInteger(amount) &&
+        amount >= 0
+      )
+        return amount.toString();
+      if (typeof amount === "string" && /^\d+$/u.test(amount)) return amount;
+      throw new Error("INVALID_DBC_SHARES");
     };
     await sql.unsafe(
       `insert into ${schema}.launchpad_fee_policies(chain_id,launchpad_id,version,total_trade_fee_bps,protocol_share_bps,operator_share_bps,creator_share_bps,referral_share_bps,operator_recipient,transaction_hash,updated_block)
@@ -124,7 +241,19 @@ export async function persistDbcEvent(
        total_trade_fee_bps=excluded.total_trade_fee_bps,protocol_share_bps=excluded.protocol_share_bps,operator_share_bps=excluded.operator_share_bps,
        creator_share_bps=excluded.creator_share_bps,referral_share_bps=excluded.referral_share_bps,operator_recipient=excluded.operator_recipient,
        transaction_hash=excluded.transaction_hash,updated_block=excluded.updated_block,updated_at=now()`,
-      [event.chainId,launchpadId,value(event,"version"),value(event,"totalTradeFeeBps"),share("protocolShareBps"),share("operatorShareBps"),share("creatorShareBps"),share("referralShareBps"),value(event,"operatorRecipient"),event.transactionHash.toLowerCase(),event.blockNumber.toString()],
+      [
+        event.chainId,
+        launchpadId,
+        value(event, "version"),
+        value(event, "totalTradeFeeBps"),
+        share("protocolShareBps"),
+        share("operatorShareBps"),
+        share("creatorShareBps"),
+        share("referralShareBps"),
+        value(event, "operatorRecipient"),
+        event.transactionHash.toLowerCase(),
+        event.blockNumber.toString(),
+      ],
     );
   }
   if (launchpadId && event.eventName === "FeePolicySnapshotted")
@@ -132,10 +261,27 @@ export async function persistDbcEvent(
       `insert into ${schema}.launchpad_fee_snapshots(chain_id,snapshot_id,launchpad_id,pool_address,policy_version,transaction_hash,updated_block)
        values($1,$2,$3,$4,$5,$6,$7) on conflict(chain_id,snapshot_id) do update set policy_version=excluded.policy_version,
        transaction_hash=excluded.transaction_hash,updated_block=excluded.updated_block,updated_at=now()`,
-      [event.chainId,value(event,"snapshotId"),launchpadId,value(event,"pool"),value(event,"policyVersion"),event.transactionHash.toLowerCase(),event.blockNumber.toString()],
+      [
+        event.chainId,
+        value(event, "snapshotId"),
+        launchpadId,
+        value(event, "pool"),
+        value(event, "policyVersion"),
+        event.transactionHash.toLowerCase(),
+        event.blockNumber.toString(),
+      ],
     );
   if (event.eventName === "RevenueSnapshotRegistered")
-    await sql.unsafe(`update ${schema}.launchpad_fee_snapshots set asset_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and snapshot_id=$2`,[event.chainId,value(event,"snapshotId"),value(event,"asset"),event.blockNumber.toString(),event.transactionHash.toLowerCase()]);
+    await sql.unsafe(
+      `update ${schema}.launchpad_fee_snapshots set asset_address=$3,updated_block=$4,transaction_hash=$5,updated_at=now() where chain_id=$1 and snapshot_id=$2`,
+      [
+        event.chainId,
+        value(event, "snapshotId"),
+        value(event, "asset"),
+        event.blockNumber.toString(),
+        event.transactionHash.toLowerCase(),
+      ],
+    );
   if (event.eventName === "Transfer") {
     const launches = await sql.unsafe<{ launch_id: string }[]>(
       `select launch_id from ${schema}.dbc_launches where token_address=$1 limit 1`,
