@@ -205,7 +205,7 @@ export function Launchpad() {
     [allLaunches, launchpadFilter, search, sort],
   );
   const selected =
-    allLaunches.find((item) => item.launch_id === selectedId) ??
+    visible.find((item) => item.launch_id === selectedId) ??
     visible[0] ??
     null;
 
@@ -482,8 +482,37 @@ export function Launchpad() {
                 />
               </>
             ) : (
-              <div className="grid min-h-[36rem] place-items-center text-sm text-muted">
-                No indexed launches.
+              <div className="grid min-h-[36rem] place-items-center p-6">
+                {loading ? (
+                  <Skeleton className="h-44 w-full max-w-md" />
+                ) : launchpadFilter ? (
+                  <div className="max-w-md text-center">
+                    <span className="mx-auto grid size-12 place-items-center border border-line bg-raised/70">
+                      <Rocket className="size-5 text-lime" aria-hidden />
+                    </span>
+                    <p className="label mt-5">
+                      Launchpad {launchpadFilter}
+                    </p>
+                    <h2 className="mt-2 text-xl">No tokens launched yet</h2>
+                    <p className="mt-3 text-sm leading-6 text-muted">
+                      This launchpad is ready. Create its first token to open a
+                      governed curve market.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWizardLaunchpadId(launchpadFilter);
+                        setWizard(true);
+                      }}
+                      className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 border border-fg bg-fg px-5 font-mono text-xs uppercase tracking-wide text-bg transition-opacity hover:opacity-90"
+                    >
+                      <Rocket className="size-4" aria-hidden />
+                      Create first token
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted">No indexed launches.</p>
+                )}
               </div>
             )}
           </section>
@@ -498,7 +527,11 @@ export function Launchpad() {
               {loading ? (
                 <Skeleton className="h-96" />
               ) : (
-                <p className="text-sm text-muted">Select an indexed launch.</p>
+                <p className="text-sm leading-6 text-muted">
+                  {launchpadFilter
+                    ? "Create the first token to enable curve trading, graduation and claims for this launchpad."
+                    : "Select an indexed launch."}
+                </p>
               )}
             </aside>
           )}
