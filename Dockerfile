@@ -1,7 +1,13 @@
 FROM node:20-alpine AS base
 
 RUN apk add --no-cache curl \
-    && corepack enable && corepack prepare pnpm@9.15.0 --activate
+    && corepack enable \
+    && for attempt in 1 2 3 4 5; do \
+         corepack prepare pnpm@9.15.0 --activate && break; \
+         if [ "$attempt" -eq 5 ]; then exit 1; fi; \
+         sleep $((attempt * 2)); \
+       done \
+    && pnpm --version
 
 WORKDIR /app
 
