@@ -260,7 +260,7 @@ export function Launchpad() {
             key={value}
             onClick={() => selectView(value)}
             aria-current={view === value ? "page" : undefined}
-            className={`relative flex min-h-14 items-center justify-center gap-2 px-4 font-mono text-xs uppercase tracking-wide transition-[background-color,color,box-shadow] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime ${view === value ? "bg-lime text-lime-ink shadow-[inset_0_-3px_0_rgba(0,0,0,0.32),0_0_24px_rgba(207,238,117,0.12)]" : "text-muted hover:bg-white/[.04] hover:text-fg"}`}
+            className={`relative flex min-h-14 items-center justify-center gap-2 px-4 font-mono text-xs uppercase tracking-wide transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime ${view === value ? "bg-white/[.05] text-fg" : "text-muted hover:bg-white/[.04] hover:text-fg"}`}
           >
             <Icon
               className={`size-4 ${view === value ? "stroke-[2.4]" : ""}`}
@@ -268,7 +268,7 @@ export function Launchpad() {
             />
             {label}
             {view === value && (
-              <span className="absolute right-3 size-1.5 rounded-full bg-lime-ink sm:right-4" />
+              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-lime shadow-[0_0_12px_rgba(223,227,238,0.8)]" />
             )}
           </button>
         ))}
