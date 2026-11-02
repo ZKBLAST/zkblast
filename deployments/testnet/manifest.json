@@ -846,7 +846,9 @@
     "curveQuoter": "0x37f3D4c50EB42b5140BF8E038D472953c82CFa11",
     "launchpadRouter": "0x7e905d393B498d5d62A7C916759982F5b09536c8",
     "graduationManager": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
-    "dammGraduationAdapter": "0xb43d74774B7045d7754012e18F80190D65d7E260",
+    "dammGraduationAdapter": "0xa23692336F45269446c9364E1ECaC616D8dC47b2",
+    "dlmmGraduationAdapter": "0xF738bDA030B45a172f66d4B6DE92436D0F9bf2c9",
+    "graduationAdapterVersion": 1,
     "lpAllocationEscrow": "0xcBbE14b6AD160a28029Dd5Ab17824Ef05419B11D"
   }
 }

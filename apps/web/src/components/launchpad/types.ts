@@ -26,6 +26,11 @@ export type TemplateEconomics = Readonly<{
   protocolFeeShareBps: number;
   creatorLpShareBps: number;
   creatorLockSeconds: number;
+  curveSegments: readonly Readonly<{
+    initialPriceX18: string;
+    slopeX18: string;
+    saleCapacityX18: string;
+  }>[];
 }>;
 export type DbcLaunch = Readonly<{
   launch_id: string;
@@ -53,6 +58,20 @@ export type DbcLaunch = Readonly<{
   holder_count?: number;
   creator_claimable_raw?: string;
   protocol_claimable_raw?: string;
+  launchpad_bound?: boolean;
+  launchpad_id?: string | null;
+  fee_snapshot_id?: string | null;
+  binding_schema_version?: number | null;
+  launchpad_treasury?: string | null;
+  launchpad_config_preset_id?: string | null;
+  launchpad_config_hash?: string | null;
+  graduation_destination?: number | null;
+  graduation_migration_id?: string | null;
+  graduation_status?:
+    "GRADUATING" | "PENDING_RETRY" | "GRADUATED" | "FAILED_NEEDS_REVIEW" | null;
+  graduation_attempts?: number | null;
+  graduation_failure_hash?: string | null;
+  graduation_transaction_hash?: string | null;
 }>;
 export type DbcCandle = Readonly<{
   bucket: string;

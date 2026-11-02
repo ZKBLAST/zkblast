@@ -1,0 +1,1590 @@
+{
+  "LaunchpadRegistry": {
+    "storage": [
+      {
+        "astId": 2258,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 2260,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 32,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 1272,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "launchpadCount",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1277,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "_launchpads",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint256,t_struct(Record)2178_storage)"
+      },
+      {
+        "astId": 1281,
+        "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+        "label": "launchpadBySlug",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(Status)2152": {
+        "encoding": "inplace",
+        "label": "enum LaunchpadTypes.Status",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_uint256,t_struct(Record)2178_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct LaunchpadTypes.Record)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Record)2178_storage"
+      },
+      "t_struct(Record)2178_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadTypes.Record",
+        "numberOfBytes": "288",
+        "members": [
+          {
+            "astId": 2154,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "owner",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 2156,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "pendingOwner",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 2158,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "treasury",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 2160,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "pendingTreasury",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 2162,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "operator",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          },
+          {
+            "astId": 2164,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "metadataHash",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 2166,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "slugCommitment",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 2168,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "configPresetId",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2170,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "version",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 2173,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "status",
+            "offset": 4,
+            "slot": "8",
+            "type": "t_enum(Status)2152"
+          },
+          {
+            "astId": 2175,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "createdAt",
+            "offset": 5,
+            "slot": "8",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 2177,
+            "contract": "src/launchpad/LaunchpadRegistry.sol:LaunchpadRegistry",
+            "label": "updatedAt",
+            "offset": 13,
+            "slot": "8",
+            "type": "t_uint64"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LaunchpadConfigManager": {
+    "storage": [
+      {
+        "astId": 14576,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 14578,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3582,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 9964,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "globalMaximumTotalTradeFeeBps",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint16"
+      },
+      {
+        "astId": 9966,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "presetCount",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9970,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "latestVersion",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_uint32)"
+      },
+      {
+        "astId": 9974,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "quoteTokenAllowed",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 9979,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "destinationSupported",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_enum(GraduationDestination)9917,t_bool)"
+      },
+      {
+        "astId": 9984,
+        "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+        "label": "_presets",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_uint256,t_struct(Preset)9962_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(CreatorAccess)9920": {
+        "encoding": "inplace",
+        "label": "enum LaunchpadConfigManager.CreatorAccess",
+        "numberOfBytes": "1"
+      },
+      "t_enum(GraduationDestination)9917": {
+        "encoding": "inplace",
+        "label": "enum LaunchpadConfigManager.GraduationDestination",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_uint32)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint32)",
+        "numberOfBytes": "32",
+        "value": "t_uint32"
+      },
+      "t_mapping(t_enum(GraduationDestination)9917,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_enum(GraduationDestination)9917",
+        "label": "mapping(enum LaunchpadConfigManager.GraduationDestination => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_uint256,t_struct(Preset)9962_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct LaunchpadConfigManager.Preset)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Preset)9962_storage"
+      },
+      "t_struct(Preset)9962_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadConfigManager.Preset",
+        "numberOfBytes": "160",
+        "members": [
+          {
+            "astId": 9939,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "familyId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 9941,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "configHash",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 9943,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "dbcTemplateId",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 9945,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "quoteToken",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 9947,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "maximumTotalTradeFeeBps",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 9950,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "graduationDestination",
+            "offset": 22,
+            "slot": "3",
+            "type": "t_enum(GraduationDestination)9917"
+          },
+          {
+            "astId": 9953,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "creatorAccess",
+            "offset": 23,
+            "slot": "3",
+            "type": "t_enum(CreatorAccess)9920"
+          },
+          {
+            "astId": 9955,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "maximumLaunches",
+            "offset": 24,
+            "slot": "3",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 9957,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "version",
+            "offset": 28,
+            "slot": "3",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 9959,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "enabled",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_bool"
+          },
+          {
+            "astId": 9961,
+            "contract": "src/launchpad/LaunchpadConfigManager.sol:LaunchpadConfigManager",
+            "label": "used",
+            "offset": 1,
+            "slot": "4",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint16": {
+        "encoding": "inplace",
+        "label": "uint16",
+        "numberOfBytes": "2"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LaunchpadFactory": {
+    "storage": [
+      {
+        "astId": 14576,
+        "contract": "src/launchpad/LaunchpadFactory.sol:LaunchpadFactory",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 14578,
+        "contract": "src/launchpad/LaunchpadFactory.sol:LaunchpadFactory",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3582,
+        "contract": "src/launchpad/LaunchpadFactory.sol:LaunchpadFactory",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 10515,
+        "contract": "src/launchpad/LaunchpadFactory.sol:LaunchpadFactory",
+        "label": "registry",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(ILaunchpadRegistry)9885"
+      },
+      {
+        "astId": 10518,
+        "contract": "src/launchpad/LaunchpadFactory.sol:LaunchpadFactory",
+        "label": "configManager",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(LaunchpadConfigManager)10494"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(ILaunchpadRegistry)9885": {
+        "encoding": "inplace",
+        "label": "contract ILaunchpadRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LaunchpadConfigManager)10494": {
+        "encoding": "inplace",
+        "label": "contract LaunchpadConfigManager",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LaunchpadFeeController": {
+    "storage": [
+      {
+        "astId": 2946,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 2948,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 60,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 445,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "registry",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(ILaunchpadRegistry)371"
+      },
+      {
+        "astId": 447,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "protocolRecipient",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_address"
+      },
+      {
+        "astId": 449,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "globalMaximumTotalTradeFeeBps",
+        "offset": 20,
+        "slot": "3",
+        "type": "t_uint16"
+      },
+      {
+        "astId": 454,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "_policies",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_struct(FeePolicy)422_storage)"
+      },
+      {
+        "astId": 458,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "snapshotByPool",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 463,
+        "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+        "label": "_snapshots",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_bytes32,t_struct(FeeSnapshot)442_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(ILaunchpadRegistry)371": {
+        "encoding": "inplace",
+        "label": "contract ILaunchpadRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(FeeSnapshot)442_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct LaunchpadFeeController.FeeSnapshot)",
+        "numberOfBytes": "32",
+        "value": "t_struct(FeeSnapshot)442_storage"
+      },
+      "t_mapping(t_uint256,t_struct(FeePolicy)422_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct LaunchpadFeeController.FeePolicy)",
+        "numberOfBytes": "32",
+        "value": "t_struct(FeePolicy)422_storage"
+      },
+      "t_struct(FeePolicy)422_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadFeeController.FeePolicy",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "astId": 412,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "totalTradeFeeBps",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 415,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "shares",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_struct(FeeShares)410_storage"
+          },
+          {
+            "astId": 417,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "operatorRecipient",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 419,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "version",
+            "offset": 20,
+            "slot": "2",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 421,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "configured",
+            "offset": 24,
+            "slot": "2",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_struct(FeeShares)410_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadFeeController.FeeShares",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 403,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "protocolShareBps",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 405,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "operatorShareBps",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 407,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "creatorShareBps",
+            "offset": 4,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 409,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "referralShareBps",
+            "offset": 6,
+            "slot": "0",
+            "type": "t_uint16"
+          }
+        ]
+      },
+      "t_struct(FeeSnapshot)442_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadFeeController.FeeSnapshot",
+        "numberOfBytes": "256",
+        "members": [
+          {
+            "astId": 424,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "launchpadId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 426,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "pool",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 428,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "protocolRecipient",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 430,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "operatorRecipient",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 432,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "creatorRecipient",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          },
+          {
+            "astId": 434,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "referralRecipient",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address"
+          },
+          {
+            "astId": 436,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "totalTradeFeeBps",
+            "offset": 20,
+            "slot": "5",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 439,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "shares",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_struct(FeeShares)410_storage"
+          },
+          {
+            "astId": 441,
+            "contract": "src/launchpad/LaunchpadFeeController.sol:LaunchpadFeeController",
+            "label": "policyVersion",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint32"
+          }
+        ]
+      },
+      "t_uint16": {
+        "encoding": "inplace",
+        "label": "uint16",
+        "numberOfBytes": "2"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "RevenueSplitter": {
+    "storage": [
+      {
+        "astId": 2946,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 2948,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 60,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 3163,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 1985,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "_snapshots",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_struct(RegisteredSnapshot)1980_storage)"
+      },
+      {
+        "astId": 1991,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "claimable",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))"
+      },
+      {
+        "astId": 1995,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "totalLiability",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 2001,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "claimableBySnapshot",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_uint256))"
+      },
+      {
+        "astId": 2008,
+        "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+        "label": "accruedByKind",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_bytes32,t_mapping(t_enum(RevenueKind)1960,t_uint256))"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(RevenueKind)1960": {
+        "encoding": "inplace",
+        "label": "enum RevenueSplitter.RevenueKind",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => mapping(address => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_uint256)"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_uint256)"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_enum(RevenueKind)1960,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(enum RevenueSplitter.RevenueKind => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_enum(RevenueKind)1960,t_uint256)"
+      },
+      "t_mapping(t_bytes32,t_struct(RegisteredSnapshot)1980_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct RevenueSplitter.RegisteredSnapshot)",
+        "numberOfBytes": "32",
+        "value": "t_struct(RegisteredSnapshot)1980_storage"
+      },
+      "t_mapping(t_enum(RevenueKind)1960,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_enum(RevenueKind)1960",
+        "label": "mapping(enum RevenueSplitter.RevenueKind => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_struct(FeeShares)410_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadFeeController.FeeShares",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "astId": 403,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "protocolShareBps",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 405,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "operatorShareBps",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 407,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "creatorShareBps",
+            "offset": 4,
+            "slot": "0",
+            "type": "t_uint16"
+          },
+          {
+            "astId": 409,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "referralShareBps",
+            "offset": 6,
+            "slot": "0",
+            "type": "t_uint16"
+          }
+        ]
+      },
+      "t_struct(RegisteredSnapshot)1980_storage": {
+        "encoding": "inplace",
+        "label": "struct RevenueSplitter.RegisteredSnapshot",
+        "numberOfBytes": "288",
+        "members": [
+          {
+            "astId": 1962,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "launchpadId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1964,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "pool",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 1966,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "asset",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 1968,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "protocolRecipient",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 1970,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "operatorRecipient",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          },
+          {
+            "astId": 1972,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "creatorRecipient",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address"
+          },
+          {
+            "astId": 1974,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "referralRecipient",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address"
+          },
+          {
+            "astId": 1977,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "shares",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_struct(FeeShares)410_storage"
+          },
+          {
+            "astId": 1979,
+            "contract": "src/launchpad/RevenueSplitter.sol:RevenueSplitter",
+            "label": "registered",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint16": {
+        "encoding": "inplace",
+        "label": "uint16",
+        "numberOfBytes": "2"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LaunchpadFeeCollector": {
+    "storage": [
+      {
+        "astId": 19695,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 19697,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3582,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 19912,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "_status",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 15537,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "revenueSplitter",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(RevenueSplitter)18689"
+      },
+      {
+        "astId": 15542,
+        "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+        "label": "_poolRevenue",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_struct(PoolRevenue)15534_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(RevenueSplitter)18689": {
+        "encoding": "inplace",
+        "label": "contract RevenueSplitter",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_struct(PoolRevenue)15534_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct LaunchpadFeeCollector.PoolRevenue)",
+        "numberOfBytes": "32",
+        "value": "t_struct(PoolRevenue)15534_storage"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_struct(PoolRevenue)15534_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadFeeCollector.PoolRevenue",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "astId": 15529,
+            "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+            "label": "snapshotId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 15531,
+            "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+            "label": "asset",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 15533,
+            "contract": "src/launchpad/LaunchpadFeeCollector.sol:LaunchpadFeeCollector",
+            "label": "registered",
+            "offset": 20,
+            "slot": "1",
+            "type": "t_bool"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  "LaunchpadTokenFactory": {
+    "storage": [
+      {
+        "astId": 14241,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint64"
+      },
+      {
+        "astId": 14243,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "_initializing",
+        "offset": 8,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3582,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
+      },
+      {
+        "astId": 12435,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "registry",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(ILaunchpadRegistry)9885"
+      },
+      {
+        "astId": 12438,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "configManager",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(LaunchpadConfigManager)10494"
+      },
+      {
+        "astId": 12441,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "dbcFactory",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(LaunchFactory)6350"
+      },
+      {
+        "astId": 12444,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "feeController",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_contract(LaunchpadFeeController)11449"
+      },
+      {
+        "astId": 12447,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "revenueSplitter",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_contract(RevenueSplitter)13701"
+      },
+      {
+        "astId": 12450,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "feeCollector",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_contract(LaunchpadFeeCollector)10847"
+      },
+      {
+        "astId": 12454,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "launchCountByLaunchpad",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_mapping(t_uint256,t_uint256)"
+      },
+      {
+        "astId": 12459,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "_bindings",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_mapping(t_bytes32,t_struct(LaunchBinding)12432_storage)"
+      },
+      {
+        "astId": 12463,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "launchByToken",
+        "offset": 0,
+        "slot": "10",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 12467,
+        "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+        "label": "launchByPool",
+        "offset": 0,
+        "slot": "11",
+        "type": "t_mapping(t_address,t_bytes32)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(ILaunchpadRegistry)9885": {
+        "encoding": "inplace",
+        "label": "contract ILaunchpadRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LaunchFactory)6350": {
+        "encoding": "inplace",
+        "label": "contract LaunchFactory",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LaunchpadConfigManager)10494": {
+        "encoding": "inplace",
+        "label": "contract LaunchpadConfigManager",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LaunchpadFeeCollector)10847": {
+        "encoding": "inplace",
+        "label": "contract LaunchpadFeeCollector",
+        "numberOfBytes": "20"
+      },
+      "t_contract(LaunchpadFeeController)11449": {
+        "encoding": "inplace",
+        "label": "contract LaunchpadFeeController",
+        "numberOfBytes": "20"
+      },
+      "t_contract(RevenueSplitter)13701": {
+        "encoding": "inplace",
+        "label": "contract RevenueSplitter",
+        "numberOfBytes": "20"
+      },
+      "t_enum(GraduationDestination)9917": {
+        "encoding": "inplace",
+        "label": "enum LaunchpadConfigManager.GraduationDestination",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_mapping(t_address,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => mapping(address => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_bool)"
+      },
+      "t_mapping(t_bytes32,t_struct(LaunchBinding)12432_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct LaunchpadTokenFactory.LaunchBinding)",
+        "numberOfBytes": "32",
+        "value": "t_struct(LaunchBinding)12432_storage"
+      },
+      "t_mapping(t_uint256,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_struct(LaunchBinding)12432_storage": {
+        "encoding": "inplace",
+        "label": "struct LaunchpadTokenFactory.LaunchBinding",
+        "numberOfBytes": "256",
+        "members": [
+          {
+            "astId": 12414,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "launchpadId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 12416,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "configPresetId",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 12418,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "configHash",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 12420,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "feeSnapshotId",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 12422,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "creator",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          },
+          {
+            "astId": 12424,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "treasury",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address"
+          },
+          {
+            "astId": 12426,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "token",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address"
+          },
+          {
+            "astId": 12428,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "virtualPool",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address"
+          },
+          {
+            "astId": 12431,
+            "contract": "src/launchpad/LaunchpadTokenFactory.sol:LaunchpadTokenFactory",
+            "label": "graduationDestination",
+            "offset": 20,
+            "slot": "7",
+            "type": "t_enum(GraduationDestination)9917"
+          }
+        ]
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  }
+}

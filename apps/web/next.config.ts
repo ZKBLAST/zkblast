@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const apiProxyTarget =
   process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? null;
+const widgetScriptPolicy = `script-src 'self' 'unsafe-inline'${
+  process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""
+}`;
 
 function getApiProxyTarget(): string | null {
   if (!apiProxyTarget) return null;
@@ -35,6 +38,16 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: "/launchpads/:slug/embed",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Content-Security-Policy",
+            value: `default-src 'self'; base-uri 'none'; frame-ancestors 'self'; form-action 'none'; object-src 'none'; connect-src 'self'; img-src 'self' data:; ${widgetScriptPolicy}; style-src 'self' 'unsafe-inline'`,
+          },
+        ],
+      },
       {
         source: "/:path*",
         headers: [

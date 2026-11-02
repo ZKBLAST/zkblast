@@ -10,6 +10,23 @@ import { reconcileUserActivity } from "./reconcile-user-activity.js";
 import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
 import { persistPerpsEvent } from "./persist-perps-event.js";
 import { persistDbcEvent } from "./persist-dbc-event.js";
+import type { IndexedEvent } from "./domain.js";
+
+const launchpadProjectionEvents = [
+  "LaunchpadCreated",
+  "LaunchpadMetadataUpdated",
+  "LaunchpadOperatorUpdated",
+  "LaunchpadOwnerProposed",
+  "LaunchpadOwnerProposalCancelled",
+  "LaunchpadOwnerAccepted",
+  "LaunchpadTreasuryProposed",
+  "LaunchpadTreasuryProposalCancelled",
+  "LaunchpadTreasuryAccepted",
+  "LaunchpadStatusUpdated",
+  "LaunchpadFeePolicyUpdated",
+  "FeePolicySnapshotted",
+  "RevenueSnapshotRegistered",
+] as const;
 
 const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
@@ -238,6 +255,37 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `update ${this.schema}.dbc_events set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
+      const launchpadEvents = await transaction.unsafe<{
+        chain_id: number;
+        transaction_hash: `0x${string}`;
+        log_index: number;
+        block_number: string;
+        block_hash: `0x${string}`;
+        contract_address: Address;
+        event_name: string;
+        payload: IndexedEvent["payload"];
+      }[]>(
+        `select chain_id,transaction_hash,log_index,block_number::text,block_hash,contract_address,event_name,payload
+         from ${this.schema}.dbc_events where chain_id=$1 and canonical and event_name=any($2::text[])
+         order by block_number,log_index`,
+        [chainId, launchpadProjectionEvents],
+      );
+      await transaction.unsafe(`delete from ${this.schema}.launchpads where chain_id=$1`, [chainId]);
+      const replayContracts = new Set(this.dbcContracts);
+      for (const row of launchpadEvents) replayContracts.add(row.contract_address.toLowerCase());
+      for (const row of launchpadEvents) {
+        await persistDbcEvent(transaction, this.schema, {
+          chainId: row.chain_id,
+          transactionHash: row.transaction_hash,
+          logIndex: row.log_index,
+          blockNumber: BigInt(row.block_number),
+          blockHash: row.block_hash,
+          contractAddress: getAddress(row.contract_address),
+          kind: "launch",
+          eventName: row.event_name,
+          payload: row.payload,
+        }, replayContracts);
+      }
       await transaction.unsafe(
         `update ${this.schema}.dbc_swaps set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],

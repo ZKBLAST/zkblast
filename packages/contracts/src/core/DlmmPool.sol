@@ -84,6 +84,7 @@ contract DlmmPool is ReentrancyGuard {
     event PauseUpdated(bool paused);
     event ProtocolFeeConfigurationUpdated(address indexed recipient, uint24 sharePips);
     event ProtocolFeesCollected(address indexed recipient, uint256 amount0, uint256 amount1);
+    event AdministratorUpdated(address indexed previousAdministrator, address indexed administrator);
 
     modifier onlyAdministrator() {
         if (msg.sender != administrator) revert Unauthorized();
@@ -233,6 +234,13 @@ contract DlmmPool is ReentrancyGuard {
     function setPaused(bool paused_) external onlyAdministrator {
         paused = paused_;
         emit PauseUpdated(paused_);
+    }
+
+    function setAdministrator(address administrator_) external onlyAdministrator {
+        if (administrator_ == address(0)) revert InvalidAdministrator();
+        address previous = administrator;
+        administrator = administrator_;
+        emit AdministratorUpdated(previous, administrator_);
     }
 
     function setProtocolFeeConfiguration(address recipient, uint24 sharePips)

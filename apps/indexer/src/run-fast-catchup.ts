@@ -56,11 +56,22 @@ async function main() {
     await installCheckpointGuard(sql, config.SUPABASE_SCHEMA);
     const addresses = [
       ...Object.values(manifest.integration),
+      ...(manifest.launchpad
+        ? [
+            manifest.launchpad.registry,
+            manifest.launchpad.configManager,
+            manifest.launchpad.factory,
+            manifest.launchpad.feeController,
+            manifest.launchpad.revenueSplitter,
+            manifest.launchpad.feeCollector,
+            manifest.launchpad.tokenFactory,
+          ]
+        : []),
       ...(manifest.shielded
         ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
         : []),
       ...(await repository.registeredPoolAddresses(config.CHAIN_ID)),
-    ].map(getAddress);
+    ].filter((address): address is string => typeof address === "string").map(getAddress);
     let lastReported = 0;
     const result = process.argv.includes("--activity-only")
       ? {}

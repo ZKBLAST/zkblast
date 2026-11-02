@@ -30,6 +30,15 @@ import { createDbcRouter } from "./dbc-router.js";
 import type { DbcService } from "./dbc-service.js";
 import { createPerpsRouter } from "./perps-router.js";
 import type { PerpsService } from "./perps-service.js";
+import { createLaunchpadBrandingRouter } from "./launchpad-branding-router.js";
+import type { LaunchpadBrandingService } from "./launchpad-branding-service.js";
+import { createLaunchpadDomainRouter } from "./launchpad-domain-router.js";
+import type { LaunchpadDomainService } from "./launchpad-domain-service.js";
+import { createLaunchpadCatalogRouter } from "./launchpad-catalog-router.js";
+import type { LaunchpadCatalogService } from "./launchpad-catalog-service.js";
+import type { LaunchpadReadService } from "./launchpad-read-service.js";
+import { createLaunchpadDeveloperRouter } from "./launchpad-developer-router.js";
+import type { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
 
 export type ApiPublicConfig = Readonly<{
   shieldedV2?: PrivateVaultV2Config;
@@ -168,6 +177,11 @@ export function createApp(
     poolCreationService?: PoolCreationService;
     perpsService?: PerpsService;
     dbcService?: DbcService;
+    launchpadBrandingService?: LaunchpadBrandingService;
+    launchpadDomainService?: LaunchpadDomainService;
+    launchpadCatalogService?: LaunchpadCatalogService;
+    launchpadReadService?: LaunchpadReadService;
+    launchpadDeveloperService?: LaunchpadDeveloperService;
   }> = {},
 ) {
   const app = express();
@@ -177,8 +191,8 @@ export function createApp(
   app.use(
     cors({
       origin: config.webOrigin,
-      methods: ["GET", "POST", "PATCH"],
-      allowedHeaders: ["content-type", "x-request-id"],
+      methods: ["GET", "POST", "PATCH", "DELETE"],
+      allowedHeaders: ["content-type", "x-request-id", "x-zkblast-api-key"],
       credentials: true,
       maxAge: 600,
     }),
@@ -191,7 +205,7 @@ export function createApp(
       legacyHeaders: false,
     }),
   );
-  app.use(express.json({ limit: "32kb", strict: true }));
+  app.use(express.json({ limit: "600kb", strict: true }));
 
   app.get("/health", (_request, response) => {
     response.json({ status: "ok" });
@@ -275,6 +289,30 @@ export function createApp(
   if (dependencies.dbcService) {
     app.use("/v1/dbc", createDbcRouter(dependencies.dbcService));
   }
+  if (dependencies.launchpadCatalogService) {
+    app.use(
+      "/v1/launchpads",
+      createLaunchpadCatalogRouter(dependencies.launchpadCatalogService, dependencies.launchpadReadService),
+    );
+  }
+  if (dependencies.launchpadBrandingService) {
+    app.use(
+      "/v1/launchpads",
+      createLaunchpadBrandingRouter(dependencies.launchpadBrandingService),
+    );
+  }
+  if (dependencies.launchpadDomainService) {
+    app.use(
+      "/v1/launchpads",
+      createLaunchpadDomainRouter(dependencies.launchpadDomainService),
+    );
+  }
+  if (dependencies.launchpadDeveloperService) {
+    app.use(
+      "/v1/launchpads",
+      createLaunchpadDeveloperRouter(dependencies.launchpadDeveloperService),
+    );
+  }
 
   app.use((_request, response) => {
     response.status(404).json({ error: { code: "NOT_FOUND" } });
@@ -315,10 +353,21 @@ export function createApp(
       error instanceof Error &&
       ["PERP_RISK_LIMIT", "PERP_INVALID_DEADLINE"].includes(error.message);
     const perpsRelayMissing =
-      error instanceof Error && error.message === "PERPS_RELAY_REQUEST_NOT_FOUND";
+      error instanceof Error &&
+      error.message === "PERPS_RELAY_REQUEST_NOT_FOUND";
     const perpsRelayPreflight =
       error instanceof Error &&
-      ["STALE_ORACLE_PRICE", "PRICE_LIMIT_EXCEEDED", "PERPS_RELAY_SIMULATION_FAILED"].includes(error.message);
+      [
+        "STALE_ORACLE_PRICE",
+        "PRICE_LIMIT_EXCEEDED",
+        "PERPS_RELAY_SIMULATION_FAILED",
+      ].includes(error.message);
+    const launchpadNotFound =
+      error instanceof Error && ["LAUNCHPAD_NOT_FOUND","LAUNCHPAD_POOL_NOT_BOUND"].includes(error.message);
+    const launchpadConflict = error instanceof Error && error.message === "LAUNCHPAD_POOL_NOT_TRADABLE";
+    const launchpadUnavailable = error instanceof Error && error.message === "LAUNCHPAD_QUOTE_UNAVAILABLE";
+    const launchpadRequestError = error instanceof Error && error.message.startsWith("LAUNCHPAD_");
+    const launchpadApiAuthentication = error instanceof Error && error.message === "LAUNCHPAD_API_KEY_INVALID";
     const status = invalidRequest
       ? 400
       : authenticationFailure
@@ -331,11 +380,21 @@ export function createApp(
               ? 404
               : perpsRelayPreflight
                 ? 409
-              : databaseCapacity || perpsUnavailable
-              ? 503
-              : perpsRequestConflict
-                ? 409
-                : 500;
+                : launchpadNotFound
+                  ? 404
+                  : launchpadConflict
+                    ? 409
+                    : launchpadUnavailable
+                      ? 503
+                      : launchpadApiAuthentication
+                        ? 401
+                      : launchpadRequestError
+                        ? 400
+                : databaseCapacity || perpsUnavailable
+                  ? 503
+                  : perpsRequestConflict
+                    ? 409
+                    : 500;
     if (status === 500) {
       console.error(
         JSON.stringify({
@@ -364,17 +423,21 @@ export function createApp(
                     ? error instanceof Error
                       ? error.message
                       : "PERPS_RELAY_SIMULATION_FAILED"
-                  : databaseCapacity
-                  ? "TEMPORARILY_UNAVAILABLE"
-                  : perpsUnavailable
-                    ? error instanceof Error
-                      ? error.message
-                      : "PERPS_UNAVAILABLE"
-                    : perpsRequestConflict
-                      ? error instanceof Error
-                        ? error.message
-                        : "PERP_REQUEST_CONFLICT"
-                      : "INTERNAL_ERROR",
+                    : launchpadNotFound || launchpadConflict || launchpadUnavailable
+                      ? error instanceof Error ? error.message : "LAUNCHPAD_REQUEST_FAILED"
+                    : launchpadRequestError
+                      ? error instanceof Error ? error.message : "LAUNCHPAD_REQUEST_INVALID"
+                    : databaseCapacity
+                      ? "TEMPORARILY_UNAVAILABLE"
+                      : perpsUnavailable
+                        ? error instanceof Error
+                          ? error.message
+                          : "PERPS_UNAVAILABLE"
+                        : perpsRequestConflict
+                          ? error instanceof Error
+                            ? error.message
+                            : "PERP_REQUEST_CONFLICT"
+                          : "INTERNAL_ERROR",
       },
     });
   };

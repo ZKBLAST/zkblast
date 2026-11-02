@@ -5,7 +5,7 @@ import {
   positionManagerAbi,
   swapRouterAbi,
 } from "@zkblast/abi";
-import type { Abi, Address } from "viem";
+import { encodeFunctionData,type Abi,type Address,type Hex } from "viem";
 
 export type PreparedContractCall = Readonly<{
   address: Address;
@@ -13,6 +13,10 @@ export type PreparedContractCall = Readonly<{
   functionName: string;
   args: readonly unknown[];
 }>;
+
+export function encodePreparedContractCall(call: PreparedContractCall): Readonly<{ to: Address;data: Hex }> {
+  return { to:call.address,data:encodeFunctionData({ abi:call.abi,functionName:call.functionName,args:call.args }) };
+}
 
 type BaseSwap = Readonly<{
   router: Address;

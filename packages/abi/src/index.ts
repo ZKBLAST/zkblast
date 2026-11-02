@@ -12,7 +12,12 @@ export {
   shieldedStateRegistryAbi,
   shieldedLPManagerAbi,
 } from "./generated.js";
-export { liquidityVaultUsdGAbi, perpEngineAbi, perpsEventsAbi, shieldedPerpAdapterAbi } from "./perps.js";
+export {
+  liquidityVaultUsdGAbi,
+  perpEngineAbi,
+  perpsEventsAbi,
+  shieldedPerpAdapterAbi,
+} from "./perps.js";
 export {
   dbcEventsAbi,
   graduationManagerAbi,
@@ -21,6 +26,18 @@ export {
   lpAllocationEscrowAbi,
   virtualPoolAbi,
 } from "./dbc.js";
+export {
+  launchpadConfigManagerAbi,
+  launchpadFactoryAbi,
+  launchpadFeeCollectorAbi,
+  launchpadFeeControllerAbi,
+  launchpadEventsAbi,
+  launchpadFeePolicyEventsAbi,
+  launchpadProofClaimAdapterAbi,
+  launchpadRegistryAbi,
+  launchpadRevenueSplitterAbi,
+  launchpadTokenFactoryAbi,
+} from "./launchpad.js";
 
 import {
   privateVaultV2Abi,
@@ -38,6 +55,7 @@ import {
 } from "./generated.js";
 import { perpsEventsAbi } from "./perps.js";
 import { dbcEventsAbi } from "./dbc.js";
+import { launchpadEventsAbi, launchpadFeePolicyEventsAbi, launchpadTokenFactoryAbi } from "./launchpad.js";
 
 export const protocolAbis = {
   PrivateVaultV2: privateVaultV2Abi,
@@ -54,4 +72,5 @@ export const protocolAbis = {
   ERC20: erc20Abi,
   Perps: perpsEventsAbi,
   DBC: dbcEventsAbi,
+  Launchpad: [...launchpadTokenFactoryAbi, ...launchpadEventsAbi, ...launchpadFeePolicyEventsAbi],
 } as const;

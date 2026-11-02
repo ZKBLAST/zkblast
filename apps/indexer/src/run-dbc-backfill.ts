@@ -28,6 +28,13 @@ const addresses = [
   manifest.dbc.graduationManager,
   manifest.dbc.dammGraduationAdapter,
   manifest.dbc.lpAllocationEscrow,
+  ...(manifest.launchpad
+    ? [
+        manifest.launchpad.tokenFactory,
+        manifest.launchpad.feeCollector,
+        manifest.launchpad.revenueSplitter,
+      ].filter((address): address is string => Boolean(address))
+    : []),
 ].map(getAddress);
 const client = createPublicClient({
   cacheTime: 0,

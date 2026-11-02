@@ -31,3 +31,7 @@ export * from "./shielded-v2-note.js";
 export * from "./shielded-v2-statement.js";
 export * from "./shielded-v2-funds.js";
 export * from "./perps-statement.js";
+export * from "./launchpad-revenue.js";
+export * from "./launchpad.js";
+export * from "./launchpad-proof-claim.js";
+export * from "./launchpad-api.js";

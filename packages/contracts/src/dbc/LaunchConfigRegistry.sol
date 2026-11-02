@@ -183,7 +183,6 @@ contract LaunchConfigRegistry is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
                 || quoteTokenDecimals[config.quoteToken] != config.quoteDecimals
                 || config.baseDecimals != 18 || config.protocolFeeRecipient == address(0)
                 || config.protocolLpRecipient == address(0)
-                || config.migrationMode != DbcTypes.MigrationMode.DAMM
                 || config.destinationFeePips == 0 || config.destinationFeePips >= 1_000_000
                 || config.terminalPriceToleranceBps == 0 || config.terminalPriceToleranceBps > 1_000
                 || config.totalSupplyRaw == 0 || config.baseInventoryRaw == 0

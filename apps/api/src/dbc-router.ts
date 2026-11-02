@@ -26,6 +26,7 @@ const page = z.object({
 const launchQuery = page.extend({
   search: z.string().trim().min(1).max(64).optional(),
   lifecycle: z.coerce.number().int().min(0).max(4).optional(),
+  launchpadId: z.string().regex(/^[1-9]\d*$/u).optional(),
 });
 const candleQuery = z
   .object({

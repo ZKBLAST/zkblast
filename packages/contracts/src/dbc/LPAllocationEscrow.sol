@@ -3,6 +3,7 @@ pragma solidity 0.8.26;
 
 import { ProtocolAccess } from "../access/ProtocolAccess.sol";
 import { DammPool } from "../core/DammPool.sol";
+import { DlmmPool } from "../core/DlmmPool.sol";
 import { UUPSUpgradeable } from "../proxy/UUPSUpgradeable.sol";
 
 /// @notice Holds non-transferable DAMM shares and releases their underlying assets
@@ -28,6 +29,8 @@ contract LPAllocationEscrow is ProtocolAccess, UUPSUpgradeable {
     }
 
     mapping(bytes32 migrationId => Allocation allocation) public allocations;
+    mapping(bytes32 migrationId => int24 binId) public dlmmBinByMigration;
+    mapping(bytes32 migrationId => bool isDlmm) public dlmmAllocation;
 
     event AllocationRegistered(
         bytes32 indexed migrationId,
@@ -92,6 +95,46 @@ contract LPAllocationEscrow is ProtocolAccess, UUPSUpgradeable {
         );
     }
 
+    function registerDlmmAllocation(
+        bytes32 migrationId,
+        DlmmPool pool,
+        int24 binId,
+        address creator,
+        address protocolRecipient,
+        uint256 creatorShares,
+        uint256 protocolShares,
+        uint64 creatorUnlockAt
+    ) external onlyRole(MANAGER_ROLE) {
+        if (
+            migrationId == bytes32(0) || address(pool) == address(0) || creator == address(0)
+                || protocolRecipient == address(0) || creatorShares + protocolShares == 0
+                || creatorShares > type(uint128).max || protocolShares > type(uint128).max
+                || pool.sharesOf(binId, address(this)) < creatorShares + protocolShares
+        ) revert InvalidAllocation();
+        if (allocations[migrationId].pool != address(0)) revert AllocationAlreadyRegistered();
+        allocations[migrationId] = Allocation({
+            pool: address(pool),
+            creator: creator,
+            protocolRecipient: protocolRecipient,
+            creatorShares: uint128(creatorShares),
+            protocolShares: uint128(protocolShares),
+            creatorUnlockAt: creatorUnlockAt,
+            creatorClaimed: false,
+            protocolClaimed: false
+        });
+        dlmmBinByMigration[migrationId] = binId;
+        dlmmAllocation[migrationId] = true;
+        emit AllocationRegistered(
+            migrationId,
+            address(pool),
+            creator,
+            protocolRecipient,
+            creatorShares,
+            protocolShares,
+            creatorUnlockAt
+        );
+    }
+
     function claim(bytes32 migrationId, bool creatorAllocation, uint256 deadline)
         external
         returns (uint256 amount0, uint256 amount1)
@@ -115,8 +158,14 @@ contract LPAllocationEscrow is ProtocolAccess, UUPSUpgradeable {
             shares = record.protocolShares;
         }
         if (shares == 0) revert AllocationUnavailable();
-        (amount0, amount1) =
-            DammPool(record.pool).removeLiquidity(shares, 0, 0, recipient, deadline);
+        if (dlmmAllocation[migrationId]) {
+            (amount0, amount1) = DlmmPool(record.pool).removeLiquidity(
+                dlmmBinByMigration[migrationId], shares, 0, 0, recipient, deadline
+            );
+        } else {
+            (amount0, amount1) =
+                DammPool(record.pool).removeLiquidity(shares, 0, 0, recipient, deadline);
+        }
         emit AllocationClaimed(
             migrationId, recipient, creatorAllocation, shares, amount0, amount1
         );

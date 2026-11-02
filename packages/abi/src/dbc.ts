@@ -121,6 +121,69 @@ export const dbcEventsAbi = [
   },
   {
     type: "event",
+    name: "GraduationAdapterBound",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "adapter", type: "address", indexed: true },
+      { name: "factory", type: "address", indexed: true },
+      { name: "version", type: "uint32", indexed: false },
+      { name: "mode", type: "uint8", indexed: false },
+      { name: "configurationHash", type: "bytes32", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "GraduationAttemptStarted",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "launchId", type: "bytes32", indexed: true },
+      { name: "sourcePool", type: "address", indexed: true },
+      { name: "adapter", type: "address", indexed: false },
+      { name: "attempt", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "GraduationAttemptPending",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "launchId", type: "bytes32", indexed: true },
+      { name: "attempt", type: "uint8", indexed: false },
+      { name: "failureHash", type: "bytes32", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "GraduationNeedsReview",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "launchId", type: "bytes32", indexed: true },
+      { name: "attempts", type: "uint8", indexed: false },
+      { name: "failureHash", type: "bytes32", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "GraduationReviewReopened",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "launchId", type: "bytes32", indexed: true },
+    ],
+  },
+  {
+    type: "event",
+    name: "GraduationContextBound",
+    inputs: [
+      { name: "migrationId", type: "bytes32", indexed: true },
+      { name: "launchId", type: "bytes32", indexed: true },
+      { name: "launchpadId", type: "uint256", indexed: true },
+      { name: "configHash", type: "bytes32", indexed: false },
+      { name: "feeSnapshotId", type: "bytes32", indexed: false },
+      { name: "graduationDestination", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "event",
     name: "AllocationRegistered",
     inputs: [
       { name: "migrationId", type: "bytes32", indexed: true },
@@ -147,6 +210,68 @@ export const dbcEventsAbi = [
 ] as const satisfies Abi;
 
 export const launchConfigRegistryAbi = [
+  {
+    type: "function",
+    name: "templateConfig",
+    stateMutability: "view",
+    inputs: [{ name: "templateId", type: "uint256" }],
+    outputs: [
+      {
+        name: "config",
+        type: "tuple",
+        components: [
+          { name: "quoteToken", type: "address" },
+          { name: "protocolFeeRecipient", type: "address" },
+          { name: "partnerFeeRecipient", type: "address" },
+          { name: "protocolLpRecipient", type: "address" },
+          { name: "quoteDecimals", type: "uint8" },
+          { name: "baseDecimals", type: "uint8" },
+          { name: "migrationMode", type: "uint8" },
+          { name: "destinationFeePips", type: "uint24" },
+          { name: "terminalPriceToleranceBps", type: "uint16" },
+          { name: "totalSupplyRaw", type: "uint128" },
+          { name: "baseInventoryRaw", type: "uint128" },
+          { name: "graduationThresholdRaw", type: "uint128" },
+          { name: "minimumDestinationShares", type: "uint128" },
+          {
+            name: "curve",
+            type: "tuple",
+            components: [
+              { name: "segmentCount", type: "uint8" },
+              {
+                name: "segments",
+                type: "tuple[16]",
+                components: [
+                  { name: "initialPriceX18", type: "uint128" },
+                  { name: "slopeX18", type: "uint128" },
+                  { name: "saleCapacityX18", type: "uint128" },
+                ],
+              },
+            ],
+          },
+          {
+            name: "fees",
+            type: "tuple",
+            components: [
+              { name: "tradeFeeBps", type: "uint16" },
+              { name: "creatorShareBps", type: "uint16" },
+              { name: "partnerShareBps", type: "uint16" },
+              { name: "protocolShareBps", type: "uint16" },
+            ],
+          },
+          {
+            name: "lp",
+            type: "tuple",
+            components: [
+              { name: "creatorShareBps", type: "uint16" },
+              { name: "protocolShareBps", type: "uint16" },
+              { name: "creatorLockSeconds", type: "uint32" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
   {
     type: "function",
     name: "templateSummary",

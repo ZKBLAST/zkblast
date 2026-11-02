@@ -25,10 +25,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const v2 = process.argv.includes("--v2");
 const perps = process.argv.includes("--perps");
 const dbc = process.argv.includes("--dbc");
+const launchpad = process.argv.includes("--launchpad");
 const baselinePath = path.join(
   root,
   "storage-layout",
-  dbc
+  launchpad
+    ? "baseline-launchpad.json"
+    : dbc
     ? "baseline-dbc.json"
     : perps
       ? "baseline-perps.json"
@@ -36,7 +39,17 @@ const baselinePath = path.join(
         ? "baseline-v2.json"
         : "baseline.json",
 );
-const contracts = dbc
+const contracts = launchpad
+  ? [
+      "LaunchpadRegistry",
+      "LaunchpadConfigManager",
+      "LaunchpadFactory",
+      "LaunchpadFeeController",
+      "RevenueSplitter",
+      "LaunchpadFeeCollector",
+      "LaunchpadTokenFactory",
+    ]
+  : dbc
   ? [
       "LaunchConfigRegistry",
       "LaunchFactory",

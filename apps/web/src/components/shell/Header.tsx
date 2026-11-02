@@ -45,6 +45,8 @@ export function Header() {
     setAcct(false);
   }, [path]);
 
+  if (/^\/launchpads\/[^/]+\/embed$/u.test(path)) return null;
+
   return (
     <>
       <a
@@ -175,8 +177,11 @@ export function Header() {
                       >
                         My positions
                       </Link>
-                      <Link href="/trade?panel=history" onClick={() => setAcct(false)}
-                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg">
+                      <Link
+                        href="/trade?panel=history"
+                        onClick={() => setAcct(false)}
+                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
+                      >
                         Account and history
                       </Link>
                       <Link

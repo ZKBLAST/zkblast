@@ -37,10 +37,16 @@ export class PostgresDbcReadStore implements DbcReadStore {
   }
   launches(
     query: DbcPage &
-      Readonly<{ search?: string | undefined; lifecycle?: number | undefined }>,
+      Readonly<{
+        search?: string | undefined;
+        lifecycle?: number | undefined;
+        launchpadId?: string | undefined;
+      }>,
   ) {
     return this.#sql.unsafe(
       `select l.launch_id,l.template_id,l.creator,l.token_address,l.virtual_pool,l.quote_token,l.name,l.symbol,l.metadata_uri,l.lifecycle,
+      l.launchpad_bound,l.launchpad_id,l.fee_snapshot_id,l.binding_schema_version,l.launchpad_treasury,
+      l.launchpad_config_preset_id,l.launchpad_config_hash,l.graduation_destination,
       m.metadata_id,m.website_url,m.x_url,(m.logo_bytes is not null) has_logo,
       real_quote_reserve_raw::text,base_sold_raw::text,graduation_threshold_raw::text,created_block,updated_block,
       m.metadata_id,m.website_url,m.x_url,(m.logo_bytes is not null) has_logo,
@@ -55,14 +61,19 @@ export class PostgresDbcReadStore implements DbcReadStore {
         coalesce((select sum((e.payload->>'protocolAmountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeAccrued'),0)
         - coalesce((select sum((e.payload->>'amountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeClaimed' and e.payload->>'allocation'='2'),0)
       )::text protocol_claimable_raw,
+      ga.migration_id graduation_migration_id,ga.status graduation_status,ga.attempts graduation_attempts,
+      ga.failure_hash graduation_failure_hash,ga.transaction_hash graduation_transaction_hash,
       case when graduation_threshold_raw is null then 0 else least(10000,floor(real_quote_reserve_raw*10000/graduation_threshold_raw))::integer end progress_bps
-      from ${this.schema}.dbc_launches l left join ${this.schema}.dbc_launch_metadata m on m.metadata_uri=l.metadata_uri where ($1::text is null or launch_id < $1)
+      from ${this.schema}.dbc_launches l left join ${this.schema}.dbc_launch_metadata m on m.metadata_uri=l.metadata_uri
+      left join ${this.schema}.dbc_graduation_attempts ga on ga.launch_id=l.launch_id where ($1::text is null or l.launch_id < $1)
       and ($2::integer is null or lifecycle=$2) and ($3::text is null or name ilike '%'||$3||'%' or symbol ilike '%'||$3||'%')
-      order by launch_id desc limit $4`,
+      and ($4::numeric is null or (l.launchpad_bound and l.launchpad_id=$4::numeric))
+      order by l.launch_id desc limit $5`,
       [
         query.cursor ?? null,
         query.lifecycle ?? null,
         query.search ?? null,
+        query.launchpadId ?? null,
         query.limit,
       ],
     );

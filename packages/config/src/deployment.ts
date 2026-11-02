@@ -131,7 +131,23 @@ export const deploymentManifestSchema = z
         launchpadRouter: addressSchema,
         graduationManager: addressSchema,
         dammGraduationAdapter: addressSchema,
+        dlmmGraduationAdapter: addressSchema.optional(),
+        graduationAdapterVersion: z.number().int().positive().optional(),
         lpAllocationEscrow: addressSchema,
+      })
+      .optional(),
+    launchpad: z
+      .object({
+        abiVersion: z.literal(1),
+        deploymentBlock: z.number().int().nonnegative(),
+        registry: addressSchema,
+        configManager: addressSchema,
+        factory: addressSchema,
+        lens: addressSchema,
+        feeController: addressSchema.optional(),
+        revenueSplitter: addressSchema.optional(),
+        feeCollector: addressSchema.optional(),
+        tokenFactory: addressSchema.optional(),
       })
       .optional(),
     shieldedV2: privateVaultV2ConfigSchema.optional(),

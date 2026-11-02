@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "feature": "launchpad-proof-claim",
+  "circuitVersion": 1,
+  "proofSystem": "groth16",
+  "curve": "bn128",
+  "publicInputs": 15,
+  "privateInputs": 2,
+  "sourceSha256": "c3f95cfde7ab02012c0dbc2b179b865398b97d3e629653f0a33255ee2adde962",
+  "verifierSha256": "54d49a3163c69565c43e86f53a53959e4da645388ec3db32238e0b2a324ca248",
+  "assets": {
+    "wasm": {
+      "path": "/zk/launchpad-claim-v1/claim-authorization.wasm",
+      "sha256": "ff9448d91330efad3ea59debf9f5f4d9e4060f545fcb086a93a302eec8568c9a"
+    },
+    "zkey": {
+      "path": "/zk/launchpad-claim-v1/claim-authorization_final.zkey",
+      "sha256": "a45c77aa6f020ef341edbfbe1480d3c15ac265570c3122a0d80c78c93223fff6"
+    },
+    "verificationKey": {
+      "path": "/zk/launchpad-claim-v1/claim-authorization_verification_key.json",
+      "sha256": "905587afdf05398c9af3772d142c98a51ac8a6f7bd88bc24ef851b1c2631e5fc"
+    }
+  },
+  "vector": {
+    "inputSha256": "066d7565f4377cd5baf1ed0db0a318ae31bae3c6e2d27e072812acb030a8d3d6",
+    "proofSha256": "8a030841e435154b72ea367d98c30658dfa5dd629edee38843dc21247978fb47",
+    "publicSha256": "57fe6ea72aa754afdd61da532d9c5667730adf74cfc71b11cb3d3c9533d293c9",
+    "negativeMutations": [
+      "chain_id",
+      "launchpad_id",
+      "pool",
+      "recipient",
+      "asset",
+      "max_amount",
+      "deadline",
+      "nullifier",
+      "authorization_commitment"
+    ]
+  }
+}

@@ -33,7 +33,22 @@ contract VirtualPoolDeployer {
     ) external returns (VirtualPool pool) {
         if (msg.sender != factory) revert Unauthorized();
         pool = new VirtualPool{ salt: salt }(
-            launchId, templateId, msg.sender, creator, token, config
+            launchId, templateId, msg.sender, creator, token, config, address(0)
+        );
+    }
+
+    function deployForLaunchpad(
+        bytes32 salt,
+        bytes32 launchId,
+        uint256 templateId,
+        address creator,
+        address token,
+        DbcTypes.TemplateConfig calldata config,
+        address feeCollector
+    ) external returns (VirtualPool pool) {
+        if (msg.sender != factory || feeCollector == address(0)) revert Unauthorized();
+        pool = new VirtualPool{ salt: salt }(
+            launchId, templateId, msg.sender, creator, token, config, feeCollector
         );
     }
 }

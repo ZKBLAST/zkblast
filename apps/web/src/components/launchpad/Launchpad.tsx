@@ -3,10 +3,14 @@ import {
   ArrowUpDown,
   AtSign,
   Globe,
+  LayoutDashboard,
   Plus,
+  Rocket,
   Search,
   ShieldCheck,
+  Store,
 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatTokenAmount, type DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
@@ -17,6 +21,9 @@ import { shortHex } from "@/lib/format";
 import { LaunchActions } from "./LaunchActions";
 import { LaunchChart } from "./LaunchChart";
 import { LaunchWizard } from "./LaunchWizard";
+import { LaunchpadBuilder } from "./LaunchpadBuilder";
+import { LaunchpadOwnerDashboard } from "./LaunchpadOwnerDashboard";
+import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import { LaunchTradeHistory } from "./LaunchTradeHistory";
 import type { DbcLaunch, DbcTemplate } from "./types";
 
@@ -27,6 +34,14 @@ const logoUrl = (launch: DbcLaunch) =>
     : `/asset-logo/${launch.symbol ?? ""}`;
 
 export function Launchpad() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedView = searchParams.get("view");
+  const launchpadFilter = searchParams.get("launchpad");
+  const view =
+    requestedView === "build" || requestedView === "manage"
+      ? requestedView
+      : "markets";
   const [templates, setTemplates] = useState<readonly DbcTemplate[]>([]);
   const [launches, setLaunches] = useState<readonly DbcLaunch[]>([]);
   const [pendingLaunches, setPendingLaunches] = useState<readonly DbcLaunch[]>(
@@ -40,9 +55,46 @@ export function Launchpad() {
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const [wizard, setWizard] = useState(false);
+  const [pendingLaunchpads, setPendingLaunchpads] = useState<
+    readonly PendingLaunchpad[]
+  >([]);
   const liveRefreshTimers = useRef<number[]>([]);
   const loadedOnce = useRef(false);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
+  const retryPendingLaunchpad = useCallback(
+    async (item: PendingLaunchpad) => {
+      let reconciliation: PendingLaunchpad["reconciliation"] = "failed";
+      try {
+        await apiRequest(
+          webPublicConfig.apiUrl,
+          `/v1/launchpads/records/${item.launchpadId}`,
+          { cache: "no-store" },
+        );
+        reconciliation = "onchain";
+        try {
+          await apiRequest(
+            webPublicConfig.apiUrl,
+            `/v1/launchpads/${encodeURIComponent(item.slug)}`,
+            { cache: "no-store" },
+          );
+          reconciliation = "published";
+        } catch {
+          // The onchain launchpad can exist before signed branding is published.
+        }
+      } catch {
+        reconciliation = "failed";
+      }
+      setPendingLaunchpads((current) =>
+        current.map((existing) =>
+          existing.launchpadId === item.launchpadId
+            ? { ...existing, reconciliation }
+            : existing,
+        ),
+      );
+      refresh();
+    },
+    [refresh],
+  );
   const refreshRealtime = useCallback(() => {
     liveRefreshTimers.current.forEach((timer) => window.clearTimeout(timer));
     liveRefreshTimers.current = [];
@@ -131,6 +183,9 @@ export function Launchpad() {
   const visible = useMemo(
     () =>
       allLaunches
+        .filter(
+          (item) => !launchpadFilter || item.launchpad_id === launchpadFilter,
+        )
         .filter((item) =>
           `${item.name ?? ""} ${item.symbol ?? ""} ${item.token_address}`
             .toLowerCase()
@@ -145,12 +200,24 @@ export function Launchpad() {
                 )
               : Number(BigInt(b.updated_block) - BigInt(a.updated_block)),
         ),
-    [allLaunches, search, sort],
+    [allLaunches, launchpadFilter, search, sort],
   );
   const selected =
     allLaunches.find((item) => item.launch_id === selectedId) ??
     visible[0] ??
     null;
+
+  const selectView = useCallback(
+    (next: "markets" | "build" | "manage") => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (next === "markets") params.delete("view");
+      else params.set("view", next);
+      router.replace(params.size ? `/launch?${params.toString()}` : "/launch", {
+        scroll: false,
+      });
+    },
+    [router, searchParams],
+  );
 
   return (
     <main
@@ -159,23 +226,78 @@ export function Launchpad() {
     >
       <div className="flex flex-wrap items-end justify-between gap-4 py-4">
         <div>
-          <p className="label">Dynamic bonding curves</p>
-          <h1 className="mt-2 text-2xl tracking-wide sm:text-3xl">Launch</h1>
+          <p className="label">ZKBLAST launch infrastructure</p>
+          <h1 className="mt-2 text-2xl tracking-wide sm:text-3xl">
+            {view === "markets"
+              ? "Launch markets"
+              : view === "build"
+                ? "Build launchpad"
+                : "My launchpads"}
+          </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
-            Create and trade governed curve markets, then follow their liquidity
-            into ZKBLAST DAMM.
+            {view === "markets"
+              ? "Create and trade governed curve markets, then follow their liquidity into ZKBLAST DAMM."
+              : view === "build"
+                ? "Configure identity, ownership, branding, economics and domain in one guided flow."
+                : "Monitor the launchpads and curve products controlled by the connected wallet."}
           </p>
         </div>
-        <button
-          disabled={!deployment}
-          onClick={() => setWizard(true)}
-          className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
-        >
-          <Plus className="size-4" />
-          Create launch
-        </button>
+        {view === "markets" && (
+          <button
+            disabled={!deployment}
+            onClick={() => setWizard(true)}
+            className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
+          >
+            <Plus className="size-4" />
+            Create token
+          </button>
+        )}
       </div>
-      {error && !loading ? (
+      <nav
+        aria-label="Launch workspace"
+        className="mb-4 grid border border-line sm:grid-cols-3"
+      >
+        {(
+          [
+            ["markets", "Markets", Store],
+            ["build", "Build launchpad", Rocket],
+            ["manage", "My launchpads", LayoutDashboard],
+          ] as const
+        ).map(([value, label, Icon]) => (
+          <button
+            key={value}
+            onClick={() => selectView(value)}
+            aria-current={view === value ? "page" : undefined}
+            className={`flex min-h-12 items-center justify-center gap-2 border-b-2 px-4 font-mono text-xs uppercase sm:border-b-0 sm:border-r-2 ${view === value ? "border-lime bg-white/[.05] text-fg" : "border-transparent text-muted hover:bg-white/[.03]"}`}
+          >
+            <Icon className="size-4" />
+            {label}
+          </button>
+        ))}
+      </nav>
+      {view === "build" ? (
+        <LaunchpadBuilder
+          onOpenMarkets={() => selectView("markets")}
+          onOpenManage={() => selectView("manage")}
+          onCreated={(item) =>
+            setPendingLaunchpads((current) => [
+              item,
+              ...current.filter(
+                (existing) => existing.launchpadId !== item.launchpadId,
+              ),
+            ])
+          }
+        />
+      ) : view === "manage" ? (
+        <LaunchpadOwnerDashboard
+          launches={allLaunches}
+          pendingLaunchpads={pendingLaunchpads}
+          loading={loading}
+          onBuild={() => selectView("build")}
+          onRefresh={refresh}
+          onRetryPending={(item) => void retryPendingLaunchpad(item)}
+        />
+      ) : error && !loading ? (
         <div className="panel ticks p-6">
           <p className="text-danger">Launchpad data unavailable · {error}</p>
           <button
@@ -189,11 +311,30 @@ export function Launchpad() {
         <div className="panel ticks grid min-h-[46rem] overflow-hidden xl:grid-cols-[18rem_minmax(0,1fr)_23rem]">
           <aside className="min-w-0 border-b border-line xl:border-b-0 xl:border-r">
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
-              <span className="label">Curve markets</span>
+              <span className="label">
+                {launchpadFilter
+                  ? `Launchpad ${launchpadFilter}`
+                  : "Curve markets"}
+              </span>
               <span className="font-mono text-[10px] text-muted">
                 {visible.length}
               </span>
             </div>
+            {launchpadFilter && (
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.delete("launchpad");
+                  router.replace(
+                    params.size ? `/launch?${params.toString()}` : "/launch",
+                    { scroll: false },
+                  );
+                }}
+                className="mx-3 mt-3 border border-line px-3 py-2 font-mono text-[10px] uppercase text-muted hover:text-fg"
+              >
+                Show all markets
+              </button>
+            )}
             <div className="grid gap-2 p-3 sm:grid-cols-[1fr_auto] xl:grid-cols-1">
               <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60">
                 <Search className="size-4 text-muted" />

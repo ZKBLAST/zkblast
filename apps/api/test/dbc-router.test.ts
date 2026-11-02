@@ -35,6 +35,12 @@ const service = new DbcService(
       5_000,
       86_400,
     ],
+    templateConfig: async () => ({
+      curve: {
+        segmentCount: 1,
+        segments: [{ initialPriceX18: 1n, slopeX18: 2n, saleCapacityX18: 3n }],
+      },
+    }),
   },
   {
     abiVersion: 1,

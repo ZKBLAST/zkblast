@@ -25,7 +25,12 @@ const vectorPath = fileURLToPath(
 );
 
 test("resolves DBC only from the selected network manifest", async () => {
-  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<string, unknown>;
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  const { dbc: _existingDbc, ...manifestWithoutDbc } = manifest;
+  void _existingDbc;
   const dbc = {
     abiVersion: 1,
     deploymentBlock: 123,
@@ -43,11 +48,19 @@ test("resolves DBC only from the selected network manifest", async () => {
   );
   assert.equal(resolved.launchFactory, dbc.launchFactory);
   assert.throws(
-    () => resolveDbcAddresses(manifest, { environment: "testnet", chainId: 46_630 }),
-    (error: unknown) => error instanceof SdkError && error.code === "DBC_NOT_DEPLOYED",
+    () =>
+      resolveDbcAddresses(manifestWithoutDbc, {
+        environment: "testnet",
+        chainId: 46_630,
+      }),
+    (error: unknown) =>
+      error instanceof SdkError && error.code === "DBC_NOT_DEPLOYED",
   );
   assert.throws(() =>
-    resolveDbcAddresses({ ...manifest, dbc }, { environment: "mainnet", chainId: 4663 }),
+    resolveDbcAddresses(
+      { ...manifest, dbc },
+      { environment: "mainnet", chainId: 4663 },
+    ),
   );
 });
 
@@ -69,9 +82,39 @@ test("builds typed launch, swap, graduation, fee and LP calls", () => {
   assert.equal(client.launch(hash("1")).functionName, "launches");
   assert.equal(client.quoteBuy(pool, 100n).functionName, "quoteBuyExactInput");
   assert.equal(client.quoteSell(pool, 10n).functionName, "quoteSellExactInput");
-  assert.equal(client.createLaunch({ templateId: 1n, salt: hash("2"), name: "Launch", symbol: "LCH", metadataUri: "ipfs://launch", creatorTokenRecipient: user }).functionName, "createLaunch");
-  assert.equal(client.buyExactInput({ pool, grossQuoteInRaw: 100n, minimumBaseOutRaw: 90n, maximumPriceX18: 2n, recipient: user, deadline }).functionName, "buyExactInput");
-  assert.equal(client.sellExactInput({ pool, baseInRaw: 10n, minimumQuoteOutRaw: 9n, minimumPriceX18: 1n, recipient: user, deadline }).functionName, "sellExactInput");
+  assert.equal(
+    client.createLaunch({
+      templateId: 1n,
+      salt: hash("2"),
+      name: "Launch",
+      symbol: "LCH",
+      metadataUri: "ipfs://launch",
+      creatorTokenRecipient: user,
+    }).functionName,
+    "createLaunch",
+  );
+  assert.equal(
+    client.buyExactInput({
+      pool,
+      grossQuoteInRaw: 100n,
+      minimumBaseOutRaw: 90n,
+      maximumPriceX18: 2n,
+      recipient: user,
+      deadline,
+    }).functionName,
+    "buyExactInput",
+  );
+  assert.equal(
+    client.sellExactInput({
+      pool,
+      baseInRaw: 10n,
+      minimumQuoteOutRaw: 9n,
+      minimumPriceX18: 1n,
+      recipient: user,
+      deadline,
+    }).functionName,
+    "sellExactInput",
+  );
   assert.equal(client.graduate(pool, deadline).functionName, "graduate");
   assert.equal(client.claimFees(pool, 2).functionName, "claimFees");
   assert.equal(client.claimLp(hash("3"), true, deadline).functionName, "claim");
@@ -115,8 +158,17 @@ test("preflight rejects chain, expiry, lifecycle, funds, allowance, slippage and
 
 test("SDK math consumes the canonical contract vectors", async () => {
   const fixture = JSON.parse(await readFile(vectorPath, "utf8")) as {
-    curve: { initialPriceX18: string; slopeX18: string; saleCapacityX18: string };
-    vectors: { soldX18: string; baseAmountX18: string; quoteUpX18: string; quoteDownX18: string }[];
+    curve: {
+      initialPriceX18: string;
+      slopeX18: string;
+      saleCapacityX18: string;
+    };
+    vectors: {
+      soldX18: string;
+      baseAmountX18: string;
+      quoteUpX18: string;
+      quoteDownX18: string;
+    }[];
   };
   const curve = {
     initialPriceX18: BigInt(fixture.curve.initialPriceX18),
@@ -124,12 +176,34 @@ test("SDK math consumes the canonical contract vectors", async () => {
     saleCapacityX18: BigInt(fixture.curve.saleCapacityX18),
   };
   for (const vector of fixture.vectors) {
-    assert.equal(linearCurveQuote(curve, BigInt(vector.soldX18), BigInt(vector.baseAmountX18), true), BigInt(vector.quoteUpX18));
-    assert.equal(linearCurveQuote(curve, BigInt(vector.soldX18), BigInt(vector.baseAmountX18), false), BigInt(vector.quoteDownX18));
+    assert.equal(
+      linearCurveQuote(
+        curve,
+        BigInt(vector.soldX18),
+        BigInt(vector.baseAmountX18),
+        true,
+      ),
+      BigInt(vector.quoteUpX18),
+    );
+    assert.equal(
+      linearCurveQuote(
+        curve,
+        BigInt(vector.soldX18),
+        BigInt(vector.baseAmountX18),
+        false,
+      ),
+      BigInt(vector.quoteDownX18),
+    );
   }
 });
 
 test("explorer helpers never hardcode a network", () => {
-  assert.equal(explorerTransactionUrl("https://explorer.example/", hash("a")), `https://explorer.example/tx/${hash("a")}`);
-  assert.equal(explorerAddressUrl("https://explorer.example/", address("b")), `https://explorer.example/address/${address("b")}`);
+  assert.equal(
+    explorerTransactionUrl("https://explorer.example/", hash("a")),
+    `https://explorer.example/tx/${hash("a")}`,
+  );
+  assert.equal(
+    explorerAddressUrl("https://explorer.example/", address("b")),
+    `https://explorer.example/address/${address("b")}`,
+  );
 });

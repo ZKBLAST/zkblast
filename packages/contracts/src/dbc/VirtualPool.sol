@@ -48,6 +48,7 @@ contract VirtualPool is IDbcEvents, ReentrancyGuard {
     address public immutable creator;
     address public immutable baseToken;
     address public immutable quoteToken;
+    address public immutable feeCollector;
     address public graduationManager;
     DbcTypes.Lifecycle public lifecycle;
     DbcTypes.PoolAccounting public accounting;
@@ -60,7 +61,8 @@ contract VirtualPool is IDbcEvents, ReentrancyGuard {
         address factory_,
         address creator_,
         address baseToken_,
-        DbcTypes.TemplateConfig memory config_
+        DbcTypes.TemplateConfig memory config_,
+        address feeCollector_
     ) {
         if (
             launchId_ == bytes32(0) || factory_ == address(0) || creator_ == address(0)
@@ -72,6 +74,7 @@ contract VirtualPool is IDbcEvents, ReentrancyGuard {
         creator = creator_;
         baseToken = baseToken_;
         quoteToken = config_.quoteToken;
+        feeCollector = feeCollector_;
         _config.write(config_);
         lifecycle = DbcTypes.Lifecycle.DRAFT;
     }
@@ -269,6 +272,7 @@ contract VirtualPool is IDbcEvents, ReentrancyGuard {
     }
 
     function claimFees(uint8 allocation) external nonReentrant returns (uint256 amount) {
+        if (feeCollector != address(0) && msg.sender != feeCollector) revert Unauthorized();
         address recipient;
         if (allocation == 0) {
             recipient = creator;
@@ -286,6 +290,7 @@ contract VirtualPool is IDbcEvents, ReentrancyGuard {
             revert InvalidRecipient();
         }
         if (amount == 0) revert InvalidInventory();
+        if (feeCollector != address(0)) recipient = feeCollector;
         quoteToken.pushExact(recipient, amount);
         emit FeeClaimed(launchId, recipient, allocation, amount);
     }

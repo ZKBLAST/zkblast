@@ -1,15 +1,33 @@
-import { launchConfigRegistryAbi, perpEngineAbi, poolRegistryAbi, shieldedPerpAdapterAbi, virtualPoolAbi } from "@zkblast/abi";
+import {
+  launchConfigRegistryAbi,
+  launchpadConfigManagerAbi,
+  launchpadRegistryAbi,
+  perpEngineAbi,
+  poolRegistryAbi,
+  shieldedPerpAdapterAbi,
+  virtualPoolAbi,
+} from "@zkblast/abi";
 import { loadServerConfig } from "@zkblast/config";
 import {
   loadDeploymentManifestFile,
   verifyPrivateV2Deployment,
   type PrivateV2RpcRequest,
 } from "@zkblast/config/node";
-import { resolveDbcAddresses, resolveProtocolAddresses } from "@zkblast/sdk";
+import {
+  resolveDbcAddresses,
+  resolveLaunchpadAddresses,
+  resolveProtocolAddresses,
+} from "@zkblast/sdk";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createPublicClient, getAddress, http, keccak256, parseAbi } from "viem";
+import {
+  createPublicClient,
+  getAddress,
+  http,
+  keccak256,
+  parseAbi,
+} from "viem";
 import { z } from "zod";
 import { createApp } from "./app.js";
 import { AuthService } from "./auth-service.js";
@@ -27,6 +45,17 @@ import { PoolCreationService } from "./pool-creation-service.js";
 import { PerpsService } from "./perps-service.js";
 import { DbcService } from "./dbc-service.js";
 import { PostgresDbcReadStore } from "./postgres-dbc-read-store.js";
+import { LaunchpadBrandingService } from "./launchpad-branding-service.js";
+import { PostgresLaunchpadBrandingStore } from "./postgres-launchpad-branding-store.js";
+import { LaunchpadDomainService } from "./launchpad-domain-service.js";
+import { PostgresLaunchpadDomainStore } from "./postgres-launchpad-domain-store.js";
+import { lookup, resolveTxt } from "node:dns/promises";
+import { LaunchpadCatalogService } from "./launchpad-catalog-service.js";
+import { LaunchpadReadService } from "./launchpad-read-service.js";
+import { PostgresLaunchpadReadStore } from "./postgres-launchpad-read-store.js";
+import { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
+import { PostgresLaunchpadDeveloperStore } from "./postgres-launchpad-developer-store.js";
+import { probeWebhookOwnership } from "./launchpad-developer-security.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -41,6 +70,7 @@ const serviceSchema = z.object({
     .default(86_400),
   ALERT_RECEIPT_FAILURES: z.coerce.number().int().positive().default(5),
   OPERATIONS_API_TOKEN: z.string().min(32),
+  LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY: z.string().min(1).optional(),
 });
 
 const serverConfig = loadServerConfig(process.env);
@@ -86,35 +116,255 @@ const protocolAddresses = resolveProtocolAddresses(manifest, {
   chainId: serverConfig.CHAIN_ID,
 });
 const dbcAddresses = manifest.dbc
-  ? resolveDbcAddresses(manifest, { environment: serverConfig.APP_ENV, chainId: serverConfig.CHAIN_ID })
+  ? resolveDbcAddresses(manifest, {
+      environment: serverConfig.APP_ENV,
+      chainId: serverConfig.CHAIN_ID,
+    })
+  : undefined;
+const launchpadAddresses = manifest.launchpad
+  ? resolveLaunchpadAddresses(manifest, {
+      environment: serverConfig.APP_ENV,
+      chainId: serverConfig.CHAIN_ID,
+    })
+  : undefined;
+const launchpadWebhookEncryptionKey = serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY
+  ? Buffer.from(serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY, "base64")
+  : undefined;
+if (launchpadWebhookEncryptionKey && launchpadWebhookEncryptionKey.length !== 32) {
+  throw new Error("LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY_INVALID");
+}
+const launchpadDeveloperService =
+  launchpadAddresses && launchpadWebhookEncryptionKey
+    ? new LaunchpadDeveloperService(
+        serverConfig.CHAIN_ID,
+        new PostgresLaunchpadDeveloperStore(
+          directDatabaseUrl,
+          serverConfig.SUPABASE_SCHEMA,
+        ),
+        {
+          owner: async (launchpadId) =>
+            (
+              await chainClient.readContract({
+                address: launchpadAddresses.registry,
+                abi: launchpadRegistryAbi,
+                functionName: "launchpad",
+                args: [launchpadId],
+              })
+            ).owner,
+        },
+        async (hostname) =>
+          (await lookup(hostname, { all: true, verbatim: true })).map(
+            ({ address }) => address,
+          ),
+        {
+          verify: (url, token) =>
+            probeWebhookOwnership(url, token, async (hostname) =>
+              (await lookup(hostname, { all: true, verbatim: true })).map(
+                ({ address }) => address,
+              ),
+            ),
+        },
+        launchpadWebhookEncryptionKey,
+      )
+    : undefined;
+const launchpadCatalogService = launchpadAddresses
+  ? new LaunchpadCatalogService(
+      serverConfig.APP_ENV,
+      serverConfig.CHAIN_ID,
+      launchpadAddresses,
+      {
+        launchpadCount: () =>
+          chainClient.readContract({
+            address: launchpadAddresses.registry,
+            abi: launchpadRegistryAbi,
+            functionName: "launchpadCount",
+          }),
+        presetCount: () =>
+          chainClient.readContract({
+            address: launchpadAddresses.configManager,
+            abi: launchpadConfigManagerAbi,
+            functionName: "presetCount",
+          }),
+        globalMaximumTotalTradeFeeBps: async () =>
+          Number(
+            await chainClient.readContract({
+              address: launchpadAddresses.configManager,
+              abi: launchpadConfigManagerAbi,
+              functionName: "globalMaximumTotalTradeFeeBps",
+            }),
+          ),
+        destinationSupported: (destination) =>
+          chainClient.readContract({
+            address: launchpadAddresses.configManager,
+            abi: launchpadConfigManagerAbi,
+            functionName: "destinationSupported",
+            args: [destination],
+          }),
+        presets: async (ids) => {
+          const items = await chainClient.readContract({
+            address: launchpadAddresses.configManager,
+            abi: launchpadConfigManagerAbi,
+            functionName: "presets",
+            args: [[...ids]],
+          });
+          return items.map((item) => ({
+            familyId: item.familyId,
+            configHash: item.configHash,
+            dbcTemplateId: item.dbcTemplateId,
+            quoteToken: item.quoteToken,
+            maximumTotalTradeFeeBps: item.maximumTotalTradeFeeBps,
+            graduationDestination: item.graduationDestination,
+            creatorAccess: item.creatorAccess,
+            maximumLaunches: item.maximumLaunches,
+            version: item.version,
+            enabled: item.enabled,
+            used: item.used,
+          }));
+        },
+        launchpad: async (id) => {
+          const item = await chainClient.readContract({
+            address: launchpadAddresses.registry,
+            abi: launchpadRegistryAbi,
+            functionName: "launchpad",
+            args: [id],
+          });
+          return {
+            owner: item.owner,
+            pendingOwner: item.pendingOwner,
+            treasury: item.treasury,
+            pendingTreasury: item.pendingTreasury,
+            operator: item.operator,
+            metadataHash: item.metadataHash,
+            slugCommitment: item.slugCommitment,
+            configPresetId: item.configPresetId,
+            version: item.version,
+            status: item.status,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          };
+        },
+        launchpads: async (ids) => {
+          const items = await chainClient.readContract({
+            address: launchpadAddresses.registry,
+            abi: launchpadRegistryAbi,
+            functionName: "launchpads",
+            args: [[...ids]],
+          });
+          return items.map((item) => ({
+            owner: item.owner,
+            pendingOwner: item.pendingOwner,
+            treasury: item.treasury,
+            pendingTreasury: item.pendingTreasury,
+            operator: item.operator,
+            metadataHash: item.metadataHash,
+            slugCommitment: item.slugCommitment,
+            configPresetId: item.configPresetId,
+            version: item.version,
+            status: item.status,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          }));
+        },
+      },
+    )
   : undefined;
 const dbcService = dbcAddresses
   ? new DbcService(
       new PostgresDbcReadStore(directDatabaseUrl, serverConfig.SUPABASE_SCHEMA),
       {
-        quote: ({ pool, side, amountRaw }) => chainClient.readContract({
-          address: pool,
-          abi: virtualPoolAbi,
-          functionName: side === "buy" ? "quoteBuyExactInput" : "quoteSellExactInput",
-          args: [amountRaw],
-        }),
-        templateEconomics: (templateId) => chainClient.readContract({
-          address: dbcAddresses.configRegistry,
-          abi: launchConfigRegistryAbi,
-          functionName: "templateEconomics",
-          args: [templateId],
-        }),
+        quote: ({ pool, side, amountRaw }) =>
+          chainClient.readContract({
+            address: pool,
+            abi: virtualPoolAbi,
+            functionName:
+              side === "buy" ? "quoteBuyExactInput" : "quoteSellExactInput",
+            args: [amountRaw],
+          }),
+        templateEconomics: (templateId) =>
+          chainClient.readContract({
+            address: dbcAddresses.configRegistry,
+            abi: launchConfigRegistryAbi,
+            functionName: "templateEconomics",
+            args: [templateId],
+          }),
+        templateConfig: (templateId) =>
+          chainClient.readContract({
+            address: dbcAddresses.configRegistry,
+            abi: launchConfigRegistryAbi,
+            functionName: "templateConfig",
+            args: [templateId],
+          }),
       },
       dbcAddresses,
+    )
+  : undefined;
+const launchpadReadService = launchpadAddresses
+  ? new LaunchpadReadService(
+      serverConfig.APP_ENV,
+      serverConfig.CHAIN_ID,
+      new PostgresLaunchpadReadStore(directDatabaseUrl, serverConfig.SUPABASE_SCHEMA),
+      dbcService,
+      () => chainClient.getBlockNumber(),
+    )
+  : undefined;
+const launchpadBrandingService = manifest.launchpad
+  ? new LaunchpadBrandingService(
+      serverConfig.CHAIN_ID,
+      new PostgresLaunchpadBrandingStore(
+        directDatabaseUrl,
+        serverConfig.SUPABASE_SCHEMA,
+      ),
+      {
+        launchpad: async (launchpadId) => {
+          const record = await chainClient.readContract({
+            address: getAddress(manifest.launchpad!.registry),
+            abi: parseAbi([
+              "function launchpad(uint256) view returns ((address owner,address pendingOwner,address treasury,address pendingTreasury,address operator,bytes32 metadataHash,bytes32 slugCommitment,uint256 configPresetId,uint32 version,uint8 status,uint64 createdAt,uint64 updatedAt) record)",
+            ]),
+            functionName: "launchpad",
+            args: [launchpadId],
+          });
+          return { owner: record.owner, metadataHash: record.metadataHash };
+        },
+      },
+    )
+  : undefined;
+const launchpadOwnershipReader = manifest.launchpad
+  ? {
+      launchpad: async (launchpadId: bigint) => {
+        const record = await chainClient.readContract({
+          address: getAddress(manifest.launchpad!.registry),
+          abi: parseAbi([
+            "function launchpad(uint256) view returns ((address owner,address pendingOwner,address treasury,address pendingTreasury,address operator,bytes32 metadataHash,bytes32 slugCommitment,uint256 configPresetId,uint32 version,uint8 status,uint64 createdAt,uint64 updatedAt) record)",
+          ]),
+          functionName: "launchpad",
+          args: [launchpadId],
+        });
+        return { owner: record.owner, metadataHash: record.metadataHash };
+      },
+    }
+  : undefined;
+const launchpadDomainService = launchpadOwnershipReader
+  ? new LaunchpadDomainService(
+      serverConfig.CHAIN_ID,
+      new PostgresLaunchpadDomainStore(
+        directDatabaseUrl,
+        serverConfig.SUPABASE_SCHEMA,
+      ),
+      launchpadOwnershipReader,
+      { resolveTxt },
     )
   : undefined;
 const perpVaultDeployment = Object.values(manifest.contracts).find(
   (contract) => contract.contractName === "LiquidityVaultUSDG",
 );
-const perpVaultAddress = manifest.perps?.liquidityVault
-  ?? perpVaultDeployment?.proxyAddress
-  ?? perpVaultDeployment?.implementationAddress;
-const usdgAsset = manifest.shielded?.assets.find((asset) => asset.symbol === "USDG");
+const perpVaultAddress =
+  manifest.perps?.liquidityVault ??
+  perpVaultDeployment?.proxyAddress ??
+  perpVaultDeployment?.implementationAddress;
+const usdgAsset = manifest.shielded?.assets.find(
+  (asset) => asset.symbol === "USDG",
+);
 const perpsService = new PerpsService(
   directDatabaseUrl,
   serverConfig.SUPABASE_SCHEMA,
@@ -122,7 +372,9 @@ const perpsService = new PerpsService(
     ? {
         chainId: serverConfig.CHAIN_ID,
         vault: getAddress(perpVaultAddress),
-        collateral: getAddress(manifest.perps?.collateral ?? usdgAsset!.address),
+        collateral: getAddress(
+          manifest.perps?.collateral ?? usdgAsset!.address,
+        ),
         ...(manifest.perps
           ? {
               privateExecution: {
@@ -135,28 +387,31 @@ const perpsService = new PerpsService(
       }
     : undefined,
   manifest.perps
-    ? async (positionId) => chainClient.readContract({
-        address: getAddress(manifest.perps!.engine),
-        abi: perpEngineAbi,
-        functionName: "quoteClose",
-        args: [positionId],
-      })
+    ? async (positionId) =>
+        chainClient.readContract({
+          address: getAddress(manifest.perps!.engine),
+          abi: perpEngineAbi,
+          functionName: "quoteClose",
+          args: [positionId],
+        })
     : undefined,
   manifest.perps
-    ? async (positionId, leverageBps, externalFeeRaw) => chainClient.readContract({
-        address: getAddress(manifest.perps!.engine),
-        abi: perpEngineAbi,
-        functionName: "quoteModify",
-        args: [positionId, leverageBps, externalFeeRaw],
-      })
+    ? async (positionId, leverageBps, externalFeeRaw) =>
+        chainClient.readContract({
+          address: getAddress(manifest.perps!.engine),
+          abi: perpEngineAbi,
+          functionName: "quoteModify",
+          args: [positionId, leverageBps, externalFeeRaw],
+        })
     : undefined,
   manifest.perps
-    ? async (positionId) => chainClient.readContract({
-        address: getAddress(manifest.perps!.shieldedAdapter),
-        abi: shieldedPerpAdapterAbi,
-        functionName: "liquidatedResidual",
-        args: [positionId],
-      })
+    ? async (positionId) =>
+        chainClient.readContract({
+          address: getAddress(manifest.perps!.shieldedAdapter),
+          abi: shieldedPerpAdapterAbi,
+          functionName: "liquidatedResidual",
+          args: [positionId],
+        })
     : undefined,
   manifest.perps
     ? async ({ from, to, data }) => {
@@ -164,20 +419,26 @@ const perpsService = new PerpsService(
       }
     : undefined,
   manifest.perps
-    ? async (oracleId) => chainClient.readContract({
-        address: getAddress(manifest.perps!.oracle),
-        abi: parseAbi(["function latestPrice(bytes32) view returns ((uint256 value,uint64 updatedAt) price)"]),
-        functionName: "latestPrice",
-        args: [oracleId],
-      })
+    ? async (oracleId) =>
+        chainClient.readContract({
+          address: getAddress(manifest.perps!.oracle),
+          abi: parseAbi([
+            "function latestPrice(bytes32) view returns ((uint256 value,uint64 updatedAt) price)",
+          ]),
+          functionName: "latestPrice",
+          args: [oracleId],
+        })
     : undefined,
   manifest.perps
-    ? async (positionId) => chainClient.readContract({
-        address: getAddress(manifest.perps!.engine),
-        abi: parseAbi(["function getPosition(bytes32) view returns ((bytes32 marketId,bytes32 ownerCommitment,uint128 marginUsd,uint128 notionalUsd,uint128 baseSize,uint128 entryPriceX18,int128 fundingIndexX18,uint64 openedAt,bool isLong) position)"]),
-        functionName: "getPosition",
-        args: [positionId],
-      })
+    ? async (positionId) =>
+        chainClient.readContract({
+          address: getAddress(manifest.perps!.engine),
+          abi: parseAbi([
+            "function getPosition(bytes32) view returns ((bytes32 marketId,bytes32 ownerCommitment,uint128 marginUsd,uint128 notionalUsd,uint128 baseSize,uint128 entryPriceX18,int128 fundingIndexX18,uint64 openedAt,bool isLong) position)",
+          ]),
+          functionName: "getPosition",
+          args: [positionId],
+        })
     : undefined,
 );
 const swapService = new SwapService(
@@ -323,13 +584,17 @@ const app = createApp(
     poolCreationService,
     perpsService,
     ...(dbcService ? { dbcService } : {}),
+    ...(launchpadCatalogService ? { launchpadCatalogService } : {}),
+    ...(launchpadReadService ? { launchpadReadService } : {}),
+    ...(launchpadBrandingService ? { launchpadBrandingService } : {}),
+    ...(launchpadDomainService ? { launchpadDomainService } : {}),
+    ...(launchpadDeveloperService ? { launchpadDeveloperService } : {}),
   },
 );
 
 const listenHost =
   process.env.HOST ??
-  (process.env.RAILWAY_ENVIRONMENT ||
-  process.env.NODE_ENV === "production"
+  (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === "production"
     ? "0.0.0.0"
     : "127.0.0.1");
 

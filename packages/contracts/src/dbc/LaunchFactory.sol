@@ -18,6 +18,9 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
     error LaunchAlreadyExists();
     error TemplateUnavailable();
 
+    bytes32 public constant LAUNCHPAD_FACTORY_ROLE =
+        keccak256("ZKBLAST_DBC_LAUNCHPAD_FACTORY_ROLE");
+
     struct LaunchRequest {
         uint256 templateId;
         bytes32 salt;
@@ -76,13 +79,37 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
         external
         returns (bytes32 launchId, address token, address virtualPool)
     {
+        return _createLaunch(request, msg.sender, address(0));
+    }
+
+    function createLaunchFor(
+        LaunchRequest calldata request,
+        address creator,
+        address feeCollector
+    )
+        external
+        onlyRole(LAUNCHPAD_FACTORY_ROLE)
+        returns (bytes32 launchId, address token, address virtualPool)
+    {
+        if (creator == address(0) || feeCollector == address(0)) revert InvalidLaunch();
+        return _createLaunch(request, creator, feeCollector);
+    }
+
+    function _createLaunch(
+        LaunchRequest calldata request,
+        address creator,
+        address feeCollector
+    )
+        private
+        returns (bytes32 launchId, address token, address virtualPool)
+    {
         if (
             request.salt == bytes32(0) || bytes(request.name).length == 0
                 || bytes(request.symbol).length == 0 || request.creatorTokenRecipient == address(0)
         ) revert InvalidLaunch();
         LaunchConfigRegistry.TemplateRecord memory template = registry.template(request.templateId);
         if (!template.enabled) revert TemplateUnavailable();
-        launchId = launchIdentifier(msg.sender, request.templateId, request.salt);
+        launchId = launchIdentifier(creator, request.templateId, request.salt);
         if (launches[launchId].creator != address(0)) revert LaunchAlreadyExists();
 
         LaunchToken launchToken = tokenDeployer.deploy(
@@ -94,14 +121,24 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
             address(this)
         );
         token = address(launchToken);
-        VirtualPool pool = poolDeployer.deploy(
-            keccak256(abi.encode(launchId, "VIRTUAL_POOL")),
-            launchId,
-            request.templateId,
-            msg.sender,
-            token,
-            template.config
-        );
+        VirtualPool pool = feeCollector == address(0)
+            ? poolDeployer.deploy(
+                keccak256(abi.encode(launchId, "VIRTUAL_POOL")),
+                launchId,
+                request.templateId,
+                creator,
+                token,
+                template.config
+            )
+            : poolDeployer.deployForLaunchpad(
+                keccak256(abi.encode(launchId, "VIRTUAL_POOL")),
+                launchId,
+                request.templateId,
+                creator,
+                token,
+                template.config,
+                feeCollector
+            );
         virtualPool = address(pool);
 
         if (graduationManager != address(0)) pool.setGraduationManager(graduationManager);
@@ -112,20 +149,24 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
         pool.activate();
         registry.markTemplateUsed(request.templateId);
 
-        launches[launchId] = LaunchRecord(msg.sender, token, virtualPool, request.templateId);
+        launches[launchId] = LaunchRecord(creator, token, virtualPool, request.templateId);
         launchByToken[token] = launchId;
         launchByPool[virtualPool] = launchId;
         ++launchCount;
         emit TokenLaunched(
             launchId,
             request.templateId,
-            msg.sender,
+            creator,
             token,
             virtualPool,
             template.config.quoteToken,
             template.config.baseInventoryRaw,
             template.config.graduationThresholdRaw
         );
+        _emitLaunchMetadata(launchId, request);
+    }
+
+    function _emitLaunchMetadata(bytes32 launchId, LaunchRequest calldata request) private {
         emit LaunchMetadataPublished(
             launchId,
             request.name,

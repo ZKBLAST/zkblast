@@ -8,14 +8,21 @@ export function SmoothScroll() {
   const path = usePathname();
 
   useEffect(() => {
-    if (path === "/trade") return;
+    if (path === "/trade" || /^\/launchpads\/[^/]+\/embed$/u.test(path)) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const l = new Lenis({ lerp: 0.11, wheelMultiplier: 1, smoothWheel: true });
     lenis.current = l;
     let raf = 0;
-    const loop = (t: number) => { l.raf(t); raf = requestAnimationFrame(loop); };
+    const loop = (t: number) => {
+      l.raf(t);
+      raf = requestAnimationFrame(loop);
+    };
     raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); l.destroy(); lenis.current = null; };
+    return () => {
+      cancelAnimationFrame(raf);
+      l.destroy();
+      lenis.current = null;
+    };
   }, [path]);
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import { Logo } from "./Logo";
 export function Footer() {
   const { config } = useApp();
   const path = usePathname();
+  if (/^\/launchpads\/[^/]+\/embed$/u.test(path)) return null;
   if (path === "/trade")
     return (
       <footer className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-5 font-mono text-[10px] text-faint">

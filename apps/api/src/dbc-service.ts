@@ -36,7 +36,11 @@ export interface DbcReadStore {
   templates(page: DbcPage): Promise<readonly unknown[]>;
   launches(
     page: DbcPage &
-      Readonly<{ search?: string | undefined; lifecycle?: number | undefined }>,
+      Readonly<{
+        search?: string | undefined;
+        lifecycle?: number | undefined;
+        launchpadId?: string | undefined;
+      }>,
   ): Promise<readonly unknown[]>;
   launch(launchId: string): Promise<unknown>;
   trades(launchId: string, page: DbcPage): Promise<readonly unknown[]>;
@@ -50,6 +54,7 @@ export interface DbcQuoteReader {
     input: Readonly<{ pool: Address; side: "buy" | "sell"; amountRaw: bigint }>,
   ): Promise<unknown>;
   templateEconomics(templateId: bigint): Promise<unknown>;
+  templateConfig(templateId: bigint): Promise<unknown>;
 }
 
 export class DbcService {
@@ -63,7 +68,11 @@ export class DbcService {
   }
   launches(
     query: DbcPage &
-      Readonly<{ search?: string | undefined; lifecycle?: number | undefined }>,
+      Readonly<{
+        search?: string | undefined;
+        lifecycle?: number | undefined;
+        launchpadId?: string | undefined;
+      }>,
   ) {
     return this.store.launches(query);
   }
@@ -107,6 +116,26 @@ export class DbcService {
       creatorLpShareBps,
       creatorLockSeconds,
     ] = parsed.data;
+    const config = (await this.quoteReader.templateConfig(templateId)) as {
+      curve?: {
+        segmentCount?: number;
+        segments?: readonly Readonly<{
+          initialPriceX18?: bigint;
+          slopeX18?: bigint;
+          saleCapacityX18?: bigint;
+        }>[];
+      };
+    };
+    const segmentCount = config.curve?.segmentCount ?? 0;
+    const curveSegments = (config.curve?.segments ?? [])
+      .slice(0, segmentCount)
+      .map((segment) => ({
+        initialPriceX18: BigInt(segment.initialPriceX18 ?? 0n).toString(),
+        slopeX18: BigInt(segment.slopeX18 ?? 0n).toString(),
+        saleCapacityX18: BigInt(segment.saleCapacityX18 ?? 0n).toString(),
+      }));
+    if (curveSegments.length !== segmentCount || segmentCount < 1)
+      throw new Error("DBC_TEMPLATE_CURVE_INVALID");
     return {
       quoteToken,
       totalSupplyRaw,
@@ -120,6 +149,7 @@ export class DbcService {
       protocolFeeShareBps,
       creatorLpShareBps,
       creatorLockSeconds,
+      curveSegments,
     };
   }
   deploymentInfo(): DbcAddresses {

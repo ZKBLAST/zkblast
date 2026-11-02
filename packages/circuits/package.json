@@ -38,6 +38,9 @@
     "perps:position-browser:prepare": "node scripts/prepare-perps-position-browser.mjs",
     "perps:browser:prepare-all": "pnpm run perps:position-browser:prepare && pnpm run perps:browser:prepare",
     "perps:browser:test": "node --test test/perps-browser-workers.test.mjs",
+    "launchpad:claim:browser:prepare": "esbuild browser/launchpad-claim-worker.js --bundle --platform=browser --format=iife --outfile=../../apps/web/public/zk/launchpad-claim-v1-worker.js --minify",
+    "launchpad:claim:release:prepare": "node scripts/prepare-launchpad-claim-release.mjs",
+    "launchpad:claim:release:check": "node scripts/validate-launchpad-claim-release.mjs",
     "v1:ceremony": "node scripts/ceremony-v1.mjs"
   },
   "devDependencies": {

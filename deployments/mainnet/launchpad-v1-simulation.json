@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet-fork",
+  "sourceChainId": 4663,
+  "sourceBlock": "103860809",
+  "simulatedAt": "2026-11-02T02:14:06.541Z",
+  "deploymentReceipts": [
+    {
+      "name": "registryImplementation",
+      "nonce": 556,
+      "hash": "0x2d3b303c02c9b13b3f01884308bb10cd8115b20b936cc496aa642cba71d09741",
+      "contractAddress": "0xb73c10a957de6366f7dd923457963ca50d67280e",
+      "gasUsed": "1790909"
+    },
+    {
+      "name": "registry",
+      "nonce": 557,
+      "hash": "0x50e822d2c8b949a7127146f244753c16c5d683d6d70b33be8c64ac6224561156",
+      "contractAddress": "0x49a6233a5942d67ef0d1024bf159480bc5e5be6a",
+      "gasUsed": "206760"
+    },
+    {
+      "name": "configManagerImplementation",
+      "nonce": 558,
+      "hash": "0xd616b59f123406911bb697f7af56e14971ed135d372fb37456484278ec2233fe",
+      "contractAddress": "0x434c766744c1057f5d7382c591f976d593d6097b",
+      "gasUsed": "1741440"
+    },
+    {
+      "name": "configManager",
+      "nonce": 559,
+      "hash": "0x0b85c62519b2ee2778378fda1235b592399e7bb89d56e3e590eec99f140c98e1",
+      "contractAddress": "0x8f6c1a55bccfab96f14acf4bc0ea36fd78eaafb0",
+      "gasUsed": "253838"
+    },
+    {
+      "name": "factoryImplementation",
+      "nonce": 560,
+      "hash": "0x98f5efa9a18589246781ce6457208c1df10ccb9108fc3b654ed1803e7d3517f5",
+      "contractAddress": "0xf1ed833d88ee1960f51b7385a0bea49467c88167",
+      "gasUsed": "759764"
+    },
+    {
+      "name": "factory",
+      "nonce": 561,
+      "hash": "0x87df145de429db9c7ec26256e2fe8072ce5dc74a8e8265ab5fcbfed529202fa7",
+      "contractAddress": "0xd604173dd6b2ccdc39c883c0908f7e298f0f23cf",
+      "gasUsed": "227411"
+    },
+    {
+      "name": "feeControllerImplementation",
+      "nonce": 562,
+      "hash": "0x478d5f44eff22ee0910c383d148c3ebc9803e542b6fcfaf595d630a99bafc304",
+      "contractAddress": "0x4710d14766de7ff50e7d121e62cc9a692d4eb41b",
+      "gasUsed": "1703703"
+    },
+    {
+      "name": "feeController",
+      "nonce": 563,
+      "hash": "0x11a175db2a6cda7424c683c6fae293d36d1413a59b76ab705c56ced3758a3ac6",
+      "contractAddress": "0x0b7de982eceab02b25bfcdc88581f3ff133ffde1",
+      "gasUsed": "230328"
+    },
+    {
+      "name": "revenueSplitterImplementation",
+      "nonce": 564,
+      "hash": "0x46c49a691a34ddb758bb1b1b629accc5027d757ef513aaedbf3c324c26e64dda",
+      "contractAddress": "0x8b3220e033735e4fb3c52a81d2ccd23d3f46926e",
+      "gasUsed": "1959492"
+    },
+    {
+      "name": "revenueSplitter",
+      "nonce": 565,
+      "hash": "0x3c9091f98d9bd9d4baa1ac6f79a0a9aa3ee68398b3711050d75ad148debba7b3",
+      "contractAddress": "0xb7582ae80429357e58b8e43b9b91cd4485b99c96",
+      "gasUsed": "182038"
+    },
+    {
+      "name": "feeCollectorImplementation",
+      "nonce": 566,
+      "hash": "0xdb503905cfcc728e2c0f7307c897d4faf993567c71b515f687853f611064f297",
+      "contractAddress": "0x45694e131b097a2ddd0dcf22dbae0b6b623f343c",
+      "gasUsed": "1056708"
+    },
+    {
+      "name": "feeCollector",
+      "nonce": 567,
+      "hash": "0x48c90887613daeae4b2d330e867a437674e3879245dda071745af02837e0f047",
+      "contractAddress": "0x4238729198c97394ca7f1d49adc3468313e0800e",
+      "gasUsed": "204689"
+    },
+    {
+      "name": "tokenFactoryImplementation",
+      "nonce": 568,
+      "hash": "0x23264f135f93c4be8c783fa04a386ceca4ce9f9d953b25e66020442d9b7a0fca",
+      "contractAddress": "0xfcc37f5abf661c1eafd5fbac20388599cfdec102",
+      "gasUsed": "2116558"
+    },
+    {
+      "name": "tokenFactory",
+      "nonce": 569,
+      "hash": "0xe34d6bc1a3e5c21e0dab8fa0d1919094d16b27f756e4107c9e9ae670167afaf8",
+      "contractAddress": "0xc8dec07dfe43efd37c1a12e82d803c8a67348148",
+      "gasUsed": "318083"
+    },
+    {
+      "name": "lens",
+      "nonce": 570,
+      "hash": "0x79b2b4ae2d09ad9329af6e558254360428aa3af5eab0043b73ccb54ba13039d5",
+      "contractAddress": "0x7b247467e73fdf3817251ce5956833344979ba57",
+      "gasUsed": "804736"
+    }
+  ],
+  "configurationReceipts": [
+    {
+      "description": "Authorize LaunchpadFactory on LaunchpadConfigManager",
+      "safeNonce": "93",
+      "hash": "0x9c84b5162f89d83c4c108e3c7331fca87d58db9e6ef764d572990d796444414b",
+      "gasUsed": "53832"
+    },
+    {
+      "description": "Authorize LaunchpadTokenFactory on DBC LaunchFactory",
+      "safeNonce": "94",
+      "hash": "0x1e772d5838211b6b2d38580d5c22dc80234b820c44cdb0c3921209b0c2926fcc",
+      "gasUsed": "53835"
+    },
+    {
+      "description": "Authorize LaunchpadTokenFactory on LaunchpadFeeController",
+      "safeNonce": "95",
+      "hash": "0x6dfcdce1405456d20bfa8868f1b5367ee1351dbcb2d78a7d24328cb389b33bcb",
+      "gasUsed": "53752"
+    },
+    {
+      "description": "Authorize LaunchpadTokenFactory on RevenueSplitter",
+      "safeNonce": "96",
+      "hash": "0x9d67c2bb176d8eeaf14ed65e2a6225b3434594944aa9e0131a6a4ecad2f5b98e",
+      "gasUsed": "53721"
+    },
+    {
+      "description": "Authorize LaunchpadTokenFactory on LaunchpadFeeCollector",
+      "safeNonce": "97",
+      "hash": "0x0cb129ecdea6d8186be36a409696d2e0e21c911a772f3d5f49d021846ef86354",
+      "gasUsed": "53759"
+    },
+    {
+      "description": "Authorize LaunchpadFeeCollector to accrue launchpad revenue",
+      "safeNonce": "98",
+      "hash": "0x981bc1a87b3cabfb058d2ea9e51a5dc47ff1afa4f4f92eb136fe66effac26dda",
+      "gasUsed": "53721"
+    }
+  ],
+  "roleChecks": {
+    "configFactory": true,
+    "feeControllerFactory": true,
+    "revenueFactory": true,
+    "collectorFactory": true,
+    "collectorAccrual": true,
+    "dbcTokenFactory": true
+  },
+  "gas": {
+    "deployment": "13556457",
+    "configuration": "322620",
+    "total": "13879077",
+    "recommendedGasLimitWith20PercentBuffer": "16654893"
+  },
+  "legacyCompatibility": {
+    "dbcRuntimeUnchanged": true,
+    "dbcRegistryRuntimeUnchanged": true,
+    "launchCountUnchanged": true,
+    "templateCountUnchanged": true,
+    "onlyPlannedLaunchpadRoleAdded": true
+  }
+}

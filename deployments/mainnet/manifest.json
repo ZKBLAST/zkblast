@@ -4,7 +4,7 @@
   "environment": "mainnet",
   "chainId": 4663,
   "chainName": "Robinhood Chain",
-  "generatedAt": "2026-10-30T07:49:57.968Z",
+  "generatedAt": "2026-11-02T02:18:03.231Z",
   "deploymentBlock": 92691497,
   "deploymentBlockHash": "0xfb57d8f4d4028dcbee33278a25f00ac39b3254b92d299d08e2eded3f9f8379d8",
   "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
@@ -842,5 +842,211 @@
     "graduationManager": "0x7DD70C9C9DFA592a4d1617F6cb2e8DB816eCd37c",
     "dammGraduationAdapter": "0xC8A115392EF415738a21C918b02Eff95970FDd89",
     "lpAllocationEscrow": "0x13A41EEE494b198d8F5E428283a0A274699C9b60"
+  },
+  "launchpad": {
+    "abiVersion": 1,
+    "status": "contracts-active-services-pending",
+    "deploymentBlock": 103862957,
+    "registry": "0x49A6233A5942d67ef0d1024BF159480Bc5e5be6a",
+    "configManager": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+    "factory": "0xd604173dd6b2ccdc39C883c0908f7e298f0F23cf",
+    "feeController": "0x0B7de982ecEab02b25bFcdc88581f3FF133FfDE1",
+    "revenueSplitter": "0xB7582AE80429357E58b8E43B9B91Cd4485B99C96",
+    "feeCollector": "0x4238729198c97394ca7F1d49ADC3468313E0800e",
+    "tokenFactory": "0xc8DEc07dfe43eFd37c1a12e82D803C8A67348148",
+    "lens": "0x7b247467e73fDf3817251Ce5956833344979BA57",
+    "implementations": {
+      "registry": "0xB73c10a957De6366F7Dd923457963CA50d67280e",
+      "configManager": "0x434C766744C1057F5d7382C591f976d593d6097B",
+      "factory": "0xF1ed833D88ee1960F51B7385A0beA49467c88167",
+      "feeController": "0x4710D14766De7Ff50E7d121e62Cc9A692D4Eb41B",
+      "revenueSplitter": "0x8b3220e033735E4fb3C52A81D2ccd23d3F46926E",
+      "feeCollector": "0x45694e131B097A2DDd0dCF22DbaE0B6b623F343c",
+      "tokenFactory": "0xfCc37F5Abf661C1EAfD5FBac20388599CFdEc102"
+    },
+    "capabilities": {
+      "permissionlessLaunchpads": true,
+      "permissionlessTokenLaunches": true,
+      "dammGraduation": true,
+      "dlmmGraduation": false,
+      "zkProofClaims": false
+    },
+    "governance": {
+      "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "timelock": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+      "delaySeconds": 300
+    },
+    "deploymentPlanSha256": "44f3c22e2aca023990a7f3be88f93fd7b7c30ca6a7dfe610e790e90b6afacc40",
+    "transactions": [
+      {
+        "stage": "deployment",
+        "label": "registryImplementation",
+        "hash": "0x6c09d18e9cb02ee1783a8d859c2ce92ed09d1df7b9d958ef7f31d5750beda3e9",
+        "blockNumber": 103862957,
+        "gasUsed": "1795222",
+        "totalFeeWei": "35904440000000"
+      },
+      {
+        "stage": "deployment",
+        "label": "registry",
+        "hash": "0xb95be2d72f04383a9419f3af31688c15a5e1d9d146b582d34ae42f8ceb4d3128",
+        "blockNumber": 103862966,
+        "gasUsed": "207539",
+        "totalFeeWei": "4168628354000"
+      },
+      {
+        "stage": "deployment",
+        "label": "configManagerImplementation",
+        "hash": "0x1fba3413f003135c4d74aca776ae1661a073626635cd65202ec059281bb93eec",
+        "blockNumber": 103862977,
+        "gasUsed": "1745783",
+        "totalFeeWei": "34915660000000"
+      },
+      {
+        "stage": "deployment",
+        "label": "configManager",
+        "hash": "0xc6293cd710ceb5c0b390e30ad17b2650a99138cea694a85e7164b78dd08315cc",
+        "blockNumber": 103862985,
+        "gasUsed": "254592",
+        "totalFeeWei": "5122391040000"
+      },
+      {
+        "stage": "deployment",
+        "label": "factoryImplementation",
+        "hash": "0xb461efc75275fffc9fd79a65e46a6f9a123e2b215210b8ee75baa874b5ceed97",
+        "blockNumber": 103862994,
+        "gasUsed": "761825",
+        "totalFeeWei": "15308111550000"
+      },
+      {
+        "stage": "deployment",
+        "label": "factory",
+        "hash": "0xc642f647b20126943291ed41230108e77e08337e5054b003c986973a7b8793ba",
+        "blockNumber": 103863002,
+        "gasUsed": "228208",
+        "totalFeeWei": "4602042528000"
+      },
+      {
+        "stage": "deployment",
+        "label": "feeControllerImplementation",
+        "hash": "0x4a22b07d93e7de59075d37fd3da64d9310c3c51e55b77067f2095836c9f96d3d",
+        "blockNumber": 103863012,
+        "gasUsed": "1707791",
+        "totalFeeWei": "34220716058000"
+      },
+      {
+        "stage": "deployment",
+        "label": "feeController",
+        "hash": "0x65d05bfc564dbd335c28d26e01974d2bab154f5eca5194ec7f30a35685b1af43",
+        "blockNumber": 103863021,
+        "gasUsed": "231112",
+        "totalFeeWei": "4633333376000"
+      },
+      {
+        "stage": "deployment",
+        "label": "revenueSplitterImplementation",
+        "hash": "0x545aed9cc82a51e6b99b9ebbaf7ba316d0ba1a683486c0b6cffb9f2ebc63e96f",
+        "blockNumber": 103863031,
+        "gasUsed": "1963997",
+        "totalFeeWei": "39315291946000"
+      },
+      {
+        "stage": "deployment",
+        "label": "revenueSplitter",
+        "hash": "0xdc600e1a4c3127a5518aa5c5c59319ca84ff4f8ce25fc7f107516d88e8a7d4c6",
+        "blockNumber": 103863041,
+        "gasUsed": "182796",
+        "totalFeeWei": "3663597432000"
+      },
+      {
+        "stage": "deployment",
+        "label": "feeCollectorImplementation",
+        "hash": "0xf5c1728bc78e01ddd46c476a7e92c5fad3f82d8392305bcccb36c1671dfca611",
+        "blockNumber": 103863050,
+        "gasUsed": "1059422",
+        "totalFeeWei": "21215984972000"
+      },
+      {
+        "stage": "deployment",
+        "label": "feeCollector",
+        "hash": "0x5b5ea92b6fbb9adf36382bcee01424c50ff4a87df8db0b03a4404d70b96d2005",
+        "blockNumber": 103863059,
+        "gasUsed": "205468",
+        "totalFeeWei": "4117167784000"
+      },
+      {
+        "stage": "deployment",
+        "label": "tokenFactoryImplementation",
+        "hash": "0xf3ea127ab329c0138b7531c8f677e6ea00755a3c93e47dc1beff44543bfd88fa",
+        "blockNumber": 103863072,
+        "gasUsed": "2121565",
+        "totalFeeWei": "42685887800000"
+      },
+      {
+        "stage": "deployment",
+        "label": "tokenFactory",
+        "hash": "0xae0079cc2caedc27dffe4cad4f7db8af8b99b1d551870ab54e6ff244da0c61d6",
+        "blockNumber": 103863081,
+        "gasUsed": "318988",
+        "totalFeeWei": "6405917016000"
+      },
+      {
+        "stage": "deployment",
+        "label": "lens",
+        "hash": "0xa10274ea467863d17de841517e8732233094a54706c423755cc7698e01f2aef4",
+        "blockNumber": 103863089,
+        "gasUsed": "806750",
+        "totalFeeWei": "16167270000000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadFactory on LaunchpadConfigManager",
+        "hash": "0xe61463fd8780f80f795875cb4d5edf383eb0d4ad758ce8bc61d11beda43fb365",
+        "blockNumber": 103863103,
+        "gasUsed": "92539",
+        "totalFeeWei": "1851150156000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadTokenFactory on DBC LaunchFactory",
+        "hash": "0x80afd4cf525f143ee12e556caef3a6590ecab3be521c2ad2ccde8cf52a711edd",
+        "blockNumber": 103863115,
+        "gasUsed": "92521",
+        "totalFeeWei": "1853010588000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadTokenFactory on LaunchpadFeeController",
+        "hash": "0x25a9070aa6179073fab9b25f4830ecdd5b9cbf5d09a5cf1c66dcb7d3f888818c",
+        "blockNumber": 103863128,
+        "gasUsed": "92461",
+        "totalFeeWei": "1855507348000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadTokenFactory on RevenueSplitter",
+        "hash": "0xf0d381306d8bbfeb5b0c60de96232795af8eb218ce3f0e7407e5f09de9e1564c",
+        "blockNumber": 103863140,
+        "gasUsed": "92420",
+        "totalFeeWei": "1860599440000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadTokenFactory on LaunchpadFeeCollector",
+        "hash": "0xddbc802adf956ef360f7dcf5d1f36d1c159b12b9881cca078afc770987b0d02b",
+        "blockNumber": 103863150,
+        "gasUsed": "92457",
+        "totalFeeWei": "1854872334000"
+      },
+      {
+        "stage": "configuration",
+        "label": "Authorize LaunchpadFeeCollector to accrue launchpad revenue",
+        "hash": "0x185395cc736aa07b602d04bb990e24712e84df753722f9c02e4b2a8a8316aebf",
+        "blockNumber": 103863161,
+        "gasUsed": "92421",
+        "totalFeeWei": "1848420000000"
+      }
+    ],
+    "totalFeeWei": "283569999722000"
   }
 }
