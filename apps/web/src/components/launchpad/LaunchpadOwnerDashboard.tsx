@@ -6,8 +6,11 @@ import {
   CircleDollarSign,
   Coins,
   ExternalLink,
+  LogIn,
   Plus,
   RefreshCw,
+  Router,
+  Wallet,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatTokenAmount } from "@zkblast/sdk";
@@ -56,7 +59,16 @@ export function LaunchpadOwnerDashboard({
   onRefresh: () => void;
   onRetryPending: (item: PendingLaunchpad) => void;
 }>) {
-  const { address, config, connect } = useApp();
+  const {
+    address,
+    injectedAddress,
+    walletChainId,
+    config,
+    busy,
+    connect,
+    loginInjected,
+    switchNetwork,
+  } = useApp();
   const [ownedRecords, setOwnedRecords] = useState<
     readonly OwnedLaunchpadRecord[]
   >([]);
@@ -117,21 +129,62 @@ export function LaunchpadOwnerDashboard({
     const block = BigInt(launch.updated_block);
     return block > latest ? block : latest;
   }, 0n);
-  if (!address)
+  const walletMatchesSession = Boolean(
+    address &&
+    injectedAddress &&
+    address.toLowerCase() === injectedAddress.toLowerCase(),
+  );
+  const wrongNetwork = Boolean(
+    config && walletChainId !== null && walletChainId !== config.chainId,
+  );
+  if (!injectedAddress || !walletMatchesSession || wrongNetwork)
     return (
       <section className="panel ticks grid min-h-[28rem] place-items-center p-6 text-center">
-        <div>
-          <p className="label">Owner dashboard</p>
-          <h2 className="mt-3 text-2xl">Connect the owner wallet.</h2>
+        <div className="max-w-md">
+          <div className="mx-auto grid size-11 place-items-center border border-line bg-raised">
+            {!injectedAddress ? (
+              <Wallet className="size-5" aria-hidden />
+            ) : wrongNetwork ? (
+              <Router className="size-5" aria-hidden />
+            ) : (
+              <LogIn className="size-5" aria-hidden />
+            )}
+          </div>
+          <p className="label mt-4">My launchpads</p>
+          <h2 className="mt-3 text-2xl">
+            {!injectedAddress
+              ? "Connect your wallet"
+              : wrongNetwork
+                ? `Switch to ${config?.chainName ?? "the configured network"}`
+                : "Sign in to continue"}
+          </h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">
-            The dashboard only shows launchpad-bound products associated with
-            the connected wallet.
+            {!injectedAddress
+              ? "Connect the owner wallet to view and manage its launchpads."
+              : wrongNetwork
+                ? "The connected wallet must match the network configured for this ZKBLAST deployment."
+                : "Confirm the login signature to load launchpads controlled by this wallet. This does not submit an onchain transaction."}
           </p>
+          {injectedAddress && (
+            <p className="mt-3 font-mono text-xs text-muted">
+              Wallet · {shortHex(injectedAddress)}
+            </p>
+          )}
           <button
-            onClick={() => void connect()}
-            className="mt-6 bg-lime px-6 py-3 font-mono text-xs uppercase text-lime-ink"
+            onClick={() => {
+              if (!injectedAddress) connect();
+              else if (wrongNetwork) void switchNetwork();
+              else void loginInjected();
+            }}
+            disabled={busy}
+            className="mt-6 inline-flex min-w-48 items-center justify-center gap-2 bg-lime px-6 py-3 font-mono text-xs uppercase text-lime-ink disabled:cursor-wait disabled:opacity-60"
           >
-            Connect wallet
+            {busy && <RefreshCw className="size-4 animate-spin" aria-hidden />}
+            {!injectedAddress
+              ? "Connect wallet"
+              : wrongNetwork
+                ? "Switch network"
+                : "Sign in"}
           </button>
         </div>
       </section>
@@ -141,7 +194,7 @@ export function LaunchpadOwnerDashboard({
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line p-5">
         <div>
           <p className="label">Connected owner</p>
-          <p className="mt-2 font-mono text-sm">{shortHex(address)}</p>
+          <p className="mt-2 font-mono text-sm">{shortHex(address!)}</p>
         </div>
         <button
           onClick={onBuild}
@@ -262,46 +315,49 @@ export function LaunchpadOwnerDashboard({
         )}
         {ownedRecords.length > 0 && (
           <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {ownedRecords
-              .map((record) => (
-                <article
-                  key={record.launchpadId}
-                  className="border border-line p-5"
+            {ownedRecords.map((record) => (
+              <article
+                key={record.launchpadId}
+                className="border border-line p-5"
+              >
+                <p className="font-mono text-sm">
+                  Launchpad {record.launchpadId}
+                </p>
+                <p className="mt-2 text-xs text-muted">
+                  Onchain and owner-verified ·{" "}
+                  {
+                    owned.filter(
+                      (launch) => launch.launchpad_id === record.launchpadId,
+                    ).length
+                  }{" "}
+                  token(s).
+                </p>
+                <dl className="mt-5 grid grid-cols-2 gap-2 text-xs">
+                  <dt className="text-muted">Preset</dt>
+                  <dd className="text-right">{record.configPresetId}</dd>
+                  <dt className="text-muted">Treasury</dt>
+                  <dd className="text-right font-mono">
+                    {shortHex(record.treasury)}
+                  </dd>
+                  <dt className="text-muted">Status</dt>
+                  <dd className="text-right">
+                    {record.status === 1 ? "Active" : `State ${record.status}`}
+                  </dd>
+                </dl>
+                <a
+                  href={`/launch?launchpad=${record.launchpadId}`}
+                  className="mt-5 flex items-center gap-2 text-xs text-muted hover:text-fg"
                 >
-                  <p className="font-mono text-sm">
-                    Launchpad {record.launchpadId}
-                  </p>
-                  <p className="mt-2 text-xs text-muted">
-                    Onchain and owner-verified · {owned.filter((launch) => launch.launchpad_id === record.launchpadId).length} token(s).
-                  </p>
-                  <dl className="mt-5 grid grid-cols-2 gap-2 text-xs">
-                    <dt className="text-muted">Preset</dt>
-                    <dd className="text-right">{record.configPresetId}</dd>
-                    <dt className="text-muted">Treasury</dt>
-                    <dd className="text-right font-mono">
-                      {shortHex(record.treasury)}
-                    </dd>
-                    <dt className="text-muted">Status</dt>
-                    <dd className="text-right">
-                      {record.status === 1
-                        ? "Active"
-                        : `State ${record.status}`}
-                    </dd>
-                  </dl>
-                  <a
-                    href={`/launch?launchpad=${record.launchpadId}`}
-                    className="mt-5 flex items-center gap-2 text-xs text-muted hover:text-fg"
-                  >
-                    Open launchpad <ExternalLink className="size-3" />
-                  </a>
-                  <button
-                    onClick={() => onCreateToken(record.launchpadId)}
-                    className="mt-4 flex items-center gap-2 bg-lime px-4 py-2 font-mono text-[10px] uppercase text-lime-ink"
-                  >
-                    <Plus className="size-3" /> Create token here
-                  </button>
-                </article>
-              ))}
+                  Open launchpad <ExternalLink className="size-3" />
+                </a>
+                <button
+                  onClick={() => onCreateToken(record.launchpadId)}
+                  className="mt-4 flex items-center gap-2 bg-lime px-4 py-2 font-mono text-[10px] uppercase text-lime-ink"
+                >
+                  <Plus className="size-3" /> Create token here
+                </button>
+              </article>
+            ))}
           </div>
         )}
         {loading || ownerDiscoveryLoading ? (

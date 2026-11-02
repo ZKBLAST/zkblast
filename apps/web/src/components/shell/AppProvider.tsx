@@ -28,6 +28,7 @@ type Toast = Readonly<{
 type AppContextValue = Readonly<{
   address: string | null;
   injectedAddress: string | null;
+  walletChainId: number | null;
   config: PublicConfig | null;
   profile: UserProfile | null;
   trades: readonly Trade[];
@@ -38,6 +39,7 @@ type AppContextValue = Readonly<{
   adjust: (_symbol: string, _delta: number) => void;
   connect: () => void;
   loginInjected: () => Promise<void>;
+  switchNetwork: () => Promise<void>;
   openWallet: () => void;
   disconnect: () => Promise<void>;
   updateUsername: (username: string) => Promise<void>;
@@ -62,6 +64,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [status, setStatus] = useState("Connecting to the ZKBLAST API");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [injectedAddress, setInjectedAddress] = useState<string | null>(null);
+  const [walletChainId, setWalletChainId] = useState<number | null>(null);
   const apiUrl = webPublicConfig.apiUrl;
   const address = profile?.wallets[0]?.address ?? null;
 
@@ -109,6 +112,13 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   useEffect(() => {
     const provider = window.ethereum;
     if (!provider) return;
+    const chainEvents = provider as unknown as {
+      on?: (event: string, listener: (value: unknown) => void) => void;
+      removeListener?: (
+        event: string,
+        listener: (value: unknown) => void,
+      ) => void;
+    };
 
     const syncInjectedAccount = (accounts: unknown) => {
       const walletAddress =
@@ -117,15 +127,42 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
           : null;
       setInjectedAddress(walletAddress);
     };
+    const syncChain = (chainId: unknown) => {
+      setWalletChainId(
+        typeof chainId === "string" ? Number.parseInt(chainId, 16) : null,
+      );
+    };
     void provider
       .request({ method: "eth_accounts" })
       .then(syncInjectedAccount)
       .catch(() => setInjectedAddress(null));
+    void provider
+      .request({ method: "eth_chainId" })
+      .then(syncChain)
+      .catch(() => setWalletChainId(null));
     provider.on?.("accountsChanged", syncInjectedAccount);
+    chainEvents.on?.("chainChanged", syncChain);
 
-    return () =>
+    return () => {
       provider.removeListener?.("accountsChanged", syncInjectedAccount);
+      chainEvents.removeListener?.("chainChanged", syncChain);
+    };
   }, []);
+
+  const switchNetwork = useCallback(async () => {
+    if (!window.ethereum) {
+      setWalletOpen(true);
+      return;
+    }
+    const activeConfig =
+      config ??
+      parsePublicConfig(await apiRequest<unknown>(apiUrl, "/v1/config"));
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: `0x${activeConfig.chainId.toString(16)}` }],
+    });
+    setWalletChainId(activeConfig.chainId);
+  }, [apiUrl, config]);
 
   const loginInjected = useCallback(async () => {
     if (!window.ethereum) {
@@ -210,6 +247,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       setProfile(null);
       setTrades([]);
       setInjectedAddress(null);
+      setWalletChainId(null);
       setStatus("Session closed");
       toast({
         kind: "info",
@@ -244,10 +282,12 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       busy,
       status,
       injectedAddress,
+      walletChainId,
       balances: {},
       adjust: () => undefined,
       connect: () => setWalletOpen(true),
       loginInjected,
+      switchNetwork,
       openWallet: () => setWalletOpen(true),
       disconnect,
       updateUsername,
@@ -264,6 +304,8 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       refreshAccount,
       status,
       injectedAddress,
+      walletChainId,
+      switchNetwork,
       toast,
       trades,
       updateUsername,
