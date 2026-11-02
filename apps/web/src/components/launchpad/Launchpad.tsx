@@ -54,7 +54,9 @@ export function Launchpad() {
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const [wizard, setWizard] = useState(false);
-  const [wizardLaunchpadId, setWizardLaunchpadId] = useState<string | null>(null);
+  const [wizardLaunchpadId, setWizardLaunchpadId] = useState<string | null>(
+    null,
+  );
   const [pendingLaunchpads, setPendingLaunchpads] = useState<
     readonly PendingLaunchpad[]
   >([]);
@@ -245,12 +247,12 @@ export function Launchpad() {
       </div>
       <nav
         aria-label="Launch workspace"
-        className="mb-4 grid border border-line sm:grid-cols-3"
+        className="mb-4 grid divide-y divide-line overflow-hidden border border-line bg-raised/40 sm:grid-cols-3 sm:divide-x sm:divide-y-0"
       >
         {(
           [
             ["markets", "Markets", Store],
-            ["build", "Build launchpad", Rocket],
+            ["build", "Launchpad", Rocket],
             ["manage", "My launchpads", LayoutDashboard],
           ] as const
         ).map(([value, label, Icon]) => (
@@ -258,10 +260,16 @@ export function Launchpad() {
             key={value}
             onClick={() => selectView(value)}
             aria-current={view === value ? "page" : undefined}
-            className={`flex min-h-12 items-center justify-center gap-2 border-b-2 px-4 font-mono text-xs uppercase sm:border-b-0 sm:border-r-2 ${view === value ? "border-lime bg-white/[.05] text-fg" : "border-transparent text-muted hover:bg-white/[.03]"}`}
+            className={`relative flex min-h-14 items-center justify-center gap-2 px-4 font-mono text-xs uppercase tracking-wide transition-[background-color,color,box-shadow] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lime ${view === value ? "bg-lime text-lime-ink shadow-[inset_0_-3px_0_rgba(0,0,0,0.32),0_0_24px_rgba(207,238,117,0.12)]" : "text-muted hover:bg-white/[.04] hover:text-fg"}`}
           >
-            <Icon className="size-4" />
+            <Icon
+              className={`size-4 ${view === value ? "stroke-[2.4]" : ""}`}
+              aria-hidden
+            />
             {label}
+            {view === value && (
+              <span className="absolute right-3 size-1.5 rounded-full bg-lime-ink sm:right-4" />
+            )}
           </button>
         ))}
       </nav>
