@@ -9,6 +9,11 @@ const LOGO_SOURCES: Readonly<Record<string, string>> = {
     "https://dbk-vercel.vercel.app/api/ipfs/content/bafybeiemw22gzvetqepidnxn4orhz6ofawlzf6vzrbbdt6rkofykuj6df4?variant=compact",
 };
 
+const LOGO_ALIASES: Readonly<Record<string, string>> = {
+  ZKCAN: "ZKBLAST",
+  ZLPC: "ZKBLAST",
+};
+
 const MAX_LOGO_BYTES = 5_000_000;
 
 async function getLocalFallback(symbol: string): Promise<Response | null> {
@@ -41,7 +46,8 @@ export async function GET(
   context: { params: Promise<{ symbol: string }> },
 ) {
   const { symbol } = await context.params;
-  const upperSymbol = symbol.toUpperCase();
+  const requestedSymbol = symbol.toUpperCase();
+  const upperSymbol = LOGO_ALIASES[requestedSymbol] ?? requestedSymbol;
   const source = LOGO_SOURCES[upperSymbol];
   if (!source) return new Response(null, { status: 404 });
 

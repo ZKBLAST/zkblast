@@ -11,6 +11,7 @@ const store: DbcReadStore = {
   templates: async () => [{ templateId: "1" }],
   launches: async () => [{ launchId: `0x${"1".repeat(64)}` }],
   launch: async (id) => ({ launchId: id }),
+  launchByPool: async () => ({ lifecycle: 1 }),
   trades: async () => [],
   candles: async () => [],
   graduation: async () => null,

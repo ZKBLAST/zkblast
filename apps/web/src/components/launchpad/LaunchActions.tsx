@@ -203,6 +203,10 @@ export function LaunchActions({
   const getQuote = useCallback(
     async (signal?: AbortSignal) => {
       try {
+        if (launch.lifecycle !== 1)
+          throw new Error(
+            "Curve trading is closed. Use the graduated DAMM pool.",
+          );
         const raw = parseTokenAmount(amount, inputDecimals);
         if (raw <= 0n) throw new Error("INVALID_AMOUNT");
         if (spendableRaw !== null && raw > spendableRaw)
@@ -236,7 +240,14 @@ export function LaunchActions({
         if (!signal?.aborted) setBusy(false);
       }
     },
-    [amount, inputDecimals, launch.virtual_pool, side, spendableRaw],
+    [
+      amount,
+      inputDecimals,
+      launch.lifecycle,
+      launch.virtual_pool,
+      side,
+      spendableRaw,
+    ],
   );
   useEffect(() => {
     if (!amount || amountRaw <= 0n || launch.lifecycle !== 1) return;
@@ -251,6 +262,10 @@ export function LaunchActions({
     };
   }, [amount, amountRaw, getQuote, launch.lifecycle]);
   async function applyPercentage(percent: number) {
+    if (launch.lifecycle !== 1) {
+      setStatus("Curve trading is closed. Use the graduated DAMM pool.");
+      return;
+    }
     if (spendableRaw === null) return;
     let raw = (spendableRaw * BigInt(percent)) / 100n;
     if (side === "sell" && percent === 100 && raw > 0n) {
@@ -477,7 +492,11 @@ export function LaunchActions({
                   <button
                     key={percent}
                     type="button"
-                    disabled={spendableRaw === null || spendableRaw === 0n}
+                    disabled={
+                      launch.lifecycle !== 1 ||
+                      spendableRaw === null ||
+                      spendableRaw === 0n
+                    }
                     onClick={() => void applyPercentage(percent)}
                     className="border border-line py-2 font-mono text-[10px] text-muted hover:border-lime/60 hover:text-fg disabled:opacity-30"
                   >

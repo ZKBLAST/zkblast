@@ -84,6 +84,13 @@ export class PostgresDbcReadStore implements DbcReadStore {
     );
     return rows[0] ?? null;
   }
+  async launchByPool(pool: `0x${string}`) {
+    const rows = await this.#sql.unsafe<{ lifecycle: number }[]>(
+      `select lifecycle from ${this.schema}.dbc_launches where virtual_pool=$1 limit 1`,
+      [pool.toLowerCase()],
+    );
+    return rows[0] ?? null;
+  }
   trades(launchId: string, page: DbcPage) {
     return this.#sql.unsafe(
       `select transaction_hash,log_index,trader,recipient,is_buy,quote_amount_raw::text,base_amount_raw::text,fee_raw::text,price_x18::text,block_number,observed_at

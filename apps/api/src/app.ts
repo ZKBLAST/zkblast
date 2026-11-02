@@ -292,7 +292,10 @@ export function createApp(
   if (dependencies.launchpadCatalogService) {
     app.use(
       "/v1/launchpads",
-      createLaunchpadCatalogRouter(dependencies.launchpadCatalogService, dependencies.launchpadReadService),
+      createLaunchpadCatalogRouter(
+        dependencies.launchpadCatalogService,
+        dependencies.launchpadReadService,
+      ),
     );
   }
   if (dependencies.launchpadBrandingService) {
@@ -363,11 +366,22 @@ export function createApp(
         "PERPS_RELAY_SIMULATION_FAILED",
       ].includes(error.message);
     const launchpadNotFound =
-      error instanceof Error && ["LAUNCHPAD_NOT_FOUND","LAUNCHPAD_POOL_NOT_BOUND"].includes(error.message);
-    const launchpadConflict = error instanceof Error && error.message === "LAUNCHPAD_POOL_NOT_TRADABLE";
-    const launchpadUnavailable = error instanceof Error && error.message === "LAUNCHPAD_QUOTE_UNAVAILABLE";
-    const launchpadRequestError = error instanceof Error && error.message.startsWith("LAUNCHPAD_");
-    const launchpadApiAuthentication = error instanceof Error && error.message === "LAUNCHPAD_API_KEY_INVALID";
+      error instanceof Error &&
+      ["LAUNCHPAD_NOT_FOUND", "LAUNCHPAD_POOL_NOT_BOUND"].includes(
+        error.message,
+      );
+    const launchpadConflict =
+      error instanceof Error && error.message === "LAUNCHPAD_POOL_NOT_TRADABLE";
+    const launchpadUnavailable =
+      error instanceof Error && error.message === "LAUNCHPAD_QUOTE_UNAVAILABLE";
+    const dbcNotFound =
+      error instanceof Error && error.message === "DBC_POOL_NOT_FOUND";
+    const dbcConflict =
+      error instanceof Error && error.message === "DBC_CURVE_TRADING_CLOSED";
+    const launchpadRequestError =
+      error instanceof Error && error.message.startsWith("LAUNCHPAD_");
+    const launchpadApiAuthentication =
+      error instanceof Error && error.message === "LAUNCHPAD_API_KEY_INVALID";
     const status = invalidRequest
       ? 400
       : authenticationFailure
@@ -384,17 +398,21 @@ export function createApp(
                   ? 404
                   : launchpadConflict
                     ? 409
-                    : launchpadUnavailable
-                      ? 503
-                      : launchpadApiAuthentication
-                        ? 401
-                      : launchpadRequestError
-                        ? 400
-                : databaseCapacity || perpsUnavailable
-                  ? 503
-                  : perpsRequestConflict
-                    ? 409
-                    : 500;
+                    : dbcNotFound
+                      ? 404
+                      : dbcConflict
+                        ? 409
+                        : launchpadUnavailable
+                          ? 503
+                          : launchpadApiAuthentication
+                            ? 401
+                            : launchpadRequestError
+                              ? 400
+                              : databaseCapacity || perpsUnavailable
+                                ? 503
+                                : perpsRequestConflict
+                                  ? 409
+                                  : 500;
     if (status === 500) {
       console.error(
         JSON.stringify({
@@ -423,21 +441,29 @@ export function createApp(
                     ? error instanceof Error
                       ? error.message
                       : "PERPS_RELAY_SIMULATION_FAILED"
-                    : launchpadNotFound || launchpadConflict || launchpadUnavailable
-                      ? error instanceof Error ? error.message : "LAUNCHPAD_REQUEST_FAILED"
-                    : launchpadRequestError
-                      ? error instanceof Error ? error.message : "LAUNCHPAD_REQUEST_INVALID"
-                    : databaseCapacity
-                      ? "TEMPORARILY_UNAVAILABLE"
-                      : perpsUnavailable
+                    : launchpadNotFound ||
+                        launchpadConflict ||
+                        launchpadUnavailable ||
+                        dbcNotFound ||
+                        dbcConflict
+                      ? error instanceof Error
+                        ? error.message
+                        : "LAUNCHPAD_REQUEST_FAILED"
+                      : launchpadRequestError
                         ? error instanceof Error
                           ? error.message
-                          : "PERPS_UNAVAILABLE"
-                        : perpsRequestConflict
-                          ? error instanceof Error
-                            ? error.message
-                            : "PERP_REQUEST_CONFLICT"
-                          : "INTERNAL_ERROR",
+                          : "LAUNCHPAD_REQUEST_INVALID"
+                        : databaseCapacity
+                          ? "TEMPORARILY_UNAVAILABLE"
+                          : perpsUnavailable
+                            ? error instanceof Error
+                              ? error.message
+                              : "PERPS_UNAVAILABLE"
+                            : perpsRequestConflict
+                              ? error instanceof Error
+                                ? error.message
+                                : "PERP_REQUEST_CONFLICT"
+                              : "INTERNAL_ERROR",
       },
     });
   };

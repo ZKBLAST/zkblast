@@ -43,6 +43,7 @@ export interface DbcReadStore {
       }>,
   ): Promise<readonly unknown[]>;
   launch(launchId: string): Promise<unknown>;
+  launchByPool(pool: Address): Promise<Readonly<{ lifecycle: number }> | null>;
   trades(launchId: string, page: DbcPage): Promise<readonly unknown[]>;
   candles(launchId: string, query: DbcCandleQuery): Promise<readonly unknown[]>;
   graduation(launchId: string): Promise<unknown>;
@@ -94,7 +95,10 @@ export class DbcService {
   metadata(metadataId: string) {
     return this.store.metadata(metadataId);
   }
-  quote(pool: Address, side: "buy" | "sell", amountRaw: bigint) {
+  async quote(pool: Address, side: "buy" | "sell", amountRaw: bigint) {
+    const launch = await this.store.launchByPool(pool);
+    if (!launch) throw new Error("DBC_POOL_NOT_FOUND");
+    if (launch.lifecycle !== 1) throw new Error("DBC_CURVE_TRADING_CLOSED");
     return this.quoteReader.quote({ pool, side, amountRaw });
   }
   async templateEconomics(templateId: bigint) {
