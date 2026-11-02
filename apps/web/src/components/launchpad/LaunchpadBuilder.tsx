@@ -191,8 +191,11 @@ export function LaunchpadBuilder({
   }, [templateEconomics]);
   const curvePath = useMemo(() => {
     if (curvePreview.length < 2) return "";
-    const minimum = curvePreview[0]!.priceX18;
-    const maximum = curvePreview[curvePreview.length - 1]!.priceX18;
+    const first = curvePreview.at(0);
+    const last = curvePreview.at(-1);
+    if (!first || !last) return "";
+    const minimum = first.priceX18;
+    const maximum = last.priceX18;
     const range = maximum > minimum ? maximum - minimum : 1n;
     return curvePreview
       .map((point, index) => {
@@ -1273,9 +1276,8 @@ export function LaunchpadBuilder({
                     vectorEffect="non-scaling-stroke"
                   />
                   {curvePreview.map((point, index) => {
-                    const minimum = curvePreview[0]!.priceX18;
-                    const maximum =
-                      curvePreview[curvePreview.length - 1]!.priceX18;
+                    const minimum = curvePreview.at(0)?.priceX18 ?? point.priceX18;
+                    const maximum = curvePreview.at(-1)?.priceX18 ?? point.priceX18;
                     const range = maximum > minimum ? maximum - minimum : 1n;
                     const y =
                       100 -

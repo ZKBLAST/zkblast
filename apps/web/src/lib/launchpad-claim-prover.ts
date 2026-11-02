@@ -15,6 +15,37 @@ export type LaunchpadClaimProofResult = Readonly<{
   publicInputs: readonly string[];
 }>;
 
+const proofStages = new Set<LaunchpadClaimProofStage>([
+  "loading-manifest",
+  "loading-artifacts",
+  "generating-witness",
+  "proving",
+  "complete",
+]);
+
+function workerMessage(value: unknown) {
+  if (!value || typeof value !== "object") return null;
+  const message = value as Record<string, unknown>;
+  return {
+    id: typeof message.id === "number" ? message.id : null,
+    stage:
+      typeof message.stage === "string"
+        && proofStages.has(message.stage as LaunchpadClaimProofStage)
+        ? (message.stage as LaunchpadClaimProofStage)
+        : null,
+    error: typeof message.error === "string" ? message.error : null,
+    proof:
+      typeof message.proof === "string" && /^0x[\da-f]+$/iu.test(message.proof)
+        ? (message.proof as `0x${string}`)
+        : null,
+    publicInputs:
+      Array.isArray(message.publicInputs)
+        && message.publicInputs.every((input) => typeof input === "string")
+        ? message.publicInputs
+        : null,
+  };
+}
+
 export class LaunchpadClaimProver {
   readonly #worker: Worker;
   #sequence = 0;
@@ -29,15 +60,20 @@ export class LaunchpadClaimProver {
   ): Promise<LaunchpadClaimProofResult> {
     const id = ++this.#sequence;
     return new Promise((resolve, reject) => {
-      const listener = (event: MessageEvent) => {
-        if (event.data?.id !== id) return;
-        if (event.data.stage) onStage?.(event.data.stage);
-        if (event.data.error) {
+      const listener = (event: MessageEvent<unknown>) => {
+        const message = workerMessage(event.data);
+        if (!message || message.id !== id) return;
+        if (message.stage) onStage?.(message.stage);
+        if (message.error) {
           this.#worker.removeEventListener("message", listener);
-          reject(new Error(event.data.error));
-        } else if (event.data.stage === "complete") {
+          reject(new Error(message.error));
+        } else if (message.stage === "complete") {
           this.#worker.removeEventListener("message", listener);
-          resolve({ proof: event.data.proof, publicInputs: event.data.publicInputs });
+          if (!message.proof || !message.publicInputs) {
+            reject(new Error("LAUNCHPAD_CLAIM_PROOF_RESPONSE_INVALID"));
+            return;
+          }
+          resolve({ proof: message.proof, publicInputs: message.publicInputs });
         }
       };
       this.#worker.addEventListener("message", listener);
