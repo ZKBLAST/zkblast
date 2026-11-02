@@ -4,7 +4,6 @@ import {
   AtSign,
   Globe,
   LayoutDashboard,
-  Plus,
   Rocket,
   Search,
   ShieldCheck,
@@ -243,19 +242,6 @@ export function Launchpad() {
                 : "Monitor the launchpads and curve products controlled by the connected wallet."}
           </p>
         </div>
-        {view === "markets" && (
-          <button
-            disabled={!deployment}
-            onClick={() => {
-              setWizardLaunchpadId(null);
-              setWizard(true);
-            }}
-            className="flex min-h-11 items-center gap-2 bg-lime px-5 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
-          >
-            <Plus className="size-4" />
-            Create token
-          </button>
-        )}
       </div>
       <nav
         aria-label="Launch workspace"

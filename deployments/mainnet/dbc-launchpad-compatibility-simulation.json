@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet-fork",
+  "chainId": 4663,
+  "planSha256": "d8ab29da404bea484c9b3aa43c247112c2fcf340853a44d237a978106c268e06",
+  "factory": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+  "implementation": "0x211a30E7D2837B04Fc72DD81fbaf15dc19CceEe6",
+  "poolDeployer": "0x3086f8699ca40aFAb009A6156efb75aF4612E10f",
+  "receipts": [
+    {
+      "step": "deploy-virtual-pool-deployer",
+      "hash": "0x43834537df30b2d05a3c86b9533f63c5a7315c139b8689e69be300f35216aab5",
+      "gasUsed": "4911929"
+    },
+    {
+      "step": "deploy-launch-factory-implementation",
+      "hash": "0x677c5f6f8aebdfcc9f4b1059bbc648292f5f2d31d29ed7f5c5518702f796987c",
+      "gasUsed": "2238690"
+    },
+    {
+      "step": "bind-new-deployer",
+      "hash": "0xe0daba27153247466ec5e221ea9dc58298a3a70f949c07824deb91796d1bcb5b",
+      "gasUsed": "44158"
+    },
+    {
+      "step": "schedule-upgrade",
+      "hash": "0x30a65bf1ad7e6fad52e64b904e1b68c3f5d1224a8983f1111046bef0dfaac273",
+      "gasUsed": "57663"
+    },
+    {
+      "step": "execute-upgrade",
+      "hash": "0x085e55a0ad9200a557b518a2986fd511b7a1a8ef1dacc55d1f34abddc2e769c0",
+      "gasUsed": "57463"
+    },
+    {
+      "step": "rotate-pool-deployer",
+      "hash": "0x421ee3f8baf14bcb76b77ceadda253b361749627784745a16abd15f71c79a0df",
+      "gasUsed": "40952"
+    }
+  ],
+  "targetCallGasUsed": "7350855",
+  "verified": true,
+  "broadcastAllowed": false
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "planSha256": "13674891ebdce3f7b6723cc6fcb49a2e1f25efefc1c3292270565ba3abae35f9",
+  "capWei": "10000000000000",
+  "status": "verified",
+  "receipts": [
+    {
+      "name": "allow-usdg-quote-token",
+      "transactionHash": "0xd6661bde0cf8706eb9b80e4a1064efc37289e22d5049991ff89aec7e24ca0938",
+      "blockNumber": "103887213",
+      "blockHash": "0x388db69edeebfe686e2fca2e97edf28bc9f2eb3d6cf67146e0c2bafb4a05109d",
+      "gasUsed": "94011",
+      "effectiveGasPriceWei": "20010000",
+      "totalFeeWei": "1881160110000"
+    },
+    {
+      "name": "create-damm-usdg-preset-v1",
+      "transactionHash": "0x3a3e00eb826b0d7c6cfed59f489025a87c9d670521bca25d9079b56043f31936",
+      "blockNumber": "103887219",
+      "blockHash": "0xdd3b66973cc7d5f6a7066619ca66f677c3ca9e56635318591f359678a3c5f1b6",
+      "gasUsed": "238212",
+      "effectiveGasPriceWei": "20060000",
+      "totalFeeWei": "4778532720000"
+    }
+  ],
+  "totalFeeWei": "6659692830000",
+  "totalFeeEth": "0.00000665969283",
+  "updatedAt": "2026-11-02T02:58:35.024Z"
+}

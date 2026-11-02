@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": "103900564",
+  "referenceBlockHash": "0xacf4fc7ac73291775ff82bc83188c33f3f8871a38c98c01fdd5b39673ddedb9e",
+  "owner": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "pendingNonce": 579,
+  "launchpadCount": "0",
+  "predictedLaunchpadId": "1",
+  "addresses": {
+    "registry": "0x49A6233A5942d67ef0d1024BF159480Bc5e5be6a",
+    "configManager": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+    "factory": "0xd604173dd6b2ccdc39C883c0908f7e298f0F23cf",
+    "feeController": "0x0B7de982ecEab02b25bFcdc88581f3FF133FfDE1",
+    "revenueSplitter": "0xB7582AE80429357E58b8E43B9B91Cd4485B99C96",
+    "feeCollector": "0x4238729198c97394ca7F1d49ADC3468313E0800e",
+    "tokenFactory": "0xc8DEc07dfe43eFd37c1a12e82D803C8A67348148",
+    "lens": "0x7b247467e73fDf3817251Ce5956833344979BA57",
+    "dbcRegistry": "0xd680c010873257f05EAAbdde583b2d6DE4FA6e33",
+    "router": "0x6d208744Ff0Ec74b04Bb76576b32A8A2ccB9f181",
+    "usdg": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"
+  },
+  "branding": {
+    "schemaVersion": 1,
+    "slug": "zkblast-mainnet-canary",
+    "name": "ZKBLAST Mainnet Canary",
+    "description": "Minimum-value mainnet acceptance launchpad for ZKBLAST.",
+    "primaryColor": "#c7f456",
+    "backgroundColor": "#090910",
+    "foregroundColor": "#f5f5f7",
+    "websiteUrl": "https://zkblast.tech",
+    "xUrl": "https://x.com/zkblast9",
+    "logoSha256": null,
+    "faviconSha256": null
+  },
+  "metadataHash": "0x744eaf236d62d68eaf8cbd65fd8865634596535d003f3da1a57a67e76417d6ed",
+  "slugCommitment": "0x45c66d51c646df1200241b331a921692236d8b0e78257f37b3e2643d17b95906",
+  "presetId": "1",
+  "templateId": "1",
+  "preset": {
+    "configHash": "0x496f8aac1f53a1489a19c863113e692279e5003f04a02f2ad7efe7b0e9707057",
+    "maximumTotalTradeFeeBps": 300,
+    "maximumLaunches": 1000,
+    "creatorAccess": 0,
+    "graduationDestination": 1,
+    "used": false
+  },
+  "templateEconomics": {
+    "quoteToken": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "totalSupplyRaw": "1000000000000000000000",
+    "baseInventoryRaw": "800000000000000000000",
+    "graduationThresholdRaw": "1000000",
+    "tradeFeeBps": 30,
+    "creatorLpShareBps": 5000
+  },
+  "balances": {
+    "ethWei": "1966442733119702",
+    "eth": "0.001966442733119702",
+    "usdgRaw": "3012578",
+    "usdg": "3.012578",
+    "routerAllowanceRaw": "0",
+    "routerAllowance": "0"
+  },
+  "liveEstimate": {
+    "gasPriceWei": "20300000",
+    "createLaunchpadGas": "258734",
+    "bufferedCreateLaunchpadGas": "388101",
+    "bufferedCreateLaunchpadFeeWei": "7878450300000",
+    "bufferedCreateLaunchpadFeeEth": "0.0000078784503"
+  },
+  "dependencies": [
+    {
+      "name": "registry",
+      "address": "0x49A6233A5942d67ef0d1024BF159480Bc5e5be6a",
+      "hasCode": true
+    },
+    {
+      "name": "configManager",
+      "address": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "hasCode": true
+    },
+    {
+      "name": "factory",
+      "address": "0xd604173dd6b2ccdc39C883c0908f7e298f0F23cf",
+      "hasCode": true
+    },
+    {
+      "name": "feeController",
+      "address": "0x0B7de982ecEab02b25bFcdc88581f3FF133FfDE1",
+      "hasCode": true
+    },
+    {
+      "name": "revenueSplitter",
+      "address": "0xB7582AE80429357E58b8E43B9B91Cd4485B99C96",
+      "hasCode": true
+    },
+    {
+      "name": "feeCollector",
+      "address": "0x4238729198c97394ca7F1d49ADC3468313E0800e",
+      "hasCode": true
+    },
+    {
+      "name": "tokenFactory",
+      "address": "0xc8DEc07dfe43eFd37c1a12e82D803C8A67348148",
+      "hasCode": true
+    },
+    {
+      "name": "lens",
+      "address": "0x7b247467e73fDf3817251Ce5956833344979BA57",
+      "hasCode": true
+    },
+    {
+      "name": "dbcRegistry",
+      "address": "0xd680c010873257f05EAAbdde583b2d6DE4FA6e33",
+      "hasCode": true
+    },
+    {
+      "name": "router",
+      "address": "0x6d208744Ff0Ec74b04Bb76576b32A8A2ccB9f181",
+      "hasCode": true
+    },
+    {
+      "name": "usdg",
+      "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "hasCode": true
+    }
+  ],
+  "sequence": [
+    "create-launchpad",
+    "configure-fee-policy",
+    "publish-signed-branding",
+    "create-token",
+    "approve-usdg-if-needed",
+    "buy",
+    "sell",
+    "collect-trade-fees",
+    "claim",
+    "graduate-damm"
+  ],
+  "broadcastAllowed": false
+}

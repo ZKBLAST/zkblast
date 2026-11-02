@@ -250,18 +250,19 @@ export function LaunchpadOwnerDashboard({
             ))}
           </div>
         )}
-        {ownedRecords.some(
-          (record) =>
-            !owned.some((launch) => launch.launchpad_id === record.launchpadId),
-        ) && (
+        {ownedRecords.length > 0 && (
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div>
+              <p className="label">Your launchpads</p>
+              <p className="mt-1 text-xs text-muted">
+                Choose one launchpad before creating a token.
+              </p>
+            </div>
+          </div>
+        )}
+        {ownedRecords.length > 0 && (
           <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {ownedRecords
-              .filter(
-                (record) =>
-                  !owned.some(
-                    (launch) => launch.launchpad_id === record.launchpadId,
-                  ),
-              )
               .map((record) => (
                 <article
                   key={record.launchpadId}
@@ -271,7 +272,7 @@ export function LaunchpadOwnerDashboard({
                     Launchpad {record.launchpadId}
                   </p>
                   <p className="mt-2 text-xs text-muted">
-                    Onchain and owner-verified · no indexed tokens yet.
+                    Onchain and owner-verified · {owned.filter((launch) => launch.launchpad_id === record.launchpadId).length} token(s).
                   </p>
                   <dl className="mt-5 grid grid-cols-2 gap-2 text-xs">
                     <dt className="text-muted">Preset</dt>
@@ -297,7 +298,7 @@ export function LaunchpadOwnerDashboard({
                     onClick={() => onCreateToken(record.launchpadId)}
                     className="mt-4 flex items-center gap-2 bg-lime px-4 py-2 font-mono text-[10px] uppercase text-lime-ink"
                   >
-                    <Plus className="size-3" /> Create token
+                    <Plus className="size-3" /> Create token here
                   </button>
                 </article>
               ))}
@@ -415,12 +416,6 @@ export function LaunchpadOwnerDashboard({
                 </dl>
                 {launch.launchpad_id && (
                   <div className="mt-5 flex flex-wrap gap-4">
-                    <button
-                      onClick={() => onCreateToken(launch.launchpad_id!)}
-                      className="flex items-center gap-2 text-xs text-lime hover:text-fg"
-                    >
-                      <Plus className="size-3" /> Create token
-                    </button>
                     <a
                       href={`/launch?launchpad=${launch.launchpad_id}`}
                       className="flex items-center gap-2 text-xs text-muted hover:text-fg"

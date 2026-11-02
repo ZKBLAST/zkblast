@@ -46,6 +46,8 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
     mapping(address token => bytes32 launchId) public launchByToken;
     mapping(address pool => bytes32 launchId) public launchByPool;
 
+    event VirtualPoolDeployerUpdated(address indexed previousDeployer, address indexed deployer);
+
     constructor() {
         _disableInitializers();
     }
@@ -93,6 +95,17 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
     {
         if (creator == address(0) || feeCollector == address(0)) revert InvalidLaunch();
         return _createLaunch(request, creator, feeCollector);
+    }
+
+    /// @notice Rotates the non-upgradeable CREATE2 deployer after it has been
+    ///         bound to this factory. Existing launches remain untouched.
+    function setPoolDeployer(VirtualPoolDeployer deployer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (address(deployer).code.length == 0 || deployer.factory() != address(this)) {
+            revert InvalidLaunch();
+        }
+        address previous = address(poolDeployer);
+        poolDeployer = deployer;
+        emit VirtualPoolDeployerUpdated(previous, address(deployer));
     }
 
     function _createLaunch(

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": "103885190",
+  "referenceBlockHash": "0x4b3bcf7d278166121b2783167972bdf92be8d81d19b3574216a5ea8664c7f755",
+  "governanceSafe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "relayer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "configManager": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+  "usdg": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+  "dbcTemplateId": "1",
+  "proposedPresetId": "1",
+  "preset": {
+    "familyId": "0xb18476ce1281e62425cb260112f9ab66d713d21173e64906051af64a73feea54",
+    "dbcTemplateId": "1",
+    "quoteToken": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+    "maximumTotalTradeFeeBps": 300,
+    "graduationDestination": 1,
+    "creatorAccess": 0,
+    "maximumLaunches": 1000
+  },
+  "actions": [
+    {
+      "name": "allow-usdg-quote-token",
+      "target": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "data": "0x19d72a350000000000000000000000005fc5360d0400a0fd4f2af552add042d716f1d1680000000000000000000000000000000000000000000000000000000000000001",
+      "safeNonce": "99",
+      "relayerNonce": 577,
+      "calldataHash": "0xaec0c156b929f6d5075345c75da3bc9a80e91b801155d3258b75600fa444f9cf"
+    },
+    {
+      "name": "create-damm-usdg-preset-v1",
+      "target": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "data": "0x57aa8363b18476ce1281e62425cb260112f9ab66d713d21173e64906051af64a73feea5400000000000000000000000000000000000000000000000000000000000000010000000000000000000000005fc5360d0400a0fd4f2af552add042d716f1d168000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e8",
+      "safeNonce": "100",
+      "relayerNonce": 578,
+      "calldataHash": "0x660e07c05192d72314a193173672df701c5b7be4f16749a0960717df201753b1"
+    }
+  ],
+  "safety": {
+    "permissionlessLaunchpadCreation": true,
+    "tokenCreatorAccess": "owner-or-operator",
+    "dammOnly": true,
+    "dlmmEnabled": false,
+    "zkProofClaimsEnabled": false,
+    "assetMovement": false
+  },
+  "broadcastAllowed": false
+}

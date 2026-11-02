@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet-fork",
+  "chainId": 4663,
+  "planSha256": "ca911c5297db41a6862a87f0674487db7a62c1239076d79cdf47855a5a250587",
+  "launchpadId": "1",
+  "launchId": "0x3ec1c6b2788d86b2e56e829f05afa9b58e76e7f8e4666fc36587dc71b4aae532",
+  "token": "0xEE6F53AB1bf792e50BaC6f47e9EdF8131f445aaa",
+  "pool": "0xB55a5698b1e5C6EB8a2b0e2202dF85E772676be0",
+  "feeSnapshotId": "0xa6eaec3de904039eb2bc17b527f61fc35b3e42ca8fa7bb19236c07c60e6e3f5c",
+  "receipts": [
+    {
+      "name": "create-launchpad",
+      "hash": "0x07c69b99b382e9b51a79cd0e5a0d44ca2b2ab159fe002a7dcde13732951dae72",
+      "gasUsed": "252207"
+    },
+    {
+      "name": "configure-fee-policy",
+      "hash": "0xf33e515765f4d2c0d8755d284482c1fc38e12079a5f04aff018429a5bd1e9474",
+      "gasUsed": "134245"
+    },
+    {
+      "name": "create-bound-token",
+      "hash": "0x549dfef4b6cd728a214fb67fc11af4403c51831408c0b1b6d3fca071cb4d1cad",
+      "gasUsed": "5679676"
+    }
+  ],
+  "gasUsed": "6066128",
+  "bufferedGas": "9099192",
+  "sampledGasPriceWei": "20300000",
+  "bufferedFeeWei": "184713597600000",
+  "bufferedFeeEth": "0.0001847135976",
+  "verified": true,
+  "broadcastAllowed": false
+}

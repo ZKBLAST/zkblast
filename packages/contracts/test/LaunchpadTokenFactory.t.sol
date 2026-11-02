@@ -206,6 +206,18 @@ contract LaunchpadTokenFactoryTest {
         feeCollector.setRole(feeCollector.FACTORY_ROLE(), address(tokenFactory), true);
     }
 
+    function testRotatesBoundVirtualPoolDeployerForFutureLaunches() external {
+        address previous = address(dbcFactory.poolDeployer());
+        VirtualPoolDeployer replacement = new VirtualPoolDeployer(address(this));
+        replacement.bindFactory(address(dbcFactory));
+
+        dbcFactory.setPoolDeployer(replacement);
+
+        require(address(dbcFactory.poolDeployer()) == address(replacement), "replacement missing");
+        require(address(dbcFactory.poolDeployer()) != previous, "deployer unchanged");
+        require(replacement.factory() == address(dbcFactory), "replacement not bound");
+    }
+
     function testCreatesTokenPoolAndImmutableSnapshotsAtomically() external {
         (bytes32 launchId, address token, address pool, bytes32 feeSnapshotId) =
             tokenFactory.createLaunch(_request(bytes32(uint256(1))));

@@ -1,0 +1,23 @@
+{
+  "environment": "mainnet-fork",
+  "sourceBlock": "103885190",
+  "receipts": [
+    {
+      "name": "allow-usdg-quote-token",
+      "hash": "0xc9cd27ca62d6364b3f24cd37cc1198d3bb7ca64faf6932b18874e3da70d80a2d",
+      "gasUsed": "55450"
+    },
+    {
+      "name": "create-damm-usdg-preset-v1",
+      "hash": "0xfb6c74dca4f28705641414508696da7f17e13d60653b2efc8c2f8b1ec5f51efa",
+      "gasUsed": "199501"
+    }
+  ],
+  "totalGas": "254951",
+  "bufferedGas": "382427",
+  "verified": {
+    "quoteTokenAllowed": true,
+    "presetId": "1",
+    "enabled": true
+  }
+}
