@@ -9,7 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { decodeEventLog, formatEther, getAddress } from "viem";
+import { decodeEventLog, formatEther, formatUnits, getAddress } from "viem";
 import { launchpadRegistryAbi } from "@zkblast/abi";
 import {
   LaunchpadClient,
@@ -31,6 +31,7 @@ import {
 import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import type { TemplateEconomics } from "./types";
 import { launchpadWalletError } from "@/lib/launchpad-wallet-errors";
+import { fmtPrice } from "@/lib/format";
 
 type LaunchpadConfiguration = Readonly<{
   environment: "testnet" | "mainnet";
@@ -199,13 +200,32 @@ export function LaunchpadBuilder({
     const range = maximum > minimum ? maximum - minimum : 1n;
     return curvePreview
       .map((point, index) => {
-        const x = (index * 100) / (curvePreview.length - 1);
+        const x = 4 + (index * 92) / (curvePreview.length - 1);
         const normalized =
           Number(((point.priceX18 - minimum) * 10_000n) / range) / 100;
-        return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${(100 - normalized).toFixed(2)}`;
+        const y = 90 - normalized * 0.8;
+        return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
       })
       .join(" ");
   }, [curvePreview]);
+  const curveFacts = useMemo(() => {
+    const segment = templateEconomics?.curveSegments[0];
+    const terminal = curvePreview.at(-1)?.priceX18;
+    if (!segment || terminal === undefined || curvePreview.length < 2)
+      return null;
+    return {
+      startPrice: fmtPrice(
+        Number(formatEther(BigInt(segment.initialPriceX18))),
+      ),
+      terminalPrice: fmtPrice(Number(formatEther(terminal))),
+      saleCapacity: Number(
+        formatEther(BigInt(segment.saleCapacityX18)),
+      ).toLocaleString("en-US", { maximumFractionDigits: 2 }),
+      graduationReserve: Number(
+        formatUnits(BigInt(templateEconomics.graduationThresholdRaw), 6),
+      ).toLocaleString("en-US", { maximumFractionDigits: 6 }),
+    };
+  }, [curvePreview, templateEconomics]);
   useEffect(() => {
     const controller = new AbortController();
     setCatalogLoading(true);
@@ -220,11 +240,10 @@ export function LaunchpadBuilder({
         globalFeeCapBps: number;
         capabilities: GraduationCapabilities;
         items: LaunchpadPreset[];
-      }>(
-        webPublicConfig.apiUrl,
-        "/v1/launchpads/presets",
-        { signal: controller.signal, cache: "no-store" },
-      ),
+      }>(webPublicConfig.apiUrl, "/v1/launchpads/presets", {
+        signal: controller.signal,
+        cache: "no-store",
+      }),
     ])
       .then(([configurationResult, presetResult]) => {
         setConfiguration(configurationResult);
@@ -1247,27 +1266,56 @@ export function LaunchpadBuilder({
           </div>
           <div className="mt-4 border border-line p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="label">Governed curve preview</p>
+              <div>
+                <p className="label">Onchain bonding curve</p>
+                <p className="mt-1 text-[10px] text-muted">
+                  Linear price model from the selected immutable template.
+                </p>
+              </div>
               <span className="font-mono text-[9px] text-muted">
                 Template {selectedPreset?.dbcTemplateId ?? "—"}
               </span>
             </div>
-            {curvePath ? (
+            {curvePath && curveFacts ? (
               <>
+                <div className="mt-4 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
+                  {[
+                    ["Start price", `${curveFacts.startPrice} USDG`],
+                    ["Terminal price", `${curveFacts.terminalPrice} USDG`],
+                    ["Sale capacity", `${curveFacts.saleCapacity} tokens`],
+                    [
+                      "Graduation reserve",
+                      `${curveFacts.graduationReserve} USDG`,
+                    ],
+                  ].map(([label, value]) => (
+                    <div key={label} className="bg-bg p-3">
+                      <p className="font-mono text-[8px] uppercase text-muted">
+                        {label}
+                      </p>
+                      <p className="mt-1.5 font-mono text-[10px] text-fg">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
                 <svg
                   viewBox="0 0 100 100"
                   role="img"
-                  aria-label="Onchain template price curve from zero to full sale capacity"
-                  className="mt-4 h-32 w-full overflow-visible"
+                  aria-label={`Linear onchain template curve from ${curveFacts.startPrice} to ${curveFacts.terminalPrice} USDG`}
+                  className="mt-3 h-36 w-full overflow-visible"
                   preserveAspectRatio="none"
                 >
-                  <path
-                    d="M 0 100 L 100 100"
-                    fill="none"
-                    stroke="currentColor"
-                    className="text-line"
-                    vectorEffect="non-scaling-stroke"
-                  />
+                  {[10, 50, 90].map((y) => (
+                    <path
+                      key={y}
+                      d={`M 4 ${y} L 96 ${y}`}
+                      fill="none"
+                      stroke="currentColor"
+                      className="text-line"
+                      strokeDasharray="2 3"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  ))}
                   <path
                     d={curvePath}
                     fill="none"
@@ -1276,19 +1324,27 @@ export function LaunchpadBuilder({
                     vectorEffect="non-scaling-stroke"
                   />
                   {curvePreview.map((point, index) => {
-                    const minimum = curvePreview.at(0)?.priceX18 ?? point.priceX18;
-                    const maximum = curvePreview.at(-1)?.priceX18 ?? point.priceX18;
+                    if (
+                      index !== 0 &&
+                      index !== curvePreview.length - 1 &&
+                      index % 4 !== 0
+                    )
+                      return null;
+                    const minimum =
+                      curvePreview.at(0)?.priceX18 ?? point.priceX18;
+                    const maximum =
+                      curvePreview.at(-1)?.priceX18 ?? point.priceX18;
                     const range = maximum > minimum ? maximum - minimum : 1n;
-                    const y =
-                      100 -
+                    const normalized =
                       Number(((point.priceX18 - minimum) * 10_000n) / range) /
-                        100;
+                      100;
+                    const y = 90 - normalized * 0.8;
                     return (
                       <circle
                         key={point.progressBps}
-                        cx={(index * 100) / (curvePreview.length - 1)}
+                        cx={4 + (index * 92) / (curvePreview.length - 1)}
                         cy={y}
-                        r="1"
+                        r="1.25"
                         fill={primary}
                         vectorEffect="non-scaling-stroke"
                       />
@@ -1296,9 +1352,14 @@ export function LaunchpadBuilder({
                   })}
                 </svg>
                 <div className="mt-2 flex justify-between font-mono text-[9px] text-muted">
-                  <span>0% sold</span>
-                  <span>100% · graduation capacity</span>
+                  <span>0% of curve inventory sold</span>
+                  <span>100% sold</span>
                 </div>
+                <p className="mt-3 border-t border-line pt-3 text-[10px] leading-5 text-muted">
+                  Previewed from the onchain template parameters. Executable
+                  quotes also account for current sold supply, trade fee and
+                  slippage.
+                </p>
               </>
             ) : (
               <Skeleton className="mt-4 h-32" />
