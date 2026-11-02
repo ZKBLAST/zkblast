@@ -34,6 +34,7 @@ export type PendingLaunchpad = Readonly<{
 }>;
 type OwnedLaunchpadRecord = Readonly<{
   launchpadId: string;
+  slug: string | null;
   owner: string;
   treasury: string;
   operator: string;
@@ -137,6 +138,17 @@ export function LaunchpadOwnerDashboard({
   const wrongNetwork = Boolean(
     config && walletChainId !== null && walletChainId !== config.chainId,
   );
+  const hostedSlugById = new Map(
+    ownedRecords.flatMap((record) =>
+      record.slug ? [[record.launchpadId, record.slug] as const] : [],
+    ),
+  );
+  const launchpadHref = (launchpadId: string) => {
+    const slug = hostedSlugById.get(launchpadId);
+    return slug
+      ? `/launchpads/${encodeURIComponent(slug)}`
+      : `/launch?launchpad=${launchpadId}`;
+  };
   if (!injectedAddress || !walletMatchesSession || wrongNetwork)
     return (
       <section className="panel ticks grid min-h-[28rem] place-items-center p-6 text-center">
@@ -345,10 +357,13 @@ export function LaunchpadOwnerDashboard({
                   </dd>
                 </dl>
                 <a
-                  href={`/launch?launchpad=${record.launchpadId}`}
+                  href={launchpadHref(record.launchpadId)}
                   className="mt-5 flex items-center gap-2 text-xs text-muted hover:text-fg"
                 >
-                  Open launchpad <ExternalLink className="size-3" />
+                  {record.slug
+                    ? "Open hosted page"
+                    : "Open launchpad workspace"}
+                  <ExternalLink className="size-3" />
                 </a>
                 <button
                   onClick={() => onCreateToken(record.launchpadId)}
@@ -473,10 +488,10 @@ export function LaunchpadOwnerDashboard({
                 {launch.launchpad_id && (
                   <div className="mt-5 flex flex-wrap gap-4">
                     <a
-                      href={`/launch?launchpad=${launch.launchpad_id}`}
+                      href={launchpadHref(launch.launchpad_id)}
                       className="flex items-center gap-2 text-xs text-muted hover:text-fg"
                     >
-                      Open market <ExternalLink className="size-3" />
+                      Open hosted page <ExternalLink className="size-3" />
                     </a>
                     {launch.graduation_transaction_hash && (
                       <a

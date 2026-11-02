@@ -100,6 +100,27 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
   }
 
   async bySlug(slug: string): Promise<StoredLaunchpadBranding | null> {
+    return this.currentBranding("p.slug=$1", slug);
+  }
+
+  async slugsByLaunchpadIds(
+    launchpadIds: readonly string[],
+  ): Promise<ReadonlyMap<string, string>> {
+    if (launchpadIds.length === 0) return new Map();
+    const rows = await this.#sql.unsafe<
+      { launchpad_id: string; slug: string }[]
+    >(
+      `select launchpad_id::text,slug from ${this.schema}.launchpad_profiles
+       where published and launchpad_id=any($1::numeric[])`,
+      [launchpadIds],
+    );
+    return new Map(rows.map((row) => [row.launchpad_id, row.slug]));
+  }
+
+  private async currentBranding(
+    predicate: "p.slug=$1",
+    value: string,
+  ): Promise<StoredLaunchpadBranding | null> {
     const rows = await this.#sql.unsafe<
       {
         launchpad_id: string;
@@ -128,8 +149,8 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
     >(
       `select v.* from ${this.schema}.launchpad_profiles p join ${this.schema}.launchpad_branding_versions v
        on v.launchpad_id=p.launchpad_id and v.version=p.current_version
-       where p.slug=$1 and p.published limit 1`,
-      [slug],
+       where ${predicate} and p.published limit 1`,
+      [value],
     );
     const row = rows[0];
     if (!row) return null;

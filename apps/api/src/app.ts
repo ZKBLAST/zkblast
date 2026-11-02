@@ -295,6 +295,7 @@ export function createApp(
       createLaunchpadCatalogRouter(
         dependencies.launchpadCatalogService,
         dependencies.launchpadReadService,
+        dependencies.launchpadBrandingService,
       ),
     );
   }

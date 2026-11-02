@@ -28,8 +28,11 @@ const branding = {
 test("publishes only owner-signed branding matching the onchain commitment", async () => {
   const saved: StoredLaunchpadBranding[] = [];
   const store: LaunchpadBrandingStore = {
-    save: async (input) => { saved.push(input); },
+    save: async (input) => {
+      saved.push(input);
+    },
     bySlug: async () => saved.at(-1) ?? null,
+    slugsByLaunchpadIds: async () => new Map([["7", branding.slug]]),
   };
   const metadataHash = launchpadBrandingHash(branding);
   const signedAt = new Date().toISOString();
@@ -57,7 +60,10 @@ test("publishes only owner-signed branding matching the onchain commitment", asy
   assert.equal(saved[0]?.branding.slug, "alpha-launch");
 
   const mismatched = new LaunchpadBrandingService(4663, store, {
-    launchpad: async () => ({ owner: account.address, metadataHash: `0x${"f".repeat(64)}` }),
+    launchpad: async () => ({
+      owner: account.address,
+      metadataHash: `0x${"f".repeat(64)}`,
+    }),
   });
   await assert.rejects(
     mismatched.publish({
