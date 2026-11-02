@@ -1,0 +1,132 @@
+{
+  "planHash": "0x2a545801ad38fc0c0da17c55f2044182d186278dd6a7673e6879e23776b51fa5",
+  "transactions": [
+    {
+      "stage": "deploy-poolFactoryImplementation",
+      "hash": "0xe9ff54f4232df3dbfde295c099be9308eb48e82e859b8464c9454212e946dd46",
+      "blockNumber": "146620298",
+      "gasUsed": "4913653",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "49136530000000",
+      "contractAddress": "0x32650D522B9a0a5BA3bC2B927d0f2c7917323103"
+    },
+    {
+      "stage": "deploy-configRegistryImplementation",
+      "hash": "0xa4678d8923551dc3ad61620c0cba439bd4a29a59609fc57f9935c1f2317a407a",
+      "blockNumber": "146620303",
+      "gasUsed": "2669567",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "26695670000000",
+      "contractAddress": "0x8204dDd06E54c2203567800e04150Da8E08927d4"
+    },
+    {
+      "stage": "deploy-escrowImplementation",
+      "hash": "0xd162b6492e641a803cd2076e751444ff9860eaa3232a1ebc9cf78a18accbc632",
+      "blockNumber": "146620310",
+      "gasUsed": "1542224",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "15422240000000",
+      "contractAddress": "0x8fC1B96487fd35cE5451e902A1b40b85A1489BD0"
+    },
+    {
+      "stage": "deploy-managerImplementation",
+      "hash": "0x8f3a0788a5d538f70a897626a2802c068b0758a360caa88a225542c5455a61cf",
+      "blockNumber": "146620315",
+      "gasUsed": "3860789",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "38607890000000",
+      "contractAddress": "0x76c99c9a42Ef27214543165E49Fd2fBBc90FD9C5"
+    },
+    {
+      "stage": "deploy-dammAdapter",
+      "hash": "0xc0cae148f85044e167f004ddc138332e0dba4fcbbd17e84aa07cb0c2a0000376",
+      "blockNumber": "146620320",
+      "gasUsed": "932990",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "9329900000000",
+      "contractAddress": "0xa23692336F45269446c9364E1ECaC616D8dC47b2"
+    },
+    {
+      "stage": "deploy-dlmmAdapter",
+      "hash": "0xf3611272e47c48ccb6d631e5586c4a45c0dd221cf7030dc5b0469390fd82f90e",
+      "blockNumber": "146620326",
+      "gasUsed": "1359806",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "13598060000000",
+      "contractAddress": "0xF738bDA030B45a172f66d4B6DE92436D0F9bf2c9"
+    },
+    {
+      "stage": "upgrade-configRegistry",
+      "hash": "0x56b4d04b7f380988f8e370b13697ad92c8ac169521149915155da2907dbfac78",
+      "blockNumber": "146620331",
+      "gasUsed": "37306",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "373060000000"
+    },
+    {
+      "stage": "upgrade-escrow",
+      "hash": "0x2d8b135a46612ce8c5ccf74a43c5d5f7f6e3026597dc9a14ab16f8aa48188f31",
+      "blockNumber": "146620337",
+      "gasUsed": "37280",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "372800000000"
+    },
+    {
+      "stage": "upgrade-manager",
+      "hash": "0x54c61f810da3b6e9402a3aa94f488e29d528da0fb2d9fd928515d2e9f8d9696d",
+      "blockNumber": "146620341",
+      "gasUsed": "37257",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "372570000000"
+    },
+    {
+      "stage": "schedule-poolFactory",
+      "hash": "0xa817d86967836eca60131382a419cf902d959b231ae5749a045f48d621fb6a66",
+      "blockNumber": "146620345",
+      "gasUsed": "57663",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "576630000000"
+    },
+    {
+      "stage": "execute-poolFactory-reverted-1",
+      "hash": "0xdfc852deb268d924d2d54b4bc11acf26bb79bde4f7f782abb6a7a56334a477aa",
+      "blockNumber": "146620347",
+      "gasUsed": "31730",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "317300000000"
+    },
+    {
+      "stage": "execute-poolFactory",
+      "hash": "0xb4c4d0c5216a6eb895074911f2b362fb3ee1632626282a3ba6b03f529c92d448",
+      "blockNumber": "146622249",
+      "gasUsed": "57445",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "574450000000"
+    },
+    {
+      "stage": "disable-legacy-damm",
+      "hash": "0x72e60ea57fb4c8fc184c1b94f6b03d504a88727e8367e80f873aa5f38ece8de8",
+      "blockNumber": "146622252",
+      "gasUsed": "33482",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "334820000000"
+    },
+    {
+      "stage": "allow-versioned-damm",
+      "hash": "0xbb326e7e858c058a53405b641c02515dc4e651dc1174aa5c13d44d5e1aa5934d",
+      "blockNumber": "146622257",
+      "gasUsed": "55394",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "553940000000"
+    },
+    {
+      "stage": "allow-versioned-dlmm",
+      "hash": "0x1e1aa552a357a3c14acc60ccf84449e10b8f376e9d52bf236720dda31b16b4a3",
+      "blockNumber": "146622260",
+      "gasUsed": "55394",
+      "effectiveGasPrice": "10000000",
+      "feeWei": "553940000000"
+    }
+  ],
+  "complete": true
+}

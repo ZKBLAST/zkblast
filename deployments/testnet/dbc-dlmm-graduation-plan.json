@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "feature": "dbc-dlmm-graduation-v1",
+  "environment": "testnet",
+  "chainId": 46630,
+  "referenceBlock": "146618625",
+  "referenceBlockHash": "0xf8cec2c23f088c22026b566ad4b9b85b6c6d680977d58106a25fbcab4945846d",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": "0x2E8ca95e429F34E6e876E078DCd8E51eB31645B9",
+  "configuredUpgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+  "factoryTimelock": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+  "startingNonce": 146,
+  "proxies": {
+    "poolFactory": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "configRegistry": "0x04E92EA7e4ba5532d57af77C4BeBba562b443841",
+    "escrow": "0xcBbE14b6AD160a28029Dd5Ab17824Ef05419B11D",
+    "manager": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93"
+  },
+  "liveDependencies": {
+    "poolRegistry": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+    "oldDammAdapter": "0xb43d74774B7045d7754012e18F80190D65d7E260"
+  },
+  "authorities": {
+    "poolFactory": {
+      "upgrader": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+      "governanceAdmin": true
+    },
+    "configRegistry": {
+      "upgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "governanceAdmin": true
+    },
+    "escrow": {
+      "upgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "governanceAdmin": true
+    },
+    "manager": {
+      "upgrader": "0x48e7BcFE8F469FBc72E6BcEf0D0cE70d51FFBbed",
+      "governanceAdmin": true
+    }
+  },
+  "executionShape": {
+    "deploymentTransactions": 6,
+    "directUpgradeTransactions": 3,
+    "timelockScheduleTransactions": 1,
+    "timelockExecuteTransactions": 1,
+    "adminTransactions": 3,
+    "totalTransactions": 14
+  },
+  "permissionlessFactory": true,
+  "deploymentOrder": [
+    "poolFactoryImplementation",
+    "configRegistryImplementation",
+    "escrowImplementation",
+    "managerImplementation",
+    "dammAdapter",
+    "dlmmAdapter"
+  ],
+  "addresses": {
+    "poolFactoryImplementation": "0x32650D522B9a0a5BA3bC2B927d0f2c7917323103",
+    "configRegistryImplementation": "0x8204dDd06E54c2203567800e04150Da8E08927d4",
+    "escrowImplementation": "0x8fC1B96487fd35cE5451e902A1b40b85A1489BD0",
+    "managerImplementation": "0x76c99c9a42Ef27214543165E49Fd2fBBc90FD9C5",
+    "dammAdapter": "0xa23692336F45269446c9364E1ECaC616D8dC47b2",
+    "dlmmAdapter": "0xF738bDA030B45a172f66d4B6DE92436D0F9bf2c9"
+  },
+  "deploymentDataHashes": {
+    "poolFactoryImplementation": "0x2ee260793854daef67d5a068ec64648024fb178c19581dbe19e2c9204bf7f70a",
+    "configRegistryImplementation": "0xeddb03a06003e584ce91726b85a97aad0d35aea3398ab4c56d1b7efb2f36c6f0",
+    "escrowImplementation": "0xfa423f2ed8ef9eae329cec276103d91706e4b01804cb37ea4c5083ce9a44f578",
+    "managerImplementation": "0x6c935ffd21a91f316e6b24f3d0159550db92b41bd122f99ab817f1212fa41bfe",
+    "dammAdapter": "0x3c644fe499b6ae85d7306659a9ebd2fb61ba9d9e0723c5f0938e100658174a8f",
+    "dlmmAdapter": "0x91f6375d95f9b4af14d6d6480d417a3384bb0f76274f86a2668c68d355ce2f3a"
+  },
+  "upgradeCalls": [
+    {
+      "name": "upgrade-poolFactory",
+      "to": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+      "data": "0x4f1ef28600000000000000000000000032650d522b9a0a5ba3bc2b927d0f2c791732310300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000",
+      "estimatedGas": "100000"
+    },
+    {
+      "name": "upgrade-configRegistry",
+      "to": "0x04E92EA7e4ba5532d57af77C4BeBba562b443841",
+      "data": "0x4f1ef2860000000000000000000000008204ddd06e54c2203567800e04150da8e08927d400000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000",
+      "estimatedGas": "100000"
+    },
+    {
+      "name": "upgrade-escrow",
+      "to": "0xcBbE14b6AD160a28029Dd5Ab17824Ef05419B11D",
+      "data": "0x4f1ef2860000000000000000000000008fc1b96487fd35ce5451e902a1b40b85a1489bd000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000",
+      "estimatedGas": "100000"
+    },
+    {
+      "name": "upgrade-manager",
+      "to": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+      "data": "0x4f1ef28600000000000000000000000076c99c9a42ef27214543165e49fd2fbbc90fd9c500000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000",
+      "estimatedGas": "100000"
+    }
+  ],
+  "adminCalls": [
+    {
+      "name": "disableLegacyDammAdapter",
+      "to": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+      "data": "0x332f6465000000000000000000000000b43d74774b7045d7754012e18f80190d65d7e2600000000000000000000000000000000000000000000000000000000000000000",
+      "estimatedGas": "100000"
+    },
+    {
+      "name": "allowVersionedDammAdapter",
+      "to": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+      "data": "0x332f6465000000000000000000000000a23692336f45269446c9364e1ecac616d8dc47b20000000000000000000000000000000000000000000000000000000000000001",
+      "estimatedGas": "100000"
+    },
+    {
+      "name": "allowVersionedDlmmAdapter",
+      "to": "0xF2d7afd8460Dc1D52d5912b30C4507ac3c5E0a93",
+      "data": "0x332f6465000000000000000000000000f738bda030b45a172f66d4b6de92436d0f9bf2c90000000000000000000000000000000000000000000000000000000000000001",
+      "estimatedGas": "100000"
+    }
+  ],
+  "estimates": {
+    "deploymentGas": {
+      "poolFactoryImplementation": "4953818",
+      "configRegistryImplementation": "2691921",
+      "escrowImplementation": "1555631",
+      "managerImplementation": "3892597",
+      "dammAdapter": "941562",
+      "dlmmAdapter": "1371765"
+    },
+    "totalGas": "16307294",
+    "bufferedGas": "19568752",
+    "gasPriceWei": "10000000",
+    "bufferedMaximumFeeWei": "195687520000000",
+    "timelockWrapperGas": "200000",
+    "dependentCallGasPolicy": "100000 conservative pre-deployment ceiling per call; mandatory live re-estimate after deployment"
+  },
+  "activation": {
+    "dlmmDestinationEnabled": false,
+    "testnetCanaryGraduationRequired": true,
+    "canaryQuoteDecimals": 18,
+    "reason": "The current 6-decimal USDG/raw-price combination is outside the v1 DLMM bin range."
+  },
+  "authorization": {
+    "broadcastAllowed": false,
+    "privateKeyRead": false,
+    "manifestChanged": false
+  }
+}
