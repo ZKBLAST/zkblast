@@ -32,6 +32,10 @@ function booleanValue(event: IndexedEvent, key: string): boolean {
   return result;
 }
 
+function optionalValue(event: IndexedEvent, key: string): string | null {
+  return event.payload[key] === undefined ? null : value(event, key);
+}
+
 export async function persistDbcEvent(
   sql: postgres.Sql | postgres.TransactionSql,
   schema: string,
@@ -385,8 +389,9 @@ export async function persistDbcEvent(
     );
   if (event.eventName === "LaunchMetadataPublished")
     await sql.unsafe(
-      `update ${schema}.dbc_launches set name=$2,symbol=$3,metadata_uri=$4,updated_block=$5,updated_at=now() where launch_id=$1`,
+      `update ${schema}.dbc_launches set name=$3,symbol=$4,metadata_uri=$5,updated_block=$6,updated_at=now() where chain_id=$1 and launch_id=$2`,
       [
+        event.chainId,
         launchId,
         rawValue(event, "name"),
         rawValue(event, "symbol"),
@@ -394,14 +399,75 @@ export async function persistDbcEvent(
         event.blockNumber.toString(),
       ],
     );
+  if (event.eventName === "GraduationReady")
+    await sql.unsafe(
+      `insert into ${schema}.dbc_graduation_readiness(chain_id,launch_id,real_quote_reserve_raw,threshold_raw,transaction_hash,log_index,block_number,observed_at)
+       values($1,$2,$3,$4,$5,$6,$7,$8) on conflict(chain_id,launch_id) do update set
+       real_quote_reserve_raw=excluded.real_quote_reserve_raw,threshold_raw=excluded.threshold_raw,
+       transaction_hash=excluded.transaction_hash,log_index=excluded.log_index,block_number=excluded.block_number,observed_at=excluded.observed_at`,
+      [
+        event.chainId,
+        launchId,
+        value(event, "realQuoteReserveRaw"),
+        value(event, "thresholdRaw"),
+        event.transactionHash.toLowerCase(),
+        event.logIndex,
+        event.blockNumber.toString(),
+        observedAt,
+      ],
+    );
+  if (event.eventName === "FeeClaimed")
+    await sql.unsafe(
+      `insert into ${schema}.launchpad_fee_claim_receipts(chain_id,transaction_hash,log_index,launch_id,snapshot_id,launchpad_id,recipient_address,pool_address,asset_address,allocation,amount_raw,block_number,observed_at)
+       values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       on conflict(chain_id,transaction_hash,log_index) do update set launch_id=excluded.launch_id,snapshot_id=excluded.snapshot_id,
+       launchpad_id=excluded.launchpad_id,recipient_address=excluded.recipient_address,pool_address=excluded.pool_address,
+       asset_address=excluded.asset_address,allocation=excluded.allocation,amount_raw=excluded.amount_raw,
+       block_number=excluded.block_number,observed_at=excluded.observed_at`,
+      [
+        event.chainId,
+        event.transactionHash.toLowerCase(),
+        event.logIndex,
+        launchId,
+        optionalValue(event, "snapshotId"),
+        optionalValue(event, "launchpadId"),
+        value(event, "recipient"),
+        optionalValue(event, "pool"),
+        optionalValue(event, "asset"),
+        optionalValue(event, "allocation"),
+        value(event, event.payload.amountRaw === undefined ? "amount" : "amountRaw"),
+        event.blockNumber.toString(),
+        observedAt,
+      ],
+    );
+  if (event.eventName === "ProofClaimVerified")
+    await sql.unsafe(
+      `insert into ${schema}.launchpad_proof_receipts(chain_id,transaction_hash,log_index,snapshot_id,recipient_address,nullifier,amount_raw,verifier_version,block_number,observed_at)
+       values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) on conflict(chain_id,transaction_hash,log_index) do update set
+       snapshot_id=excluded.snapshot_id,recipient_address=excluded.recipient_address,nullifier=excluded.nullifier,
+       amount_raw=excluded.amount_raw,verifier_version=excluded.verifier_version,block_number=excluded.block_number,observed_at=excluded.observed_at`,
+      [
+        event.chainId,
+        event.transactionHash.toLowerCase(),
+        event.logIndex,
+        value(event, "snapshotId"),
+        value(event, "recipient"),
+        value(event, "nullifier"),
+        value(event, "amount"),
+        value(event, "verifierVersion"),
+        event.blockNumber.toString(),
+        observedAt,
+      ],
+    );
   const binding = dbcLaunchBindingFromEvent(event);
   if (binding)
     await sql.unsafe(
-      `update ${schema}.dbc_launches set launchpad_bound=true,launchpad_id=$2,fee_snapshot_id=$3,
-      binding_schema_version=$4,launchpad_treasury=$5,launchpad_config_preset_id=$6,
-      launchpad_config_hash=$7,graduation_destination=$8,updated_block=$9,updated_at=now()
-      where launch_id=$1`,
+      `update ${schema}.dbc_launches set launchpad_bound=true,launchpad_id=$3,fee_snapshot_id=$4,
+      binding_schema_version=$5,launchpad_treasury=$6,launchpad_config_preset_id=$7,
+      launchpad_config_hash=$8,graduation_destination=$9,updated_block=$10,updated_at=now()
+      where chain_id=$1 and launch_id=$2`,
       [
+        event.chainId,
         binding.launchId,
         binding.launchpadId.toString(),
         binding.feeSnapshotId,
@@ -415,10 +481,11 @@ export async function persistDbcEvent(
     );
   if (event.eventName === "GraduationAttemptStarted")
     await sql.unsafe(
-      `insert into ${schema}.dbc_graduation_attempts(migration_id,launch_id,source_pool,adapter,status,attempts,transaction_hash,updated_block)
-     values($1,$2,$3,$4,'GRADUATING',$5,$6,$7) on conflict(migration_id) do update set status='GRADUATING',attempts=excluded.attempts,
+      `insert into ${schema}.dbc_graduation_attempts(chain_id,migration_id,launch_id,source_pool,adapter,status,attempts,transaction_hash,updated_block)
+     values($1,$2,$3,$4,$5,'GRADUATING',$6,$7,$8) on conflict(chain_id,migration_id) do update set status='GRADUATING',attempts=excluded.attempts,
      failure_hash=null,transaction_hash=excluded.transaction_hash,updated_block=excluded.updated_block,updated_at=now()`,
       [
+        event.chainId,
         value(event, "migrationId"),
         launchId,
         value(event, "sourcePool"),
@@ -428,15 +495,37 @@ export async function persistDbcEvent(
         event.blockNumber.toString(),
       ],
     );
+  if (event.eventName === "GraduationAdapterBound")
+    await sql.unsafe(
+      `insert into ${schema}.dbc_graduation_adapter_bindings(chain_id,migration_id,adapter_address,factory_address,adapter_version,migration_mode,configuration_hash,transaction_hash,log_index,block_number,observed_at)
+       values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) on conflict(chain_id,migration_id) do update set
+       adapter_address=excluded.adapter_address,factory_address=excluded.factory_address,adapter_version=excluded.adapter_version,
+       migration_mode=excluded.migration_mode,configuration_hash=excluded.configuration_hash,transaction_hash=excluded.transaction_hash,
+       log_index=excluded.log_index,block_number=excluded.block_number,observed_at=excluded.observed_at`,
+      [
+        event.chainId,
+        value(event, "migrationId"),
+        value(event, "adapter"),
+        value(event, "factory"),
+        value(event, "version"),
+        value(event, "mode"),
+        value(event, "configurationHash"),
+        event.transactionHash.toLowerCase(),
+        event.logIndex,
+        event.blockNumber.toString(),
+        observedAt,
+      ],
+    );
   if (
     event.eventName === "GraduationAttemptPending" ||
     event.eventName === "GraduationNeedsReview"
   )
     await sql.unsafe(
-      `insert into ${schema}.dbc_graduation_attempts(migration_id,launch_id,status,attempts,failure_hash,transaction_hash,updated_block)
-     values($1,$2,$3,$4,$5,$6,$7) on conflict(migration_id) do update set status=excluded.status,attempts=excluded.attempts,
+      `insert into ${schema}.dbc_graduation_attempts(chain_id,migration_id,launch_id,status,attempts,failure_hash,transaction_hash,updated_block)
+     values($1,$2,$3,$4,$5,$6,$7,$8) on conflict(chain_id,migration_id) do update set status=excluded.status,attempts=excluded.attempts,
      failure_hash=excluded.failure_hash,transaction_hash=excluded.transaction_hash,updated_block=excluded.updated_block,updated_at=now()`,
       [
+        event.chainId,
         value(event, "migrationId"),
         launchId,
         event.eventName === "GraduationNeedsReview"
@@ -454,8 +543,9 @@ export async function persistDbcEvent(
   if (event.eventName === "GraduationReviewReopened")
     await sql.unsafe(
       `update ${schema}.dbc_graduation_attempts set status='PENDING_RETRY',attempts=0,failure_hash=null,
-     transaction_hash=$2,updated_block=$3,updated_at=now() where migration_id=$1`,
+     transaction_hash=$3,updated_block=$4,updated_at=now() where chain_id=$1 and migration_id=$2`,
       [
+        event.chainId,
         value(event, "migrationId"),
         event.transactionHash.toLowerCase(),
         event.blockNumber.toString(),
@@ -463,9 +553,10 @@ export async function persistDbcEvent(
     );
   if (event.eventName === "GraduationContextBound")
     await sql.unsafe(
-      `update ${schema}.dbc_graduation_attempts set launchpad_id=$2,config_hash=$3,fee_snapshot_id=$4,
-     graduation_destination=$5,updated_block=$6,updated_at=now() where migration_id=$1`,
+      `update ${schema}.dbc_graduation_attempts set launchpad_id=$3,config_hash=$4,fee_snapshot_id=$5,
+     graduation_destination=$6,updated_block=$7,updated_at=now() where chain_id=$1 and migration_id=$2`,
       [
+        event.chainId,
         value(event, "migrationId"),
         value(event, "launchpadId"),
         value(event, "configHash"),
@@ -476,10 +567,11 @@ export async function persistDbcEvent(
     );
   if (event.eventName === "GraduationCompleted")
     await sql.unsafe(
-      `insert into ${schema}.dbc_graduations(migration_id,launch_id,destination_pool,base_migrated_raw,quote_migrated_raw,destination_shares_raw,transaction_hash,block_number,observed_at)
-     values($1,$2,$3,$4,$5,$6,$7,$8,$9) on conflict(migration_id) do update set destination_pool=excluded.destination_pool,
+      `insert into ${schema}.dbc_graduations(chain_id,migration_id,launch_id,destination_pool,base_migrated_raw,quote_migrated_raw,destination_shares_raw,transaction_hash,block_number,observed_at)
+     values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) on conflict(chain_id,migration_id) do update set destination_pool=excluded.destination_pool,
      destination_shares_raw=excluded.destination_shares_raw,transaction_hash=excluded.transaction_hash,block_number=excluded.block_number,observed_at=excluded.observed_at`,
       [
+        event.chainId,
         value(event, "migrationId"),
         launchId,
         value(event, "destinationPool"),
@@ -494,11 +586,12 @@ export async function persistDbcEvent(
   if (event.eventName === "GraduationCompleted")
     await sql.unsafe(
       `update ${schema}.dbc_graduation_attempts set status='GRADUATED',failure_hash=null,transaction_hash=$2,
-     updated_block=$3,updated_at=now() where migration_id=$1`,
+     updated_block=$3,updated_at=now() where chain_id=$4 and migration_id=$1`,
       [
         value(event, "migrationId"),
         event.transactionHash.toLowerCase(),
         event.blockNumber.toString(),
+        event.chainId,
       ],
     );
   if (event.eventName === "AllocationRegistered") {
@@ -507,10 +600,11 @@ export async function persistDbcEvent(
       Number(BigInt(value(event, "creatorUnlockAt"))) * 1_000,
     );
     await sql.unsafe(
-      `insert into ${schema}.dbc_lp_allocations(migration_id,allocation_kind,recipient,shares_raw,unlock_at,updated_block)
-       values($1,'creator',$2,$3,$4,$5),($1,'protocol',$6,$7,null,$5)
-       on conflict(migration_id,allocation_kind) do update set shares_raw=excluded.shares_raw,unlock_at=excluded.unlock_at,updated_block=excluded.updated_block`,
+      `insert into ${schema}.dbc_lp_allocations(chain_id,migration_id,allocation_kind,recipient,shares_raw,unlock_at,updated_block)
+       values($1,$2,'creator',$3,$4,$5,$6),($1,$2,'protocol',$7,$8,null,$6)
+       on conflict(chain_id,migration_id,allocation_kind) do update set shares_raw=excluded.shares_raw,unlock_at=excluded.unlock_at,updated_block=excluded.updated_block`,
       [
+        event.chainId,
         migrationId,
         value(event, "creator"),
         value(event, "creatorShares"),
@@ -523,9 +617,10 @@ export async function persistDbcEvent(
   }
   if (event.eventName === "AllocationClaimed")
     await sql.unsafe(
-      `update ${schema}.dbc_lp_allocations set claimed=true,claim_transaction_hash=$3,updated_block=$4
-     where migration_id=$1 and allocation_kind=$2`,
+      `update ${schema}.dbc_lp_allocations set claimed=true,claim_transaction_hash=$4,updated_block=$5
+     where chain_id=$1 and migration_id=$2 and allocation_kind=$3`,
       [
+        event.chainId,
         value(event, "migrationId"),
         booleanValue(event, "creatorAllocation") ? "creator" : "protocol",
         event.transactionHash.toLowerCase(),

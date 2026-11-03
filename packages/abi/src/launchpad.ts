@@ -190,6 +190,34 @@ export const launchpadConfigManagerAbi = [
 
 export const launchpadRevenueSplitterAbi = [
   {
+    type: "event",
+    name: "FeeAccrued",
+    inputs: [
+      { name: "snapshotId", type: "bytes32", indexed: true },
+      { name: "launchpadId", type: "uint256", indexed: true },
+      { name: "asset", type: "address", indexed: true },
+      { name: "pool", type: "address", indexed: false },
+      { name: "kind", type: "uint8", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+      { name: "protocolAmount", type: "uint256", indexed: false },
+      { name: "operatorAmount", type: "uint256", indexed: false },
+      { name: "creatorAmount", type: "uint256", indexed: false },
+      { name: "referralAmount", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "FeeClaimed",
+    inputs: [
+      { name: "snapshotId", type: "bytes32", indexed: true },
+      { name: "launchpadId", type: "uint256", indexed: true },
+      { name: "recipient", type: "address", indexed: true },
+      { name: "pool", type: "address", indexed: false },
+      { name: "asset", type: "address", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+    ],
+  },
+  {
     type: "function",
     name: "claimable",
     stateMutability: "view",

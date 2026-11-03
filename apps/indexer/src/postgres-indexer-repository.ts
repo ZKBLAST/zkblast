@@ -27,6 +27,7 @@ const launchpadProjectionEvents = [
   "LaunchpadFeePolicyUpdated",
   "FeePolicySnapshotted",
   "RevenueSnapshotRegistered",
+  "ProofClaimVerified",
 ] as const;
 
 
@@ -340,6 +341,16 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `delete from ${this.schema}.dbc_graduations where block_number >= $1`,
         [fromBlock.toString()],
       );
+      for (const table of [
+        "dbc_graduation_readiness",
+        "dbc_graduation_adapter_bindings",
+        "launchpad_fee_claim_receipts",
+        "launchpad_proof_receipts",
+      ])
+        await transaction.unsafe(
+          `delete from ${this.schema}.${table} where chain_id=$1 and block_number >= $2`,
+          [chainId, fromBlock.toString()],
+        );
       await transaction.unsafe(
         `update ${this.schema}.perp_oracle_prices set canonical=false where block_number >= $1`,
         [fromBlock.toString()],
