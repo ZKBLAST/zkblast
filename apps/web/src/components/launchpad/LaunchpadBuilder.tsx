@@ -230,6 +230,10 @@ export function LaunchpadBuilder({
     const controller = new AbortController();
     setCatalogLoading(true);
     setCatalogError("");
+    setConfiguration(null);
+    setPresets([]);
+    setPresetId("");
+    setTemplateEconomics(null);
     void Promise.all([
       apiRequest<LaunchpadConfiguration>(
         webPublicConfig.apiUrl,
@@ -268,7 +272,7 @@ export function LaunchpadBuilder({
         if (!controller.signal.aborted) setCatalogLoading(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [config?.chainId]);
   useEffect(() => {
     if (!selectedPreset) {
       setTemplateEconomics(null);

@@ -25,6 +25,7 @@ import { LaunchpadOwnerDashboard } from "./LaunchpadOwnerDashboard";
 import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import { LaunchTradeHistory } from "./LaunchTradeHistory";
 import type { DbcLaunch, DbcTemplate } from "./types";
+import { useApp } from "@/components/shell/AppProvider";
 
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
 const logoUrl = (launch: DbcLaunch) =>
@@ -33,6 +34,7 @@ const logoUrl = (launch: DbcLaunch) =>
     : `/asset-logo/${launch.symbol ?? ""}`;
 
 export function Launchpad() {
+  const { config } = useApp();
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
@@ -125,6 +127,12 @@ export function Launchpad() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setTemplates([]);
+    setLaunches([]);
+    setPendingLaunches([]);
+    setPendingLaunchpads([]);
+    setDeployment(null);
+    setSelectedId("");
     if (!loadedOnce.current) setLoading(true);
     setError("");
     void Promise.all([
@@ -170,7 +178,7 @@ export function Launchpad() {
         }
       });
     return () => controller.abort();
-  }, [revision]);
+  }, [config?.chainId, revision]);
 
   const allLaunches = useMemo(
     () => [
@@ -205,9 +213,7 @@ export function Launchpad() {
     [allLaunches, launchpadFilter, search, sort],
   );
   const selected =
-    visible.find((item) => item.launch_id === selectedId) ??
-    visible[0] ??
-    null;
+    visible.find((item) => item.launch_id === selectedId) ?? visible[0] ?? null;
 
   const selectView = useCallback(
     (next: "markets" | "build" | "manage") => {
@@ -244,6 +250,13 @@ export function Launchpad() {
                 : "Monitor the launchpads and curve products controlled by the connected wallet."}
           </p>
         </div>
+        {config && (
+          <div className="border border-line bg-raised/50 px-3 py-2 text-right font-mono text-[10px] uppercase tracking-wide text-muted">
+            <span className="text-fg">{config.chainName}</span>
+            <span className="mx-2">·</span>
+            <span>chain {config.chainId}</span>
+          </div>
+        )}
       </div>
       <nav
         aria-label="Launch workspace"
@@ -490,9 +503,7 @@ export function Launchpad() {
                     <span className="mx-auto grid size-12 place-items-center border border-line bg-raised/70">
                       <Rocket className="size-5 text-lime" aria-hidden />
                     </span>
-                    <p className="label mt-5">
-                      Launchpad {launchpadFilter}
-                    </p>
+                    <p className="label mt-5">Launchpad {launchpadFilter}</p>
                     <h2 className="mt-2 text-xl">No tokens launched yet</h2>
                     <p className="mt-3 text-sm leading-6 text-muted">
                       This launchpad is ready. Create its first token to open a

@@ -99,7 +99,7 @@ export function LaunchWizard({
         if (!controller.signal.aborted) setEconomicsLoading(false);
       });
     return () => controller.abort();
-  }, [templateId]);
+  }, [config?.chainId, templateId]);
   useEffect(() => {
     if (!open || !launchpadId) {
       setLaunchpadConfiguration(null);
@@ -114,7 +114,7 @@ export function LaunchWizard({
       .then(setLaunchpadConfiguration)
       .catch(() => setLaunchpadConfiguration(null));
     return () => controller.abort();
-  }, [launchpadId, open]);
+  }, [config?.chainId, launchpadId, open]);
   const validWebsite = !websiteUrl || /^https:\/\/.+/u.test(websiteUrl);
   const validX =
     !xUrl || /^https:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/.+/iu.test(xUrl);
@@ -385,7 +385,11 @@ export function LaunchWizard({
       <Modal
         open={open}
         onClose={onClose}
-        title={launchpadId ? `Create token in launchpad ${launchpadId}` : "Create a curve launch"}
+        title={
+          launchpadId
+            ? `Create token in launchpad ${launchpadId}`
+            : "Create a curve launch"
+        }
         width="max-w-2xl"
       >
         <div className="mb-5 grid grid-cols-3 gap-2">

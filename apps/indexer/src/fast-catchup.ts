@@ -16,6 +16,35 @@ const registryAbi = parseAbi([
 ]);
 const combinedAbi = Object.values(protocolAbis).flat();
 
+const retryableRpcError = (error: unknown) => {
+  const message =
+    error instanceof Error
+      ? error.message.toLowerCase()
+      : String(error).toLowerCase();
+  return (
+    message.includes("rate limit") ||
+    message.includes("rate limited") ||
+    message.includes("limit exceeded") ||
+    message.includes("429") ||
+    message.includes("timeout") ||
+    message.includes("timed out")
+  );
+};
+
+async function withRpcRetry<T>(operation: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (!retryableRpcError(error) || attempt === 4) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1_000 * 2 ** attempt));
+    }
+  }
+  throw lastError;
+}
+
 /** Sparse anchors prove the scanned ranges; no per-block RPC/SQL round trip for empty blocks. */
 export async function fastCatchup(input: {
   client: PublicClient;
@@ -32,7 +61,7 @@ export async function fastCatchup(input: {
   onDiscoveredLaunchContracts?: (addresses: readonly Address[]) => void;
 }) {
   const { client, repository, chainId, addresses } = input;
-  if ((await client.getChainId()) !== chainId)
+  if ((await withRpcRetry(() => client.getChainId())) !== chainId)
     throw new Error("CATCHUP_CHAIN_MISMATCH");
   const confirmations = input.confirmations ?? 5n;
   const chunk = input.chunkSize ?? 2000n;
@@ -49,7 +78,9 @@ export async function fastCatchup(input: {
     rangeDelayMs > 10_000
   )
     throw new Error("INVALID_CATCHUP_BOUND");
-  const head = await client.getBlockNumber({ cacheTime: 0 });
+  const head = await withRpcRetry(() =>
+    client.getBlockNumber({ cacheTime: 0 }),
+  );
   if (head < confirmations) return { blocks: 0, events: 0 };
   const finalized = head - confirmations;
   let checkpoint = await repository.checkpoint(chainId);
@@ -63,20 +94,28 @@ export async function fastCatchup(input: {
     const latest = await repository.checkpoint(chainId);
     if (latest && checkpoint && latest.blockNumber > checkpoint.blockNumber)
       checkpoint = latest;
-    if (
-      checkpoint &&
-      (
-        await client.getBlock({ blockNumber: checkpoint.blockNumber })
-      ).hash?.toLowerCase() !== checkpoint.blockHash.toLowerCase()
-    )
-      throw new Error("CATCHUP_REORG_REQUIRES_REWIND");
+    if (checkpoint) {
+      const checkpointBlockNumber = checkpoint.blockNumber;
+      const checkpointBlock = await withRpcRetry(() =>
+        client.getBlock({ blockNumber: checkpointBlockNumber }),
+      );
+      if (
+        checkpointBlock.hash?.toLowerCase() !==
+        checkpoint.blockHash.toLowerCase()
+      )
+        throw new Error("CATCHUP_REORG_REQUIRES_REWIND");
+    }
     const to = from + chunk - 1n < end ? from + chunk - 1n : end;
-    const boundary = await client.getBlock({ blockNumber: to });
-    const logs = await client.getLogs({
-      address: [...addresses],
-      fromBlock: from,
-      toBlock: to,
-    });
+    const boundary = await withRpcRetry(() =>
+      client.getBlock({ blockNumber: to }),
+    );
+    const logs = await withRpcRetry(() =>
+      client.getLogs({
+        address: [...addresses],
+        fromBlock: from,
+        toBlock: to,
+      }),
+    );
     // Discover pools created during a scanned range before capturing their same-range activity.
     const discovered: Address[] = [];
     const discoveredLaunchContracts: Address[] = [];
@@ -125,31 +164,37 @@ export async function fastCatchup(input: {
       for (const contract of discoveredLaunchContracts) {
         addresses.push(contract);
         logs.push(
-          ...(await client.getLogs({
-            address: contract,
-            fromBlock: from,
-            toBlock: to,
-          })),
+          ...(await withRpcRetry(() =>
+            client.getLogs({
+              address: contract,
+              fromBlock: from,
+              toBlock: to,
+            }),
+          )),
         );
       }
     }
     for (const pool of discovered) {
       if (
-        !(await client.readContract({
-          address: input.registry,
-          abi: registryAbi,
-          functionName: "isRegisteredPool",
-          args: [pool],
-        }))
+        !(await withRpcRetry(() =>
+          client.readContract({
+            address: input.registry,
+            abi: registryAbi,
+            functionName: "isRegisteredPool",
+            args: [pool],
+          }),
+        ))
       )
         throw new Error("CATCHUP_UNREGISTERED_POOL");
       addresses.push(pool);
       logs.push(
-        ...(await client.getLogs({
-          address: pool,
-          fromBlock: from,
-          toBlock: to,
-        })),
+        ...(await withRpcRetry(() =>
+          client.getLogs({
+            address: pool,
+            fromBlock: from,
+            toBlock: to,
+          }),
+        )),
       );
     }
     const numbers = [
@@ -167,14 +212,15 @@ export async function fastCatchup(input: {
         throw new Error("CATCHUP_REMOVED_LOG");
       blocks.push(
         validateBlockForPersistence(
-          await reader.block(number, selected),
+          await withRpcRetry(() => reader.block(number, selected)),
           chainId,
         ),
       );
     }
     if (
       !boundary.hash ||
-      (await client.getBlock({ blockNumber: to })).hash !== boundary.hash
+      (await withRpcRetry(() => client.getBlock({ blockNumber: to }))).hash !==
+        boundary.hash
     )
       throw new Error("CATCHUP_RANGE_CHANGED");
     for (const block of blocks) {
