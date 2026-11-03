@@ -21,7 +21,7 @@ export function parsePublicConfig(value: unknown): PublicConfig {
     const v1 = (config.shielded as { vaultAddress?: string } | undefined)
       ?.vaultAddress;
     if (
-      privateV2ConfigIssue(config.environment, config.chainId as number, v2, v1)
+      privateV2ConfigIssue(config.environment, config.chainId, v2, v1)
     )
       throw new Error("V2_VAULT_NOT_ISOLATED");
   }
