@@ -1,11 +1,12 @@
 import type postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 
 /** Older workers may still run during rollout: reject their stale transactions atomically. */
 export async function installCheckpointGuard(
   sql: postgres.Sql,
   schema: string,
 ) {
-  if (!/^zkblast_(mainnet|testnet)$/u.test(schema))
+  if (!isSupportedDatabaseSchema(schema))
     throw new Error("INVALID_DATABASE_SCHEMA");
   await sql.begin(async (tx) => {
     await tx.unsafe(`create or replace function ${schema}.guard_protocol_checkpoint()

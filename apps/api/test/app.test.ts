@@ -46,6 +46,15 @@ test("public config excludes internal connection details", async () => {
     chainId: 46_630,
     chainName: "Test Chain",
     explorerUrl: "https://explorer.example",
+    capabilities: {
+      launchpad: true,
+      dbc: true,
+      dammGraduation: true,
+      dlmmGraduation: true,
+      zkClaimAuthorization: true,
+      customDomains: true,
+      metadataUpload: true,
+    },
     contracts: [
       {
         name: "SwapRouter",
@@ -63,6 +72,102 @@ test("public config excludes internal connection details", async () => {
       },
     ],
   });
+});
+
+test("chain catalog exposes capabilities without RPC or private configuration", async () => {
+  const response = await request(app).get("/v2/chains");
+  assert.equal(response.status, 200);
+  assert.equal(response.body.chains.length, 4);
+  const hyperEvm = response.body.chains.find(
+    (chain: { chainId: number }) => chain.chainId === 999,
+  );
+  assert.equal(hyperEvm.capabilities.launchpad, true);
+  assert.equal(hyperEvm.capabilities.dbc, true);
+  assert.equal(hyperEvm.capabilities.dammGraduation, true);
+  assert.equal(hyperEvm.capabilities.dlmmGraduation, false);
+  assert.equal(hyperEvm.nativeCurrency.symbol, "HYPE");
+  assert.equal(hyperEvm.configured, false);
+  assert.equal("publicRpcUrls" in hyperEvm, false);
+  assert.equal("databaseSchema" in hyperEvm, false);
+});
+
+test("v2 chain scope rejects unknown and non-configured networks", async () => {
+  const unknown = await request(app).get(
+    "/v2/chains/123456/protocol/pools",
+  );
+  assert.equal(unknown.status, 404);
+  assert.equal(unknown.body.error.code, "CHAIN_NOT_SUPPORTED");
+
+  const other = await request(app).get("/v2/chains/999/protocol/pools");
+  assert.equal(other.status, 409);
+  assert.equal(other.body.error.code, "CHAIN_NOT_CONFIGURED");
+  assert.equal(other.body.error.configuredChainId, 46630);
+});
+
+test("one API process exposes isolated config for multiple configured chains", async () => {
+  const multichain = createApp(
+    {
+      environment: "mainnet",
+      chainId: 4663,
+      chainName: "Robinhood Chain",
+      explorerUrl: "https://robinhoodchain.blockscout.com",
+      webOrigin: "https://zkblast.tech",
+    },
+    {},
+    [
+      {
+        config: {
+          environment: "mainnet",
+          chainId: 999,
+          chainName: "HyperEVM",
+          explorerUrl: "https://www.hyperscan.com",
+          webOrigin: "https://zkblast.tech",
+        },
+        dependencies: {},
+      },
+    ],
+  );
+
+  const catalog = await request(multichain).get("/v2/chains");
+  assert.equal(catalog.status, 200);
+  assert.deepEqual(
+    catalog.body.chains
+      .filter((chain: { configured: boolean }) => chain.configured)
+      .map((chain: { chainId: number }) => chain.chainId),
+    [4663, 999],
+  );
+
+  const hyperConfig = await request(multichain).get("/v2/chains/999/config");
+  assert.equal(hyperConfig.status, 200);
+  assert.equal(hyperConfig.body.chainId, 999);
+  assert.equal(hyperConfig.body.chainName, "HyperEVM");
+  assert.equal(hyperConfig.body.capabilities.dammGraduation, true);
+  assert.equal(hyperConfig.body.capabilities.dlmmGraduation, false);
+
+  const unavailableFeature = await request(multichain).get(
+    "/v2/chains/999/protocol/pools",
+  );
+  assert.equal(unavailableFeature.status, 404);
+  assert.equal(unavailableFeature.body.error.code, "FEATURE_NOT_CONFIGURED");
+});
+
+test("HyperEVM config is accepted only on its matching environment", async () => {
+  const hyperEvm = createApp({
+    environment: "testnet",
+    chainId: 998,
+    chainName: "HyperEVM Testnet",
+    explorerUrl: "",
+    webOrigin: "http://localhost:3000",
+  });
+  assert.equal((await request(hyperEvm).get("/v1/config")).status, 200);
+  const crossed = createApp({
+    environment: "mainnet",
+    chainId: 998,
+    chainName: "HyperEVM Testnet",
+    explorerUrl: "",
+    webOrigin: "http://localhost:3000",
+  });
+  assert.notEqual((await request(crossed).get("/v1/config")).status, 200);
 });
 
 test("mainnet v2 public config exposes only network-bound deployment metadata", async () => {
@@ -105,6 +210,7 @@ test("mainnet v2 public config exposes only network-bound deployment metadata", 
   assert.deepEqual(
     Object.keys(response.body).sort(),
     [
+      "capabilities",
       "chainId",
       "chainName",
       "contracts",

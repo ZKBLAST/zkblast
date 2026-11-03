@@ -1,7 +1,12 @@
 import { readdir, readFile } from "node:fs/promises";
 
-for (const environment of ["testnet", "mainnet"]) {
-  const schema = `zkblast_${environment}`;
+const environments = [
+  { environment: "testnet", schema: "zkblast_testnet", chainId: 46630, chainKey: "robinhood-testnet", forbiddenSchemas: ["zkblast_mainnet", "zkblast_hyperevm_mainnet"] },
+  { environment: "mainnet", schema: "zkblast_mainnet", chainId: 4663, chainKey: "robinhood-mainnet", forbiddenSchemas: ["zkblast_testnet", "zkblast_hyperevm_mainnet"] },
+  { environment: "hyperevm-mainnet", schema: "zkblast_hyperevm_mainnet", chainId: 999, chainKey: "hyperevm-mainnet", forbiddenSchemas: ["zkblast_testnet", "zkblast_mainnet"] },
+];
+
+for (const { environment, schema, chainId, chainKey, forbiddenSchemas } of environments) {
   const directory = `supabase/migrations/${environment}`;
   const filenames = (await readdir(directory))
     .filter((filename) => filename.endsWith(".sql"))
@@ -37,12 +42,48 @@ for (const environment of ["testnet", "mainnet"]) {
     }
   }
 
-  const otherSchema =
-    environment === "testnet" ? "zkblast_mainnet" : "zkblast_testnet";
   for (const migration of migrations) {
-    if (migration.sql.includes(otherSchema)) {
+    for (const forbiddenSchema of forbiddenSchemas) {
+      if (migration.sql.includes(forbiddenSchema)) {
+        throw new Error(
+          `${migration.path}: cross-environment schema reference ${forbiddenSchema}`,
+        );
+      }
+    }
+  }
+
+  const chainRegistry = migrations.find(({ path }) =>
+    path.endsWith("202611020004_multichain_registry.sql"),
+  );
+  const chainQualified = migrations.find(({ path }) =>
+    path.endsWith("202611020005_chain_qualified_launchpad.sql"),
+  );
+  if (!chainRegistry || !chainQualified) {
+    throw new Error(`${directory}: multichain isolation migrations are missing`);
+  }
+  for (const fragment of [
+    `(${chainId},'${chainKey}'`,
+    "chain_projection_health",
+    "primary key (chain_id,consumer)",
+  ]) {
+    if (!chainRegistry.sql.includes(fragment)) {
+      throw new Error(`${chainRegistry.path}: missing ${fragment}`);
+    }
+  }
+  for (const fragment of [
+    `default ${chainId} check (chain_id=${chainId})`,
+    "dbc_launches_chain_identity_idx",
+    "launchpad_branding_chain_identity_idx",
+    "launchpad_webhook_deliveries_chain_event_idx",
+  ]) {
+    if (!chainQualified.sql.includes(fragment)) {
+      throw new Error(`${chainQualified.path}: missing ${fragment}`);
+    }
+  }
+  for (const forbiddenChainId of [4663, 46630, 998, 999].filter((value) => value !== chainId)) {
+    if (chainQualified.sql.includes(`check (chain_id=${forbiddenChainId})`)) {
       throw new Error(
-        `${migration.path}: cross-environment schema reference ${otherSchema}`,
+        `${chainQualified.path}: contains cross-network chain ${forbiddenChainId}`,
       );
     }
   }

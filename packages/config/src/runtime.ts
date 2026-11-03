@@ -1,18 +1,19 @@
 import { z } from "zod";
+import { getChainDescriptor } from "./chains.js";
 
 const appEnvironmentSchema = z.enum(["testnet", "mainnet"]);
 export type AppEnvironment = z.infer<typeof appEnvironmentSchema>;
-const chainIds: Readonly<Record<AppEnvironment, number>> = {
-  testnet: 46_630,
-  mainnet: 4_663,
-};
-
+const optionalUrlSchema = z.union([z.string().url(), z.literal("")]);
+const optionalAddressSchema = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.string().regex(/^0x[\da-f]{40}$/iu, "Invalid EVM address").optional(),
+);
 const publicConfigSchema = z.object({
   APP_ENV: appEnvironmentSchema,
   CHAIN_ID: z.coerce.number().int().positive(),
   CHAIN_NAME: z.string().min(1),
   RPC_URL: z.string().url(),
-  BLOCK_EXPLORER_URL: z.string().url(),
+  BLOCK_EXPLORER_URL: optionalUrlSchema,
   DEPLOYMENT_MANIFEST_PATH: z.string().min(1),
   SUPABASE_URL: z.string().url(),
   SUPABASE_SCHEMA: z.string().min(1),
@@ -20,28 +21,61 @@ const publicConfigSchema = z.object({
 
 const serverConfigSchema = publicConfigSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  EXECUTION_RESERVE_ASSET_ADDRESS: optionalAddressSchema,
+  GRADUATION_POOL_FACTORY_ADDRESS: optionalAddressSchema,
+  GRADUATION_SWAP_ROUTER_ADDRESS: optionalAddressSchema,
 });
 
 export type PublicConfig = z.infer<typeof publicConfigSchema>;
 export type ServerConfig = z.infer<typeof serverConfigSchema>;
 
 function assertEnvironmentBoundary(config: PublicConfig): void {
-  const expectedChainId = chainIds[config.APP_ENV];
-  if (config.CHAIN_ID !== expectedChainId) {
+  const descriptor = getChainDescriptor(config.CHAIN_ID);
+  if (config.APP_ENV !== descriptor.environment) {
     throw new Error(
-      `${config.APP_ENV} requires Robinhood chain ${expectedChainId}`,
+      `${config.APP_ENV} cannot use ${descriptor.slug} (${descriptor.chainId})`,
     );
   }
-  const expectedSchema = `zkblast_${config.APP_ENV}`;
-  if (config.SUPABASE_SCHEMA !== expectedSchema) {
+  if (config.SUPABASE_SCHEMA !== descriptor.databaseSchema) {
     throw new Error(
-      `${config.APP_ENV} requires database schema ${expectedSchema}`,
+      `${descriptor.slug} requires database schema ${descriptor.databaseSchema}`,
     );
   }
+  if (config.CHAIN_NAME !== descriptor.name) {
+    throw new Error(
+      `${descriptor.slug} requires chain name ${descriptor.name}`,
+    );
+  }
+  const explorerUrl = config.BLOCK_EXPLORER_URL.replace(/\/$/u, "");
+  if (descriptor.explorerUrl && explorerUrl !== descriptor.explorerUrl) {
+    throw new Error(
+      `${descriptor.slug} requires explorer ${descriptor.explorerUrl}`,
+    );
+  }
+  if (!descriptor.explorerUrl && explorerUrl) {
+    throw new Error(
+      `${descriptor.slug} does not have a validated explorer URL`,
+    );
+  }
+  if (config.DEPLOYMENT_MANIFEST_PATH !== descriptor.deploymentManifestPath) {
+    throw new Error(
+      `${descriptor.slug} requires manifest ${descriptor.deploymentManifestPath}`,
+    );
+  }
+}
 
-  const expectedManifest = `deployments/${config.APP_ENV}/manifest.json`;
-  if (config.DEPLOYMENT_MANIFEST_PATH !== expectedManifest) {
-    throw new Error(`${config.APP_ENV} requires manifest ${expectedManifest}`);
+function assertServerIntegrationBoundary(config: ServerConfig): void {
+  const descriptor = getChainDescriptor(config.CHAIN_ID);
+  const integrations = [
+    config.EXECUTION_RESERVE_ASSET_ADDRESS,
+    config.GRADUATION_POOL_FACTORY_ADDRESS,
+    config.GRADUATION_SWAP_ROUTER_ADDRESS,
+  ];
+
+  if (!descriptor.capabilities.launchpad && integrations.some(Boolean)) {
+    throw new Error(
+      `${descriptor.slug} integration addresses are disabled until its launchpad capability is approved`,
+    );
   }
 }
 
@@ -54,5 +88,6 @@ export function loadPublicConfig(input: Record<string, unknown>): PublicConfig {
 export function loadServerConfig(input: Record<string, unknown>): ServerConfig {
   const config = serverConfigSchema.parse(input);
   assertEnvironmentBoundary(config);
+  assertServerIntegrationBoundary(config);
   return config;
 }

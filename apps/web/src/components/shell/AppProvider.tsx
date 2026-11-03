@@ -15,7 +15,12 @@ import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import { parsePublicConfig } from "@/lib/network-config";
 import { createWalletVerifyPayload } from "@/lib/wallet-auth";
-import type { PublicConfig, Trade, UserProfile } from "@/types/application";
+import type {
+  ChainCatalogItem,
+  PublicConfig,
+  Trade,
+  UserProfile,
+} from "@/types/application";
 import { WalletModal } from "./WalletModal";
 import { TransactionSuccessModal } from "./TransactionSuccessModal";
 
@@ -30,6 +35,7 @@ type AppContextValue = Readonly<{
   injectedAddress: string | null;
   walletChainId: number | null;
   config: PublicConfig | null;
+  chains: readonly ChainCatalogItem[];
   profile: UserProfile | null;
   trades: readonly Trade[];
   busy: boolean;
@@ -40,6 +46,7 @@ type AppContextValue = Readonly<{
   connect: () => void;
   loginInjected: () => Promise<void>;
   switchNetwork: () => Promise<void>;
+  selectChain: (chainId: number) => Promise<void>;
   openWallet: () => void;
   disconnect: () => Promise<void>;
   updateUsername: (username: string) => Promise<void>;
@@ -59,6 +66,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [trades, setTrades] = useState<readonly Trade[]>([]);
   const [config, setConfig] = useState<PublicConfig | null>(null);
+  const [chains, setChains] = useState<readonly ChainCatalogItem[]>([]);
   const [walletOpen, setWalletOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("Connecting to the ZKBLAST API");
@@ -101,12 +109,35 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
   }, [apiUrl]);
 
   useEffect(() => {
-    void Promise.all([
-      apiRequest<unknown>(apiUrl, "/v1/config").then((value) =>
-        setConfig(parsePublicConfig(value)),
-      ),
-      refreshAccount(),
-    ]).catch(() => setStatus("ZKBLAST API is unavailable"));
+    void (async () => {
+      try {
+        const [catalog, defaultConfig] = await Promise.all([
+          apiRequest<{ chains: ChainCatalogItem[] }>(apiUrl, "/v2/chains"),
+          apiRequest<unknown>(apiUrl, "/v1/config"),
+          refreshAccount(),
+        ]);
+        setChains(catalog.chains);
+        const fallback = parsePublicConfig(defaultConfig);
+        const storedChainId = Number.parseInt(
+          window.localStorage.getItem("zkblast.activeChainId") ?? "",
+          10,
+        );
+        const storedChain = catalog.chains.find(
+          (chain) => chain.chainId === storedChainId && chain.configured,
+        );
+        if (!storedChain || storedChain.chainId === fallback.chainId) {
+          setConfig(fallback);
+          return;
+        }
+        const selected = await apiRequest<unknown>(
+          apiUrl,
+          `/v2/chains/${storedChain.chainId}/config`,
+        );
+        setConfig(parsePublicConfig(selected));
+      } catch {
+        setStatus("ZKBLAST API is unavailable");
+      }
+    })();
   }, [apiUrl, refreshAccount]);
 
   useEffect(() => {
@@ -163,6 +194,46 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     });
     setWalletChainId(activeConfig.chainId);
   }, [apiUrl, config]);
+
+  const selectChain = useCallback(
+    async (chainId: number) => {
+      const target = chains.find(
+        (chain) => chain.chainId === chainId && chain.configured,
+      );
+      if (!target) throw new Error("CHAIN_NOT_CONFIGURED");
+      setBusy(true);
+      try {
+        const selected = parsePublicConfig(
+          await apiRequest<unknown>(apiUrl, `/v2/chains/${chainId}/config`),
+        );
+        if (window.ethereum) {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: `0x${chainId.toString(16)}` }],
+          });
+          setWalletChainId(chainId);
+        }
+        window.localStorage.setItem("zkblast.activeChainId", String(chainId));
+        setConfig(selected);
+        setStatus(`${selected.chainName} selected`);
+        toast({
+          kind: "success",
+          title: "Network changed",
+          body: `${selected.chainName} · chain ${selected.chainId}`,
+        });
+      } catch (error) {
+        toast({
+          kind: "error",
+          title: "Network change failed",
+          body: error instanceof Error ? error.message : "Request rejected",
+        });
+        throw error;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [apiUrl, chains, toast],
+  );
 
   const loginInjected = useCallback(async () => {
     if (!window.ethereum) {
@@ -277,6 +348,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     () => ({
       address,
       config,
+      chains,
       profile,
       trades,
       busy,
@@ -288,6 +360,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       connect: () => setWalletOpen(true),
       loginInjected,
       switchNetwork,
+      selectChain,
       openWallet: () => setWalletOpen(true),
       disconnect,
       updateUsername,
@@ -298,6 +371,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       address,
       busy,
       config,
+      chains,
       disconnect,
       loginInjected,
       profile,
@@ -306,6 +380,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
       injectedAddress,
       walletChainId,
       switchNetwork,
+      selectChain,
       toast,
       trades,
       updateUsername,

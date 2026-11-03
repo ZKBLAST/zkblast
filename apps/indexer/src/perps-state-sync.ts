@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { getAddress, parseAbi, type Address, type PublicClient } from "viem";
 
 const oracleAbi = parseAbi([
@@ -43,7 +44,7 @@ export class PerpsStateSynchronizer {
     readonly client: PublicClient,
     readonly addresses?: PerpsStateAddresses,
   ) {
-    if (!/^zkblast_(testnet|mainnet)$/u.test(schema))
+    if (!isSupportedDatabaseSchema(schema))
       throw new Error("INVALID_DATABASE_SCHEMA");
     this.#sql = postgres(databaseUrl, {
       max: 1,

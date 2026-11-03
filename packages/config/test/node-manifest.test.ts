@@ -92,7 +92,12 @@ test("rejects environment and chain crossover", async () => {
 test("mainnet shielded configuration rejects an unpinned or testnet prover", async () => {
   const manifest = await loadDeploymentManifestFile(testnetManifest);
   assert.ok(manifest.shielded);
-  const mainnet = { ...manifest, environment: "mainnet", chainId: 4663 };
+  const mainnet = {
+    ...manifest,
+    environment: "mainnet",
+    chainId: 4663,
+    chainName: "Robinhood Chain",
+  };
   assert.throws(
     () => parseDeploymentManifest(mainnet),
     /mainnet-specific prover release/u,
@@ -117,6 +122,7 @@ test("core-only mainnet configuration remains valid without shielded custody", a
     ...manifest,
     environment: "mainnet",
     chainId: 4663,
+    chainName: "Robinhood Chain",
     shielded: undefined,
     shieldedV2: undefined,
   });

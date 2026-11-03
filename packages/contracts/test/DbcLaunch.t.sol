@@ -12,6 +12,10 @@ import { LaunchToken } from "../src/dbc/LaunchToken.sol";
 import { VirtualPool } from "../src/dbc/VirtualPool.sol";
 import { ERC1967Proxy } from "../src/proxy/ERC1967Proxy.sol";
 
+interface VmLaunchDomain {
+    function chainId(uint256 newChainId) external;
+}
+
 contract MockUsdgMetadata {
     uint8 public constant decimals = 6;
     string public constant name = "Global Dollar";
@@ -49,6 +53,8 @@ contract MockUsdgMetadata {
 }
 
 contract DbcLaunchTest {
+    VmLaunchDomain private constant vm =
+        VmLaunchDomain(address(uint160(uint256(keccak256("hevm cheat code")))));
     LaunchConfigRegistry private registry;
     LaunchFactory private factory;
     LaunchpadRouter private router;
@@ -127,6 +133,22 @@ contract DbcLaunchTest {
         require(firstId != secondId, "launch id collision");
         require(firstToken != secondToken, "token collision");
         require(factory.launchCount() == 2, "launch count");
+    }
+
+    function testLaunchIdentifierIsChainQualified() external {
+        bytes32 salt = bytes32(uint256(77));
+        vm.chainId(4663);
+        bytes32 robinhoodId = factory.launchIdentifier(address(this), templateId, salt);
+        vm.chainId(999);
+        bytes32 hyperEvmId = factory.launchIdentifier(address(this), templateId, salt);
+        require(robinhoodId != hyperEvmId, "cross-chain launch id collision");
+        require(
+            hyperEvmId
+                == keccak256(
+                    abi.encode(uint256(999), address(factory), address(this), templateId, salt)
+                ),
+            "launch domain mismatch"
+        );
     }
 
     function testRejectsDuplicateLaunchAndDisabledTemplate() external {

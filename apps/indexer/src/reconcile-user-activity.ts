@@ -1,4 +1,5 @@
 import { positionManagerAbi, dammPoolAbi, dlmmPoolAbi } from "@zkblast/abi";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import type postgres from "postgres";
 import {
   decodeEventLog,
@@ -20,7 +21,7 @@ export async function reconcileUserActivity(input: {
 }) {
   const { client, sql, schema, chainId, positionManager } = input;
   if (
-    !/^zkblast_(mainnet|testnet)$/u.test(schema) ||
+    !isSupportedDatabaseSchema(schema) ||
     (await client.getChainId()) !== chainId
   )
     throw new Error("ACTIVITY_CHAIN_MISMATCH");

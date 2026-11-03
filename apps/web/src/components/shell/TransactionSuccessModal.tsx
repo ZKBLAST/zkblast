@@ -112,7 +112,7 @@ export function TransactionSuccessModal({
               )}
               {copied === current.hash ? "Copied" : "Copy hash"}
             </button>
-            {network && (
+            {network?.explorerUrl && (
               <a
                 href={`${network.explorerUrl.replace(/\/$/u, "")}/tx/${current.hash}`}
                 target="_blank"

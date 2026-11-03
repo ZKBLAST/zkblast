@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "mode": "fork-acceptance",
+  "generatedAt": "2026-11-02T16:17:31.298Z",
+  "sourcePlanSha256": "92c8cddea71f4cf8ecb902119acabd4694e2c948c8b8424b19dfc5ed94fcc09d",
+  "transactionHash": "0x129b2cce3534b78787d7867b387464f63d27f7845ef6ba553592f3c81e276813",
+  "gasUsed": "1411199",
+  "launchId": "0xb5142cb47633e2e59f92df26c3c8a19fefa507cc4f570e481c6be2fe875f0626",
+  "token": "0x7ED8fa8aF6C39BeC885559E8b4bcA680275fC170",
+  "virtualPool": "0xFa7c0cD72a266776628deFBC6C24e5a93BaaEC8f",
+  "templateId": "1",
+  "checks": {
+    "launchCountIncremented": true,
+    "tokenCodePresent": true,
+    "cloneCodePresent": true,
+    "cloneInitializationSucceeded": true
+  },
+  "passed": true,
+  "broadcastAllowed": false
+}

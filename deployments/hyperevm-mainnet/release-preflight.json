@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "mode": "read-only-live-release-preflight",
+  "generatedAt": "2026-11-02T15:48:05.767Z",
+  "chain": {
+    "chainId": 999,
+    "referenceBlock": "50200664",
+    "referenceBlockHash": "0xf8d28eca72d62c6e9d82b4fe7f558164565ca55928ce5bfbe05bee12b46bca51",
+    "gasPriceWei": "128042053"
+  },
+  "deployer": {
+    "address": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "pendingNonce": 0,
+    "balanceWei": "40570465190722668",
+    "balanceHype": "0.040570465190722668"
+  },
+  "plan": {
+    "sha256": "796f14804049a0b8a24e42d07506a3e2590aa9a788a4120435b00560659a15b3",
+    "transactionCount": 56,
+    "predictedAddressCount": 41,
+    "occupiedPredictedAddressCount": 0
+  },
+  "reserveAsset": {
+    "address": "0x5555555555555555555555555555555555555555",
+    "symbol": "WHYPE",
+    "decimals": 18
+  },
+  "cost": {
+    "simulatedGasUsed": "48154670",
+    "gasLimitWith25PercentBuffer": "60193338",
+    "expectedFeeWei": "6165822808337510",
+    "expectedFeeHype": "0.00616582280833751",
+    "bufferedFeeWei": "7707278574442914",
+    "bufferedFeeHype": "0.007707278574442914",
+    "approvedCapWei": "13000000000000000",
+    "approvedCapHype": "0.013"
+  },
+  "gates": {
+    "planIntegrity": true,
+    "economicsApproved": true,
+    "sequentialSimulationPassed": true,
+    "nonceUnchanged": true,
+    "predictedAddressesEmpty": true,
+    "balanceCoversApprovedCap": true,
+    "estimateWithinApprovedCap": true,
+    "privateKeysRead": false,
+    "broadcastAllowed": false,
+    "separateBroadcastApprovalRequired": true
+  }
+}

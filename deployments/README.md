@@ -5,6 +5,12 @@ edited by hand. Each environment has exactly one canonical path:
 
 - `deployments/testnet/manifest.json`
 - `deployments/mainnet/manifest.json`
+- `deployments/hyperevm-testnet/manifest.json` (generated only after an approved chain-998 deployment)
+- `deployments/hyperevm-mainnet/manifest.json` (generated only after the Phase 2 mainnet gate)
+
+An empty HyperEVM directory is not a deployment claim. Application capability
+flags remain disabled until a generated manifest is reconciled against successful
+receipts, runtime bytecode, roles, and the selected chain-specific adapters.
 
 The manifest records proxy and implementation addresses separately, initializer
 arguments and calldata hash, every deployment/configuration transaction, block and

@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { z } from "zod";
 import type {
   PageQuery,
@@ -6,14 +7,13 @@ import type {
   ProtocolReadStore,
 } from "./protocol-service.js";
 
-const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
 export class PostgresProtocolReadStore implements ProtocolReadStore {
   private readonly sql;
   private readonly schema: string;
 
   constructor(databaseUrl: string, schema: string) {
-    if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!isSupportedDatabaseSchema(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
     this.schema = schema;
     this.sql = postgres(databaseUrl, {
       max: 1,

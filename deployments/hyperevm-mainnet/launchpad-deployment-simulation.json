@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "generatedAt": "2026-11-02T16:50:09.643Z",
+  "sourcePlanSha256": "019f3384052efb77427ade4692eb53ca2bead70be0973c9b623d28dfede0cac4",
+  "startingNonce": 34,
+  "nextNonce": 55,
+  "transactionCount": 21,
+  "blockGasLimit": "3000000",
+  "totalGasUsed": "11492353",
+  "maximumEstimatedGas": "1799487",
+  "receipts": [
+    {
+      "nonce": 34,
+      "name": "registryImplementation",
+      "hash": "0x5887bcd551927b917e6e4163d31a67d74680142a16aa463bdad619bd98886a3a",
+      "estimatedGas": "1384740",
+      "gasLimit": "1484740",
+      "gasUsed": "1384740",
+      "blockNumber": "50204427",
+      "contractAddress": "0xe1e89984a58cffcb9584c47ad04be37026a8d389"
+    },
+    {
+      "nonce": 35,
+      "name": "registry",
+      "hash": "0x4a8f8f93b0606445cf66eae1ce7d01b8e3cdc6e14ac655fa13345865c489aeca",
+      "estimatedGas": "211421",
+      "gasLimit": "311421",
+      "gasUsed": "211421",
+      "blockNumber": "50204428",
+      "contractAddress": "0x4395182aa91e5afb8aacb6987c63e77e4aa9dd57"
+    },
+    {
+      "nonce": 36,
+      "name": "configManagerImplementation",
+      "hash": "0xff8100079d72d6cb4b1160a1bf5f8cd994bff521490162bd45a4fabe895f1806",
+      "estimatedGas": "1301053",
+      "gasLimit": "1401053",
+      "gasUsed": "1301053",
+      "blockNumber": "50204429",
+      "contractAddress": "0x3c87569210706b413101ad6a30e9e623e38d8051"
+    },
+    {
+      "nonce": 37,
+      "name": "configManager",
+      "hash": "0x63590769be9eb2de4831fcde2e608a9b612855781a51915e4f485a8736ef3975",
+      "estimatedGas": "258574",
+      "gasLimit": "358574",
+      "gasUsed": "258574",
+      "blockNumber": "50204430",
+      "contractAddress": "0x99bd43e3c19c5cbbfff037441abaacb4263cabca"
+    },
+    {
+      "nonce": 38,
+      "name": "factoryImplementation",
+      "hash": "0xe82aa4fa3c0666947874956394f8d44af3036887b0f46de8edd8922ce03d7fc8",
+      "estimatedGas": "628184",
+      "gasLimit": "728184",
+      "gasUsed": "628184",
+      "blockNumber": "50204431",
+      "contractAddress": "0x7154e701b8d496fc6763bf0f4caeaa1c882320f2"
+    },
+    {
+      "nonce": 39,
+      "name": "factory",
+      "hash": "0x7148ede34ad544b2173a3b75922e57530e91ae2cf780884c764d205cba0f4a13",
+      "estimatedGas": "231989",
+      "gasLimit": "331989",
+      "gasUsed": "231989",
+      "blockNumber": "50204432",
+      "contractAddress": "0x766fcae1becea363694f1955e79a5f9afc1746ec"
+    },
+    {
+      "nonce": 40,
+      "name": "feeControllerImplementation",
+      "hash": "0x5ca6ed9caccf90498f826afdc2644cf0e73389dc6387f9cf85ca17a55ff4f8ee",
+      "estimatedGas": "1275988",
+      "gasLimit": "1375988",
+      "gasUsed": "1275988",
+      "blockNumber": "50204433",
+      "contractAddress": "0x26cc247284966d24ef0d9de03a59ae55bae0c0f7"
+    },
+    {
+      "nonce": 41,
+      "name": "feeController",
+      "hash": "0xdaba628d9b41a0ec5e0aba429f4d7c4889a75942fe682bd6ec70b638d736a488",
+      "estimatedGas": "235110",
+      "gasLimit": "335110",
+      "gasUsed": "235110",
+      "blockNumber": "50204434",
+      "contractAddress": "0xb699ca9d4125cb35715ba15199be17131b09a564"
+    },
+    {
+      "nonce": 42,
+      "name": "revenueSplitterImplementation",
+      "hash": "0x6ede35943f9c35496773a121e1ac893f99c961f9e613b4591f3d7d65e48a8144",
+      "estimatedGas": "1579687",
+      "gasLimit": "1679687",
+      "gasUsed": "1579687",
+      "blockNumber": "50204435",
+      "contractAddress": "0x33067dc6118e355bc7b415103ad5e40c52c64d1e"
+    },
+    {
+      "nonce": 43,
+      "name": "revenueSplitter",
+      "hash": "0x9815f447753e06c29cb2a776d9efb41efc46b92189298b696f00d9da35518696",
+      "estimatedGas": "186678",
+      "gasLimit": "286678",
+      "gasUsed": "186678",
+      "blockNumber": "50204436",
+      "contractAddress": "0xb6be5a7198a9459d393ccedf7594441c9117d6ba"
+    },
+    {
+      "nonce": 44,
+      "name": "feeCollectorImplementation",
+      "hash": "0x45c50a1757dd8fba5330e544caec365ecbe1aaa4d554673959e0aa65f1dd9703",
+      "estimatedGas": "870134",
+      "gasLimit": "970134",
+      "gasUsed": "870134",
+      "blockNumber": "50204437",
+      "contractAddress": "0xe49b9c6b8aae69b017550c688310783168d2b48a"
+    },
+    {
+      "nonce": 45,
+      "name": "feeCollector",
+      "hash": "0xc4a8762011b8d62a4ad94e693a63afe6e25232b54a85f7226572ff1e36599114",
+      "estimatedGas": "209300",
+      "gasLimit": "309300",
+      "gasUsed": "209300",
+      "blockNumber": "50204438",
+      "contractAddress": "0x9c5932a8f990e601ad88236f3a3d5cdfbb1a6175"
+    },
+    {
+      "nonce": 46,
+      "name": "tokenFactoryImplementation",
+      "hash": "0xf1beacde8fc958661467f7740e2a434ec7775aae49d076a178550db4f300d474",
+      "estimatedGas": "1799487",
+      "gasLimit": "1899487",
+      "gasUsed": "1799487",
+      "blockNumber": "50204439",
+      "contractAddress": "0x1c939310385cf0f0d3bceddda543f7d81d96d59d"
+    },
+    {
+      "nonce": 47,
+      "name": "tokenFactory",
+      "hash": "0xfb6243e793017d5ffe9a2645d49f8321d86157c01caceb2e85465fa980872158",
+      "estimatedGas": "322370",
+      "gasLimit": "422370",
+      "gasUsed": "322370",
+      "blockNumber": "50204440",
+      "contractAddress": "0xee5ec100f295b00d6146b134accd3da1bd831f93"
+    },
+    {
+      "nonce": 48,
+      "name": "lens",
+      "hash": "0x206a8d2285ee50b230388717abf010d2ff119c4e3ec21b5fbb64f68d2cf9c398",
+      "estimatedGas": "675301",
+      "gasLimit": "775301",
+      "gasUsed": "675301",
+      "blockNumber": "50204441",
+      "contractAddress": "0xac418a27ecc0e1fac5b86ec3d0a30951dcef8d21"
+    },
+    {
+      "nonce": 49,
+      "name": "Authorize LaunchpadFactory on LaunchpadConfigManager",
+      "hash": "0x2b8b56a66e68795591715dc6bc564a4da6cc48716df9bef601355e36b8624139",
+      "estimatedGas": "54189",
+      "gasLimit": "154189",
+      "gasUsed": "53793",
+      "blockNumber": "50204442",
+      "contractAddress": null
+    },
+    {
+      "nonce": 50,
+      "name": "Authorize LaunchpadTokenFactory on DBC LaunchFactory",
+      "hash": "0xf89fd9537e066987b0d87ba39edabf530ca0d78a5aafcbd14e44995160cfef56",
+      "estimatedGas": "54187",
+      "gasLimit": "154187",
+      "gasUsed": "53791",
+      "blockNumber": "50204443",
+      "contractAddress": null
+    },
+    {
+      "nonce": 51,
+      "name": "Authorize LaunchpadTokenFactory on LaunchpadFeeController",
+      "hash": "0x97f95ca4f9ec45800c214ea30ad0ea77f3982cc9368cb9a220eb3c0da71d3995",
+      "estimatedGas": "54070",
+      "gasLimit": "154070",
+      "gasUsed": "53676",
+      "blockNumber": "50204444",
+      "contractAddress": null
+    },
+    {
+      "nonce": 52,
+      "name": "Authorize LaunchpadTokenFactory on RevenueSplitter",
+      "hash": "0x0e7c18b709cbac676bdfed1e0e244b2e4165f3d1845d4cb5f2f4a1c92bf1db12",
+      "estimatedGas": "54142",
+      "gasLimit": "154142",
+      "gasUsed": "53747",
+      "blockNumber": "50204445",
+      "contractAddress": null
+    },
+    {
+      "nonce": 53,
+      "name": "Authorize LaunchpadTokenFactory on LaunchpadFeeCollector",
+      "hash": "0xd93d9fe0a22d36709acfec6cd466fe15cf1f21e4ec2869136f9db39fd4098b4a",
+      "estimatedGas": "53964",
+      "gasLimit": "153964",
+      "gasUsed": "53571",
+      "blockNumber": "50204446",
+      "contractAddress": null
+    },
+    {
+      "nonce": 54,
+      "name": "Authorize LaunchpadFeeCollector to accrue revenue",
+      "hash": "0xeb7a7659aba85f47d4dc9519e85a3d4c30192c67ef5e20e2182b1b88d6d93bb9",
+      "estimatedGas": "54154",
+      "gasLimit": "154154",
+      "gasUsed": "53759",
+      "blockNumber": "50204447",
+      "contractAddress": null
+    }
+  ],
+  "passed": true,
+  "broadcastAllowed": false
+}

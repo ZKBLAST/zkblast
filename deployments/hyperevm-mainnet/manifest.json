@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 2,
+  "protocol": "ZKBLAST",
+  "environment": "mainnet",
+  "chainId": 999,
+  "chainName": "HyperEVM",
+  "generatedAt": "2026-11-02T17:04:20.825Z",
+  "deploymentBlock": 50200708,
+  "deploymentBlockHash": "0x6c15247301cc1ea66ae5c8c9978050a24b8b84843b84f8d439e543d8e497ae44",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+  "contracts": {
+    "PoolRegistry": {
+      "contractName": "PoolRegistry",
+      "proxyKind": "uups",
+      "proxyAddress": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+      "implementationAddress": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+      "artifactBytecodeHash": "0xac9dbcff740ab75f83ef553f0cbfcecccc1f227fb2abb81085b2406881bc333c",
+      "deployedRuntimeBytecodeHash": "0xd66d4dcee1e2f640be6d6590042f29fe68eceffa02be70284538bebe0583ca7f",
+      "initializerCalldataHash": "0x7041f005768a436387c669e012d50e8390c2a2277ca4759ad12f2f03512cbedf",
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x59f6d8ba0f803be2f47121e2d711141fefb955f68a44139c83e714e8d8d6fce0",
+          "contractAddress": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+          "blockNumber": 50200711,
+          "blockHash": "0xe2d391dcd1b3630ec6174e33ef0cafe653ee50185c4a69395ffbb8631b83389f",
+          "gasUsed": "808686",
+          "effectiveGasPriceWei": "170088420",
+          "totalFeeWei": "137548124016120",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x0bb1528dc0df234298c175c8611ed13adeae03e59032067dbbed0d138f1f72e6",
+          "contractAddress": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+          "blockNumber": 50200713,
+          "blockHash": "0xae3f658b8f3d1503e8ef2c3a44c9255982fdc489e8e29ef0872cee2acbe943d4",
+          "gasUsed": "206704",
+          "effectiveGasPriceWei": "170088420",
+          "totalFeeWei": "35157956767680",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26",
+        "optimizer": true,
+        "optimizerRuns": 1
+      },
+      "verification": {
+        "implementation": "pending",
+        "proxy": "pending",
+        "urls": []
+      }
+    },
+    "PoolFactory": {
+      "contractName": "HyperEvmDammPoolFactory",
+      "proxyKind": "uups",
+      "proxyAddress": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+      "implementationAddress": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+      "artifactBytecodeHash": "0xef13c29da913bb90d8fe6e9977aaed00221925776d2d9c5575ce03a1cdb8ca56",
+      "deployedRuntimeBytecodeHash": "0x516939840b835ed98093e4f766eb702c20dce8488cf29d4f3e7c051411f04018",
+      "initializerCalldataHash": "0x8e90bef1cdf0380f977dfdba96643d5dfa2d8f9e11112aa3713d820d24aaed37",
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x9918e58aa8d29ffc3347de8bc665a33afb34b230668616bc4a131fd4b9457ea9",
+          "contractAddress": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+          "blockNumber": 50201863,
+          "blockHash": "0xdab36b69bc5e56d576901164a9024c5d2e6a8e50d6fd2405cffed17b12ddebe1",
+          "gasUsed": "2550518",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "261050873387800",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x81d57b6ada578a2fdfcd58ddc8319547efb7c0a64749b9a94b4cd742070c7491",
+          "contractAddress": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+          "blockNumber": 50201867,
+          "blockHash": "0x8b417b435125381a04ab455e797735b85a91b367f20d92c195b5748a5a141dff",
+          "gasUsed": "204689",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "20950348996900",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26",
+        "optimizer": true,
+        "optimizerRuns": 1
+      },
+      "verification": {
+        "implementation": "pending",
+        "proxy": "pending",
+        "urls": []
+      }
+    },
+    "SwapRouter": {
+      "contractName": "SwapRouter",
+      "proxyKind": "uups",
+      "proxyAddress": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+      "implementationAddress": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+      "artifactBytecodeHash": "0xedd21e3a18139c4dfefad7af2ea6380070a6fd3cd5bde01429501b832a00221b",
+      "deployedRuntimeBytecodeHash": "0x6b917b6e2b20b043770e57c8de21b176bfa2cb8829745e623b74531e81996c23",
+      "initializerCalldataHash": "0x8e90bef1cdf0380f977dfdba96643d5dfa2d8f9e11112aa3713d820d24aaed37",
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x5c55216e966ca94c00c04946bd7502ebfb2d29e93ad40694cf8fc681c8624676",
+          "contractAddress": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+          "blockNumber": 50201881,
+          "blockHash": "0x0d107e8c24febb8f330458fc925e94bd4ddd1d8a1d6e2b811737ae1ae992cedc",
+          "gasUsed": "1092187",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "111787633042700",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x1a6bb2daaa064fbbb883d72234178fdd2127e9ce21e4e7fe21bdc38dacde0031",
+          "contractAddress": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+          "blockNumber": 50201885,
+          "blockHash": "0x875fbfb0176cb2d516022687e7b0be4e950c37002ca3721f211f47c5d16cfb80",
+          "gasUsed": "204733",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "20954852489300",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26",
+        "optimizer": true,
+        "optimizerRuns": 1
+      },
+      "verification": {
+        "implementation": "pending",
+        "proxy": "pending",
+        "urls": []
+      }
+    },
+    "PositionManager": {
+      "contractName": "PositionManager",
+      "proxyKind": "uups",
+      "proxyAddress": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+      "implementationAddress": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+      "artifactBytecodeHash": "0xef64ceffc053cae319f9d3ee6e8a010bd028d5b7f00302588b856222d6652ba6",
+      "deployedRuntimeBytecodeHash": "0x6abc3d23a281daa469f871d12cea9847c5386a77e668f7700888fab7c0c03a20",
+      "initializerCalldataHash": "0x8e90bef1cdf0380f977dfdba96643d5dfa2d8f9e11112aa3713d820d24aaed37",
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0x632905783fa0d23a2076f84a147d83cb814c121f85da6ae29c18c947e6c937c4",
+          "contractAddress": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+          "blockNumber": 50201889,
+          "blockHash": "0x3485f90f6818e498f41fe58daa3136db596489461aa975cdb09024b51c790049",
+          "gasUsed": "1825658",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "186859930181800",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": {
+          "hash": "0x8c69676478c9ba38876ae5b983a80b28866eb13e02dba3f7d171936ef0fc4bc7",
+          "contractAddress": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+          "blockNumber": 50201891,
+          "blockHash": "0x46d1f273e5bf2c302b83005c939c46a108c9a92265e7ebd43c98819c54961235",
+          "gasUsed": "226817",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "23215196265700",
+          "status": "success"
+        },
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26",
+        "optimizer": true,
+        "optimizerRuns": 1
+      },
+      "verification": {
+        "implementation": "pending",
+        "proxy": "pending",
+        "urls": []
+      }
+    },
+    "PoolQuoter": {
+      "contractName": "PoolQuoter",
+      "proxyKind": "none",
+      "proxyAddress": null,
+      "implementationAddress": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+      "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "governanceAddress": null,
+      "upgraderAddress": null,
+      "artifactBytecodeHash": "0xf5ee6a152192c9d9930b0b23d327ac5c3e2d1e8196149cb0bcc391071ad78295",
+      "deployedRuntimeBytecodeHash": "0x4bcd16603440ee6196dfab6bed068a40bca5bd2175784d1b3ffea4ac364d2e96",
+      "initializerCalldataHash": null,
+      "initializerArguments": [],
+      "transactions": {
+        "implementationDeployment": {
+          "hash": "0xce3e15d20a70855719beb8fb75d321491b6a3a94dd0d32978010cc7d43cb45b5",
+          "contractAddress": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+          "blockNumber": 50201893,
+          "blockHash": "0x83edf6734c904f09eada45f553472f72619932d0a499b1f7e48dd078081ae185",
+          "gasUsed": "742014",
+          "effectiveGasPriceWei": "102352100",
+          "totalFeeWei": "75946691129400",
+          "status": "success"
+        },
+        "proxyDeploymentAndInitialization": null,
+        "configuration": []
+      },
+      "upgrades": [],
+      "compiler": {
+        "version": "0.8.26",
+        "optimizer": true,
+        "optimizerRuns": 1
+      },
+      "verification": {
+        "implementation": "pending",
+        "proxy": "not_applicable",
+        "urls": []
+      }
+    }
+  },
+  "roles": {
+    "defaultAdmin": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "factory": "0x4f967Beb4929CCF6F4D323669ce83074b8238439"
+  },
+  "totals": {
+    "transactionCount": 57,
+    "gasUsed": "38572615",
+    "totalFeeWei": "4087342521190546"
+  },
+  "integration": {
+    "poolRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+    "poolFactory": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+    "swapRouter": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+    "positionManager": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+    "poolQuoter": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13"
+  },
+  "dbc": {
+    "abiVersion": 1,
+    "deploymentBlock": 50204224,
+    "configRegistry": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+    "launchTokenDeployer": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "virtualPoolDeployer": "0xF06276C3C6900268B3d6940b05ee75c9320B46c2",
+    "launchFactory": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+    "curveQuoter": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+    "launchpadRouter": "0xB3C158cd339B9589A307ba8A75C77A177F540737",
+    "graduationManager": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1",
+    "dammGraduationAdapter": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888",
+    "graduationAdapterRegistry": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868",
+    "lpAllocationEscrow": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5"
+  },
+  "launchpad": {
+    "abiVersion": 1,
+    "deploymentBlock": 50204611,
+    "registry": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+    "configManager": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+    "factory": "0x766fcaE1BECEA363694F1955E79a5F9AfC1746eC",
+    "lens": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+    "feeController": "0xB699ca9D4125CB35715Ba15199bE17131B09a564",
+    "revenueSplitter": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+    "feeCollector": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+    "tokenFactory": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93"
+  }
+}

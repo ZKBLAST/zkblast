@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "environment": "mainnet",
+  "verifiedAt": "2026-11-02T16:09:05.787Z",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
+  "nextNonce": 10,
+  "capabilities": {
+    "damm": true,
+    "dlmm": false,
+    "dbc": false,
+    "launchpad": false,
+    "zk": false
+  },
+  "contracts": {
+    "timelock": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "poolRegistryImplementation": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+    "poolRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+    "poolFactoryImplementation": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+    "poolFactory": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+    "swapRouterImplementation": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+    "swapRouter": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+    "positionManagerImplementation": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+    "positionManager": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+    "poolQuoter": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13"
+  },
+  "checks": {
+    "codeAddressCount": 10,
+    "proxyRoleCount": 4,
+    "timelockDelaySeconds": "300",
+    "poolFactoryRegistryBinding": true,
+    "permissionlessPoolCreation": true
+  },
+  "sourcePlanSha256": "86a0c05a88e8a6a7962ffe535050459b715e288dffa9fb61ad54ce29bf1692b2",
+  "transactions": [
+    {
+      "nonce": 0,
+      "name": "timelock",
+      "hash": "0x390e552787391d04dc333fa830ece3fe3db7993b1a4a81ea110e5950ac1c1375",
+      "blockNumber": "50200708",
+      "gasUsed": "1603917",
+      "effectiveGasPrice": "170088420",
+      "contractAddress": "0x54ad8502759c61596c428054660674e0ec919f10"
+    },
+    {
+      "nonce": 1,
+      "name": "poolRegistryImplementation",
+      "hash": "0x59f6d8ba0f803be2f47121e2d711141fefb955f68a44139c83e714e8d8d6fce0",
+      "blockNumber": "50200711",
+      "gasUsed": "808686",
+      "effectiveGasPrice": "170088420",
+      "contractAddress": "0x1a8c1e85382ef7fb5eca49a289b8ccefda46a9cb"
+    },
+    {
+      "nonce": 2,
+      "name": "poolRegistry",
+      "hash": "0x0bb1528dc0df234298c175c8611ed13adeae03e59032067dbbed0d138f1f72e6",
+      "blockNumber": "50200713",
+      "gasUsed": "206704",
+      "effectiveGasPrice": "170088420",
+      "contractAddress": "0xb07add5366e4689898dd55f3043b845283dfd3fe"
+    },
+    {
+      "nonce": 3,
+      "name": "hyperEvmDammPoolFactoryImplementation",
+      "hash": "0x9918e58aa8d29ffc3347de8bc665a33afb34b230668616bc4a131fd4b9457ea9",
+      "blockNumber": "50201863",
+      "gasUsed": "2550518",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x36d5a7f4fd8d9607206d0b1aaace10e617cd2584"
+    },
+    {
+      "nonce": 4,
+      "name": "poolFactory",
+      "hash": "0x81d57b6ada578a2fdfcd58ddc8319547efb7c0a64749b9a94b4cd742070c7491",
+      "blockNumber": "50201867",
+      "gasUsed": "204689",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x4f967beb4929ccf6f4d323669ce83074b8238439"
+    },
+    {
+      "nonce": 5,
+      "name": "swapRouterImplementation",
+      "hash": "0x5c55216e966ca94c00c04946bd7502ebfb2d29e93ad40694cf8fc681c8624676",
+      "blockNumber": "50201881",
+      "gasUsed": "1092187",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x347c1b5ea6963c68911acf91dbe1593835dc21b3"
+    },
+    {
+      "nonce": 6,
+      "name": "swapRouter",
+      "hash": "0x1a6bb2daaa064fbbb883d72234178fdd2127e9ce21e4e7fe21bdc38dacde0031",
+      "blockNumber": "50201885",
+      "gasUsed": "204733",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x6ba114ebbc04a0b774b366cedd4be90506122e5c"
+    },
+    {
+      "nonce": 7,
+      "name": "positionManagerImplementation",
+      "hash": "0x632905783fa0d23a2076f84a147d83cb814c121f85da6ae29c18c947e6c937c4",
+      "blockNumber": "50201889",
+      "gasUsed": "1825658",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x07c76c1597d47981350af10e3e74d831d595756d"
+    },
+    {
+      "nonce": 8,
+      "name": "positionManager",
+      "hash": "0x8c69676478c9ba38876ae5b983a80b28866eb13e02dba3f7d171936ef0fc4bc7",
+      "blockNumber": "50201891",
+      "gasUsed": "226817",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0xb7905ae5cd4bc93d826ec9a809673c7391571015"
+    },
+    {
+      "nonce": 9,
+      "name": "poolQuoter",
+      "hash": "0xce3e15d20a70855719beb8fb75d321491b6a3a94dd0d32978010cc7d43cb45b5",
+      "blockNumber": "50201893",
+      "gasUsed": "742014",
+      "effectiveGasPrice": "102352100",
+      "contractAddress": "0x5568ba402fdefd33b8ba02dc816ebca5b736cf13"
+    }
+  ]
+}

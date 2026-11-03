@@ -18,7 +18,9 @@ export function explorerAddressUrl(
 export * from "./adapters.js";
 export * from "./amounts.js";
 export * from "./calls.js";
+export * from "./client.js";
 export * from "./deployments.js";
+export * from "./deterministic.js";
 export * from "./errors.js";
 export * from "./quotes.js";
 export * from "./pool-creation.js";

@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { encodeFunctionData, keccak256, type Address, type Hex } from "viem";
 import { erc20Abi, liquidityVaultUsdGAbi, shieldedPerpAdapterAbi } from "@zkblast/abi";
 import { perpsRelaySimulationErrorCode } from "./perps-relay-errors.js";
@@ -60,7 +61,7 @@ export class PerpsService {
     latestOraclePrice?: (oracleId: Hex) => Promise<Readonly<{ value: bigint; updatedAt: bigint }>>,
     livePosition?: (positionId: Hex) => Promise<LivePosition>,
   ) {
-    if (!/^zkblast_(testnet|mainnet)$/u.test(schema)) throw new Error("Invalid schema");
+    if (!isSupportedDatabaseSchema(schema)) throw new Error("Invalid schema");
     this.#sql = postgres(databaseUrl, { max: 3 });
     this.#schema = schema;
     this.#execution = execution;

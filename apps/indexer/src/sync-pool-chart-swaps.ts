@@ -1,4 +1,5 @@
 import { dammPoolAbi, dlmmPoolAbi } from "@zkblast/abi";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import type postgres from "postgres";
 import {
   decodeEventLog,
@@ -24,7 +25,7 @@ export async function syncPoolChartSwaps(input: {
 }) {
   const { client, sql, schema, chainId, registry } = input;
   if (
-    !/^zkblast_(testnet|mainnet)$/u.test(schema) ||
+    !isSupportedDatabaseSchema(schema) ||
     (await client.getChainId()) !== chainId
   )
     throw new Error("CHART_NETWORK_MISMATCH");

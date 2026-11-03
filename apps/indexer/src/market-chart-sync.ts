@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { getChainDescriptor } from "@zkblast/config";
 import { createPublicClient, http, type Address } from "viem";
 import { z } from "zod";
 import { syncPoolChartSwaps } from "./sync-pool-chart-swaps.js";
@@ -34,9 +35,10 @@ type Network = {
   SUPABASE_SCHEMA: string;
 };
 export function marketChartSynchronizer(network: Network, registry: Address) {
+  const descriptor = getChainDescriptor(network.CHAIN_ID);
   if (
-    network.SUPABASE_SCHEMA !== `zkblast_${network.APP_ENV}` ||
-    network.CHAIN_ID !== (network.APP_ENV === "mainnet" ? 4663 : 46630)
+    network.APP_ENV !== descriptor.environment ||
+    network.SUPABASE_SCHEMA !== descriptor.databaseSchema
   )
     throw new Error("CHART_NETWORK_SCHEMA_MISMATCH");
   const settings = settingsSchema.parse(process.env);
@@ -48,12 +50,17 @@ export function marketChartSynchronizer(network: Network, registry: Address) {
   const execution = createPublicClient({
     transport: http(network.RPC_URL, { timeout: 20000, retryCount: 1 }),
   });
-  const reference = createPublicClient({
-    transport: http(
-      network.APP_ENV === "mainnet" ? network.RPC_URL : settings.PONS_RPC_URL,
-      { timeout: 20000, retryCount: 1 },
-    ),
-  });
+  const reference =
+    descriptor.family === "robinhood"
+      ? createPublicClient({
+          transport: http(
+            network.APP_ENV === "mainnet"
+              ? network.RPC_URL
+              : settings.PONS_RPC_URL,
+            { timeout: 20000, retryCount: 1 },
+          ),
+        })
+      : null;
   let running = false;
   const synchronize = async () => {
     if (running) return null;
@@ -67,13 +74,15 @@ export function marketChartSynchronizer(network: Network, registry: Address) {
         registry,
         maximumBlocks: settings.CHART_SYNC_MAX_BLOCKS,
       }).catch(() => ({ unavailable: true }));
-      const markets = await syncReferenceChartPrices({
-        client: reference,
-        sql,
-        schema: network.SUPABASE_SCHEMA,
-        stockApi: settings.STOCK_TOKEN_API_URL.replace(/\/$/u, ""),
-        feedRegistry: settings.CHAINLINK_FEED_REGISTRY_URL,
-      }).catch(() => ({ unavailable: true }));
+      const markets = reference
+        ? await syncReferenceChartPrices({
+            client: reference,
+            sql,
+            schema: network.SUPABASE_SCHEMA,
+            stockApi: settings.STOCK_TOKEN_API_URL.replace(/\/$/u, ""),
+            feedRegistry: settings.CHAINLINK_FEED_REGISTRY_URL,
+          }).catch(() => ({ unavailable: true }))
+        : { disabled: true, reason: "CHAIN_FAMILY_NOT_SUPPORTED" };
       const result = {
         service: "chart-sync",
         environment: network.APP_ENV,

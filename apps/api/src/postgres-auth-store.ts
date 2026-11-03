@@ -1,4 +1,5 @@
 import postgres, { type Sql } from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { z } from "zod";
 import type { AuthStore, LoginChallenge } from "./auth-service.js";
 import type { IdentityStore, SessionIdentity } from "./identity-service.js";
@@ -78,7 +79,7 @@ export class PostgresAuthStore
     databaseUrl: string,
     private readonly schema: string,
   ) {
-    if (!/^zkblast_(testnet|mainnet)$/u.test(schema)) {
+    if (!isSupportedDatabaseSchema(schema)) {
       throw new Error("INVALID_DATABASE_SCHEMA");
     }
     this.sql = postgres(databaseUrl, {

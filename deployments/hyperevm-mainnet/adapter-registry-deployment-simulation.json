@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "generatedAt": "2026-11-02T16:56:10.307Z",
+  "sourcePlanSha256": "ec83be5a8823437c6863c327b619c92cffcae4ddf7e762dafcd2f567f14c59cb",
+  "startingNonce": 55,
+  "nextNonce": 57,
+  "transactionCount": 2,
+  "blockGasLimit": "3000000",
+  "totalGasUsed": "1147278",
+  "receipts": [
+    {
+      "nonce": 55,
+      "name": "graduationAdapterRegistryImplementation",
+      "hash": "0xf3c372829549a8524735a7924592cec5b293d43154a16136c571ca3df5bbc42f",
+      "estimatedGas": "938583",
+      "gasLimit": "1038583",
+      "gasUsed": "938583",
+      "blockNumber": "50204800",
+      "contractAddress": "0x2ece215e0672d1d8c460409d631b506ce0d84c65"
+    },
+    {
+      "nonce": 56,
+      "name": "graduationAdapterRegistry",
+      "hash": "0x8e8e3aab187e5ad3519e9eec68c9f7bfb01136022645a4d097609887c28d9021",
+      "estimatedGas": "208695",
+      "gasLimit": "308695",
+      "gasUsed": "208695",
+      "blockNumber": "50204801",
+      "contractAddress": "0x3e4d135e3865e4664ce894da9d46aadd4be25868"
+    }
+  ],
+  "passed": true,
+  "broadcastAllowed": false
+}

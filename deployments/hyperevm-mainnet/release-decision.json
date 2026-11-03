@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "recordedAt": "2026-11-02T15:42:00.000Z",
+  "decisionSource": "explicit owner approval in the active development session",
+  "economics": {
+    "approved": true,
+    "quoteAsset": "WHYPE",
+    "quoteAssetAddress": "0x5555555555555555555555555555555555555555",
+    "totalSupplyRaw": "1000000000000000000000000",
+    "curveInventoryRaw": "800000000000000000000000",
+    "graduationThresholdRaw": "10000000000000000",
+    "tradeFeeBps": 30,
+    "creatorFeeShareBps": 5000,
+    "protocolFeeShareBps": 5000,
+    "creatorLpShareBps": 5000,
+    "protocolLpShareBps": 5000,
+    "creatorLpLockSeconds": 300
+  },
+  "capabilities": {
+    "dammActivationApproved": true,
+    "adapterRegistryReviewRecordApproved": false,
+    "dlmmEnabled": false,
+    "zkEnabled": false
+  },
+  "riskBoundary": {
+    "publicTestnetDeploymentSkipped": true,
+    "sequentialChain999ForkSimulationRequired": true,
+    "freshLivePreflightRequired": true,
+    "broadcastRequiresSeparateApproval": true,
+    "maximumSpendHype": "0.013"
+  }
+}

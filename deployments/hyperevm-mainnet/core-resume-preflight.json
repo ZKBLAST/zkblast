@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "generatedAt": "2026-11-02T16:07:24.684Z",
+  "referenceBlock": "50201842",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "pendingNonce": 3,
+  "balanceHype": "0.040124951401597728",
+  "planSha256": "86a0c05a88e8a6a7962ffe535050459b715e288dffa9fb61ad54ce29bf1692b2",
+  "transactionCount": 7,
+  "gasPriceWei": "101904033",
+  "simulatedGasUsed": "6846616",
+  "aggregateGasLimit": "7188949",
+  "maximumFeeHype": "0.000732582896131317",
+  "proposedCapHype": "0.0025",
+  "confirmedPrefixCodeCount": 3,
+  "pendingAddressCount": 7,
+  "gates": {
+    "simulationPassed": true,
+    "nonceMatches": true,
+    "confirmedPrefixPresent": true,
+    "pendingAddressesEmpty": true,
+    "privateKeysRead": false,
+    "broadcastAllowed": false,
+    "separateApprovalRequired": true
+  }
+}

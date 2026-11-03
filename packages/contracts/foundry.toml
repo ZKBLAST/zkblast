@@ -11,6 +11,12 @@ optimizer_runs = 200
 bytecode_hash = "none"
 extra_output = ["storageLayout"]
 
+[profile.hyperevm]
+via_ir = true
+optimizer = true
+optimizer_runs = 1
+out = "out-hyperevm"
+
 [fmt]
 line_length = 100
 tab_width = 4

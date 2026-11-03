@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "verifiedAt": "2026-11-02T15:40:40.972Z",
+  "transactionCount": 56,
+  "totalGasUsed": "48154670",
+  "codeAddressCount": 41,
+  "proxyRoleChecks": 17,
+  "checks": {
+    "timelockDelaySeconds": "300",
+    "poolRegistryBinding": true,
+    "dbcDeployerBindings": true,
+    "launchpadBindings": true,
+    "adapterRegistryChainId": "999",
+    "candidateTemplateCount": "1",
+    "whypeAllowed": true
+  },
+  "passed": true
+}

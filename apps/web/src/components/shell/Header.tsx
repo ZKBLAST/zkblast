@@ -14,17 +14,28 @@ import { nav } from "@/lib/nav";
 import { XIcon } from "@/components/ui/Icons";
 import { useApp } from "./AppProvider";
 import { Logo } from "./Logo";
+import { ChainSelector } from "./ChainSelector";
 
 export function Header() {
   const path = usePathname();
   const search = useSearchParams();
   const tradeMode = search.get("mode");
-  const { address, config, connect, disconnect, injectedAddress } = useApp();
+  const {
+    address,
+    chains,
+    config,
+    connect,
+    disconnect,
+    injectedAddress,
+    selectChain,
+    busy,
+  } = useApp();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const [acct, setAcct] = useState(false);
   const { scrollY } = useScroll();
+  const visibleNav = nav.filter((item) => !item.mode || Boolean(config?.perps));
   const isNavActive = (item: (typeof nav)[number]) => {
     const navPath = item.href.split("?")[0] ?? item.href;
     if (item.mode) return path === navPath && tradeMode === item.mode;
@@ -79,7 +90,7 @@ export function Header() {
             className="hidden flex-1 justify-center lg:flex"
           >
             <ul className="flex items-stretch">
-              {nav.map((n) => {
+              {visibleNav.map((n) => {
                 const on = isNavActive(n);
                 return (
                   <li
@@ -116,16 +127,7 @@ export function Header() {
           </nav>
 
           <div className="ml-auto flex min-w-0 items-center gap-1 border-l border-line px-2 sm:gap-2 sm:px-4 lg:ml-0">
-            <span
-              className="hidden h-9 items-center gap-2 border border-line px-2.5 font-mono text-[11px] uppercase tracking-wide text-muted xl:inline-flex"
-              title="Network status"
-            >
-              <span
-                className="size-1.5 rounded-full bg-lime shadow-[0_0_8px_rgba(223,227,238,0.8)]"
-                aria-hidden
-              />
-              {config?.chainName ?? "API sync"}
-            </span>
+            <ChainSelector />
 
             <a
               href="https://x.com/zkblast9"
@@ -184,20 +186,24 @@ export function Header() {
                       >
                         Account and history
                       </Link>
-                      <Link
-                        href="/trade?mode=shielded"
-                        onClick={() => setAcct(false)}
-                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
-                      >
-                        My notes
-                      </Link>
-                      <Link
-                        href="/trade?mode=perps"
-                        onClick={() => setAcct(false)}
-                        className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
-                      >
-                        Trade Perps
-                      </Link>
+                      {config?.shieldedV2 && (
+                        <Link
+                          href="/trade?mode=shielded"
+                          onClick={() => setAcct(false)}
+                          className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
+                        >
+                          My notes
+                        </Link>
+                      )}
+                      {config?.perps && (
+                        <Link
+                          href="/trade?mode=perps"
+                          onClick={() => setAcct(false)}
+                          className="flex h-10 items-center px-3 font-mono text-[12px] uppercase tracking-wide text-muted hover:bg-raised hover:text-fg"
+                        >
+                          Trade Perps
+                        </Link>
+                      )}
                       <button
                         onClick={() => {
                           void disconnect();
@@ -255,7 +261,7 @@ export function Header() {
                   s: { transition: { staggerChildren: 0.04 } },
                 }}
               >
-                {nav.map((n) => (
+                {visibleNav.map((n) => (
                   <motion.li
                     key={n.href}
                     variants={{
@@ -298,6 +304,41 @@ export function Header() {
                   ? `${config.chainName} · Chain ${config.chainId}`
                   : "Synchronizing network configuration"}
               </p>
+              <div className="mt-4 border border-line p-2">
+                <p className="px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+                  Networks
+                </p>
+                {chains.map((chain) => {
+                  const active = chain.chainId === config?.chainId;
+                  return (
+                    <button
+                      type="button"
+                      key={chain.chainId}
+                      disabled={!chain.configured || active || busy}
+                      onClick={() => {
+                        void selectChain(chain.chainId)
+                          .then(() => setMenu(false))
+                          .catch(() => undefined);
+                      }}
+                      className={cx(
+                        "flex min-h-11 w-full items-center justify-between gap-3 px-2 text-left font-mono text-xs",
+                        active ? "bg-lime/10 text-fg" : "text-faint",
+                        chain.configured && !active && "cursor-pointer hover:bg-lime/10 hover:text-fg",
+                        (!chain.configured || busy) && "cursor-not-allowed opacity-55",
+                      )}
+                    >
+                      <span>{chain.name}</span>
+                      <span className="text-[10px] uppercase">
+                        {active
+                          ? "Current"
+                          : chain.configured
+                            ? `${chain.environment} · open`
+                            : `${chain.environment} · soon`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </nav>
           </motion.div>
         )}

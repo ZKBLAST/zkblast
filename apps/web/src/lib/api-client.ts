@@ -1,9 +1,22 @@
+function networkScopedPath(path: string): string {
+  if (typeof window === "undefined") return path;
+  if (!/^\/v1\/(protocol|dbc|launchpads)(?:\/|\?|$)/u.test(path))
+    return path;
+  const chainId = Number.parseInt(
+    window.localStorage.getItem("zkblast.activeChainId") ?? "",
+    10,
+  );
+  if (!Number.isSafeInteger(chainId) || chainId <= 0 || chainId === 4663)
+    return path;
+  return path.replace(/^\/v1\/(protocol|dbc|launchpads)/u, `/v2/chains/${chainId}/$1`);
+}
+
 export async function apiRequest<T>(
   apiUrl: string,
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(`${apiUrl}${path}`, {
+  const response = await fetch(`${apiUrl}${networkScopedPath(path)}`, {
     ...init,
     signal:
       init?.signal ??

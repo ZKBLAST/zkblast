@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "method": "same-artifact receipts plus focused simulations and conservative allowances",
+  "components": [
+    {
+      "name": "governanceTimelock",
+      "gas": "1617814",
+      "evidence": "chain-999 eth_estimateGas"
+    },
+    {
+      "name": "poolCore",
+      "gas": "9989099",
+      "evidence": "same-artifact Robinhood mainnet receipts"
+    },
+    {
+      "name": "dbcV1",
+      "gas": "18205773",
+      "evidence": "focused full DBC fork simulation"
+    },
+    {
+      "name": "launchpadV1",
+      "gas": "13879077",
+      "evidence": "focused full launchpad fork simulation"
+    },
+    {
+      "name": "graduationAdapterRegistryAndProxy",
+      "gas": "1750000",
+      "evidence": "conservative bytecode-deposit plus proxy/initializer allowance"
+    },
+    {
+      "name": "chainSpecificConfigurationContingency",
+      "gas": "2000000",
+      "evidence": "reserved until exact chain-999 initializer/configuration simulation"
+    }
+  ],
+  "estimatedGas": "47441763",
+  "sequentialSimulationGas": "48154670",
+  "planningGas": "48154670",
+  "gasWith25PercentExecutionBuffer": "60193338",
+  "observedGasPriceWei": "100000000",
+  "planningGasPriceWei": "200000000",
+  "estimatedAtObservedPriceHype": "0.004815467",
+  "recommendedGasBudgetHype": "0.0120386676",
+  "minimumPracticalWalletFundingHype": "0.0170386676",
+  "limitations": [
+    "This is not a broadcast approval or an exact chain-999 transaction plan.",
+    "Pool-core gas uses identical-artifact Robinhood receipts until sequential chain-999 simulation exists.",
+    "The practical wallet amount includes 0.005 HYPE beyond the buffered gas budget for retries and canary acceptance."
+  ]
+}

@@ -56,6 +56,7 @@ import { PostgresLaunchpadReadStore } from "./postgres-launchpad-read-store.js";
 import { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
 import { PostgresLaunchpadDeveloperStore } from "./postgres-launchpad-developer-store.js";
 import { probeWebhookOwnership } from "./launchpad-developer-security.js";
+import { createHyperEvmMainnetContext } from "./hyperevm-mainnet-context.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -71,6 +72,16 @@ const serviceSchema = z.object({
   ALERT_RECEIPT_FAILURES: z.coerce.number().int().positive().default(5),
   OPERATIONS_API_TOKEN: z.string().min(32),
   LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY: z.string().min(1).optional(),
+  ROBINHOOD_MAINNET_WEB_URL: z.string().url().optional(),
+  HYPEREVM_MAINNET_WEB_URL: z.string().url().optional(),
+  ENABLE_HYPEREVM_MAINNET: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  HYPEREVM_MAINNET_RPC_URL: z
+    .string()
+    .url()
+    .default("https://rpc.hyperliquid.xyz/evm"),
 });
 
 const serverConfig = loadServerConfig(process.env);
@@ -140,6 +151,7 @@ const launchpadDeveloperService =
         new PostgresLaunchpadDeveloperStore(
           directDatabaseUrl,
           serverConfig.SUPABASE_SCHEMA,
+          serverConfig.CHAIN_ID,
         ),
         {
           owner: async (launchpadId) =>
@@ -270,7 +282,11 @@ const launchpadCatalogService = launchpadAddresses
   : undefined;
 const dbcService = dbcAddresses
   ? new DbcService(
-      new PostgresDbcReadStore(directDatabaseUrl, serverConfig.SUPABASE_SCHEMA),
+      new PostgresDbcReadStore(
+        directDatabaseUrl,
+        serverConfig.SUPABASE_SCHEMA,
+        serverConfig.CHAIN_ID,
+      ),
       {
         quote: ({ pool, side, amountRaw }) =>
           chainClient.readContract({
@@ -302,7 +318,11 @@ const launchpadReadService = launchpadAddresses
   ? new LaunchpadReadService(
       serverConfig.APP_ENV,
       serverConfig.CHAIN_ID,
-      new PostgresLaunchpadReadStore(directDatabaseUrl, serverConfig.SUPABASE_SCHEMA),
+      new PostgresLaunchpadReadStore(
+        directDatabaseUrl,
+        serverConfig.SUPABASE_SCHEMA,
+        serverConfig.CHAIN_ID,
+      ),
       dbcService,
       () => chainClient.getBlockNumber(),
     )
@@ -313,6 +333,7 @@ const launchpadBrandingService = manifest.launchpad
       new PostgresLaunchpadBrandingStore(
         directDatabaseUrl,
         serverConfig.SUPABASE_SCHEMA,
+        serverConfig.CHAIN_ID,
       ),
       {
         launchpad: async (launchpadId) => {
@@ -350,6 +371,7 @@ const launchpadDomainService = launchpadOwnershipReader
       new PostgresLaunchpadDomainStore(
         directDatabaseUrl,
         serverConfig.SUPABASE_SCHEMA,
+        serverConfig.CHAIN_ID,
       ),
       launchpadOwnershipReader,
       { resolveTxt },
@@ -533,6 +555,16 @@ const shieldedV2Service = manifest.shieldedV2
       deploymentBlock: BigInt(manifest.shieldedV2.deploymentBlock),
     })
   : undefined;
+const additionalChainContexts = serviceConfig.ENABLE_HYPEREVM_MAINNET
+  ? [
+      await createHyperEvmMainnetContext({
+        databaseUrl: directDatabaseUrl,
+        rpcUrl: serviceConfig.HYPEREVM_MAINNET_RPC_URL,
+        webOrigin: serviceConfig.WEB_ORIGIN,
+        operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
+      }),
+    ]
+  : [];
 const app = createApp(
   {
     environment: serverConfig.APP_ENV,
@@ -540,6 +572,14 @@ const app = createApp(
     chainName: serverConfig.CHAIN_NAME,
     explorerUrl: serverConfig.BLOCK_EXPLORER_URL,
     webOrigin: serviceConfig.WEB_ORIGIN,
+    chainAppUrls: {
+      ...(serviceConfig.ROBINHOOD_MAINNET_WEB_URL
+        ? { 4663: serviceConfig.ROBINHOOD_MAINNET_WEB_URL }
+        : {}),
+      ...(serviceConfig.HYPEREVM_MAINNET_WEB_URL
+        ? { 999: serviceConfig.HYPEREVM_MAINNET_WEB_URL }
+        : {}),
+    },
     ...(manifest.shieldedV2 ? { shieldedV2: manifest.shieldedV2 } : {}),
     ...(manifest.perps ? { perps: manifest.perps } : {}),
     operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
@@ -590,6 +630,7 @@ const app = createApp(
     ...(launchpadDomainService ? { launchpadDomainService } : {}),
     ...(launchpadDeveloperService ? { launchpadDeveloperService } : {}),
   },
+  additionalChainContexts,
 );
 
 const listenHost =

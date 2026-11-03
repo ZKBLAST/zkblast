@@ -1,14 +1,20 @@
 import cors from "cors";
-import express, { type ErrorRequestHandler } from "express";
+import express, {
+  type ErrorRequestHandler,
+  type RequestHandler,
+} from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { z } from "zod";
 import {
+  type ChainCapabilities,
   privateVaultV2ConfigSchema,
   privateV2ConfigIssue,
   type PrivateVaultV2Config,
   privatePerpsConfigSchema,
   type PrivatePerpsConfig,
+  getChainDescriptor,
+  supportedChains,
 } from "@zkblast/config";
 import { createAuthRouter } from "./auth-router.js";
 import type { AuthService } from "./auth-service.js";
@@ -47,6 +53,8 @@ export type ApiPublicConfig = Readonly<{
   chainId: number;
   chainName: string;
   explorerUrl: string;
+  capabilities?: ChainCapabilities;
+  chainAppUrls?: Readonly<Record<number, string>>;
   webOrigin: string;
   operationsToken?: string;
   contracts?: readonly Readonly<{
@@ -83,7 +91,16 @@ const publicConfigResponseSchema = z
     environment: z.enum(["testnet", "mainnet"]),
     chainId: z.number().int().positive(),
     chainName: z.string().min(1),
-    explorerUrl: z.string().url(),
+    explorerUrl: z.union([z.string().url(), z.literal("")]),
+    capabilities: z.object({
+      launchpad: z.boolean(),
+      dbc: z.boolean(),
+      dammGraduation: z.boolean(),
+      dlmmGraduation: z.boolean(),
+      zkClaimAuthorization: z.boolean(),
+      customDomains: z.boolean(),
+      metadataUpload: z.boolean(),
+    }),
     contracts: z
       .array(
         z.object({
@@ -151,19 +168,27 @@ const publicConfigResponseSchema = z
         )!,
       });
     }
-    const expected = value.environment === "testnet" ? 46_630 : 4_663;
-    if (value.chainId !== expected) {
+    let descriptor;
+    try {
+      descriptor = getChainDescriptor(value.chainId);
+    } catch {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["chainId"],
-        message: `${value.environment} requires chain ${expected}`,
+        message: "Unsupported chain",
+      });
+      return;
+    }
+    if (value.environment !== descriptor.environment) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["environment"],
+        message: `Chain ${value.chainId} requires ${descriptor.environment}`,
       });
     }
   });
 
-export function createApp(
-  config: ApiPublicConfig,
-  dependencies: Readonly<{
+export type ApiDependencies = Readonly<{
     authService?: AuthService;
     identityService?: IdentityService;
     protocolService?: ProtocolService;
@@ -182,9 +207,48 @@ export function createApp(
     launchpadCatalogService?: LaunchpadCatalogService;
     launchpadReadService?: LaunchpadReadService;
     launchpadDeveloperService?: LaunchpadDeveloperService;
-  }> = {},
+  }>;
+
+export type ApiChainContext = Readonly<{
+  config: ApiPublicConfig;
+  dependencies: ApiDependencies;
+}>;
+
+export function createApp(
+  config: ApiPublicConfig,
+  dependencies: ApiDependencies = {},
+  additionalChainContexts: readonly ApiChainContext[] = [],
 ) {
   const app = express();
+  const chainContexts = new Map<number, ApiChainContext>([
+    [config.chainId, { config, dependencies }],
+  ]);
+  for (const context of additionalChainContexts) {
+    if (chainContexts.has(context.config.chainId))
+      throw new Error(`DUPLICATE_CHAIN_CONTEXT:${context.config.chainId}`);
+    chainContexts.set(context.config.chainId, context);
+  }
+  const requireConfiguredChain: RequestHandler = (request, response, next) => {
+    const requestedChainId = Number(request.params.chainId);
+    try {
+      getChainDescriptor(requestedChainId);
+    } catch {
+      return response
+        .status(404)
+        .json({ error: { code: "CHAIN_NOT_SUPPORTED" } });
+    }
+    if (!chainContexts.has(requestedChainId)) {
+      return response.status(409).json({
+        error: {
+          code: "CHAIN_NOT_CONFIGURED",
+          configuredChainId: config.chainId,
+          configuredChainIds: [...chainContexts.keys()],
+        },
+      });
+    }
+    response.setHeader("x-zkblast-chain-id", String(requestedChainId));
+    return next();
+  };
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
   app.use(helmet());
@@ -222,19 +286,81 @@ export function createApp(
     }
   });
 
-  app.get("/v1/config", (_request, response) => {
-    const body = publicConfigResponseSchema.parse({
-      environment: config.environment,
-      chainId: config.chainId,
-      chainName: config.chainName,
-      explorerUrl: config.explorerUrl,
-      contracts: config.contracts,
-      shielded: config.shielded,
-      shieldedV2: config.shieldedV2,
-      perps: config.perps,
+  const publicConfigBody = (chainConfig: ApiPublicConfig) => {
+    const descriptor = getChainDescriptor(chainConfig.chainId);
+    return publicConfigResponseSchema.parse({
+      environment: chainConfig.environment,
+      chainId: chainConfig.chainId,
+      chainName: chainConfig.chainName,
+      explorerUrl: chainConfig.explorerUrl,
+      capabilities: descriptor.capabilities,
+      contracts: chainConfig.contracts,
+      shielded: chainConfig.shielded,
+      shieldedV2: chainConfig.shieldedV2,
+      perps: chainConfig.perps,
     });
-    response.json(body);
+  };
+
+  app.get("/v1/config", (_request, response) => {
+    response.json(publicConfigBody(config));
   });
+
+  app.get("/v2/chains", (_request, response) => {
+    response.json({
+      chains: supportedChains.map((chain) => ({
+        chainId: chain.chainId,
+        slug: chain.slug,
+        family: chain.family,
+        environment: chain.environment,
+        name: chain.name,
+        nativeCurrency: chain.nativeCurrency,
+        explorerUrl: chain.explorerUrl,
+        capabilities: chain.capabilities,
+        configured: chainContexts.has(chain.chainId),
+        appUrl: config.chainAppUrls?.[chain.chainId] ?? null,
+      })),
+    });
+  });
+  app.use("/v2/chains/:chainId", requireConfiguredChain);
+
+  app.get("/v2/chains/:chainId/config", (request, response) => {
+    const context = chainContexts.get(Number(request.params.chainId));
+    if (!context)
+      return response.status(409).json({ error: { code: "CHAIN_NOT_CONFIGURED" } });
+    return response.json(publicConfigBody(context.config));
+  });
+
+  app.get("/v2/chains/:chainId/ready", async (request, response, next) => {
+    try {
+      const context = chainContexts.get(Number(request.params.chainId));
+      if (!context?.dependencies.protocolService)
+        return response.status(503).json({ ready: false });
+      const readiness = await context.dependencies.protocolService.readiness();
+      return response.status(readiness.ready ? 200 : 503).json(readiness);
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  const mountChainRouters = (
+    path: string,
+    createRouter: (context: ApiChainContext) => RequestHandler | undefined,
+  ) => {
+    const routers = new Map<number, RequestHandler>();
+    for (const [chainId, context] of chainContexts) {
+      const router = createRouter(context);
+      if (router) routers.set(chainId, router);
+    }
+    app.use(path, (request, response, next) => {
+      const chainId = Number(request.params.chainId);
+      const router = routers.get(chainId);
+      if (!router)
+        return response.status(404).json({
+          error: { code: "FEATURE_NOT_CONFIGURED", chainId },
+        });
+      return router(request, response, next);
+    });
+  };
 
   if (dependencies.authService) {
     app.use("/v1/auth", createAuthRouter(dependencies.authService));
@@ -249,17 +375,34 @@ export function createApp(
     );
   }
   if (dependencies.protocolService) {
-    app.use(
-      "/v1/protocol",
+    const createCurrentProtocolRouter = () =>
       createProtocolRouter(
-        dependencies.protocolService,
+        dependencies.protocolService!,
         dependencies.swapService,
         dependencies.liquidityService,
         dependencies.operationsService,
         config.operationsToken,
-      ),
-    );
+      );
+    app.use("/v1/protocol", createCurrentProtocolRouter());
   }
+  mountChainRouters("/v2/chains/:chainId/protocol", ({ config: chainConfig, dependencies: chainDependencies }) =>
+    chainDependencies.protocolService
+      ? createProtocolRouter(
+          chainDependencies.protocolService,
+          chainDependencies.swapService,
+          chainDependencies.liquidityService,
+          chainDependencies.operationsService,
+          chainConfig.operationsToken,
+        )
+      : undefined,
+  );
+  mountChainRouters(
+    "/v2/chains/:chainId/protocol/pool-creation",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.poolCreationService
+        ? createPoolCreationRouter(chainDependencies.poolCreationService)
+        : undefined,
+  );
   if (dependencies.shieldedService) {
     app.use("/v1/shielded", createShieldedRouter(dependencies.shieldedService));
   }
@@ -289,34 +432,58 @@ export function createApp(
   if (dependencies.dbcService) {
     app.use("/v1/dbc", createDbcRouter(dependencies.dbcService));
   }
+  mountChainRouters("/v2/chains/:chainId/dbc", ({ dependencies: chainDependencies }) =>
+    chainDependencies.dbcService
+      ? createDbcRouter(chainDependencies.dbcService)
+      : undefined,
+  );
   if (dependencies.launchpadCatalogService) {
-    app.use(
-      "/v1/launchpads",
+    const createCurrentLaunchpadCatalogRouter = () =>
       createLaunchpadCatalogRouter(
-        dependencies.launchpadCatalogService,
+        dependencies.launchpadCatalogService!,
         dependencies.launchpadReadService,
         dependencies.launchpadBrandingService,
-      ),
-    );
+      );
+    app.use("/v1/launchpads", createCurrentLaunchpadCatalogRouter());
   }
   if (dependencies.launchpadBrandingService) {
-    app.use(
-      "/v1/launchpads",
-      createLaunchpadBrandingRouter(dependencies.launchpadBrandingService),
-    );
+    const createCurrentBrandingRouter = () =>
+      createLaunchpadBrandingRouter(dependencies.launchpadBrandingService!);
+    app.use("/v1/launchpads", createCurrentBrandingRouter());
   }
   if (dependencies.launchpadDomainService) {
-    app.use(
-      "/v1/launchpads",
-      createLaunchpadDomainRouter(dependencies.launchpadDomainService),
-    );
+    const createCurrentDomainRouter = () =>
+      createLaunchpadDomainRouter(dependencies.launchpadDomainService!);
+    app.use("/v1/launchpads", createCurrentDomainRouter());
   }
   if (dependencies.launchpadDeveloperService) {
-    app.use(
-      "/v1/launchpads",
-      createLaunchpadDeveloperRouter(dependencies.launchpadDeveloperService),
-    );
+    const createCurrentDeveloperRouter = () =>
+      createLaunchpadDeveloperRouter(dependencies.launchpadDeveloperService!);
+    app.use("/v1/launchpads", createCurrentDeveloperRouter());
   }
+  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) => {
+    if (!chainDependencies.launchpadCatalogService) return undefined;
+    return createLaunchpadCatalogRouter(
+      chainDependencies.launchpadCatalogService,
+      chainDependencies.launchpadReadService,
+      chainDependencies.launchpadBrandingService,
+    );
+  });
+  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
+    chainDependencies.launchpadBrandingService
+      ? createLaunchpadBrandingRouter(chainDependencies.launchpadBrandingService)
+      : undefined,
+  );
+  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
+    chainDependencies.launchpadDomainService
+      ? createLaunchpadDomainRouter(chainDependencies.launchpadDomainService)
+      : undefined,
+  );
+  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
+    chainDependencies.launchpadDeveloperService
+      ? createLaunchpadDeveloperRouter(chainDependencies.launchpadDeveloperService)
+      : undefined,
+  );
 
   app.use((_request, response) => {
     response.status(404).json({ error: { code: "NOT_FOUND" } });

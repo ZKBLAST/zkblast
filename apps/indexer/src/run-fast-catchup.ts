@@ -1,35 +1,45 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadServerConfig } from "@zkblast/config";
+import { getChainDescriptor, loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import postgres from "postgres";
-import { createPublicClient, getAddress, http } from "viem";
+import { createPublicClient, getAddress } from "viem";
 import { z } from "zod";
 import { installCheckpointGuard } from "./checkpoint-guard.js";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 import { fastCatchup } from "./fast-catchup.js";
+import { createIndexerTransport } from "./rpc-transport.js";
 
 async function main() {
   const config = loadServerConfig(process.env);
+  const descriptor = getChainDescriptor(config.CHAIN_ID);
   if (
-    config.SUPABASE_SCHEMA !== `zkblast_${config.APP_ENV}` ||
-    config.CHAIN_ID !== (config.APP_ENV === "mainnet" ? 4663 : 46630)
+    config.APP_ENV !== descriptor.environment ||
+    config.SUPABASE_SCHEMA !== descriptor.databaseSchema
   )
     throw new Error("CATCHUP_ENVIRONMENT_MISMATCH");
   const settings = z
     .object({
       SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
-      INDEXER_CONFIRMATIONS: z.coerce.bigint().min(1n).default(5n),
-      INDEXER_CATCHUP_CHUNK_SIZE: z.coerce
-        .bigint()
-        .min(1n)
-        .max(10000n)
-        .default(2000n),
+      INDEXER_CONFIRMATIONS: z.preprocess(
+        (value) => value === "" ? undefined : value,
+        z.coerce.bigint().min(1n).optional(),
+      ),
+      INDEXER_CATCHUP_CHUNK_SIZE: z.preprocess(
+        (value) => value === "" ? undefined : value,
+        z.coerce.bigint().min(1n).max(10000n).optional(),
+      ),
       INDEXER_CATCHUP_MAX_BLOCKS: z.coerce
         .bigint()
         .min(1n)
         .max(10000000n)
         .default(3000000n),
+      INDEXER_RPC_RANGE_DELAY_MS: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(10_000)
+        .optional(),
     })
     .parse(process.env);
   const manifest = await loadDeploymentManifestFile(
@@ -48,8 +58,14 @@ async function main() {
     config.SUPABASE_SCHEMA,
   );
   try {
+    const confirmations =
+      settings.INDEXER_CONFIRMATIONS ??
+      BigInt(descriptor.indexer.confirmations ?? 1);
+    const chunkSize =
+      settings.INDEXER_CATCHUP_CHUNK_SIZE ??
+      BigInt(descriptor.indexer.maximumLogRange ?? 2_000);
     const client = createPublicClient({
-      transport: http(config.RPC_URL, { timeout: 20000, retryCount: 1 }),
+      transport: createIndexerTransport(config.RPC_URL),
     });
     if ((await client.getChainId()) !== config.CHAIN_ID)
       throw new Error("CATCHUP_CHAIN_MISMATCH");
@@ -115,9 +131,12 @@ async function main() {
               manifest.shielded?.deploymentBlock ?? manifest.deploymentBlock,
             ),
           ),
-          chunkSize: settings.INDEXER_CATCHUP_CHUNK_SIZE,
-          confirmations: settings.INDEXER_CONFIRMATIONS,
+          chunkSize,
+          confirmations,
           maximumBlocks: settings.INDEXER_CATCHUP_MAX_BLOCKS,
+          rangeDelayMs:
+            settings.INDEXER_RPC_RANGE_DELAY_MS ??
+            (descriptor.family === "hyperevm" ? 500 : 0),
           onDiscoveredLaunchContracts: (contracts) =>
             repository.trackDbcContracts(contracts),
           onProgress: (checkpoint, finalized) => {
@@ -148,7 +167,7 @@ async function main() {
           client,
           config.CHAIN_ID,
           getAddress(manifest.integration.positionManager),
-          settings.INDEXER_CONFIRMATIONS,
+          confirmations,
         ),
       }),
     );

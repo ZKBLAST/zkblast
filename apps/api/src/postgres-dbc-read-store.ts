@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import type {
   DbcCandleQuery,
   DbcLaunchMetadata,
@@ -6,7 +7,6 @@ import type {
   DbcReadStore,
 } from "./dbc-service.js";
 
-const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 const intervals = {
   "1m": "1 minute",
   "5m": "5 minutes",
@@ -20,8 +20,10 @@ export class PostgresDbcReadStore implements DbcReadStore {
   constructor(
     databaseUrl: string,
     private readonly schema: string,
+    private readonly chainId: number,
   ) {
-    if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!isSupportedDatabaseSchema(schema))
+      throw new Error("INVALID_DATABASE_SCHEMA");
     this.#sql = postgres(databaseUrl, {
       max: 3,
       prepare: false,
@@ -31,8 +33,8 @@ export class PostgresDbcReadStore implements DbcReadStore {
   templates(page: DbcPage) {
     return this.#sql.unsafe(
       `select template_id,family_id,config_hash,version,enabled,used,updated_block from ${this.schema}.dbc_templates
-      where ($2::numeric is null or template_id < $2::numeric) order by template_id desc limit $1`,
-      [page.limit, page.cursor ?? null],
+      where chain_id=$1 and ($3::numeric is null or template_id < $3::numeric) order by template_id desc limit $2`,
+      [this.chainId, page.limit, page.cursor ?? null],
     );
   }
   launches(
@@ -49,26 +51,28 @@ export class PostgresDbcReadStore implements DbcReadStore {
       l.launchpad_config_preset_id,l.launchpad_config_hash,l.graduation_destination,
       m.metadata_id,m.website_url,m.x_url,(m.logo_bytes is not null) has_logo,
       l.real_quote_reserve_raw::text,l.base_sold_raw::text,l.graduation_threshold_raw::text,l.created_block,l.updated_block,
-      coalesce((select sum(s.quote_amount_raw)::text from ${this.schema}.dbc_swaps s where s.launch_id=l.launch_id and s.canonical),'0') volume_raw,
-      coalesce((select count(*)::integer from ${this.schema}.dbc_swaps s where s.launch_id=l.launch_id and s.canonical),0) trade_count,
-      coalesce((select count(*)::integer from ${this.schema}.dbc_holder_balances h where h.launch_id=l.launch_id and h.balance_raw>0),0) holder_count,
+      coalesce((select sum(s.quote_amount_raw)::text from ${this.schema}.dbc_swaps s where s.chain_id=$1 and s.launch_id=l.launch_id and s.canonical),'0') volume_raw,
+      coalesce((select count(*)::integer from ${this.schema}.dbc_swaps s where s.chain_id=$1 and s.launch_id=l.launch_id and s.canonical),0) trade_count,
+      coalesce((select count(*)::integer from ${this.schema}.dbc_holder_balances h where h.chain_id=$1 and h.launch_id=l.launch_id and h.balance_raw>0),0) holder_count,
       greatest(0,
-        coalesce((select sum((e.payload->>'creatorAmountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeAccrued'),0)
-        - coalesce((select sum((e.payload->>'amountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeClaimed' and e.payload->>'allocation'='0'),0)
+        coalesce((select sum((e.payload->>'creatorAmountRaw')::numeric) from ${this.schema}.dbc_events e where e.chain_id=$1 and e.launch_id=l.launch_id and e.canonical and e.event_name='FeeAccrued'),0)
+        - coalesce((select sum((e.payload->>'amountRaw')::numeric) from ${this.schema}.dbc_events e where e.chain_id=$1 and e.launch_id=l.launch_id and e.canonical and e.event_name='FeeClaimed' and e.payload->>'allocation'='0'),0)
       )::text creator_claimable_raw,
       greatest(0,
-        coalesce((select sum((e.payload->>'protocolAmountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeAccrued'),0)
-        - coalesce((select sum((e.payload->>'amountRaw')::numeric) from ${this.schema}.dbc_events e where e.launch_id=l.launch_id and e.canonical and e.event_name='FeeClaimed' and e.payload->>'allocation'='2'),0)
+        coalesce((select sum((e.payload->>'protocolAmountRaw')::numeric) from ${this.schema}.dbc_events e where e.chain_id=$1 and e.launch_id=l.launch_id and e.canonical and e.event_name='FeeAccrued'),0)
+        - coalesce((select sum((e.payload->>'amountRaw')::numeric) from ${this.schema}.dbc_events e where e.chain_id=$1 and e.launch_id=l.launch_id and e.canonical and e.event_name='FeeClaimed' and e.payload->>'allocation'='2'),0)
       )::text protocol_claimable_raw,
       ga.migration_id graduation_migration_id,ga.status graduation_status,ga.attempts graduation_attempts,
       ga.failure_hash graduation_failure_hash,ga.transaction_hash graduation_transaction_hash,
       case when l.graduation_threshold_raw is null then 0 else least(10000,floor(l.real_quote_reserve_raw*10000/l.graduation_threshold_raw))::integer end progress_bps
-      from ${this.schema}.dbc_launches l left join ${this.schema}.dbc_launch_metadata m on m.metadata_uri=l.metadata_uri
-      left join ${this.schema}.dbc_graduation_attempts ga on ga.launch_id=l.launch_id where ($1::text is null or l.launch_id < $1)
-      and ($2::integer is null or lifecycle=$2) and ($3::text is null or name ilike '%'||$3||'%' or symbol ilike '%'||$3||'%')
-      and ($4::numeric is null or (l.launchpad_bound and l.launchpad_id=$4::numeric))
-      order by l.launch_id desc limit $5`,
+      from ${this.schema}.dbc_launches l left join ${this.schema}.dbc_launch_metadata m on m.chain_id=l.chain_id and m.metadata_uri=l.metadata_uri
+      left join ${this.schema}.dbc_graduation_attempts ga on ga.chain_id=l.chain_id and ga.launch_id=l.launch_id
+      where l.chain_id=$1 and ($2::text is null or l.launch_id < $2)
+      and ($3::integer is null or lifecycle=$3) and ($4::text is null or name ilike '%'||$4||'%' or symbol ilike '%'||$4||'%')
+      and ($5::numeric is null or (l.launchpad_bound and l.launchpad_id=$5::numeric))
+      order by l.launch_id desc limit $6`,
       [
+        this.chainId,
         query.cursor ?? null,
         query.lifecycle ?? null,
         query.search ?? null,
@@ -79,24 +83,24 @@ export class PostgresDbcReadStore implements DbcReadStore {
   }
   async launch(launchId: string) {
     const rows = await this.#sql.unsafe(
-      `select * from ${this.schema}.dbc_launches where launch_id=$1 limit 1`,
-      [launchId],
+      `select * from ${this.schema}.dbc_launches where chain_id=$1 and launch_id=$2 limit 1`,
+      [this.chainId, launchId],
     );
     return rows[0] ?? null;
   }
   async launchByPool(pool: `0x${string}`) {
     const rows = await this.#sql.unsafe<{ lifecycle: number }[]>(
-      `select lifecycle from ${this.schema}.dbc_launches where virtual_pool=$1 limit 1`,
-      [pool.toLowerCase()],
+      `select lifecycle from ${this.schema}.dbc_launches where chain_id=$1 and virtual_pool=$2 limit 1`,
+      [this.chainId, pool.toLowerCase()],
     );
     return rows[0] ?? null;
   }
   trades(launchId: string, page: DbcPage) {
     return this.#sql.unsafe(
       `select transaction_hash,log_index,trader,recipient,is_buy,quote_amount_raw::text,base_amount_raw::text,fee_raw::text,price_x18::text,block_number,observed_at
-      from ${this.schema}.dbc_swaps where launch_id=$1 and canonical and ($2::text is null or (block_number::text||':'||log_index::text)<$2)
-      order by block_number desc,log_index desc limit $3`,
-      [launchId, page.cursor ?? null, page.limit],
+      from ${this.schema}.dbc_swaps where chain_id=$1 and launch_id=$2 and canonical and ($3::text is null or (block_number::text||':'||log_index::text)<$3)
+      order by block_number desc,log_index desc limit $4`,
+      [this.chainId, launchId, page.cursor ?? null, page.limit],
     );
   }
   candles(launchId: string, query: DbcCandleQuery) {
@@ -106,24 +110,25 @@ export class PostgresDbcReadStore implements DbcReadStore {
       (array_agg(price_x18::text order by block_number,log_index))[1] open_x18,max(price_x18)::text high_x18,min(price_x18)::text low_x18,
       (array_agg(price_x18::text order by block_number desc,log_index desc))[1] close_x18,sum(base_amount_raw)::text base_volume_raw,
       sum(quote_amount_raw)::text quote_volume_raw,count(*)::integer trades from ${this.schema}.dbc_swaps
-      where launch_id=$1 and canonical and observed_at >= $2 and observed_at <= $3 group by bucket order by bucket limit $4`,
-      [launchId, query.from, query.to, query.limit],
+      where chain_id=$1 and launch_id=$2 and canonical and observed_at >= $3 and observed_at <= $4 group by bucket order by bucket limit $5`,
+      [this.chainId, launchId, query.from, query.to, query.limit],
     );
   }
   async graduation(launchId: string) {
     const rows = await this.#sql.unsafe(
       `select g.*,coalesce(jsonb_agg(a order by a.allocation_kind) filter(where a.migration_id is not null),'[]'::jsonb) allocations
-      from ${this.schema}.dbc_graduations g left join ${this.schema}.dbc_lp_allocations a using(migration_id)
-      where g.launch_id=$1 group by g.migration_id limit 1`,
-      [launchId],
+      from ${this.schema}.dbc_graduations g left join ${this.schema}.dbc_lp_allocations a on a.chain_id=g.chain_id and a.migration_id=g.migration_id
+      where g.chain_id=$1 and g.launch_id=$2 group by g.migration_id limit 1`,
+      [this.chainId, launchId],
     );
     return rows[0] ?? null;
   }
   async saveMetadata(input: DbcLaunchMetadata) {
     await this.#sql.unsafe(
-      `insert into ${this.schema}.dbc_launch_metadata(metadata_id,metadata_uri,website_url,x_url,logo_mime,logo_bytes)
-       values($1,$2,$3,$4,$5,$6) on conflict(metadata_id) do nothing`,
+      `insert into ${this.schema}.dbc_launch_metadata(chain_id,metadata_id,metadata_uri,website_url,x_url,logo_mime,logo_bytes)
+       values($1,$2,$3,$4,$5,$6,$7) on conflict(metadata_id) do nothing`,
       [
+        this.chainId,
         input.metadataId,
         input.metadataUri,
         input.websiteUrl,
@@ -144,8 +149,8 @@ export class PostgresDbcReadStore implements DbcReadStore {
         logo_bytes: Buffer | null;
       }[]
     >(
-      `select metadata_id,metadata_uri,website_url,x_url,logo_mime,logo_bytes from ${this.schema}.dbc_launch_metadata where metadata_id=$1 limit 1`,
-      [metadataId],
+      `select metadata_id,metadata_uri,website_url,x_url,logo_mime,logo_bytes from ${this.schema}.dbc_launch_metadata where chain_id=$1 and metadata_id=$2 limit 1`,
+      [this.chainId, metadataId],
     );
     const row = rows[0];
     return row

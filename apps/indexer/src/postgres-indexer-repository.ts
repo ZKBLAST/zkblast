@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { getAddress, type Address, type PublicClient } from "viem";
 import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
@@ -28,7 +29,6 @@ const launchpadProjectionEvents = [
   "RevenueSnapshotRegistered",
 ] as const;
 
-const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
 export class PostgresIndexerRepository implements IndexerRepository {
   private readonly sql;
@@ -40,7 +40,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
     private readonly consumer = "protocol",
     dbcContracts: readonly Address[] = [],
   ) {
-    if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!isSupportedDatabaseSchema(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
     if (!/^(protocol|shielded-v2-[a-f0-9]{40})$/u.test(consumer))
       throw new Error("INVALID_INDEXER_CONSUMER");
     this.schema = schema;

@@ -1,10 +1,10 @@
 import postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import type {
   LaunchpadBrandingStore,
   StoredLaunchpadBranding,
 } from "./launchpad-branding-service.js";
 
-const schemaPattern = /^zkblast_(testnet|mainnet)$/u;
 
 export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
   readonly #sql;
@@ -12,8 +12,10 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
   constructor(
     databaseUrl: string,
     private readonly schema: string,
+    private readonly chainId: number,
   ) {
-    if (!schemaPattern.test(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!isSupportedDatabaseSchema(schema))
+      throw new Error("INVALID_DATABASE_SCHEMA");
     this.#sql = postgres(databaseUrl, {
       max: 2,
       prepare: false,
@@ -32,9 +34,9 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
         }[]
       >(
         `select p.current_version,p.slug,p.metadata_hash,v.signature from ${this.schema}.launchpad_profiles p
-         left join ${this.schema}.launchpad_branding_versions v on v.launchpad_id=p.launchpad_id and v.version=p.current_version
-         where p.launchpad_id=$1 for update of p`,
-        [input.branding.launchpadId],
+         left join ${this.schema}.launchpad_branding_versions v on v.chain_id=p.chain_id and v.launchpad_id=p.launchpad_id and v.version=p.current_version
+         where p.chain_id=$1 and p.launchpad_id=$2 for update of p`,
+        [this.chainId,input.branding.launchpadId],
       );
       if (
         current[0]?.current_version === input.version &&
@@ -45,8 +47,8 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
       if (current[0] && current[0].current_version >= input.version)
         throw new Error("LAUNCHPAD_BRANDING_VERSION_STALE");
       const slugOwner = await transaction.unsafe<{ launchpad_id: string }[]>(
-        `select launchpad_id::text from ${this.schema}.launchpad_profiles where slug=$1 limit 1`,
-        [input.branding.slug],
+        `select launchpad_id::text from ${this.schema}.launchpad_profiles where chain_id=$1 and slug=$2 limit 1`,
+        [this.chainId,input.branding.slug],
       );
       if (
         slugOwner[0] &&
@@ -55,11 +57,12 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
         throw new Error("LAUNCHPAD_SLUG_TAKEN");
       await transaction.unsafe(
         `insert into ${this.schema}.launchpad_branding_versions(
-          launchpad_id,version,owner_address,slug,name,description,primary_color,background_color,foreground_color,
+          chain_id,launchpad_id,version,owner_address,slug,name,description,primary_color,background_color,foreground_color,
           website_url,x_url,logo_mime,logo_bytes,logo_width,logo_height,favicon_mime,favicon_bytes,favicon_width,
           favicon_height,metadata_hash,signature,signed_at)
-         values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
+         values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)`,
         [
+          this.chainId,
           input.branding.launchpadId,
           input.version,
           input.ownerAddress.toLowerCase(),
@@ -85,11 +88,12 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
         ],
       );
       await transaction.unsafe(
-        `insert into ${this.schema}.launchpad_profiles(launchpad_id,current_version,slug,metadata_hash,published,updated_at)
-         values($1,$2,$3,$4,true,now())
+        `insert into ${this.schema}.launchpad_profiles(chain_id,launchpad_id,current_version,slug,metadata_hash,published,updated_at)
+         values($1,$2,$3,$4,$5,true,now())
          on conflict(launchpad_id) do update set current_version=excluded.current_version,slug=excluded.slug,
          metadata_hash=excluded.metadata_hash,published=true,updated_at=now()`,
         [
+          this.chainId,
           input.branding.launchpadId,
           input.version,
           input.branding.slug,
@@ -111,8 +115,8 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
       { launchpad_id: string; slug: string }[]
     >(
       `select launchpad_id::text,slug from ${this.schema}.launchpad_profiles
-       where published and launchpad_id=any($1::numeric[])`,
-      [launchpadIds],
+       where chain_id=$1 and published and launchpad_id=any($2::numeric[])`,
+      [this.chainId,launchpadIds],
     );
     return new Map(rows.map((row) => [row.launchpad_id, row.slug]));
   }
@@ -148,9 +152,9 @@ export class PostgresLaunchpadBrandingStore implements LaunchpadBrandingStore {
       }[]
     >(
       `select v.* from ${this.schema}.launchpad_profiles p join ${this.schema}.launchpad_branding_versions v
-       on v.launchpad_id=p.launchpad_id and v.version=p.current_version
-       where ${predicate} and p.published limit 1`,
-      [value],
+       on v.chain_id=p.chain_id and v.launchpad_id=p.launchpad_id and v.version=p.current_version
+       where p.chain_id=$1 and ${predicate.replace("$1", "$2")} and p.published limit 1`,
+      [this.chainId,value],
     );
     const row = rows[0];
     if (!row) return null;

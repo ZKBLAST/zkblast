@@ -27,6 +27,7 @@ export async function fastCatchup(input: {
   confirmations?: bigint;
   chunkSize?: bigint;
   maximumBlocks?: bigint;
+  rangeDelayMs?: number;
   onProgress?: (checkpoint: IndexerCheckpoint, finalized: bigint) => void;
   onDiscoveredLaunchContracts?: (addresses: readonly Address[]) => void;
 }) {
@@ -36,12 +37,16 @@ export async function fastCatchup(input: {
   const confirmations = input.confirmations ?? 5n;
   const chunk = input.chunkSize ?? 2000n;
   const maximum = input.maximumBlocks ?? 3000000n;
+  const rangeDelayMs = input.rangeDelayMs ?? 0;
   if (
     confirmations < 1n ||
     chunk < 1n ||
     chunk > 10000n ||
     maximum < 1n ||
-    maximum > 10000000n
+    maximum > 10000000n ||
+    !Number.isInteger(rangeDelayMs) ||
+    rangeDelayMs < 0 ||
+    rangeDelayMs > 10_000
   )
     throw new Error("INVALID_CATCHUP_BOUND");
   const head = await client.getBlockNumber({ cacheTime: 0 });
@@ -197,6 +202,8 @@ export async function fastCatchup(input: {
     }
     processed += Number(to - from + 1n);
     if (checkpoint) input.onProgress?.(checkpoint, finalized);
+    if (rangeDelayMs > 0 && to < end)
+      await new Promise((resolve) => setTimeout(resolve, rangeDelayMs));
   }
   return {
     blocks: processed,

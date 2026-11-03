@@ -4,6 +4,7 @@ import process from "node:process";
 import postgres from "postgres";
 
 const environment = process.env.APP_ENV;
+const chainId = Number(process.env.CHAIN_ID);
 const mode = process.argv[2];
 const onlyMigration = process.argv[3];
 if (onlyMigration && !/^\d{12}_[a-z0-9_]+\.sql$/u.test(onlyMigration)) {
@@ -17,7 +18,14 @@ if (mode !== "apply" && mode !== "verify") {
   throw new Error("Migration mode must be apply or verify");
 }
 
-const expectedSchema = `zkblast_${environment}`;
+const migrationTarget = chainId === 999 ? "hyperevm-mainnet" : environment;
+const expectedSchema =
+  migrationTarget === "hyperevm-mainnet"
+    ? "zkblast_hyperevm_mainnet"
+    : `zkblast_${environment}`;
+if (chainId === 999 && environment !== "mainnet") {
+  throw new Error("HyperEVM chain 999 requires APP_ENV=mainnet");
+}
 if (process.env.SUPABASE_SCHEMA !== expectedSchema) {
   throw new Error(`SUPABASE_SCHEMA must equal ${expectedSchema}`);
 }
@@ -68,7 +76,7 @@ const expectedDbcTables = [
   "dbc_swaps",
   "dbc_templates",
 ];
-const expectedExternalMarketTables = [
+const expectedExternalMarketTables = migrationTarget === "hyperevm-mainnet" ? [] : [
   "external_market_curation_audit",
   "external_market_pairs",
   "external_market_price_points",
@@ -99,7 +107,7 @@ const requiredColumns = {
     "log_index",
     "transaction_hash",
   ],
-  external_market_pairs: [
+  ...(migrationTarget === "hyperevm-mainnet" ? {} : { external_market_pairs: [
     "base_address",
     "execution_chain_id",
     "market_id",
@@ -107,7 +115,7 @@ const requiredColumns = {
     "pool_identifier",
     "quote_address",
     "route_status",
-  ],
+  ] }),
   dbc_launches: [
     "launch_id",
     "template_id",
@@ -146,14 +154,14 @@ async function ensureMigrationLedger() {
 }
 
 async function applyMigrations() {
-  const directory = `supabase/migrations/${environment}`;
+  const directory = `supabase/migrations/${migrationTarget}`;
   const filenames = (await readdir(directory))
     .filter((filename) => filename.endsWith(".sql"))
     .sort();
   if (onlyMigration && !filenames.includes(onlyMigration))
     throw new Error("Migration not found");
 
-  await sql`select pg_advisory_lock(hashtext(${`zkblast:${environment}:migrations`}))`;
+  await sql`select pg_advisory_lock(hashtext(${`zkblast:${migrationTarget}:migrations`}))`;
   try {
     await ensureMigrationLedger();
     for (const filename of filenames) {
@@ -182,7 +190,7 @@ async function applyMigrations() {
       console.log(`Applied migration: ${filename}`);
     }
   } finally {
-    await sql`select pg_advisory_unlock(hashtext(${`zkblast:${environment}:migrations`}))`;
+    await sql`select pg_advisory_unlock(hashtext(${`zkblast:${migrationTarget}:migrations`}))`;
   }
 }
 
@@ -271,10 +279,15 @@ async function verifyDatabase() {
     );
   }
 
+  const forbiddenSchemas = [
+    "zkblast_testnet",
+    "zkblast_mainnet",
+    "zkblast_hyperevm_mainnet",
+  ].filter((schema) => schema !== expectedSchema);
   const crossSchemaReferences = await sql`
     select count(*)::integer as count
     from information_schema.constraint_column_usage
-    where table_schema = ${expectedSchema === "zkblast_testnet" ? "zkblast_mainnet" : "zkblast_testnet"}
+    where table_schema = any(${forbiddenSchemas})
       and constraint_schema = ${expectedSchema}
   `;
   if (crossSchemaReferences[0]?.count !== 0) {

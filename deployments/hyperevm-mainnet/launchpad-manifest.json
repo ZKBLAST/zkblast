@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "network": "hyperevm",
+  "chainId": 999,
+  "verifiedAt": "2026-11-02T16:54:50.939Z",
+  "verifiedBlock": "50204735",
+  "planSha256": "019f3384052efb77427ade4692eb53ca2bead70be0973c9b623d28dfede0cac4",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
+  "addresses": {
+    "registryImplementation": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+    "registry": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+    "configManagerImplementation": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+    "configManager": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+    "factoryImplementation": "0x7154e701B8D496FC6763bF0F4caEAA1c882320f2",
+    "factory": "0x766fcaE1BECEA363694F1955E79a5F9AfC1746eC",
+    "feeControllerImplementation": "0x26cc247284966D24eF0D9DE03a59AE55Bae0c0f7",
+    "feeController": "0xB699ca9D4125CB35715Ba15199bE17131B09a564",
+    "revenueSplitterImplementation": "0x33067dc6118E355bC7B415103Ad5E40C52C64D1E",
+    "revenueSplitter": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+    "feeCollectorImplementation": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+    "feeCollector": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+    "tokenFactoryImplementation": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+    "tokenFactory": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+    "lens": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21"
+  },
+  "dependencies": {
+    "dbcConfigRegistry": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+    "dbcLaunchFactory": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f"
+  },
+  "capabilities": {
+    "permissionlessCreation": true,
+    "dbc": true,
+    "dammGraduation": true,
+    "dlmmGraduation": false,
+    "zkProofClaims": false
+  },
+  "transactions": [
+    {
+      "nonce": 34,
+      "hash": "0x94ba949b6635ad4936d747d0c56c480cbcc0e78124fb3522727c533f33cf8822",
+      "blockNumber": "50204611",
+      "gasUsed": "1384740"
+    },
+    {
+      "nonce": 35,
+      "hash": "0xa28c10d90cfd070ee2726c8a40d4848aa4266773125c7305b8203bab0056c4e9",
+      "blockNumber": "50204614",
+      "gasUsed": "211421"
+    },
+    {
+      "nonce": 36,
+      "hash": "0x5f44513c7a5c5fb3b3f2019a6cbee39c6f7609d32fa4a9469dbbb96dc2a38f87",
+      "blockNumber": "50204616",
+      "gasUsed": "1301053"
+    },
+    {
+      "nonce": 37,
+      "hash": "0x0316f9ee365753ed477e2bf7436a2cd1a0d204b5f0c0476b00e372ff83ec9633",
+      "blockNumber": "50204619",
+      "gasUsed": "258574"
+    },
+    {
+      "nonce": 38,
+      "hash": "0xb64914d9b3d52765dfd177fb4e0a638cbec332d45b91ce42191cd8a3f3181399",
+      "blockNumber": "50204621",
+      "gasUsed": "628184"
+    },
+    {
+      "nonce": 39,
+      "hash": "0xa21206ffbe15ce920480a27333a9b9e90953fd12be0feb5ef9378eeb9488afe3",
+      "blockNumber": "50204623",
+      "gasUsed": "231989"
+    },
+    {
+      "nonce": 40,
+      "hash": "0x79022747bfd4e32556955ce53ff5c50c260908596fb390f64ea4a4d4fa657f9e",
+      "blockNumber": "50204626",
+      "gasUsed": "1275988"
+    },
+    {
+      "nonce": 41,
+      "hash": "0x6581b1be72c599120d9d0dde433ab95495e666846d7bb0db14fe24fc8e0a02cb",
+      "blockNumber": "50204630",
+      "gasUsed": "235110"
+    },
+    {
+      "nonce": 42,
+      "hash": "0x89782380705a0b5c59b767997d787a941a64d70b8b78fe2e018a5aa771a3bbe7",
+      "blockNumber": "50204633",
+      "gasUsed": "1579687"
+    },
+    {
+      "nonce": 43,
+      "hash": "0xbdf14d931edaed1bbed165c142e294a9567f65f24a521b5e2e0949484bf7f8a0",
+      "blockNumber": "50204636",
+      "gasUsed": "186678"
+    },
+    {
+      "nonce": 44,
+      "hash": "0xe5a494071deb3e7c4f05e33db87256ebb4f018ed8b76bdc9c1c078343946a5f3",
+      "blockNumber": "50204638",
+      "gasUsed": "870134"
+    },
+    {
+      "nonce": 45,
+      "hash": "0x1c69edc158d25cad7f0087cd73646b6261e107cdf92e8d8d1aecb5c3088c3047",
+      "blockNumber": "50204640",
+      "gasUsed": "209300"
+    },
+    {
+      "nonce": 46,
+      "hash": "0x3b5538a1883067f27f505b6fbbd9a04e34aa4200c5ee912d6c086b6d593d7023",
+      "blockNumber": "50204642",
+      "gasUsed": "1799487"
+    },
+    {
+      "nonce": 47,
+      "hash": "0xc1e0a8067bfc0ab97c702023b4243ee5213e5bb5e306bc9c01c10ca3fcb09195",
+      "blockNumber": "50204644",
+      "gasUsed": "322370"
+    },
+    {
+      "nonce": 48,
+      "hash": "0xbb1ed7e9ae390eaf18cb9dfc1795ed9f02cc3767f600781a902a65ee479f5e23",
+      "blockNumber": "50204646",
+      "gasUsed": "675301"
+    },
+    {
+      "nonce": 49,
+      "hash": "0x1574104071a59798a744a6a18b4f641fc48c43224685b72a6cd7bb2a2c7ff0e2",
+      "blockNumber": "50204648",
+      "gasUsed": "53793"
+    },
+    {
+      "nonce": 50,
+      "hash": "0x8745cb027aa0a9c6c60450dde0776710d9737f2abc08552b7b9b4dc1572b955e",
+      "blockNumber": "50204650",
+      "gasUsed": "53791"
+    },
+    {
+      "nonce": 51,
+      "hash": "0xd97f59cda2c20852b08c848805532a7e42a9f0998b615db214704cef56f29a69",
+      "blockNumber": "50204652",
+      "gasUsed": "53676"
+    },
+    {
+      "nonce": 52,
+      "hash": "0x29aa6a379297d207bf41dd667af2e19f71469e71c7ee4b1b1faf7c20fc969e5a",
+      "blockNumber": "50204654",
+      "gasUsed": "53747"
+    },
+    {
+      "nonce": 53,
+      "hash": "0xeb6d656429b14dfeb3d3f4ab8453571f79fe0bb6b6798db3c190f94ff48d8427",
+      "blockNumber": "50204658",
+      "gasUsed": "53571"
+    },
+    {
+      "nonce": 54,
+      "hash": "0x67507cdff1b265f8afa3a6a84b1bfeb5316b5e8a8f603372b9797618c59052e7",
+      "blockNumber": "50204661",
+      "gasUsed": "53759"
+    }
+  ],
+  "checks": {
+    "code": [
+      {
+        "name": "registryImplementation",
+        "address": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+        "present": true
+      },
+      {
+        "name": "registry",
+        "address": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+        "present": true
+      },
+      {
+        "name": "configManagerImplementation",
+        "address": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+        "present": true
+      },
+      {
+        "name": "configManager",
+        "address": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+        "present": true
+      },
+      {
+        "name": "factoryImplementation",
+        "address": "0x7154e701B8D496FC6763bF0F4caEAA1c882320f2",
+        "present": true
+      },
+      {
+        "name": "factory",
+        "address": "0x766fcaE1BECEA363694F1955E79a5F9AfC1746eC",
+        "present": true
+      },
+      {
+        "name": "feeControllerImplementation",
+        "address": "0x26cc247284966D24eF0D9DE03a59AE55Bae0c0f7",
+        "present": true
+      },
+      {
+        "name": "feeController",
+        "address": "0xB699ca9D4125CB35715Ba15199bE17131B09a564",
+        "present": true
+      },
+      {
+        "name": "revenueSplitterImplementation",
+        "address": "0x33067dc6118E355bC7B415103Ad5E40C52C64D1E",
+        "present": true
+      },
+      {
+        "name": "revenueSplitter",
+        "address": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+        "present": true
+      },
+      {
+        "name": "feeCollectorImplementation",
+        "address": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+        "present": true
+      },
+      {
+        "name": "feeCollector",
+        "address": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+        "present": true
+      },
+      {
+        "name": "tokenFactoryImplementation",
+        "address": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+        "present": true
+      },
+      {
+        "name": "tokenFactory",
+        "address": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "present": true
+      },
+      {
+        "name": "lens",
+        "address": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+        "present": true
+      }
+    ],
+    "roles": [
+      {
+        "description": "Authorize LaunchpadFactory on LaunchpadConfigManager",
+        "target": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+        "role": "0x6849443141e4741ac9ed8d289640527756b367cab3287068a1baf70f31b451eb",
+        "account": "0x766fcaE1BECEA363694F1955E79a5F9AfC1746eC",
+        "enabled": true
+      },
+      {
+        "description": "Authorize LaunchpadTokenFactory on DBC LaunchFactory",
+        "target": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+        "role": "0xaeb67be73f11b9595311ea1411e3faab3bcec4bc15cdc9def518d0b409c9347d",
+        "account": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "enabled": true
+      },
+      {
+        "description": "Authorize LaunchpadTokenFactory on LaunchpadFeeController",
+        "target": "0xB699ca9D4125CB35715Ba15199bE17131B09a564",
+        "role": "0x6849443141e4741ac9ed8d289640527756b367cab3287068a1baf70f31b451eb",
+        "account": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "enabled": true
+      },
+      {
+        "description": "Authorize LaunchpadTokenFactory on RevenueSplitter",
+        "target": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+        "role": "0x6849443141e4741ac9ed8d289640527756b367cab3287068a1baf70f31b451eb",
+        "account": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "enabled": true
+      },
+      {
+        "description": "Authorize LaunchpadTokenFactory on LaunchpadFeeCollector",
+        "target": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+        "role": "0x6849443141e4741ac9ed8d289640527756b367cab3287068a1baf70f31b451eb",
+        "account": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "enabled": true
+      },
+      {
+        "description": "Authorize LaunchpadFeeCollector to accrue revenue",
+        "target": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+        "role": "0x54dfb3ce42c81c9c01e16422eb65d097b7b644a471d3221f5993d42b55cd80a8",
+        "account": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+        "enabled": true
+      }
+    ],
+    "bindings": {
+      "factoryRegistry": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "factoryConfigManager": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+      "tokenFactoryRegistry": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "tokenFactoryConfigManager": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+      "tokenFactoryDbcFactory": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+      "tokenFactoryFeeController": "0xB699ca9D4125CB35715Ba15199bE17131B09a564",
+      "tokenFactoryRevenueSplitter": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+      "tokenFactoryFeeCollector": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175"
+    }
+  }
+}

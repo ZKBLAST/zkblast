@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "mode": "read-only-preflight",
+  "generatedAt": "2026-11-02T14:21:29.204Z",
+  "chain": {
+    "chainId": 999,
+    "slug": "hyperevm-mainnet",
+    "name": "HyperEVM",
+    "environment": "mainnet",
+    "rpcChainId": 999,
+    "referenceBlock": "50195380",
+    "referenceBlockHash": "0x6cf3959e5a7c8e63b866e0c276266cd8abf65d972b25b2e5dd24fae207480caa",
+    "gasPriceWei": "100000000"
+  },
+  "roles": {
+    "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "keeper": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "relayer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "feeRecipient": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10"
+  },
+  "governancePlan": {
+    "mode": "explicit-mainnet-governance",
+    "minimumDelaySeconds": "300",
+    "predictedTimelock": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "deploymentNonce": 0,
+    "estimatedGas": "1617814",
+    "estimatedFeeWei": "161781400000000",
+    "estimatedFeeHype": "0.0001617814",
+    "creationBytecodeHash": "0xeb681d2cd174eec7d7608e1c639d751bc1c0982c40efdd60db49f354d74b56ed"
+  },
+  "deployer": {
+    "nonce": 0,
+    "balanceWei": "0",
+    "balanceHype": "0"
+  },
+  "reserveAsset": {
+    "address": "0x5555555555555555555555555555555555555555",
+    "symbol": "WHYPE",
+    "decimals": 18,
+    "runtimeBytecodeHash": "0xe2e18bc11f218432ca1aabc44b53cce54a78c77ae2d76093a577e0564a77aa04"
+  },
+  "artifacts": {
+    "PoolRegistry": {
+      "creationBytecodeHash": "0xdd556d54c22f948b194b38b1cc15416b58c4a95b3eb179efdf45fba8188dc82c",
+      "runtimeBytecodeHash": "0xea3dc3da6f799dd5e4985e1e28d90313548a606839bdbe68731f61a98d7210d6",
+      "creationBytecodeBytes": 3526,
+      "runtimeBytecodeBytes": 3388,
+      "artifactSha256": "12bb3e90297fe88a9066cf0da197454f34f0770e9df43aa67039b94f6469ccdf"
+    },
+    "PoolFactory": {
+      "creationBytecodeHash": "0x2ee260793854daef67d5a068ec64648024fb178c19581dbe19e2c9204bf7f70a",
+      "runtimeBytecodeHash": "0xd055f64c6853d1f3c02efdcc733edaad379fb6b2733933e3f0c9e25eb4886e0f",
+      "creationBytecodeBytes": 22572,
+      "runtimeBytecodeBytes": 22434,
+      "artifactSha256": "698a686cce310761ac4331232da4cfe1b883f2a0adf347c7f58f0cd7d8370265"
+    },
+    "SwapRouter": {
+      "creationBytecodeHash": "0xe23a7ab7f657dd8bc11a971cbf4ada5857269a585bf971c6fa87add250884a3b",
+      "runtimeBytecodeHash": "0x47a71ab136fc6ed7b654ad60c6108d31d98e227893b351859abfca6b04d63827",
+      "creationBytecodeBytes": 4837,
+      "runtimeBytecodeBytes": 4699,
+      "artifactSha256": "28e7bd2ee14a2764b27d73edc32426e7653d721d99a3e9cb2e969834cd8735c3"
+    },
+    "PositionManager": {
+      "creationBytecodeHash": "0x21a0a130db96316d67b21b9bc3ab5bcbfec5653f937201dec7ed66fd5940ddae",
+      "runtimeBytecodeHash": "0x9c1e72fc6f2d9ad17857fe1954ec021e870b328a7f01120318cb7d5b59040bcc",
+      "creationBytecodeBytes": 8228,
+      "runtimeBytecodeBytes": 8090,
+      "artifactSha256": "0631e60634bd5f28464f7211bcbe8e6806feed32c705e39896bcccbfc342b7aa"
+    },
+    "PoolQuoter": {
+      "creationBytecodeHash": "0x9c6b47c870f39bd3433ec0245868f47346311039bcbb2a9fa1da5a9f856e9bc7",
+      "runtimeBytecodeHash": "0xa574db139399e4232e4ce0b9963fba0165853b6d3e42a2d77fe1ead7bca9e8d3",
+      "creationBytecodeBytes": 3213,
+      "runtimeBytecodeBytes": 3185,
+      "artifactSha256": "5fa0307218fda963db8f8dcf5c3832352e94c43c453e8308a145c17c81d68975"
+    },
+    "LaunchConfigRegistry": {
+      "creationBytecodeHash": "0xeddb03a06003e584ce91726b85a97aad0d35aea3398ab4c56d1b7efb2f36c6f0",
+      "runtimeBytecodeHash": "0x5533548652d13430591ea71d74c3ecf2528357ec79d4c35b75d831a07f9229c0",
+      "creationBytecodeBytes": 12133,
+      "runtimeBytecodeBytes": 11995,
+      "artifactSha256": "05910009fbf391a2f04d561cd2555b2dbd640f96f5d24d8a2272441912204858"
+    },
+    "LaunchTokenDeployer": {
+      "creationBytecodeHash": "0x26bfd501b4ebca42b1811d7d9ca953a8c1116f4d9edf384743db35dba9766820",
+      "runtimeBytecodeHash": "0xaefe9fd29d526629d81ba97e3024d6dc79ddbb76a6aad82f358f55016b250558",
+      "creationBytecodeBytes": 3661,
+      "runtimeBytecodeBytes": 3492,
+      "artifactSha256": "e3e873b7912615bb171c3c5ebd3c67f95bb598447f697e5750e50118c094b4cd"
+    },
+    "VirtualPoolDeployer": {
+      "creationBytecodeHash": "0x201d0cd2dcc66039fd1588ee8686fd7e3d5ed26cb73a23d5768aa231ad9ef6ae",
+      "runtimeBytecodeHash": "0xbbe40fb38fb6bc0f8b3343f221d91e357cd6d96e2346691b7012969b7cdf5ff3",
+      "creationBytecodeBytes": 22689,
+      "runtimeBytecodeBytes": 22520,
+      "artifactSha256": "6387c17623b2280dd4443d42564b0998f447d3f7b63993feff81d3fa8579579b"
+    },
+    "LaunchFactory": {
+      "creationBytecodeHash": "0xf560adcdd8d8385331929c8e697f4cc9314c320c8c0b199f8e2dccf0ca91b388",
+      "runtimeBytecodeHash": "0x404b0321301890789787d36adcf88090850491eff9a98510f9c444c360289ee7",
+      "creationBytecodeBytes": 10138,
+      "runtimeBytecodeBytes": 10000,
+      "artifactSha256": "561199f7130af6573cdd8b5b7218fabff7e1832661c79c3f4b211b024aa89001"
+    },
+    "LaunchpadRouter": {
+      "creationBytecodeHash": "0x947476254f2a60366714c19c16e7befc392610599b6072cad64e56a2820fbe65",
+      "runtimeBytecodeHash": "0x48be7018f6e147cd270114f6b0d37b5e0c6c2192703ce33b5dbbeba60eaf749f",
+      "creationBytecodeBytes": 5809,
+      "runtimeBytecodeBytes": 5671,
+      "artifactSha256": "75ea431b987fb7e3bae88e19c9d3857667d611e4c223f6179e7de274421fc809"
+    },
+    "LPAllocationEscrow": {
+      "creationBytecodeHash": "0xfa423f2ed8ef9eae329cec276103d91706e4b01804cb37ea4c5083ce9a44f578",
+      "runtimeBytecodeHash": "0xdcd14dcaee6ff7672aea9d271fadb33808b926b44ffba1409c25d48abf544d31",
+      "creationBytecodeBytes": 6919,
+      "runtimeBytecodeBytes": 6781,
+      "artifactSha256": "d1abe5db8feff59c52092b5ab2f3fcb3d4eb8f72162d0d462283151a68512cec"
+    },
+    "GraduationManager": {
+      "creationBytecodeHash": "0x6c935ffd21a91f316e6b24f3d0159550db92b41bd122f99ab817f1212fa41bfe",
+      "runtimeBytecodeHash": "0x56c0b88ca57ed37fe8446a5ee3bcf36673d73eee1011daa26698483f49aadfac",
+      "creationBytecodeBytes": 17639,
+      "runtimeBytecodeBytes": 17501,
+      "artifactSha256": "10f367f6eef68e2f2cd1150ee022d9fd3fdbf4a23c64939864ddb4d7bf28f82b"
+    },
+    "CurveQuoter": {
+      "creationBytecodeHash": "0xd0d20a94bedb1433bc42a31d422490e7a218fa98da033578003888c0c167cd7d",
+      "runtimeBytecodeHash": "0xa9e77905d3a89d3b07df412536c33dcc6444c09f1befac60c0f01ad30e9bee1e",
+      "creationBytecodeBytes": 3703,
+      "runtimeBytecodeBytes": 3675,
+      "artifactSha256": "3084f7ed94a6b8a05bc634ae4605e046b6593a217a6d5c4c25758af4055f8e85"
+    },
+    "DammGraduationAdapter": {
+      "creationBytecodeHash": "0xa19b9ccf70d163cf70df57e2ccadf2b9838908a2298073f8bb628e8dd102748e",
+      "runtimeBytecodeHash": "0x639a639472d418efde68879287bc300a39e21b412998a7035a2eaec7655ca7bf",
+      "creationBytecodeBytes": 4322,
+      "runtimeBytecodeBytes": 4056,
+      "artifactSha256": "6ac8ba0d3f20051d43f1b0a6213e2b8b640c3fbb5fd8c93a49486e09842d63aa"
+    },
+    "GraduationAdapterRegistry": {
+      "creationBytecodeHash": "0x87c67dd1f6bed996392a7f5e0c42d39cac737e2ae4f866520c1deb7b1fe55c28",
+      "runtimeBytecodeHash": "0xa62ff357c462ada060d36a79c3352c8930cb8eb7f1ba1b6a97dd286f672783ca",
+      "creationBytecodeBytes": 5217,
+      "runtimeBytecodeBytes": 5079,
+      "artifactSha256": "2f3fe56407d88abbd8353a22fa76fd1f12362bc24dceed15cfdfb5944b7f6ac9"
+    },
+    "LaunchpadRegistry": {
+      "creationBytecodeHash": "0x6ac67071cd09e2518c6dee7e568388114838e2fccc965380ed1ada4f4d214974",
+      "runtimeBytecodeHash": "0x10ae3cf91d42792d4ca223ccf023ec376436d2e7d3e6c94a28865578244816fc",
+      "creationBytecodeBytes": 8069,
+      "runtimeBytecodeBytes": 7931,
+      "artifactSha256": "731ae95017eb6dd74f0f509dd60324316c255d907f1d522ee54a39371ee0c9d9"
+    },
+    "LaunchpadConfigManager": {
+      "creationBytecodeHash": "0x774ed09e1b49eb0d44910912ecfbbe28fb6ea0e1a9e8914c4ce17e486463a444",
+      "runtimeBytecodeHash": "0x616599ae17fad7f6c4e3a7f401f3d2cf47422f59896ebf945d4a7389d39fa093",
+      "creationBytecodeBytes": 7839,
+      "runtimeBytecodeBytes": 7701,
+      "artifactSha256": "a391185f6e14ef4afe408b56a6144d3a1c92054ee3813b134accdfabbabd9d26"
+    },
+    "LaunchpadFactory": {
+      "creationBytecodeHash": "0x33ced74bca60ee4fd708f46a045eb4093b01487404dc9ce9651aa8a7a7d38e2c",
+      "runtimeBytecodeHash": "0x75dd17338a32d4beac2d8a7557ed1a5aae0a540c6b6b290732b07574f761ceea",
+      "creationBytecodeBytes": 3300,
+      "runtimeBytecodeBytes": 3162,
+      "artifactSha256": "db411683cecdd252e9cb12f950b54f8f0a82877b421058a9503dba8d517a9e0b"
+    },
+    "LaunchpadFeeController": {
+      "creationBytecodeHash": "0x4efbc29838a6a921cc84b149bbd6e243e5aa5a5b0de0ec419668ac362b26ebb3",
+      "runtimeBytecodeHash": "0xd6d7c1f6ca9b669bd889f8f52281d29a1c78c23ebc7f1ea6fc3657934d1b9f2b",
+      "creationBytecodeBytes": 7667,
+      "runtimeBytecodeBytes": 7529,
+      "artifactSha256": "ca2416e7dffb40c8b82c0e1a8b42c2c38e241b88146f79bf4347ad1d9b717154"
+    },
+    "RevenueSplitter": {
+      "creationBytecodeHash": "0xc117f7a50374aefd23455394cf48690a8b39042fd9d5f8c330a17ffccf855a55",
+      "runtimeBytecodeHash": "0xe347bc1e06a4ad68c85def49fb241463a3c305ef96d5c65ff9f6f1ed857f1431",
+      "creationBytecodeBytes": 8849,
+      "runtimeBytecodeBytes": 8711,
+      "artifactSha256": "4a687ac4e1639935aafc018d432cf23787c233e3294b386063cc52766606f2f7"
+    },
+    "LaunchpadFeeCollector": {
+      "creationBytecodeHash": "0x96ca3b549f5db55ebd6fab6fd2fa04874ff08f389cfcdd63a9ce99e924ae06c0",
+      "runtimeBytecodeHash": "0x534a250151c2985690fedf41c7f3674fc1b5ae963407ba676bcdea43754bca0a",
+      "creationBytecodeBytes": 4673,
+      "runtimeBytecodeBytes": 4535,
+      "artifactSha256": "e5fffd5dc2467bb50f059e4c1f3b9a7121c931ee5664dea6260462422978f652"
+    },
+    "LaunchpadTokenFactory": {
+      "creationBytecodeHash": "0x8dd4e461ed29dba10cc73d333e89b61d08fa9da876ec43880389e72196beed03",
+      "runtimeBytecodeHash": "0xb0df9ba55569f7c3bb2aeb4241e5d234b10b62a4b1170aa36bedac10e15dd77a",
+      "creationBytecodeBytes": 9574,
+      "runtimeBytecodeBytes": 9436,
+      "artifactSha256": "4f761a0763785961d1b9f2b6bc1993f543125d98b6c648d2bbe52ed6d1c66927"
+    },
+    "LaunchpadLens": {
+      "creationBytecodeHash": "0xe089139d3a84cccafdb804a40c8b3faa0140e5539edd472ac072c090eebfae7f",
+      "runtimeBytecodeHash": "0x76335e55359f5937f47c831a84cfdd295a5a872750a902bd3921418f95bde380",
+      "creationBytecodeBytes": 3675,
+      "runtimeBytecodeBytes": 3468,
+      "artifactSha256": "dbf5bdd6658290b1e9ce4d7db44f8415ade19b7c3c0fe2b7902c906df6c5a827"
+    },
+    "ZKBlastTimelock": {
+      "creationBytecodeHash": "0xf3a282f7733e411f069ad3905767e318da20bb64891395c625bc0c1c159df75f",
+      "runtimeBytecodeHash": "0xc86a66eb96baf95b1f1e4bcf6e9beca7231c8e4a56c2c552d335aa69c3cebfe2",
+      "creationBytecodeBytes": 7366,
+      "runtimeBytecodeBytes": 6541,
+      "artifactSha256": "98650bc0baa6291480a4db20dd8f93996b980bb4a5fda1a0a11a064140c78519"
+    }
+  },
+  "gates": {
+    "privateKeysRead": false,
+    "broadcastAllowed": false,
+    "capabilityEnabled": false,
+    "graduationAdapterApproved": false,
+    "exactGasEstimateReady": false
+  },
+  "nextRequired": [
+    "complete the deployment transaction plan and initializer simulation",
+    "approve the chain-999 governance and graduation adapter configuration",
+    "report exact gas and maximum spend before broadcast",
+    "obtain explicit broadcast approval"
+  ]
+}

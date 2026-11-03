@@ -1,4 +1,5 @@
 import type postgres from "postgres";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 import type { IndexedEvent } from "./domain.js";
 import { projectPoolSwap, type SwapPool } from "./pool-swap-projection.js";
 
@@ -7,7 +8,7 @@ export async function persistPoolSwap(
   schema: string,
   event: IndexedEvent,
 ) {
-  if (!/^zkblast_(testnet|mainnet)$/u.test(schema))
+  if (!isSupportedDatabaseSchema(schema))
     throw new Error("INVALID_DATABASE_SCHEMA");
   if (event.eventName !== "Swap" || event.kind !== "swap") return false;
   const pools = await sql.unsafe<SwapPool[]>(

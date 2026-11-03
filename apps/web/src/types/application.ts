@@ -1,4 +1,27 @@
-import type { PrivatePerpsConfig, PrivateVaultV2Config } from "@zkblast/config";
+import type {
+  ChainCapabilities,
+  ChainEnvironment,
+  ChainFamily,
+  PrivatePerpsConfig,
+  PrivateVaultV2Config,
+} from "@zkblast/config";
+
+export type ChainCatalogItem = Readonly<{
+  chainId: number;
+  slug: string;
+  family: ChainFamily;
+  environment: ChainEnvironment;
+  name: string;
+  nativeCurrency: Readonly<{
+    name: string;
+    symbol: string;
+    decimals: 18;
+  }>;
+  explorerUrl: string | null;
+  capabilities: ChainCapabilities;
+  configured: boolean;
+  appUrl: string | null;
+}>;
 
 export type EthereumProvider = Readonly<{
   request(
@@ -21,6 +44,7 @@ export type PublicConfig = Readonly<{
   chainId: number;
   chainName: string;
   explorerUrl: string;
+  capabilities: ChainCapabilities;
   contracts?: readonly Readonly<{
     name: string;
     proxyKind: "uups" | "none";

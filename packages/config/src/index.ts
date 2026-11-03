@@ -7,6 +7,26 @@ export type { DeploymentManifest } from "./deployment.js";
 export { loadPublicConfig, loadServerConfig } from "./runtime.js";
 export { loadWebPublicConfig } from "./web-public.js";
 export type { AppEnvironment, PublicConfig, ServerConfig } from "./runtime.js";
+export {
+  getChainDescriptor,
+  isSupportedDatabaseSchema,
+  isSupportedChainId,
+  supportedChains,
+} from "./chains.js";
+export type {
+  ChainCapabilities,
+  ChainDescriptor,
+  ChainEnvironment,
+  ChainFamily,
+} from "./chains.js";
+export {
+  createChainEntityIdentity,
+  createChainObjectKey,
+} from "./identity.js";
+export type {
+  ChainEntityIdentity,
+  ChainEntityKind,
+} from "./identity.js";
 export type { WebPublicConfig } from "./web-public.js";
 export {
   assertProverNetwork,

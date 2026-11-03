@@ -16,6 +16,8 @@ coverage/
 !.env.example
 !.env.testnet.example
 !.env.mainnet.example
+!.env.hyperevm-testnet.example
+!.env.hyperevm-mainnet.example
 
 # Local documentation, reports, and security/deployment evidence
 /docs/
@@ -46,6 +48,7 @@ supabase/.temp/
 packages/contracts/cache/
 packages/contracts/test/generated-v2-local/
 packages/contracts/out/
+packages/contracts/out-hyperevm/
 packages/contracts/broadcast/
 packages/contracts/lib/
 !packages/contracts/lib/

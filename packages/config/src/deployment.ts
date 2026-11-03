@@ -4,6 +4,7 @@ import {
   privateV2ConfigIssue,
 } from "./private-prover-v2.js";
 import { privatePerpsConfigSchema } from "./private-perps.js";
+import { getChainDescriptor } from "./chains.js";
 
 const addressSchema = z
   .string()
@@ -131,6 +132,7 @@ export const deploymentManifestSchema = z
         launchpadRouter: addressSchema,
         graduationManager: addressSchema,
         dammGraduationAdapter: addressSchema,
+        graduationAdapterRegistry: addressSchema.optional(),
         dlmmGraduationAdapter: addressSchema.optional(),
         graduationAdapterVersion: z.number().int().positive().optional(),
         lpAllocationEscrow: addressSchema,
@@ -228,6 +230,17 @@ export function parseDeploymentManifest(
   runtime?: RuntimeNetwork,
 ): DeploymentManifest {
   const manifest = deploymentManifestSchema.parse(input);
+  const descriptor = getChainDescriptor(manifest.chainId);
+  if (manifest.environment !== descriptor.environment) {
+    throw new Error(
+      `Deployment environment mismatch for ${descriptor.slug}: expected ${descriptor.environment}, received ${manifest.environment}`,
+    );
+  }
+  if (manifest.chainName !== descriptor.name) {
+    throw new Error(
+      `Deployment chain name mismatch: expected ${descriptor.name}, received ${manifest.chainName}`,
+    );
+  }
   if (runtime && manifest.environment !== runtime.environment) {
     throw new Error(
       `Deployment environment mismatch: expected ${runtime.environment}, received ${manifest.environment}`,

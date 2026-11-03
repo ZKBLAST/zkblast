@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "verifiedAt": "2026-11-02T16:49:08.084Z",
+  "nextNonce": 34,
+  "capabilities": {
+    "dbc": true,
+    "dammGraduation": true,
+    "dlmm": false,
+    "zk": false
+  },
+  "contracts": {
+    "configRegistryImplementation": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+    "configRegistry": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+    "launchTokenDeployer": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "virtualPoolImplementation": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+    "virtualPoolDeployer": "0xF06276C3C6900268B3d6940b05ee75c9320B46c2",
+    "launchFactoryImplementation": "0x8cE789eBd36dC53000255d210b5983bA36e2A3D2",
+    "launchFactory": "0xeA8488b911b6b51ca0a172e59BDD26ce1be1075f",
+    "launchpadRouterImplementation": "0xb0C2EF188B57E720D44a318F495d87C6e95dcE69",
+    "launchpadRouter": "0xB3C158cd339B9589A307ba8A75C77A177F540737",
+    "lpAllocationEscrowImplementation": "0xc56d156D535d31d236A6a3553161f969a6416e0a",
+    "lpAllocationEscrow": "0x1DF949C7a8351cc5679403935d3c883Fa796F3F5",
+    "graduationManagerImplementation": "0xFcb008C4Eb72AEF922c0CA469498Fa200d2ae537",
+    "graduationManager": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1",
+    "curveQuoter": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+    "dammGraduationAdapter": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888"
+  },
+  "dependencies": {
+    "quoteToken": "0x5555555555555555555555555555555555555555",
+    "poolFactory": "0x4f967Beb4929CCF6F4D323669ce83074b8238439"
+  },
+  "checks": {
+    "codeAddressCount": 15,
+    "proxyRoleCount": 5,
+    "templateCount": "1",
+    "whypeAllowed": true,
+    "cloneDeployerBound": true,
+    "graduationManagerBound": true,
+    "dammAdapterAllowed": true
+  },
+  "sourcePlanSha256": "92c8cddea71f4cf8ecb902119acabd4694e2c948c8b8424b19dfc5ed94fcc09d",
+  "transactions": [
+    {
+      "nonce": 10,
+      "name": "configRegistryImplementation",
+      "hash": "0x37064f60a8ac90c25392a53a926f83acbd13c4e63b45b67adf117598426dcabb",
+      "blockNumber": "50204224",
+      "gasUsed": "2052271",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xd3e491a0b9c9cfed288ea4d7a0827c0b248eff50"
+    },
+    {
+      "nonce": 11,
+      "name": "configRegistry",
+      "hash": "0xa83e70353dfa8fc151d88314ca6cc6d00cfcf308712576cbc5b324bfad9622d7",
+      "blockNumber": "50204227",
+      "gasUsed": "211477",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xcb331f29163ceb7afecc5cb82083b988483992c7"
+    },
+    {
+      "nonce": 12,
+      "name": "launchTokenDeployer",
+      "hash": "0x52e1082dd231cdf408c3a490f349b9922f7332ea20dd22f517316f319b60a350",
+      "blockNumber": "50204229",
+      "gasUsed": "917251",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x4fc2da2feb00a905dfaf39a7e402943250e0221e"
+    },
+    {
+      "nonce": 13,
+      "name": "virtualPoolImplementation",
+      "hash": "0xc8d38f9cebde48e932467b04884c9e4d307b8d18af2551821f6e9f4ee49ce751",
+      "blockNumber": "50204299",
+      "gasUsed": "2873650",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x6d89d199d2a2a253caeb322ba5b2cd8a558408cd"
+    },
+    {
+      "nonce": 14,
+      "name": "virtualPoolDeployer",
+      "hash": "0xd61bc336a57d58751a43733a8170976b414fd3bd48703394d4c3d71f9251bf83",
+      "blockNumber": "50204303",
+      "gasUsed": "638142",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xf06276c3c6900268b3d6940b05ee75c9320b46c2"
+    },
+    {
+      "nonce": 15,
+      "name": "launchFactoryImplementation",
+      "hash": "0x60c99f31760b1f3e612e76ebe04249f3bb91dbd079ec7d5156a04b708e65a8ee",
+      "blockNumber": "50204306",
+      "gasUsed": "2333893",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x8ce789ebd36dc53000255d210b5983ba36e2a3d2"
+    },
+    {
+      "nonce": 16,
+      "name": "launchFactory",
+      "hash": "0xc11901a1975b4c3bb49f3a5413e83a0fcc266de566c1155e217d59e805c4b1bf",
+      "blockNumber": "50204309",
+      "gasUsed": "259620",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xea8488b911b6b51ca0a172e59bdd26ce1be1075f"
+    },
+    {
+      "nonce": 17,
+      "name": "launchpadRouterImplementation",
+      "hash": "0x08bc49a4613c960aa3452120cfb7c4a75a37da230044f226d287f8a7fc774aab",
+      "blockNumber": "50204313",
+      "gasUsed": "1061028",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xb0c2ef188b57e720d44a318f495d87c6e95dce69"
+    },
+    {
+      "nonce": 18,
+      "name": "launchpadRouter",
+      "hash": "0xf1f1f524d99dd70fb8d0c0723035407c997d6da4c482d06b2ffbfb791f88e090",
+      "blockNumber": "50204317",
+      "gasUsed": "209295",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xb3c158cd339b9589a307ba8a75c77a177f540737"
+    },
+    {
+      "nonce": 19,
+      "name": "lpAllocationEscrowImplementation",
+      "hash": "0x2cfc41ad02fc3772a892359648aa1b47b1fcc8d76708bb0222ab27b1078e1552",
+      "blockNumber": "50204320",
+      "gasUsed": "1199765",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xc56d156d535d31d236a6a3553161f969a6416e0a"
+    },
+    {
+      "nonce": 20,
+      "name": "lpAllocationEscrow",
+      "hash": "0x0222bb1f09fc46715160b201e49931462845f491761c773691bab849b1ada9c6",
+      "blockNumber": "50204322",
+      "gasUsed": "186590",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x1df949c7a8351cc5679403935d3c883fa796f3f5"
+    },
+    {
+      "nonce": 21,
+      "name": "graduationManagerImplementation",
+      "hash": "0x23a2218721c8619867eaa552a2ed24176eb8b40db909d4cdc7f4373460ae61cb",
+      "blockNumber": "50204324",
+      "gasUsed": "1973775",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xfcb008c4eb72aef922c0ca469498fa200d2ae537"
+    },
+    {
+      "nonce": 22,
+      "name": "graduationManager",
+      "hash": "0x674a23833fbd889633d4941ea51c15af0fa28ac68b0169cab4952a1b26c0db98",
+      "blockNumber": "50204329",
+      "gasUsed": "232031",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x64c302ea4a8f8ba4c6c9d8910df2657840e0a2d1"
+    },
+    {
+      "nonce": 23,
+      "name": "curveQuoter",
+      "hash": "0xff124018d33c67cd497a474dbb54fb4f2c96926ce7b64b3001b4a791bf511c82",
+      "blockNumber": "50204334",
+      "gasUsed": "702401",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0xcee36b69a287ccaaf64d0297dcfea9b9f472300f"
+    },
+    {
+      "nonce": 24,
+      "name": "dammGraduationAdapter",
+      "hash": "0xb0537884338ae013b03916d124595713bff6198bd1cc86225049a3dc81f6eb00",
+      "blockNumber": "50204336",
+      "gasUsed": "744616",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": "0x28cc16a2dd4e6656ee5181990502202d90af0888"
+    },
+    {
+      "nonce": 25,
+      "name": "bindLaunchTokenDeployer",
+      "hash": "0x2201222437ef34f81f3639713ea6d6bfd018ea5c10ddaf668c54600a26e67238",
+      "blockNumber": "50204338",
+      "gasUsed": "43921",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 26,
+      "name": "bindVirtualPoolDeployer",
+      "hash": "0x9a3316d15caa5de694f078a7ea6bd956d91ac7cebc8a67c6236f22beca0e762b",
+      "blockNumber": "50204340",
+      "gasUsed": "43980",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 27,
+      "name": "allowWhypeQuoteToken",
+      "hash": "0x676e2411cd4e17ba5db2de2d28c19dcf11e0c2e116ccc6497d0b74ae90fc359c",
+      "blockNumber": "50204342",
+      "gasUsed": "80495",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 28,
+      "name": "authorizeLaunchFactory",
+      "hash": "0xe6a99a76f0197de343b002717f21dbcbde905f23a9bdd26f16a991862425ad18",
+      "blockNumber": "50204344",
+      "gasUsed": "53759",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 29,
+      "name": "bindGraduationManager",
+      "hash": "0x76527d44f37952650cffe452c283043cf90001f418de3ddec17b47411fb488a2",
+      "blockNumber": "50204346",
+      "gasUsed": "51358",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 30,
+      "name": "allowDammAdapter",
+      "hash": "0x54dca32df4c6d63aab74b79a0fde613d8432497755d5745e8ccad6160030da85",
+      "blockNumber": "50204348",
+      "gasUsed": "55202",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 31,
+      "name": "authorizeGraduationManager",
+      "hash": "0x3669a8f3bcc4165678ff28e364ac586bf03c6a1c53b67c352e608769d1a21f95",
+      "blockNumber": "50204350",
+      "gasUsed": "53644",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 32,
+      "name": "authorizeAdapterOnPoolFactory",
+      "hash": "0x16ca71a8b2a23c59e01c2f4a0ffe1b32d99fa4ae2e03ba80af82f6d77fb4c2ec",
+      "blockNumber": "50204352",
+      "gasUsed": "53752",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 33,
+      "name": "createWhypeCanaryTemplate",
+      "hash": "0xa6799e810e1f77b8caeca7602d789a43d9a615d461ab1e3f0573920a8a520400",
+      "blockNumber": "50204354",
+      "gasUsed": "435145",
+      "effectiveGasPrice": "100000000",
+      "contractAddress": null
+    }
+  ]
+}

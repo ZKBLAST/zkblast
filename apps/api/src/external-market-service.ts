@@ -1,5 +1,6 @@
 import postgres from "postgres";
 import { z } from "zod";
+import { isSupportedDatabaseSchema } from "@zkblast/config";
 
 const rowSchema = z.object({
   id: z.string().uuid(),
@@ -65,7 +66,7 @@ export class ExternalMarketService {
     databaseUrl: string,
     readonly schema: string,
   ) {
-    if (!/^zkblast_(testnet|mainnet)$/u.test(schema))
+    if (!isSupportedDatabaseSchema(schema))
       throw new Error("Invalid schema");
     this.#sql = postgres(databaseUrl, {
       max: 1,
