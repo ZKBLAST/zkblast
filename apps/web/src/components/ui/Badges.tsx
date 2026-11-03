@@ -2,11 +2,16 @@ import { cx } from "@/lib/format";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 // The only place the app talks about privacy on an action. Public actions are never marked private.
-export function LaneBadge({ lane, className, stage = true }: { lane: "public" | "shielded"; className?: string; stage?: boolean }) {
+export function LaneBadge({ lane, className, stage = true }: { lane: "public" | "dbc" | "shielded"; className?: string; stage?: boolean }) {
   return lane === "public" ? (
     <span className={cx("inline-flex h-6 items-center gap-1.5 rounded-xs border border-line-strong px-2 font-mono text-[11px] uppercase tracking-wide text-muted", className)}>
       <span className="size-1.5 rounded-full bg-muted" aria-hidden />
       Public AMM
+    </span>
+  ) : lane === "dbc" ? (
+    <span className={cx("inline-flex h-6 items-center gap-1.5 rounded-xs border border-line-strong px-2 font-mono text-[11px] uppercase tracking-wide text-fg", className)}>
+      <span className="size-1.5 rounded-full bg-fg" aria-hidden />
+      DBC
     </span>
   ) : (
     <span className={cx("inline-flex h-6 items-center gap-1.5 rounded-xs border border-lime/60 px-2 font-mono text-[11px] uppercase tracking-wide text-lime", className)}>

@@ -40,6 +40,7 @@ export function DocsView() {
         badges={
           <>
             <LaneBadge lane="public" />
+            <LaneBadge lane="dbc" />
             <LaneBadge
               lane="shielded"
               stage={config?.environment === "testnet"}
