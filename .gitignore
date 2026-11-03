@@ -25,6 +25,18 @@ evidence/
 reports/
 audit-artifacts/
 
+# Explicitly public, reviewed product documentation. Keep internal review,
+# evidence, and remediation working papers local.
+!/docs/
+/docs/*
+!/docs/SECURITY_AND_TRANSPARENCY.md
+!/docs/PRIVACY_GUARANTEES.md
+!/docs/THREAT_MODEL.md
+
+# Internal security review registers and raw evidence are never public by
+# default. Publish only a separately reviewed, sanitized product document.
+/audit/
+
 secrets/
 keys/
 private/

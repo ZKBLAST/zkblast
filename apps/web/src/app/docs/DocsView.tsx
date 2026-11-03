@@ -36,7 +36,7 @@ export function DocsView() {
     <>
       <PageHeader
         title="Docs"
-        lead="How the public pools and the shielded vault work, what each one reveals, and what is not built yet."
+        lead="Protocol architecture, execution lanes, privacy scope and chain-specific contract references."
         badges={
           <>
             <LaneBadge lane="public" />
@@ -143,17 +143,19 @@ export function DocsView() {
               Architecture
             </h2>
             <pre className="mt-5 overflow-x-auto panel p-5 font-mono text-[13px] leading-relaxed text-muted">{`Web app
- ├─ Public pools · DLMM · DAMM · Swap ──► Public AMM router ──► AMM contracts
- ├─ Shielded vault · notes · proof status
- │    └─ Client-side prover ── proof + public inputs ──► Vault / Verifier
- └─ Read API / indexer ──► pool state, events, Merkle roots (never note secrets)
+ ├─ Public pools · DBC · launchpads ──► public routers / pools
+ ├─ Robinhood Shielded · notes · private actions
+ │    └─ browser prover ── proof + public inputs ──► vault / action verifier
+ ├─ Robinhood Perps ──► public or proof-authorized position execution
+ └─ Read API / chain indexers ──► validated events and state (never note secrets)
 
-Robinhood Chain
- ├─ AMM contracts
- ├─ ZKBlastVault
- ├─ CommitmentTree + NullifierRegistry
- ├─ VerifierRegistry + ZKVerifierAdapter
- └─ ShieldedLPManager (later)`}</pre>
+Robinhood Chain · 4663
+ ├─ DAMM / DLMM / DBC / launchpad
+ ├─ Shielded v1 + v2 contracts and Groth16 verifiers
+ └─ public + private perps modules
+
+HyperEVM · 999
+ └─ public pools / DBC / launchpad`}</pre>
           </section>
         </article>
       </div>

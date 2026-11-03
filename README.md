@@ -128,6 +128,12 @@ ZKBLAST treats proofs, manifests, and network context as versioned protocol inpu
 
 Cryptographic correctness does not remove smart-contract, market, wallet, or operational risk. Verify the selected network, pool, assets, amounts, and transaction details before signing, and keep encrypted recovery material available for every unspent private note.
 
+The protocol publishes chain-specific deployment identities, proof-system
+boundaries and user verification guidance in
+[Security and Transparency](docs/SECURITY_AND_TRANSPARENCY.md). Operational
+review material, raw evidence and security-sensitive working papers remain
+outside the public repository surface.
+
 ## License
 
 ZKBLAST is open-source software released under the [Apache License 2.0](LICENSE).

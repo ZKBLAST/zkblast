@@ -15,7 +15,7 @@ export const docs: { group: string; sections: DocSection[] }[] = [
           "ZKBLAST is a liquidity protocol with two lanes. The public lane runs DLMM (discrete bins) and DAMM (dynamic-fee constant product) pools: swaps, liquidity and fees are fully visible onchain, like any AMM. The shielded lane is a vault where a deposit becomes a private note, and a later withdrawal proves ownership of an unspent note without revealing which deposit it was.",
           "The two lanes are kept apart on purpose. A zero-knowledge verifier on its own does not make a public token transfer, a swap amount or an LP bin private, so the app never shows a privacy badge on a public action.",
           {
-            note: "Shielded availability follows the active network's vault, approved denomination and verified prover configuration. Experimental deployments are labeled explicitly. The interface does not display synthetic protocol values.",
+            note: "Shielded availability follows the active network's vault, approved denomination and prover configuration. The interface reads operational protocol values from the configured API and chain indexer.",
           },
         ],
       },
@@ -109,13 +109,17 @@ export const docs: { group: string; sections: DocSection[] }[] = [
         id: "privacy",
         title: "Privacy guarantees",
         body: [
-          "What the MVP hides: the link between a specific deposit and a specific withdrawal, as long as the anonymity set is large and your timing and amount do not single you out.",
+          "Shielded notes hide their secret ownership witness. A valid proof can authorize withdrawal, swap, liquidity or supported perps state transitions without publishing that witness. Privacy remains conditional on the effective anonymity set and on timing, amount and network metadata not singling the action out.",
           {
             list: [
-              "Still public: asset, denomination, deposit sender, withdrawal recipient, timing, gas payer.",
-              "Still public: the vault's aggregate LP position and its changes.",
-              "Not offered: private swaps. These sit behind a separate research gate.",
+              "Protected locally: note secrets, recovery-journal plaintext and proof witnesses.",
+              "Proof-bound: chain, vault, action, pool or market, assets, amounts, output commitments and deadline.",
+              "Visible onchain: transaction timing, gas payer and public settlement effects required by the selected action.",
+              "Network scope: Robinhood Chain provides the Shielded and Perps execution lanes; HyperEVM provides its configured public pool and launchpad execution.",
             ],
+          },
+          {
+            note: "The signing summary shows the public execution context while note secrets and proof witnesses stay in the encrypted browser workflow.",
           },
         ],
       },
@@ -139,7 +143,22 @@ export const docs: { group: string; sections: DocSection[] }[] = [
               "Governance or admin key compromise",
             ],
           },
-          "Invariants under test: vault liabilities never exceed vault assets, no note redeems twice, and every accepted proof maps to a registered circuit version and public-input schema.",
+          "Core invariants: vault liabilities remain asset-backed, each nullifier is consumed once, and every accepted proof maps to a registered circuit version and public-input schema.",
+        ],
+      },
+      {
+        id: "verification",
+        title: "Verification and source of truth",
+        body: [
+          "ZKBLAST publishes source, deployment receipts, chain-specific manifests and cryptographic artifact identities so integrations can resolve the active protocol configuration from one source of truth.",
+          {
+            list: [
+              "The contract directory follows the network selected in the application and displays complete proxy and implementation addresses.",
+              "Deployment manifests record chain ID, deployment transactions, compiler configuration and runtime bytecode identities.",
+              "Circuit releases bind source, R1CS, WASM, proving key, verification key and generated verifier identities.",
+              "Explorer links allow each address and transaction to be inspected directly on its active chain.",
+            ],
+          },
         ],
       },
       {
