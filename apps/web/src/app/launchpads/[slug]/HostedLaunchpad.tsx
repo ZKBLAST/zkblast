@@ -13,7 +13,11 @@ import type {
 } from "@/components/launchpad/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
-import { apiRequest } from "@/lib/api-client";
+import {
+  activeChainId,
+  apiProxyAssetPath,
+  apiRequest,
+} from "@/lib/api-client";
 import { shortHex } from "@/lib/format";
 
 type Branding = Readonly<{
@@ -37,7 +41,7 @@ type NetworkIdentity = Readonly<{
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
 const tokenLogoUrl = (launch: DbcLaunch) =>
   launch.has_logo && launch.metadata_id
-    ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+    ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
     : `/asset-logo/${launch.symbol ?? ""}`;
 
 export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
@@ -65,6 +69,11 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
   );
   useEffect(() => {
     const controller = new AbortController();
+    const selectedChainId = activeChainId();
+    const configPath =
+      selectedChainId && selectedChainId !== 4663
+        ? `/v2/chains/${selectedChainId}/config`
+        : "/v1/config";
     setLoading(true);
     setError("");
     void Promise.all([
@@ -73,7 +82,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
         `/v1/launchpads/${encodeURIComponent(slug)}`,
         { signal: controller.signal, cache: "no-store" },
       ),
-      apiRequest<NetworkIdentity>(webPublicConfig.apiUrl, "/v1/config", {
+      apiRequest<NetworkIdentity>(webPublicConfig.apiUrl, configPath, {
         signal: controller.signal,
         cache: "no-store",
       }),
@@ -168,7 +177,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
             {branding.logoUrl ? (
               <img
                 className="size-14 rounded-full border border-white/20 object-cover"
-                src={`/api${branding.logoUrl}`}
+                src={apiProxyAssetPath(branding.logoUrl)}
                 alt={`${branding.name} logo`}
               />
             ) : (
@@ -336,10 +345,21 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
               deployment={deployment}
               onComplete={refreshAfterTransaction}
             />
-          ) : (
+          ) : loading ? (
             <aside className="border-l border-white/15 p-5">
               <Skeleton className="h-12 w-full" />
               <Skeleton className="mt-5 h-72 w-full" />
+            </aside>
+          ) : (
+            <aside className="border-l border-white/15 p-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-55">
+                Launch execution
+              </p>
+              <div className="mt-5 border border-white/15 p-5 text-sm leading-6 opacity-65">
+                {selected
+                  ? "Trading configuration is temporarily unavailable. Refresh this page to retry."
+                  : "No token has been launched here yet. Confirmed launches will make the trading controls available."}
+              </div>
             </aside>
           )}
         </div>

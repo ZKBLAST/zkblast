@@ -9,7 +9,7 @@ import type {
 } from "@/components/launchpad/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
-import { apiRequest } from "@/lib/api-client";
+import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 
 type WidgetBranding = Readonly<{
   launchpadId: string;
@@ -82,7 +82,7 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
         <div className="flex min-w-0 items-center gap-3">
           {branding?.logoUrl ? (
             <img
-              src={`/api${branding.logoUrl}`}
+              src={apiProxyAssetPath(branding.logoUrl)}
               alt=""
               className="size-9 rounded-full border border-current/20 object-cover"
             />
@@ -137,7 +137,9 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
               <AssetLogo
                 url={
                   launch.has_logo && launch.metadata_id
-                    ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+                    ? apiProxyAssetPath(
+                        `/v1/dbc/metadata/${launch.metadata_id}/logo`,
+                      )
                     : `/asset-logo/${launch.symbol ?? ""}`
                 }
                 label={launch.symbol ?? "Token"}

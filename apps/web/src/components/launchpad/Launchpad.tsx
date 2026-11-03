@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatTokenAmount, type DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { apiRequest } from "@/lib/api-client";
+import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import { shortHex } from "@/lib/format";
 import { LaunchActions } from "./LaunchActions";
@@ -30,7 +30,7 @@ import { useApp } from "@/components/shell/AppProvider";
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
 const logoUrl = (launch: DbcLaunch) =>
   launch.has_logo && launch.metadata_id
-    ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+    ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
     : `/asset-logo/${launch.symbol ?? ""}`;
 
 export function Launchpad() {

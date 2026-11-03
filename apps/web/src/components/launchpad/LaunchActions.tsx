@@ -17,7 +17,7 @@ import {
 import type { DbcAddresses } from "@zkblast/sdk";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { useApp } from "@/components/shell/AppProvider";
-import { apiRequest } from "@/lib/api-client";
+import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import {
   parseTokenAmount,
@@ -62,7 +62,7 @@ export function LaunchActions({
   const quoteDecimals = economics?.quoteDecimals ?? 18;
   const tokenLogoUrl =
     launch.has_logo && launch.metadata_id
-      ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
+      ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
       : `/asset-logo/${symbol}`;
   const inputDecimals = side === "buy" ? quoteDecimals : 18;
   const outputDecimals = side === "buy" ? 18 : quoteDecimals;

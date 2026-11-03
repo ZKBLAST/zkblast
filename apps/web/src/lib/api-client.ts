@@ -1,14 +1,24 @@
-function networkScopedPath(path: string): string {
-  if (typeof window === "undefined") return path;
-  if (!/^\/v1\/(protocol|dbc|launchpads)(?:\/|\?|$)/u.test(path))
-    return path;
+export function activeChainId(): number | null {
+  if (typeof window === "undefined") return null;
   const chainId = Number.parseInt(
     window.localStorage.getItem("zkblast.activeChainId") ?? "",
     10,
   );
-  if (!Number.isSafeInteger(chainId) || chainId <= 0 || chainId === 4663)
+  return Number.isSafeInteger(chainId) && chainId > 0 ? chainId : null;
+}
+
+export function networkScopedPath(path: string): string {
+  if (typeof window === "undefined") return path;
+  if (!/^\/v1\/(protocol|dbc|launchpads)(?:\/|\?|$)/u.test(path))
+    return path;
+  const chainId = activeChainId();
+  if (!chainId || chainId === 4663)
     return path;
   return path.replace(/^\/v1\/(protocol|dbc|launchpads)/u, `/v2/chains/${chainId}/$1`);
+}
+
+export function apiProxyAssetPath(path: string): string {
+  return `/api${networkScopedPath(path)}`;
 }
 
 export async function apiRequest<T>(
