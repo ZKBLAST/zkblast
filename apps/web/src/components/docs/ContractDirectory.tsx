@@ -1,8 +1,14 @@
 "use client";
 
 import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getChainDescriptor } from "@zkblast/config";
 import { useApp } from "@/components/shell/AppProvider";
+import { NetworkLogo } from "@/components/shell/NetworkLogo";
+import { webPublicConfig } from "@/config/public-env";
+import { apiRequest } from "@/lib/api-client";
+import { parsePublicConfig } from "@/lib/network-config";
+import type { PublicConfig } from "@/types/application";
 
 function explorerAddressUrl(explorerUrl: string, address: string) {
   return `${explorerUrl.replace(/\/$/u, "")}/address/${address}`;
@@ -62,28 +68,25 @@ function AddressRow({
   );
 }
 
-export function ContractDirectory() {
-  const { config } = useApp();
-  const contracts = config?.contracts ?? [];
-
-  if (!config) {
-    return (
-      <div className="panel mt-6 p-5 text-sm text-muted">
-        Loading deployment manifest…
-      </div>
-    );
-  }
-
+function DeploymentSection({ config }: Readonly<{ config: PublicConfig }>) {
+  const contracts = config.contracts ?? [];
+  const family = getChainDescriptor(config.chainId).family;
   return (
-    <div className="mt-7 space-y-4" aria-label="Deployed contract directory">
+    <section
+      className="space-y-4"
+      aria-labelledby={`deployment-${config.chainId}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-lime/30 bg-lime/[0.04] p-4">
-        <div>
+        <div className="flex items-center gap-3">
+          <NetworkLogo family={family} className="size-8" />
+          <div>
           <p className="font-mono text-[11px] uppercase tracking-wide text-lime">
-            Active deployment
+            Mainnet deployment
           </p>
-          <p className="mt-1 text-sm text-fg">
+          <p id={`deployment-${config.chainId}`} className="mt-1 text-sm text-fg">
             {config.chainName} · Chain ID {config.chainId}
           </p>
+          </div>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1 font-mono text-[11px] uppercase text-muted">
           <ShieldCheck className="size-3.5 text-lime" aria-hidden />
@@ -132,6 +135,57 @@ export function ContractDirectory() {
           </section>
         ))
       )}
+    </section>
+  );
+}
+
+export function ContractDirectory() {
+  const { chains, config } = useApp();
+  const [deployments, setDeployments] = useState<readonly PublicConfig[]>([]);
+
+  useEffect(() => {
+    if (!config) return;
+    const controller = new AbortController();
+    const targets = chains.filter(
+      (chain) => chain.configured && chain.environment === "mainnet",
+    );
+
+    void Promise.all(
+      targets.map(async (chain) => {
+        if (chain.chainId === config.chainId) return config;
+        const response = await apiRequest<unknown>(
+          webPublicConfig.apiUrl,
+          `/v2/chains/${chain.chainId}/config`,
+          { signal: controller.signal },
+        );
+        return parsePublicConfig(response);
+      }),
+    )
+      .then((items) => setDeployments(items))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setDeployments([config]);
+      });
+
+    return () => controller.abort();
+  }, [chains, config]);
+
+  if (!config || deployments.length === 0) {
+    return (
+      <div className="panel mt-6 p-5 text-sm text-muted">
+        Loading deployment manifests…
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="mt-7 space-y-10"
+      aria-label="Multichain deployed contract directory"
+    >
+      {deployments.map((deployment) => (
+        <DeploymentSection key={deployment.chainId} config={deployment} />
+      ))}
     </div>
   );
 }
