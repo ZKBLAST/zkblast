@@ -10,6 +10,7 @@ import type {
 import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
+import { assetLogoUrl } from "@/lib/asset-logo-url";
 
 type WidgetBranding = Readonly<{
   launchpadId: string;
@@ -140,7 +141,7 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
                     ? apiProxyAssetPath(
                         `/v1/dbc/metadata/${launch.metadata_id}/logo`,
                       )
-                    : `/asset-logo/${launch.symbol ?? ""}`
+                    : assetLogoUrl(launch.symbol ?? "")
                 }
                 label={launch.symbol ?? "Token"}
               />

@@ -19,6 +19,7 @@ import { AssetLogo } from "@/components/markets/AssetLogo";
 import { useApp } from "@/components/shell/AppProvider";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
+import { assetLogoUrl } from "@/lib/asset-logo-url";
 import {
   parseTokenAmount,
   formatTokenAmount,
@@ -63,7 +64,7 @@ export function LaunchActions({
   const tokenLogoUrl =
     launch.has_logo && launch.metadata_id
       ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
-      : `/asset-logo/${symbol}`;
+      : assetLogoUrl(symbol);
   const inputDecimals = side === "buy" ? quoteDecimals : 18;
   const outputDecimals = side === "buy" ? 18 : quoteDecimals;
   useEffect(() => {
@@ -451,7 +452,7 @@ export function LaunchActions({
               <div className="flex -space-x-2">
                 <AssetLogo url={tokenLogoUrl} label={symbol} />
                 <AssetLogo
-                  url={`/asset-logo/${quoteSymbol}`}
+                  url={assetLogoUrl(quoteSymbol)}
                   label={quoteSymbol}
                 />
               </div>

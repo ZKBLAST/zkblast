@@ -121,7 +121,16 @@ export class PostgresLaunchpadReadStore {
        from ${this.schema}.dbc_events where chain_id=$1 and canonical
        and event_name=any($2::text[]) and (block_number,log_index) > ($3::bigint,$4)
        order by block_number,log_index limit $5`,
-      [this.chainId,["LaunchpadCreated","LaunchpadMetadataUpdated","LaunchpadOperatorUpdated","LaunchpadOwnerAccepted","LaunchpadTreasuryAccepted","LaunchpadStatusUpdated","LaunchpadFeePolicyUpdated","FeePolicySnapshotted","RevenueSnapshotRegistered","LaunchpadTokenBound","ProofClaimVerified"],afterBlock,afterLogIndex,limit],
+      [this.chainId,[
+        "LaunchpadCreated","LaunchpadMetadataUpdated","LaunchpadOperatorUpdated",
+        "LaunchpadOwnerAccepted","LaunchpadTreasuryAccepted","LaunchpadStatusUpdated",
+        "LaunchpadFeePolicyUpdated","FeePolicySnapshotted","RevenueSnapshotRegistered",
+        "LaunchpadTokenBound","ProofClaimVerified","TokenLaunched",
+        "LaunchMetadataPublished","CurveSwapExecuted","FeeAccrued","FeeClaimed",
+        "LifecycleUpdated","GraduationReady","GraduationCompleted",
+        "GraduationAttemptStarted","GraduationAttemptPending","GraduationNeedsReview",
+        "GraduationReviewReopened","AllocationRegistered","AllocationClaimed",
+      ],afterBlock,afterLogIndex,limit],
     );
   }
 }

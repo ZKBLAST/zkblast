@@ -41,8 +41,6 @@ export function LaunchTradeHistory({
   }, [launchId, refreshKey]);
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => void load(), 15_000);
-    return () => window.clearInterval(timer);
   }, [load]);
   return (
     <section className="border-t border-line">

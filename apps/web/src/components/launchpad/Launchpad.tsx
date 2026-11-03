@@ -17,6 +17,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import { shortHex } from "@/lib/format";
+import { assetLogoUrl } from "@/lib/asset-logo-url";
+import { useLaunchpadEventRefresh } from "@/lib/use-launchpad-event-refresh";
 import { LaunchActions } from "./LaunchActions";
 import { LaunchChart } from "./LaunchChart";
 import { LaunchWizard } from "./LaunchWizard";
@@ -31,7 +33,7 @@ const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
 const logoUrl = (launch: DbcLaunch) =>
   launch.has_logo && launch.metadata_id
     ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
-    : `/asset-logo/${launch.symbol ?? ""}`;
+    : assetLogoUrl(launch.symbol ?? "");
 
 export function Launchpad() {
   const { config } = useApp();
@@ -64,8 +66,8 @@ export function Launchpad() {
   const [pendingLaunchpads, setPendingLaunchpads] = useState<
     readonly PendingLaunchpad[]
   >([]);
-  const liveRefreshTimers = useRef<number[]>([]);
   const loadedOnce = useRef(false);
+  const loadedChainId = useRef<number | null>(null);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
   const retryPendingLaunchpad = useCallback(
     async (item: PendingLaunchpad) => {
@@ -101,18 +103,7 @@ export function Launchpad() {
     },
     [refresh],
   );
-  const refreshRealtime = useCallback(() => {
-    liveRefreshTimers.current.forEach((timer) => window.clearTimeout(timer));
-    liveRefreshTimers.current = [];
-    for (let delay = 0; delay <= 36_000; delay += 2_000) {
-      liveRefreshTimers.current.push(window.setTimeout(refresh, delay));
-    }
-  }, [refresh]);
-  useEffect(
-    () => () =>
-      liveRefreshTimers.current.forEach((timer) => window.clearTimeout(timer)),
-    [],
-  );
+  useLaunchpadEventRefresh(refresh, config?.chainId);
   const completeLaunch = useCallback(
     (launch?: DbcLaunch) => {
       if (launch) {
@@ -129,13 +120,18 @@ export function Launchpad() {
 
   useEffect(() => {
     const controller = new AbortController();
-    setTemplates([]);
-    setLaunches([]);
-    setPendingLaunches([]);
-    setPendingLaunchpads([]);
-    setDeployment(null);
-    setSelectedId("");
-    if (!loadedOnce.current) setLoading(true);
+    const chainId = config?.chainId ?? null;
+    const chainChanged = loadedChainId.current !== chainId;
+    if (chainChanged) {
+      loadedChainId.current = chainId;
+      setTemplates([]);
+      setLaunches([]);
+      setPendingLaunches([]);
+      setPendingLaunchpads([]);
+      setDeployment(null);
+      setSelectedId("");
+      setLoading(true);
+    } else if (!loadedOnce.current) setLoading(true);
     setError("");
     void Promise.all([
       apiRequest<{ items: DbcTemplate[] }>(
@@ -405,7 +401,15 @@ export function Launchpad() {
                 ? Array.from({ length: 7 }, (_, index) => (
                     <Skeleton key={index} className="mb-2 h-20" />
                   ))
-                : visible.map((item) => (
+                : visible.length === 0
+                  ? (
+                    <p className="p-4 text-xs leading-5 text-muted">
+                      No token launches on {config?.chainName ?? "this network"}.
+                      Launches created on another network remain available when
+                      that network is selected.
+                    </p>
+                  )
+                  : visible.map((item) => (
                     <button
                       key={item.launch_id}
                       onClick={() => setSelectedId(item.launch_id)}
@@ -548,7 +552,15 @@ export function Launchpad() {
                     </button>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">No indexed launches.</p>
+                  <div className="max-w-md text-center">
+                    <p className="text-sm text-muted">
+                      No token launches exist on {config?.chainName ?? "this network"}.
+                    </p>
+                    <p className="mt-2 text-xs leading-5 text-faint">
+                      Launchpads and tokens are isolated per chain. Use the
+                      network selector to view launches created elsewhere.
+                    </p>
+                  </div>
                 )}
               </div>
             )}
@@ -557,7 +569,7 @@ export function Launchpad() {
             <LaunchActions
               launch={selected}
               deployment={deployment}
-              onComplete={refreshRealtime}
+              onComplete={refresh}
             />
           ) : (
             <aside className="border-l border-line p-5">

@@ -20,6 +20,8 @@ import {
   apiRequest,
 } from "@/lib/api-client";
 import { shortHex } from "@/lib/format";
+import { assetLogoUrl } from "@/lib/asset-logo-url";
+import { useLaunchpadEventRefresh } from "@/lib/use-launchpad-event-refresh";
 
 type Branding = Readonly<{
   launchpadId: string;
@@ -43,7 +45,7 @@ const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
 const tokenLogoUrl = (launch: DbcLaunch) =>
   launch.has_logo && launch.metadata_id
     ? apiProxyAssetPath(`/v1/dbc/metadata/${launch.metadata_id}/logo`)
-    : `/asset-logo/${launch.symbol ?? ""}`;
+    : assetLogoUrl(launch.symbol ?? "");
 
 export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
   const [branding, setBranding] = useState<Branding | null>(null);
@@ -54,20 +56,9 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
-  const refreshTimers = useRef<number[]>([]);
+  const loadedOnce = useRef(false);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
-  const refreshAfterTransaction = useCallback(() => {
-    refreshTimers.current.forEach((timer) => window.clearTimeout(timer));
-    refreshTimers.current = [0, 2_000, 5_000, 10_000, 20_000].map((delay) =>
-      window.setTimeout(refresh, delay),
-    );
-  }, [refresh]);
-
-  useEffect(
-    () => () =>
-      refreshTimers.current.forEach((timer) => window.clearTimeout(timer)),
-    [],
-  );
+  useLaunchpadEventRefresh(refresh, network?.chainId ?? activeChainId());
   useEffect(() => {
     const controller = new AbortController();
     const selectedChainId = activeChainId();
@@ -75,7 +66,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
       selectedChainId && selectedChainId !== 4663
         ? `/v2/chains/${selectedChainId}/config`
         : "/v1/config";
-    setLoading(true);
+    if (!loadedOnce.current) setLoading(true);
     setError("");
     void Promise.all([
       apiRequest<Branding>(
@@ -115,7 +106,10 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
           );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          loadedOnce.current = true;
+          setLoading(false);
+        }
       });
     return () => controller.abort();
   }, [revision, slug]);
@@ -363,7 +357,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
             <LaunchActions
               launch={selected}
               deployment={deployment}
-              onComplete={refreshAfterTransaction}
+              onComplete={refresh}
             />
           ) : loading ? (
             <aside className="border-l border-white/15 p-5">

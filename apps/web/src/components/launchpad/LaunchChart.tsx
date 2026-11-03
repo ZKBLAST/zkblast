@@ -1,6 +1,6 @@
 "use client";
 import { ChartCandlestick, ChartLine, RefreshCw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PriceHistoryCanvas } from "@/components/markets/PriceHistoryCanvas";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { apiRequest } from "@/lib/api-client";
@@ -32,9 +32,11 @@ export function LaunchChart({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
+  const loadedLaunch = useRef("");
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
+    const firstLoad = loadedLaunch.current !== launchId;
+    if (firstLoad) setLoading(true);
     setError("");
     const to = new Date();
     const from = new Date(to.getTime() - 30 * 86400_000);
@@ -51,7 +53,10 @@ export function LaunchChart({
           );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          loadedLaunch.current = launchId;
+          setLoading(false);
+        }
       });
     return () => controller.abort();
   }, [launchId, interval, revision, refreshKey]);
