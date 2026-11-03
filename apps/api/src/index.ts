@@ -537,16 +537,35 @@ const shieldedService = manifest.shielded
       deploymentBlock: BigInt(manifest.shielded.deploymentBlock),
     })
   : undefined;
-await verifyPrivateV2Deployment(
-  {
-    environment: serverConfig.APP_ENV,
-    chainId: serverConfig.CHAIN_ID,
-    config: manifest.shieldedV2,
-    legacyVault: manifest.shielded?.vault,
-  },
-  chainClient.request as PrivateV2RpcRequest,
-  keccak256,
-);
+try {
+  await verifyPrivateV2Deployment(
+    {
+      environment: serverConfig.APP_ENV,
+      chainId: serverConfig.CHAIN_ID,
+      config: manifest.shieldedV2,
+      legacyVault: manifest.shielded?.vault,
+    },
+    chainClient.request as PrivateV2RpcRequest,
+    keccak256,
+  );
+} catch (error) {
+  if (
+    !(error instanceof Error) ||
+    error.message !== "V2_DEPLOYMENT_VERIFICATION_UNAVAILABLE"
+  ) {
+    throw error;
+  }
+
+  // A rate-limited or temporarily unavailable RPC must not take the public API
+  // offline. Deterministic manifest/state mismatches still fail startup above.
+  console.warn(
+    JSON.stringify({
+      service: "api",
+      event: "shielded-v2-startup-verification-deferred",
+      chainId: serverConfig.CHAIN_ID,
+    }),
+  );
+}
 const shieldedV2Service = manifest.shieldedV2
   ? new ShieldedService(chainClient, {
       schemaVersion: 2,
