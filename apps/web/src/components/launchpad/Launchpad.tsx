@@ -39,6 +39,8 @@ export function Launchpad() {
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
   const launchpadFilter = searchParams.get("launchpad");
+  const createTokenRequested =
+    searchParams.get("action") === "create-token" && Boolean(launchpadFilter);
   const view =
     requestedView === "build" || requestedView === "manage"
       ? requestedView
@@ -55,9 +57,9 @@ export function Launchpad() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
-  const [wizard, setWizard] = useState(false);
+  const [wizard, setWizard] = useState(createTokenRequested);
   const [wizardLaunchpadId, setWizardLaunchpadId] = useState<string | null>(
-    null,
+    createTokenRequested ? launchpadFilter : null,
   );
   const [pendingLaunchpads, setPendingLaunchpads] = useState<
     readonly PendingLaunchpad[]

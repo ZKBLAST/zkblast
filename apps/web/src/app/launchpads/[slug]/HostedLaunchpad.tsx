@@ -1,7 +1,8 @@
 "use client";
 
 import type { DbcAddresses } from "@zkblast/sdk";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Plus } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { LaunchActions } from "@/components/launchpad/LaunchActions";
@@ -144,6 +145,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
   }, [selected?.template_id]);
   const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
   const quoteDecimals = economics?.quoteDecimals ?? 18;
+  const createTokenHref = `/launch?launchpad=${encodeURIComponent(branding?.launchpadId ?? "")}&action=create-token`;
   if (loading && !branding) return <HostedSkeleton />;
   if (error && !branding)
     return (
@@ -191,6 +193,13 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              className="inline-flex items-center gap-2 border border-current bg-white px-3 py-2 font-mono text-[10px] uppercase text-black transition-opacity hover:opacity-85"
+              href={createTokenHref}
+            >
+              <Plus className="size-3" aria-hidden />
+              Create token
+            </Link>
             {branding.websiteUrl && (
               <a
                 className="border border-white/20 px-3 py-2 font-mono text-[10px] uppercase"
@@ -334,8 +343,19 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
                 />
               </>
             ) : (
-              <div className="grid min-h-[36rem] place-items-center p-8 text-sm opacity-60">
-                No confirmed launch is available.
+              <div className="grid min-h-[36rem] place-items-center p-8 text-center">
+                <div className="max-w-md">
+                  <p className="text-sm opacity-60">
+                    No confirmed launch is available.
+                  </p>
+                  <Link
+                    href={createTokenHref}
+                    className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 border border-current px-5 font-mono text-xs uppercase transition-colors hover:bg-white hover:text-black"
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    Create first token
+                  </Link>
+                </div>
               </div>
             )}
           </section>
@@ -360,6 +380,15 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
                   ? "Trading configuration is temporarily unavailable. Refresh this page to retry."
                   : "No token has been launched here yet. Confirmed launches will make the trading controls available."}
               </div>
+              {!selected && (
+                <Link
+                  href={createTokenHref}
+                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 border border-current font-mono text-xs uppercase transition-colors hover:bg-white hover:text-black"
+                >
+                  <Plus className="size-4" aria-hidden />
+                  Create token
+                </Link>
+              )}
             </aside>
           )}
         </div>
