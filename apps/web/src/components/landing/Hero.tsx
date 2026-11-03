@@ -143,7 +143,7 @@ export function Hero() {
         <div className="relative flex min-h-[calc(100svh-var(--header-h)-50px)] min-w-0 flex-col xl:min-h-0">
           <div className="hidden h-11 shrink-0 items-center justify-between border-b border-line px-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint xl:flex">
             <span>ZKBLAST / Liquidity infrastructure</span>
-            <span>Robinhood Chain + HyperEVM</span>
+            <span>Robinhood Chain + Hyperliquid</span>
           </div>
           <div
             aria-hidden
@@ -180,7 +180,7 @@ export function Hero() {
                         <NetworkLogo family="robinhood" className="size-6" />
                         <NetworkLogo family="hyperevm" className="size-6" />
                       </span>
-                      Robinhood + HyperEVM
+                      Robinhood + Hyperliquid
                     </span>
                   </div>
                   <h1 className="display">
