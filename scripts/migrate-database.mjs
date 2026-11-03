@@ -68,6 +68,8 @@ const expectedProtocolTables = [
 const expectedEventTables = ["indexed_blocks", "protocol_events"];
 const expectedDbcTables = [
   "dbc_events",
+  "dbc_graduation_adapter_bindings",
+  "dbc_graduation_readiness",
   "dbc_graduations",
   "dbc_holder_balances",
   "dbc_launches",
@@ -75,6 +77,8 @@ const expectedDbcTables = [
   "dbc_monitoring",
   "dbc_swaps",
   "dbc_templates",
+  "launchpad_fee_claim_receipts",
+  "launchpad_proof_receipts",
 ];
 const expectedExternalMarketTables = migrationTarget === "hyperevm-mainnet" ? [] : [
   "external_market_curation_audit",

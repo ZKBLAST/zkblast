@@ -18,6 +18,7 @@ const selected = [
   "202611020002_launchpad_developer_integrations.sql",
   "202611020003_launchpad_event_kind.sql",
   "202611020005_chain_qualified_launchpad.sql",
+  "202611030001_chain_event_reconciliation.sql",
 ];
 
 await rm(targetDirectory, { recursive: true, force: true });
