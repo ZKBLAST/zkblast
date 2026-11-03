@@ -1,5 +1,11 @@
 "use client";
-import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
@@ -41,127 +47,192 @@ function Drum() {
 }
 
 function PixelArrow() {
-  const dots = [[2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 3], [4, 3], [1, 4], [2, 4], [3, 4], [2, 5]];
+  const dots = [
+    [2, 0],
+    [2, 1],
+    [2, 2],
+    [0, 3],
+    [1, 3],
+    [2, 3],
+    [3, 3],
+    [4, 3],
+    [1, 4],
+    [2, 4],
+    [3, 4],
+    [2, 5],
+  ];
   return (
     <svg viewBox="0 0 25 30" className="h-8 w-7" aria-hidden>
       {dots.map(([x, y], k) => (
-        <motion.rect key={k} x={x * 5 + 1} y={y * 5 + 1} width={3} height={3} fill="#aebce5"
-          initial={{ opacity: 0.15 }} animate={{ opacity: [0.15, 0.7, 0.15] }} transition={{ duration: 1.6, repeat: Infinity, delay: y * 0.12 }} />
+        <motion.rect
+          key={k}
+          x={x * 5 + 1}
+          y={y * 5 + 1}
+          width={3}
+          height={3}
+          fill="#aebce5"
+          initial={{ opacity: 0.15 }}
+          animate={{ opacity: [0.15, 0.7, 0.15] }}
+          transition={{ duration: 1.6, repeat: Infinity, delay: y * 0.12 }}
+        />
       ))}
     </svg>
-  );
-}
-
-function PartnershipBadge() {
-  return (
-    <div className="mx-auto mb-5 flex w-fit max-w-full flex-wrap items-center justify-center gap-2 rounded-sm border border-line bg-black/30 p-1.5 font-mono sm:mb-6">
-      <a
-        href="https://zkblast.tech"
-        className="group flex items-center gap-2 rounded-sm px-2 py-1 transition-colors hover:bg-white/[0.05]"
-        aria-label="Visit ZKBLAST at zkblast.tech"
-      >
-        <span className="grid size-7 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
-          <img src="/zk/logo.png" alt="ZKBLAST" className="size-full rounded-full object-cover" />
-        </span>
-        <span className="text-left leading-tight">
-          <strong className="block text-[10px] tracking-[0.12em] text-white">ZKBLAST</strong>
-          <span className="block text-[8px] text-faint transition-colors group-hover:text-lime">zkblast.tech</span>
-        </span>
-      </a>
-
-      <span className="px-0.5 text-sm font-semibold text-lime" aria-hidden>×</span>
-
-      <a
-        href="https://quantapools.tech"
-        className="group flex items-center gap-2 rounded-sm px-2 py-1 transition-colors hover:bg-white/[0.05]"
-        aria-label="Visit Quanta Pools at quantapools.tech"
-      >
-        <span className="grid size-7 place-items-center overflow-hidden rounded-full border border-line-strong bg-white p-0.5">
-          <img src="https://quantapools.tech/logo.png" alt="Quanta Pools" className="size-full rounded-full object-cover" />
-        </span>
-        <span className="text-left leading-tight">
-          <strong className="block text-[10px] tracking-[0.12em] text-white">QUANTA</strong>
-          <span className="block text-[8px] text-faint transition-colors group-hover:text-lime">quantapools.tech</span>
-        </span>
-      </a>
-    </div>
   );
 }
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
   const consoleY = useTransform(scrollYProgress, [0, 1], [0, -40]);
   const consoleScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
   const fieldY = useTransform(scrollYProgress, [0, 1], [0, 200]);
-    const [feed, setFeed] = useState<{ leaf: number; root: string }[]>([]);
-  const onInsert = useCallback((leaf: number, root: string) => setFeed((f) => [{ leaf, root }, ...f].slice(0, 4)), []);
+  const [feed, setFeed] = useState<{ leaf: number; root: string }[]>([]);
+  const onInsert = useCallback(
+    (leaf: number, root: string) =>
+      setFeed((f) => [{ leaf, root }, ...f].slice(0, 4)),
+    [],
+  );
 
-  const rise = (d: number) => (reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: d, ease: easeOut } });
+  const rise = (d: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 18 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.8, delay: d, ease: easeOut },
+        };
 
   return (
-    <section ref={ref} className="relative isolate flex min-h-[100svh] flex-col overflow-x-clip pt-[var(--header-h)]">
+    <section
+      ref={ref}
+      className="relative isolate flex min-h-[100svh] flex-col overflow-x-clip pt-[var(--header-h)]"
+    >
       {/* Inner bay rails, mirroring the chassis */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 hidden w-[min(1040px,100%)] -translate-x-1/2 border-x border-line md:block xl:hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 hidden w-[min(1040px,100%)] -translate-x-1/2 border-x border-line md:block xl:hidden"
+      >
         <div className="absolute inset-y-0 -left-[49px] w-12 border-x border-line bg-[linear-gradient(180deg,rgba(45,45,82,0.22),rgba(6,6,12,0.1))]" />
         <div className="absolute inset-y-0 -right-[49px] w-12 border-x border-line bg-[linear-gradient(180deg,rgba(45,45,82,0.22),rgba(6,6,12,0.1))]" />
       </div>
-      <motion.div className="grid-field absolute inset-0 -z-20 [mask-image:radial-gradient(ellipse_at_50%_45%,black_10%,transparent_65%)]" style={{ y: fieldY }} aria-hidden />
-      <motion.div aria-hidden className="absolute inset-x-0 top-[8%] -z-10 mx-auto h-[80%] max-w-[1100px] opacity-[0.28]" style={{ y: fieldY }}>
+      <motion.div
+        className="grid-field absolute inset-0 -z-20 [mask-image:radial-gradient(ellipse_at_50%_45%,black_10%,transparent_65%)]"
+        style={{ y: fieldY }}
+        aria-hidden
+      />
+      <motion.div
+        aria-hidden
+        className="absolute inset-x-0 top-[8%] -z-10 mx-auto h-[80%] max-w-[1100px] opacity-[0.28]"
+        style={{ y: fieldY }}
+      >
         <MerkleField scrollProgress={scrollYProgress} onInsert={onInsert} />
       </motion.div>
 
       <div className="mx-auto grid w-full max-w-[1392px] flex-1 xl:min-h-[max(640px,calc(100svh-var(--header-h)-50px))] xl:grid-cols-[300px_minmax(0,1fr)_300px] xl:border-x xl:border-line">
-      <aside aria-label="Pool prices" className="hidden min-h-0 border-r border-line bg-[#0a0a12]/80 xl:block"><PoolRail /></aside>
-      <div className="relative flex min-h-[calc(100svh-var(--header-h)-50px)] min-w-0 flex-col xl:min-h-0">
-        <div className="hidden h-11 shrink-0 items-center justify-between border-b border-line px-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint xl:flex">
-          <span>ZKBLAST / Liquidity infrastructure</span><span>Built on Robinhood Chain</span>
+        <aside
+          aria-label="Pool prices"
+          className="hidden min-h-0 border-r border-line bg-[#0a0a12]/80 xl:block"
+        >
+          <PoolRail />
+        </aside>
+        <div className="relative flex min-h-[calc(100svh-var(--header-h)-50px)] min-w-0 flex-col xl:min-h-0">
+          <div className="hidden h-11 shrink-0 items-center justify-between border-b border-line px-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint xl:flex">
+            <span>ZKBLAST / Liquidity infrastructure</span>
+            <span>Built on Robinhood Chain</span>
+          </div>
+          <div
+            aria-hidden
+            className="dotmatrix absolute inset-0 top-11 -z-10 hidden xl:block"
+          />
+          <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10 xl:py-6">
+            <motion.div
+              style={{ y: consoleY, scale: consoleScale }}
+              className="relative w-full max-w-[680px]"
+            >
+              <div
+                aria-hidden
+                className="grip absolute -left-6 top-0 hidden h-24 sm:block"
+              />
+              <div
+                aria-hidden
+                className="grip absolute -right-6 bottom-6 hidden h-24 sm:block"
+              />
+
+              <motion.div {...rise(0.05)} className="panel ticks p-2.5">
+                <div className="panel-inset px-4 py-6 text-center sm:px-8 sm:py-8">
+                  <ContractAddressBadge className="mb-3 justify-center" />
+                  <p className="label mb-3 flex items-center justify-center gap-2">
+                    <span
+                      className="size-1.5 bg-lime motion-safe:animate-blink"
+                      aria-hidden
+                    />{" "}
+                    Zero-knowledge liquidity · Robinhood Chain
+                  </p>
+                  <h1 className="display">
+                    <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">
+                      Provide
+                    </span>
+                    <span className="ticks relative mx-auto my-3 block max-w-[560px] border border-line bg-[linear-gradient(180deg,#14142100,#14142180)] px-4 py-2.5 font-mono text-[clamp(2.4rem,7vw,4.2rem)] font-normal tracking-[-0.04em] text-white shadow-[inset_0_1px_10px_rgba(0,0,0,0.6),inset_0_0_14px_rgba(255,255,255,0.04)] [--tick-c:rgba(223,227,238,0.6)]">
+                      <Drum />
+                    </span>
+                    <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">
+                      Without exposure
+                    </span>
+                  </h1>
+                </div>
+              </motion.div>
+
+              <div aria-hidden className="flex justify-center gap-24 py-1.5">
+                <span className="barcode w-16" />
+                <span className="barcode w-16" />
+              </div>
+
+              <motion.div
+                {...rise(0.25)}
+                className="panel ticks px-5 py-4 text-center sm:px-8"
+              >
+                <p className="text-[14px] uppercase leading-relaxed tracking-[0.02em] text-muted sm:text-[15px]">
+                  Public DLMM and DAMM pools for price discovery, and a shielded
+                  vault where a deposit becomes a private note only you can
+                  prove you own.
+                </p>
+              </motion.div>
+
+              <motion.div
+                {...rise(0.45)}
+                className="panel-inset mx-auto mt-3 flex w-fit bg-[#090911] flex-wrap justify-center gap-2 p-2"
+              >
+                <ButtonLink href="#lanes" variant="secondary">
+                  Explore features
+                </ButtonLink>
+                <ButtonLink href="/trade?mode=perps" variant="secondary">
+                  Trade Perps
+                </ButtonLink>
+                <ButtonLink href="/trade">
+                  Launch app <ArrowRight className="size-4" aria-hidden />
+                </ButtonLink>
+              </motion.div>
+            </motion.div>
+
+            <a
+              href="#lanes"
+              aria-label="Scroll to how it works"
+              className="mt-5 opacity-80 transition-opacity hover:opacity-100 sm:mt-8"
+            >
+              <PixelArrow />
+            </a>
+          </div>
         </div>
-        <div aria-hidden className="dotmatrix absolute inset-0 top-11 -z-10 hidden xl:block" />
-      <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-10 xl:py-6">
-        <motion.div style={{ y: consoleY, scale: consoleScale }} className="relative w-full max-w-[680px]">
-          <div aria-hidden className="grip absolute -left-6 top-0 hidden h-24 sm:block" />
-          <div aria-hidden className="grip absolute -right-6 bottom-6 hidden h-24 sm:block" />
-
-          <motion.div {...rise(0.05)} className="panel ticks p-2.5">
-            <div className="panel-inset px-4 py-6 text-center sm:px-8 sm:py-8">
-              <ContractAddressBadge className="mb-3 justify-center" />
-              <p className="label mb-3 flex items-center justify-center gap-2"><span className="size-1.5 bg-lime motion-safe:animate-blink" aria-hidden /> Zero-knowledge liquidity · Robinhood Chain</p>
-              <PartnershipBadge />
-              <h1 className="display">
-                <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Provide</span>
-                <span className="ticks relative mx-auto my-3 block max-w-[560px] border border-line bg-[linear-gradient(180deg,#14142100,#14142180)] px-4 py-2.5 font-mono text-[clamp(2.4rem,7vw,4.2rem)] font-normal tracking-[-0.04em] text-white shadow-[inset_0_1px_10px_rgba(0,0,0,0.6),inset_0_0_14px_rgba(255,255,255,0.04)] [--tick-c:rgba(223,227,238,0.6)]">
-                  <Drum />
-                </span>
-                <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">Without exposure</span>
-              </h1>
-            </div>
-          </motion.div>
-
-          <div aria-hidden className="flex justify-center gap-24 py-1.5"><span className="barcode w-16" /><span className="barcode w-16" /></div>
-
-          <motion.div {...rise(0.25)} className="panel ticks px-5 py-4 text-center sm:px-8">
-            <p className="text-[14px] uppercase leading-relaxed tracking-[0.02em] text-muted sm:text-[15px]">
-              Public DLMM and DAMM pools for price discovery, and a shielded vault where a deposit becomes a private note only you can prove you own.
-            </p>
-          </motion.div>
-
-          <motion.div {...rise(0.45)} className="panel-inset mx-auto mt-3 flex w-fit bg-[#090911] flex-wrap justify-center gap-2 p-2">
-            <ButtonLink href="#lanes" variant="secondary">Explore features</ButtonLink>
-            <ButtonLink href="/trade?mode=perps" variant="secondary">Trade Perps</ButtonLink>
-            <ButtonLink href="/trade">Launch app <ArrowRight className="size-4" aria-hidden /></ButtonLink>
-          </motion.div>
-
-        </motion.div>
-
-
-        <a href="#lanes" aria-label="Scroll to how it works" className="mt-5 opacity-80 transition-opacity hover:opacity-100 sm:mt-8">
-          <PixelArrow />
-        </a>
-      </div>
-      </div>
-      <aside aria-label="Event stream" className="hidden min-h-0 border-l border-line bg-[#0a0a12]/80 xl:block"><EventStream commits={feed} /></aside>
+        <aside
+          aria-label="Event stream"
+          className="hidden min-h-0 border-l border-line bg-[#0a0a12]/80 xl:block"
+        >
+          <EventStream commits={feed} />
+        </aside>
       </div>
       <Ticker />
     </section>

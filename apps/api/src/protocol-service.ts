@@ -46,13 +46,29 @@ export class ProtocolService {
   }
 
   async readiness() {
-    const [status, rpcHead] = await Promise.all([
-      this.store.indexerStatus(),
-      this.rpcHead(),
-    ]);
+    const status = await this.store.indexerStatus();
+    let rpcHead: bigint;
+    try {
+      rpcHead = await this.rpcHead();
+    } catch {
+      return {
+        ready: false,
+        rpcAvailable: false,
+        rpcHead: status?.indexedBlock.toString() ?? "0",
+        indexedBlock: status?.indexedBlock.toString() ?? null,
+        ...(status
+          ? {
+              finalizedBlock: status.finalizedBlock.toString(),
+              checkpointUpdatedAt: status.updatedAt.toISOString(),
+            }
+          : {}),
+        lag: null,
+      };
+    }
     if (!status)
       return {
         ready: false,
+        rpcAvailable: true,
         rpcHead: rpcHead.toString(),
         indexedBlock: null,
         lag: null,
@@ -61,6 +77,7 @@ export class ProtocolService {
       rpcHead > status.indexedBlock ? rpcHead - status.indexedBlock : 0n;
     return {
       ready: lag <= 25n,
+      rpcAvailable: true,
       rpcHead: rpcHead.toString(),
       indexedBlock: status.indexedBlock.toString(),
       finalizedBlock: status.finalizedBlock.toString(),

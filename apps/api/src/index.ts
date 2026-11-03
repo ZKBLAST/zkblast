@@ -7,7 +7,7 @@ import {
   shieldedPerpAdapterAbi,
   virtualPoolAbi,
 } from "@zkblast/abi";
-import { loadServerConfig } from "@zkblast/config";
+import { getChainDescriptor, loadServerConfig } from "@zkblast/config";
 import {
   loadDeploymentManifestFile,
   verifyPrivateV2Deployment,
@@ -23,6 +23,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   createPublicClient,
+  fallback,
   getAddress,
   http,
   keccak256,
@@ -111,8 +112,23 @@ const protocolStore = new PostgresProtocolReadStore(
   directDatabaseUrl,
   serverConfig.SUPABASE_SCHEMA,
 );
+const primaryDescriptor = getChainDescriptor(serverConfig.CHAIN_ID);
+const rpcUrls = [
+  serverConfig.RPC_URL,
+  ...primaryDescriptor.publicRpcUrls.filter(
+    (url) => url !== serverConfig.RPC_URL,
+  ),
+];
 const chainClient = createPublicClient({
-  transport: http(serverConfig.RPC_URL),
+  transport:
+    rpcUrls.length === 1
+      ? http(rpcUrls[0]!, { retryCount: 2, retryDelay: 500 })
+      : fallback(
+          rpcUrls.map((url) =>
+            http(url, { retryCount: 1, retryDelay: 500, timeout: 20_000 }),
+          ),
+          { rank: true, retryCount: 2, retryDelay: 500 },
+        ),
 });
 const protocolService = new ProtocolService(protocolStore, () =>
   chainClient.getBlockNumber(),
@@ -138,10 +154,14 @@ const launchpadAddresses = manifest.launchpad
       chainId: serverConfig.CHAIN_ID,
     })
   : undefined;
-const launchpadWebhookEncryptionKey = serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY
-  ? Buffer.from(serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY, "base64")
-  : undefined;
-if (launchpadWebhookEncryptionKey && launchpadWebhookEncryptionKey.length !== 32) {
+const launchpadWebhookEncryptionKey =
+  serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY
+    ? Buffer.from(serviceConfig.LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY, "base64")
+    : undefined;
+if (
+  launchpadWebhookEncryptionKey &&
+  launchpadWebhookEncryptionKey.length !== 32
+) {
   throw new Error("LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY_INVALID");
 }
 const launchpadDeveloperService =
