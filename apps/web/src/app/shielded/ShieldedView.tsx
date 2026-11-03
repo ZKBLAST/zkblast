@@ -61,8 +61,8 @@ export function ShieldedView({ compact = false }: { compact?: boolean } = {}) {
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
                 The active network has no governance-approved public shielded
                 asset. Controls remain disabled until governance configures and
-                verifies a user-facing asset such as USDG. The UI will not
-                relabel or substitute a different token address.
+                verifies a user-facing shielded asset. The UI will not relabel
+                or substitute a different token address.
               </p>
             </div>
           </section>

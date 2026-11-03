@@ -36,7 +36,9 @@ export function Header() {
   const [menu, setMenu] = useState(false);
   const [acct, setAcct] = useState(false);
   const { scrollY } = useScroll();
-  const visibleNav = nav.filter((item) => !item.mode || Boolean(config?.perps));
+  const visibleNav = nav;
+  const unavailable = (item: (typeof nav)[number]) =>
+    item.mode === "perps" && Boolean(config) && !config?.perps;
   const mainnetChains = chains.filter(
     (chain) => chain.environment === "mainnet",
   );
@@ -111,7 +113,14 @@ export function Header() {
                           : "text-muted hover:bg-white/[0.02] hover:text-fg",
                       )}
                     >
-                      {n.label}
+                      <span className="flex items-center gap-2">
+                        {n.label}
+                        {unavailable(n) && (
+                          <span className="border border-line px-1 py-0.5 text-[8px] tracking-normal text-faint">
+                            Unavailable
+                          </span>
+                        )}
+                      </span>
                       {on && (
                         <motion.span
                           layoutId="nav-active"
@@ -281,7 +290,12 @@ export function Header() {
                         isNavActive(n) ? "text-lime" : "text-fg",
                       )}
                     >
-                      {n.label}
+                      <span>{n.label}</span>
+                      {unavailable(n) && (
+                        <span className="text-[10px] tracking-wide text-faint">
+                          Unavailable on {config?.chainName}
+                        </span>
+                      )}
                     </Link>
                   </motion.li>
                 ))}

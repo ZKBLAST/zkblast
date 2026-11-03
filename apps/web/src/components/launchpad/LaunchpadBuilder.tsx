@@ -135,6 +135,8 @@ export function LaunchpadBuilder({
     gasPrice: bigint;
   }> | null>(null);
   const owner = address ?? "Connect wallet to set owner";
+  const quoteSymbol = templateEconomics?.quoteSymbol ?? "Quote token";
+  const quoteDecimals = templateEconomics?.quoteDecimals ?? 18;
   const effectiveTreasury = treasury || address || "Treasury required";
   const identityReady =
     name.trim().length >= 2 &&
@@ -222,10 +224,21 @@ export function LaunchpadBuilder({
         formatEther(BigInt(segment.saleCapacityX18)),
       ).toLocaleString("en-US", { maximumFractionDigits: 2 }),
       graduationReserve: Number(
-        formatUnits(BigInt(templateEconomics.graduationThresholdRaw), 6),
+        formatUnits(
+          BigInt(templateEconomics.graduationThresholdRaw),
+          quoteDecimals,
+        ),
       ).toLocaleString("en-US", { maximumFractionDigits: 6 }),
     };
-  }, [curvePreview, templateEconomics]);
+  }, [curvePreview, quoteDecimals, templateEconomics]);
+  useEffect(() => {
+    if (!config?.capabilities.customDomains) setHostname("");
+    if (!config?.capabilities.metadataUpload) {
+      setLogo(null);
+      setFavicon(null);
+      setImageStatus("");
+    }
+  }, [config?.capabilities.customDomains, config?.capabilities.metadataUpload]);
   useEffect(() => {
     const controller = new AbortController();
     setCatalogLoading(true);
@@ -785,9 +798,17 @@ export function LaunchpadBuilder({
                   placeholder="https://x.com/example"
                 />
                 <label className="sm:col-span-2">
-                  <span className="label">Custom domain (optional)</span>
+                  <span className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="label">Custom domain (optional)</span>
+                    {config && !config.capabilities.customDomains && (
+                      <span className="font-mono text-[9px] uppercase text-faint">
+                        Unavailable on {config.chainName}
+                      </span>
+                    )}
+                  </span>
                   <input
                     value={hostname}
+                    disabled={!config?.capabilities.customDomains}
                     onChange={(event) =>
                       setHostname(
                         event.target.value
@@ -797,12 +818,17 @@ export function LaunchpadBuilder({
                           .replace(/\/$/u, ""),
                       )
                     }
-                    placeholder="launch.example.com"
-                    className="mt-2 h-12 w-full border border-line bg-bg px-3 text-sm outline-none focus:border-lime/60"
+                    placeholder={
+                      config && !config.capabilities.customDomains
+                        ? `Unavailable on ${config.chainName}`
+                        : "launch.example.com"
+                    }
+                    className="mt-2 h-12 w-full border border-line bg-bg px-3 text-sm outline-none enabled:focus:border-lime/60 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <span className="mt-2 block text-[11px] leading-5 text-muted">
-                    DNS verification starts only after deployment. Leave empty
-                    to use the hosted ZKBLAST URL.
+                    {config && !config.capabilities.customDomains
+                      ? `Hosted ZKBLAST URLs remain available on ${config.chainName}.`
+                      : "DNS verification starts only after deployment. Leave empty to use the hosted ZKBLAST URL."}
                   </span>
                 </label>
                 <label>
@@ -817,16 +843,36 @@ export function LaunchpadBuilder({
                     <span className="font-mono text-xs">{primary}</span>
                   </span>
                 </label>
-                <ImageField
-                  label="Logo (optional)"
-                  previewUrl={logo?.previewUrl}
-                  onSelect={(file) => void selectImage(file, "logo")}
-                />
-                <ImageField
-                  label="Favicon (optional)"
-                  previewUrl={favicon?.previewUrl}
-                  onSelect={(file) => void selectImage(file, "favicon")}
-                />
+                {config?.capabilities.metadataUpload ? (
+                  <>
+                    <ImageField
+                      label="Logo (optional)"
+                      previewUrl={logo?.previewUrl}
+                      onSelect={(file) => void selectImage(file, "logo")}
+                    />
+                    <ImageField
+                      label="Favicon (optional)"
+                      previewUrl={favicon?.previewUrl}
+                      onSelect={(file) => void selectImage(file, "favicon")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {[
+                      "Logo (optional)",
+                      "Favicon (optional)",
+                    ].map((label) => (
+                      <div key={label} aria-disabled="true">
+                        <span className="label">{label}</span>
+                        <div className="mt-2 flex h-12 cursor-not-allowed items-center border border-line bg-bg px-3 font-mono text-[10px] uppercase text-faint opacity-50">
+                          {config
+                            ? `Unavailable on ${config.chainName}`
+                            : "Loading availability"}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
                 {imageStatus && (
                   <p
                     role="status"
@@ -1022,7 +1068,11 @@ export function LaunchpadBuilder({
                 <ReviewRow label="Hosted URL" value={`/launchpads/${slug}`} />
                 <ReviewRow
                   label="Custom domain"
-                  value={hostname || "Hosted URL only"}
+                  value={
+                    config && !config.capabilities.customDomains
+                      ? `Unavailable on ${config.chainName}`
+                      : hostname || "Hosted URL only"
+                  }
                 />
                 <ReviewRow label="Owner" value={owner} />
                 <ReviewRow label="Treasury" value={effectiveTreasury} />
@@ -1284,12 +1334,12 @@ export function LaunchpadBuilder({
               <>
                 <div className="mt-4 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
                   {[
-                    ["Start price", `${curveFacts.startPrice} USDG`],
-                    ["Terminal price", `${curveFacts.terminalPrice} USDG`],
+                    ["Start price", `${curveFacts.startPrice} ${quoteSymbol}`],
+                    ["Terminal price", `${curveFacts.terminalPrice} ${quoteSymbol}`],
                     ["Sale capacity", `${curveFacts.saleCapacity} tokens`],
                     [
                       "Graduation reserve",
-                      `${curveFacts.graduationReserve} USDG`,
+                      `${curveFacts.graduationReserve} ${quoteSymbol}`,
                     ],
                   ].map(([label, value]) => (
                     <div key={label} className="bg-bg p-3">
@@ -1305,7 +1355,7 @@ export function LaunchpadBuilder({
                 <svg
                   viewBox="0 0 100 100"
                   role="img"
-                  aria-label={`Linear onchain template curve from ${curveFacts.startPrice} to ${curveFacts.terminalPrice} USDG`}
+                  aria-label={`Linear onchain template curve from ${curveFacts.startPrice} to ${curveFacts.terminalPrice} ${quoteSymbol}`}
                   className="mt-3 h-36 w-full overflow-visible"
                   preserveAspectRatio="none"
                 >

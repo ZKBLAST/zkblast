@@ -7,9 +7,14 @@ import { ContractAddressBadge } from "@/components/ui/ContractAddressBadge";
 import { XIcon } from "@/components/ui/Icons";
 import { nav } from "@/lib/nav";
 import { Logo } from "./Logo";
+import { NetworkLogo } from "./NetworkLogo";
+import { getChainDescriptor } from "@zkblast/config";
 
 export function Footer() {
   const { config } = useApp();
+  const activeFamily = config
+    ? getChainDescriptor(config.chainId).family
+    : null;
   const path = usePathname();
   if (/^\/launchpads\/[^/]+\/embed$/u.test(path)) return null;
   if (path === "/trade")
@@ -30,7 +35,7 @@ export function Footer() {
           >
             <XIcon className="size-3" />
           </a>
-          <ContractAddressBadge />
+          {activeFamily === "robinhood" && <ContractAddressBadge />}
         </div>
         <span>
           Onchain transactions carry risk.{" "}
@@ -86,7 +91,7 @@ export function Footer() {
                 read from validated {config?.environment ?? "network"} records.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <ContractAddressBadge />
+                {activeFamily === "robinhood" && <ContractAddressBadge />}
                 <a
                   href="https://x.com/zkblast9"
                   target="_blank"
@@ -99,8 +104,11 @@ export function Footer() {
               </div>
             </div>
             <div className="font-mono text-[12px] leading-relaxed text-faint md:text-right">
-              <p className="uppercase tracking-[0.06em]">
-                Built on Robinhood Chain
+              <p className="inline-flex items-center gap-2 uppercase tracking-[0.06em] md:justify-end">
+                {activeFamily && (
+                  <NetworkLogo family={activeFamily} className="size-5" />
+                )}
+                Built on {config?.chainName ?? "supported networks"}
               </p>
               <p className="mt-2">
                 Using smart contracts carries risk, including loss of funds.
@@ -125,7 +133,7 @@ export function Footer() {
             <span aria-hidden className="h-px flex-1 bg-line" />
             <span className="text-faint/70">© 2026 ZKBLAST</span>
             <span aria-hidden className="h-px flex-1 bg-line" />
-            <span>Robinhood Chain</span>
+            <span>{config?.chainName ?? "Multichain"}</span>
           </div>
         </div>
       </div>

@@ -64,7 +64,7 @@ function Terminal() {
 
   useEffect(() => {
     const controller = new AbortController();
-    if (mode !== "perps" || !wallet) {
+    if (mode !== "perps" || !wallet || !config?.perps) {
       setPerpsPositions([]);
       return () => controller.abort();
     }
@@ -76,7 +76,7 @@ function Terminal() {
       if (!controller.signal.aborted) setPerpsPositions([]);
     });
     return () => controller.abort();
-  }, [mode, revision, wallet]);
+  }, [config?.perps, mode, revision, wallet]);
   const publicPositionLines = useMemo(() => perpsPositions
     .filter((position) => position.status === "open" && position.marketId === perpsMarketId)
     .map((position) => ({
@@ -102,6 +102,30 @@ function Terminal() {
   }
   async function refresh() {
     await Promise.all([protocol.refresh(), markets.refresh()]);
+  }
+
+  if (mode === "perps" && !config) {
+    return (
+      <p className="px-4 pt-[calc(var(--header-h)+2rem)] text-sm text-muted">
+        Loading network capabilities…
+      </p>
+    );
+  }
+
+  if (mode === "perps" && config && !config.perps) {
+    return (
+      <div className="mx-auto grid min-h-[calc(100dvh-var(--header-h))] max-w-[1600px] place-items-center px-4 pt-[var(--header-h)]">
+        <section className="panel ticks max-w-xl p-8 text-center">
+          <p className="label">Perpetuals unavailable</p>
+          <h1 className="mt-3 text-2xl">Not enabled on {config.chainName}</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            This network does not publish a Perps deployment. Switch to a
+            supported network or continue with its available pool and launch
+            markets.
+          </p>
+        </section>
+      </div>
+    );
   }
 
   if (mode === "perps") {
@@ -192,7 +216,11 @@ function Terminal() {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-mono text-lg uppercase tracking-[0.12em]">Pools</h1>
-          <p className="mt-1 text-xs text-muted">DAMM and DLMM swaps, liquidity and shielded pool execution.</p>
+          <p className="mt-1 text-xs text-muted">
+            {config?.shielded
+              ? "DAMM and DLMM swaps, liquidity and shielded pool execution."
+              : "Public pool swaps and liquidity. Shielded execution remains visible but unavailable on this network."}
+          </p>
         </div>
         <p className="font-mono text-[10px] uppercase text-muted">
           {config

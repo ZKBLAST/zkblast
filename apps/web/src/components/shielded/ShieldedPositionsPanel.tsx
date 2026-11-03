@@ -8,8 +8,10 @@ import {
   PRIVATE_V2_SUMMARY_EVENT,
   type PrivateV2SessionSummary,
 } from "@/lib/private-v2-session-summary";
+import { useApp } from "@/components/shell/AppProvider";
 
 export function ShieldedPositionsPanel() {
+  const { config } = useApp();
   const [summary, setSummary] = useState<PrivateV2SessionSummary | null>(null);
 
   useEffect(() => {
@@ -20,6 +22,23 @@ export function ShieldedPositionsPanel() {
     window.addEventListener(PRIVATE_V2_SUMMARY_EVENT, update);
     return () => window.removeEventListener(PRIVATE_V2_SUMMARY_EVENT, update);
   }, []);
+
+  if (config && !config.shielded)
+    return (
+      <section className="mb-4 border border-line bg-panel/30 p-4 opacity-70">
+        <div className="flex items-start gap-3">
+          <Shield className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />
+          <div>
+            <h3 className="text-sm font-semibold">Shielded positions</h3>
+            <p className="mt-1 text-xs leading-relaxed text-muted">
+              Shielded positions are visible as a product capability but are
+              not enabled on {config.chainName}. No private controls or notes
+              are loaded for this network.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
 
   return (
     <section className="mb-4 border border-line bg-panel/40 p-4">

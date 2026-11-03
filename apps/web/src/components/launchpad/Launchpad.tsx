@@ -216,21 +216,23 @@ export function Launchpad() {
     visible.find((item) => item.launch_id === selectedId) ?? visible[0] ?? null;
   const [selectedEconomics, setSelectedEconomics] =
     useState<TemplateEconomics | null>(null);
+  const economicsTemplateId =
+    selected?.template_id ?? templates[0]?.template_id ?? null;
   useEffect(() => {
-    if (!selected) {
+    if (!economicsTemplateId) {
       setSelectedEconomics(null);
       return;
     }
     const controller = new AbortController();
     void apiRequest<TemplateEconomics>(
       webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${selected.template_id}/economics`,
+      `/v1/dbc/templates/${economicsTemplateId}/economics`,
       { signal: controller.signal },
     )
       .then(setSelectedEconomics)
       .catch(() => setSelectedEconomics(null));
     return () => controller.abort();
-  }, [config?.chainId, selected?.template_id]);
+  }, [config?.chainId, economicsTemplateId]);
   const selectedQuoteSymbol = selectedEconomics?.quoteSymbol ?? "QUOTE";
   const selectedQuoteDecimals = selectedEconomics?.quoteDecimals ?? 18;
 
@@ -327,6 +329,8 @@ export function Launchpad() {
           }}
           onRefresh={refresh}
           onRetryPending={(item) => void retryPendingLaunchpad(item)}
+          quoteSymbol={selectedQuoteSymbol}
+          quoteDecimals={selectedQuoteDecimals}
         />
       ) : error && !loading ? (
         <div className="panel ticks p-6">
@@ -411,7 +415,7 @@ export function Launchpad() {
                       />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-mono text-xs">
-                          {item.symbol ?? shortHex(item.token_address)}/USDG
+                          {item.symbol ?? shortHex(item.token_address)}/{selectedQuoteSymbol}
                         </span>
                         <span className="mt-1 block text-[10px] text-muted">
                           {lifecycle[item.lifecycle]} ·{" "}

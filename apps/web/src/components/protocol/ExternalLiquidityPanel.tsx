@@ -159,7 +159,7 @@ export function ExternalLiquidityPanel({
       toast({
         kind: "success",
         title: "Liquidity position created",
-        body: `${selected.market.symbol}/USDG confirmed on-chain.`,
+        body: `${selected.market.symbol}/${selected.route.quoteSymbol} confirmed on-chain.`,
       });
     } catch (error) {
       setState("failed");
@@ -209,16 +209,16 @@ export function ExternalLiquidityPanel({
           />
         </label>
         <div className="text-sm text-muted">
-          Required USDG raw
+          Required {selected.route.quoteSymbol} raw
           <div className="mt-2 flex h-11 items-center border border-line bg-bg px-3 font-mono text-fg">
             {amounts?.quoteRaw.toString() ?? "—"}
           </div>
         </div>
       </div>
       <p className="mt-3 text-xs text-faint">
-        The USDG amount follows the current reserve ratio. Minimum LP shares use
-        a 1% safety bound. Two exact approvals and one Position Manager
-        transaction will be requested.
+        The {selected.route.quoteSymbol} amount follows the current reserve
+        ratio. Minimum LP shares use a 1% safety bound. Two exact approvals and
+        one Position Manager transaction will be requested.
       </p>
       <Button
         className="mt-5"

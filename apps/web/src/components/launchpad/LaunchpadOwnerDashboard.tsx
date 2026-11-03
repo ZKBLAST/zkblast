@@ -51,6 +51,8 @@ export function LaunchpadOwnerDashboard({
   onCreateToken,
   onRefresh,
   onRetryPending,
+  quoteSymbol,
+  quoteDecimals,
 }: Readonly<{
   launches: readonly DbcLaunch[];
   pendingLaunchpads: readonly PendingLaunchpad[];
@@ -59,6 +61,8 @@ export function LaunchpadOwnerDashboard({
   onCreateToken: (launchpadId: string) => void;
   onRefresh: () => void;
   onRetryPending: (item: PendingLaunchpad) => void;
+  quoteSymbol: string;
+  quoteDecimals: number;
 }>) {
   const {
     address,
@@ -242,12 +246,12 @@ export function LaunchpadOwnerDashboard({
           <Metric
             icon={CircleDollarSign}
             label="Recorded volume"
-            value={`${formatTokenAmount(totals.volumeRaw, 6)} USDG`}
+            value={`${formatTokenAmount(totals.volumeRaw, quoteDecimals)} ${quoteSymbol}`}
           />
           <Metric
             icon={CircleDollarSign}
             label="Creator claimable"
-            value={`${formatTokenAmount(totals.claimableRaw, 6)} USDG`}
+            value={`${formatTokenAmount(totals.claimableRaw, quoteDecimals)} ${quoteSymbol}`}
           />
           <Metric
             icon={AlertTriangle}
@@ -424,16 +428,19 @@ export function LaunchpadOwnerDashboard({
                   <dd className="text-right">{launch.holder_count ?? 0}</dd>
                   <dt className="text-muted">Volume</dt>
                   <dd className="text-right font-mono">
-                    {formatTokenAmount(BigInt(launch.volume_raw ?? "0"), 6)}{" "}
-                    USDG
+                    {formatTokenAmount(
+                      BigInt(launch.volume_raw ?? "0"),
+                      quoteDecimals,
+                    )}{" "}
+                    {quoteSymbol}
                   </dd>
                   <dt className="text-muted">Creator claimable</dt>
                   <dd className="text-right font-mono">
                     {formatTokenAmount(
                       BigInt(launch.creator_claimable_raw ?? "0"),
-                      6,
+                      quoteDecimals,
                     )}{" "}
-                    USDG
+                    {quoteSymbol}
                   </dd>
                   <dt className="text-muted">Fee snapshot</dt>
                   <dd className="text-right font-mono">

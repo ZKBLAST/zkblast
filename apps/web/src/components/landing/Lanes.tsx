@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { LaneBadge } from "@/components/ui/Badges";
 import { Bay } from "@/components/ui/Frame";
 import { MaskHeading, Reveal } from "@/components/ui/Reveal";
+import { useApp } from "@/components/shell/AppProvider";
 
 const lanes = [
   {
@@ -21,8 +22,8 @@ const lanes = [
     id: "perps",
     lane: "public" as const,
     title: "Perpetuals",
-    lead: "Open a USDG-margined long or short from the same trading terminal, with oracle pricing, capped leverage and positions tracked onchain.",
-    points: ["PONS, ZKBLAST and WETH markets", "Long or short with controlled leverage", "Live position and activity tracking", "Public or shielded execution"],
+    lead: "Open a collateralized long or short from the same trading terminal, with oracle pricing, capped leverage and positions tracked onchain.",
+    points: ["Oracle-priced perpetual markets", "Long or short with controlled leverage", "Live position and activity tracking", "Public or shielded execution"],
     href: "/trade?mode=perps",
     cta: "Trade Perps",
   },
@@ -38,6 +39,11 @@ const lanes = [
 ];
 
 export function Lanes() {
+  const { config } = useApp();
+  const supported = (laneId: string) =>
+    laneId === "pools" ||
+    (laneId === "perps" && Boolean(config?.perps)) ||
+    (laneId === "shielded" && Boolean(config?.shielded));
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const split = useTransform(scrollYProgress, [0.15, 0.5], ["0%", "100%"]);
@@ -57,25 +63,35 @@ export function Lanes() {
       <div className="relative mt-16 grid gap-3 lg:grid-cols-3">
         <motion.div aria-hidden className="absolute left-1/3 top-0 z-10 hidden w-px -translate-x-1/2 origin-top bg-lime shadow-[0_0_10px_rgba(223,227,238,0.7)] lg:block" style={{ height: split }} />
         <motion.div aria-hidden className="absolute left-2/3 top-0 z-10 hidden w-px -translate-x-1/2 origin-top bg-lime shadow-[0_0_10px_rgba(223,227,238,0.7)] lg:block" style={{ height: split }} />
-        {lanes.map((l, i) => (
-          <Reveal key={l.id} delay={i * 0.12} className="panel ticks p-6 pt-10 sm:p-8 sm:pt-12">
-            <LaneBadge lane={l.lane} stage={false} />
-            <h3 className="wide mt-6 text-[clamp(1.2rem,2vw,1.5rem)]">{l.title}</h3>
-            <p className="mt-4 max-w-[34rem] font-mono text-[13.5px] leading-relaxed text-muted">{l.lead}</p>
-            <ul className="panel-inset mt-8 divide-y divide-line">
-              {l.points.map((p) => (
-                <li key={p} className="flex items-center justify-between px-4 py-3 font-mono text-[13px] uppercase tracking-[0.03em]">
-                  {p}
-                  <span className={l.lane === "shielded" ? "size-1.5 bg-lime" : "size-1.5 bg-muted"} aria-hidden />
-                </li>
-              ))}
-            </ul>
-            <Link href={l.href} className="group mt-8 inline-flex items-center gap-2 text-[13px] wide text-fg">
-              <span className="border-b border-line-strong pb-0.5 transition-colors group-hover:border-lime">{l.cta}</span>
-              <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
-            </Link>
-          </Reveal>
-        ))}
+        {lanes.map((l, i) => {
+          const enabled = supported(l.id);
+          return (
+            <Reveal key={l.id} delay={i * 0.12} className={`panel ticks p-6 pt-10 sm:p-8 sm:pt-12 ${enabled ? "" : "opacity-65"}`}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <LaneBadge lane={l.lane} stage={false} />
+                {!enabled && config && (
+                  <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-faint">
+                    Unavailable on {config.chainName}
+                  </span>
+                )}
+              </div>
+              <h3 className="wide mt-6 text-[clamp(1.2rem,2vw,1.5rem)]">{l.title}</h3>
+              <p className="mt-4 max-w-[34rem] font-mono text-[13.5px] leading-relaxed text-muted">{l.lead}</p>
+              <ul className="panel-inset mt-8 divide-y divide-line">
+                {l.points.map((p) => (
+                  <li key={p} className="flex items-center justify-between px-4 py-3 font-mono text-[13px] uppercase tracking-[0.03em]">
+                    {p}
+                    <span className={l.lane === "shielded" ? "size-1.5 bg-lime" : "size-1.5 bg-muted"} aria-hidden />
+                  </li>
+                ))}
+              </ul>
+              <Link href={l.href} className="group mt-8 inline-flex items-center gap-2 text-[13px] wide text-fg">
+                <span className="border-b border-line-strong pb-0.5 transition-colors group-hover:border-lime">{enabled ? l.cta : "View availability"}</span>
+                <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
+              </Link>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );

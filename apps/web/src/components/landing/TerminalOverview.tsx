@@ -11,6 +11,7 @@ import {
 } from "@/data/terminal";
 import { cx } from "@/lib/format";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import { useApp } from "@/components/shell/AppProvider";
 
 /* One clock drives every panel, and only while the section is on screen. */
 function useTick(active: boolean, ms = 850) {
@@ -243,6 +244,7 @@ export function TerminalOverview() {
   const inView = useInView(ref, { margin: "0px 0px -10% 0px" });
   const t = useTick(inView);
   const { metrics, pools, swaps } = useProtocolData();
+  const { config } = useApp();
   const items = useMemo<Intent[]>(() => {
     const onchain = swaps.slice(0, 8).map((swap) => ({
       id: `${swap.transaction_hash}:${swap.log_index}`,
@@ -310,7 +312,11 @@ export function TerminalOverview() {
           </div>
 
           {/* Column 4: chain */}
-          <Panel title="Robinhood Chain · verifier" caption="Chain verification state" className="h-[460px] lg:h-auto">
+          <Panel
+            title={`${config?.chainName ?? "Active chain"} · verifier`}
+            caption="Chain verification state"
+            className="h-[460px] lg:h-auto"
+          >
             <Verifier t={t} state={verifierRoot} block={indexedBlock} />
           </Panel>
         </div>

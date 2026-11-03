@@ -11,6 +11,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { ContractAddressBadge } from "@/components/ui/ContractAddressBadge";
 import { NetworkLogo } from "@/components/shell/NetworkLogo";
+import { useApp } from "@/components/shell/AppProvider";
+import { getChainDescriptor } from "@zkblast/config";
 import { easeOut } from "@/lib/motion";
 import { MerkleField } from "./MerkleField";
 import { EventStream, PoolRail } from "./HeroRails";
@@ -82,6 +84,10 @@ function PixelArrow() {
 }
 
 export function Hero() {
+  const { config } = useApp();
+  const activeFamily = config
+    ? getChainDescriptor(config.chainId).family
+    : null;
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -165,7 +171,9 @@ export function Hero() {
 
               <motion.div {...rise(0.05)} className="panel ticks p-2.5">
                 <div className="panel-inset px-4 py-6 text-center sm:px-8 sm:py-8">
-                  <ContractAddressBadge className="mb-3 justify-center" />
+                  {activeFamily === "robinhood" && (
+                    <ContractAddressBadge className="mb-3 justify-center" />
+                  )}
                   <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
                     <span className="label flex items-center gap-2">
                       <span
@@ -207,9 +215,9 @@ export function Hero() {
                 className="panel ticks px-5 py-4 text-center sm:px-8"
               >
                 <p className="text-[14px] uppercase leading-relaxed tracking-[0.02em] text-muted sm:text-[15px]">
-                  Public DLMM and DAMM pools for price discovery, and a shielded
-                  vault where a deposit becomes a private note only you can
-                  prove you own.
+                  {config?.shielded
+                    ? "Public DLMM and DAMM pools for price discovery, plus a shielded vault where a deposit becomes a private note only you can prove you own."
+                    : "Public liquidity and governed launch markets, with every supported route, trade and settlement recorded onchain."}
                 </p>
               </motion.div>
 
@@ -221,7 +229,7 @@ export function Hero() {
                   Explore features
                 </ButtonLink>
                 <ButtonLink href="/trade?mode=perps" variant="secondary">
-                  Trade Perps
+                  {config && !config.perps ? "Perps availability" : "Trade Perps"}
                 </ButtonLink>
                 <ButtonLink href="/trade">
                   Launch app <ArrowRight className="size-4" aria-hidden />

@@ -3,7 +3,10 @@
 import { ExternalLink, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AssetLogo } from "@/components/markets/AssetLogo";
-import type { DbcLaunch } from "@/components/launchpad/types";
+import type {
+  DbcLaunch,
+  TemplateEconomics,
+} from "@/components/launchpad/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
@@ -20,6 +23,7 @@ type WidgetBranding = Readonly<{
 export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
   const [branding, setBranding] = useState<WidgetBranding | null>(null);
   const [launches, setLaunches] = useState<readonly DbcLaunch[]>([]);
+  const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const load = useCallback(
@@ -37,8 +41,17 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
           `/v1/dbc/launches?launchpadId=${encodeURIComponent(brand.launchpadId)}&limit=12`,
           { signal, cache: "no-store" },
         );
+        const templateId = result.items[0]?.template_id;
+        const economicsResult = templateId
+          ? await apiRequest<TemplateEconomics>(
+              webPublicConfig.apiUrl,
+              `/v1/dbc/templates/${templateId}/economics`,
+              { signal, cache: "no-store" },
+            )
+          : null;
         setBranding(brand);
         setLaunches(result.items);
+        setEconomics(economicsResult);
       } catch (reason) {
         if (!(reason instanceof DOMException && reason.name === "AbortError"))
           setError(
@@ -62,6 +75,7 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
         color: branding.foregroundColor,
       }
     : undefined;
+  const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
   return (
     <main className="min-h-screen p-3 sm:p-4" style={colors}>
       <header className="flex items-center justify-between gap-3 border-b border-current/15 pb-3">
@@ -130,7 +144,7 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
               />
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-mono text-xs">
-                  {launch.symbol ?? "TOKEN"}/USDG
+                  {launch.symbol ?? "TOKEN"}/{quoteSymbol}
                 </span>
                 <span className="mt-1 block text-[10px] opacity-55">
                   {(launch.progress_bps / 100).toFixed(1)}% ·{" "}
