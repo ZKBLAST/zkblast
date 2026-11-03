@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "environment": "mainnet",
+  "generatedAt": "2026-11-03T04:43:28.425Z",
+  "referenceBlock": "50247962",
+  "owner": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "target": "0x5555555555555555555555555555555555555555",
+  "action": "wrap-native-hype-for-ui-acceptance",
+  "nonce": 59,
+  "prerequisitePresetPlanSha256": "9446e0b5399148872fddaeef92156e0df7a7d54a1c201cac7bd49e361bfd190f",
+  "valueWei": "1000000000000000",
+  "valueHype": "0.001",
+  "data": "0xd0e30db0",
+  "gasEstimate": "45246",
+  "guardedGas": "67869",
+  "gasPriceWei": "100000000",
+  "maximumGasFeeWei": "6786900000000",
+  "maximumGasFeeHype": "0.0000067869",
+  "safety": {
+    "exactValueHype": "0.001",
+    "maximumGasFeeHype": "0.00001",
+    "destinationIsTemplateQuoteToken": true,
+    "broadcastAllowed": false,
+    "explicitApprovalRequired": true
+  }
+}

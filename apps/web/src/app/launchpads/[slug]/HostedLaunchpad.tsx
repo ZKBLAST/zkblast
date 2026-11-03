@@ -7,7 +7,10 @@ import { AssetLogo } from "@/components/markets/AssetLogo";
 import { LaunchActions } from "@/components/launchpad/LaunchActions";
 import { LaunchChart } from "@/components/launchpad/LaunchChart";
 import { LaunchTradeHistory } from "@/components/launchpad/LaunchTradeHistory";
-import type { DbcLaunch } from "@/components/launchpad/types";
+import type {
+  DbcLaunch,
+  TemplateEconomics,
+} from "@/components/launchpad/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
@@ -114,6 +117,24 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
       null,
     [launches, selectedId],
   );
+  const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
+  useEffect(() => {
+    if (!selected) {
+      setEconomics(null);
+      return;
+    }
+    const controller = new AbortController();
+    void apiRequest<TemplateEconomics>(
+      webPublicConfig.apiUrl,
+      `/v1/dbc/templates/${selected.template_id}/economics`,
+      { signal: controller.signal },
+    )
+      .then(setEconomics)
+      .catch(() => setEconomics(null));
+    return () => controller.abort();
+  }, [selected?.template_id]);
+  const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
+  const quoteDecimals = economics?.quoteDecimals ?? 18;
   if (loading && !branding) return <HostedSkeleton />;
   if (error && !branding)
     return (
@@ -231,7 +252,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
                     />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-mono text-xs">
-                        {launch.symbol ?? shortHex(launch.token_address)}/USDG
+                        {launch.symbol ?? shortHex(launch.token_address)}/{quoteSymbol}
                       </span>
                       <span className="mt-1 block text-[10px] opacity-55">
                         {lifecycle[launch.lifecycle] ?? "Onchain"} ·{" "}
@@ -273,6 +294,8 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
                 <LaunchChart
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
+                  quoteSymbol={quoteSymbol}
+                  quoteDecimals={quoteDecimals}
                   refreshKey={String(revision)}
                 />
                 <div className="grid grid-cols-2 gap-px border-y border-white/15 bg-white/15 sm:grid-cols-4">
@@ -296,6 +319,8 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
                 <LaunchTradeHistory
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
+                  quoteSymbol={quoteSymbol}
+                  quoteDecimals={quoteDecimals}
                   refreshKey={String(revision)}
                 />
               </>

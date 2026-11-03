@@ -16,10 +16,14 @@ const intervals = ["1m", "5m", "15m", "1h", "1d"] as const;
 export function LaunchChart({
   launchId,
   symbol,
+  quoteSymbol,
+  quoteDecimals,
   refreshKey,
 }: {
   launchId: string;
   symbol: string;
+  quoteSymbol: string;
+  quoteDecimals: number;
   refreshKey?: string;
 }) {
   const [interval, setInterval] = useState<(typeof intervals)[number]>("1h");
@@ -70,14 +74,14 @@ export function LaunchChart({
       items
         .map((item) => ({
           time: Date.parse(item.bucket) / 1000,
-          value: Number(item.quote_volume_raw) / 1e6,
+          value: Number(item.quote_volume_raw) / 10 ** quoteDecimals,
           color:
             Number(item.close_x18) >= Number(item.open_x18)
               ? "#56d9ad99"
               : "#f07b8799",
         }))
         .filter((item) => Number.isFinite(item.value) && item.value > 0),
-    [items],
+    [items, quoteDecimals],
   );
   return (
     <section className="flex min-h-[28rem] flex-col p-4 sm:p-5">
@@ -85,7 +89,7 @@ export function LaunchChart({
         <div>
           <p className="label">Curve market chart</p>
           <p className="mt-1 text-xs text-muted">
-            Executed {symbol}/USDG curve trades
+            Executed {symbol}/{quoteSymbol} curve trades
           </p>
         </div>
         <div className="flex items-center gap-1">
@@ -132,9 +136,9 @@ export function LaunchChart({
         <PriceHistoryCanvas
           bars={bars}
           volumes={volumes}
-          volumeUnit="USDG"
+          volumeUnit={quoteSymbol}
           style={style}
-          label={`${symbol}/USDG curve chart`}
+          label={`${symbol}/${quoteSymbol} curve chart`}
         />
       ) : (
         <div className="my-auto border border-line p-5 text-sm text-muted">

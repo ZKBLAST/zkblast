@@ -1,5 +1,6 @@
 import {
   launchConfigRegistryAbi,
+  erc20Abi,
   launchpadConfigManagerAbi,
   launchpadRegistryAbi,
   perpEngineAbi,
@@ -330,6 +331,21 @@ const dbcService = dbcAddresses
             functionName: "templateConfig",
             args: [templateId],
           }),
+        tokenMetadata: async (token) => {
+          const [symbol, decimals] = await Promise.all([
+            chainClient.readContract({
+              address: token,
+              abi: erc20Abi,
+              functionName: "symbol",
+            }),
+            chainClient.readContract({
+              address: token,
+              abi: erc20Abi,
+              functionName: "decimals",
+            }),
+          ]);
+          return { symbol, decimals };
+        },
       },
       dbcAddresses,
     )

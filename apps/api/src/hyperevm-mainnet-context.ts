@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import {
   launchConfigRegistryAbi,
+  erc20Abi,
   launchpadConfigManagerAbi,
   launchpadRegistryAbi,
   poolRegistryAbi,
@@ -124,6 +125,21 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
           functionName: "templateConfig",
           args: [templateId],
         }),
+      tokenMetadata: async (token) => {
+        const [symbol, decimals] = await Promise.all([
+          client.readContract({
+            address: token,
+            abi: erc20Abi,
+            functionName: "symbol",
+          }),
+          client.readContract({
+            address: token,
+            abi: erc20Abi,
+            functionName: "decimals",
+          }),
+        ]);
+        return { symbol, decimals };
+      },
     },
     dbcAddresses,
   );

@@ -15,6 +15,8 @@ export type DbcTemplate = Readonly<{
 }>;
 export type TemplateEconomics = Readonly<{
   quoteToken: string;
+  quoteSymbol: string;
+  quoteDecimals: number;
   totalSupplyRaw: string;
   baseInventoryRaw: string;
   graduationThresholdRaw: string;

@@ -11,10 +11,14 @@ import type { DbcTrade } from "./types";
 export function LaunchTradeHistory({
   launchId,
   symbol,
+  quoteSymbol,
+  quoteDecimals,
   refreshKey,
 }: {
   launchId: string;
   symbol: string;
+  quoteSymbol: string;
+  quoteDecimals: number;
   refreshKey?: string;
 }) {
   const { config } = useApp();
@@ -65,7 +69,7 @@ export function LaunchTradeHistory({
             <tr>
               <th className="px-4 py-3 font-normal">Action</th>
               <th className="px-3 py-3 font-normal">Trader</th>
-              <th className="px-3 py-3 text-right font-normal">USDG</th>
+              <th className="px-3 py-3 text-right font-normal">{quoteSymbol}</th>
               <th className="px-3 py-3 text-right font-normal">{symbol}</th>
               <th className="px-3 py-3 text-right font-normal">Price</th>
               <th className="px-3 py-3 font-normal">Time</th>
@@ -87,7 +91,7 @@ export function LaunchTradeHistory({
                   {shortHex(trade.trader)}
                 </td>
                 <td className="px-3 py-3 text-right font-mono">
-                  {formatTokenAmount(BigInt(trade.quote_amount_raw), 6)}
+                  {formatTokenAmount(BigInt(trade.quote_amount_raw), quoteDecimals)}
                 </td>
                 <td className="px-3 py-3 text-right font-mono">
                   {formatTokenAmount(BigInt(trade.base_amount_raw), 18)}

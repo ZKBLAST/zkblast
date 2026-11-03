@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "chainId": 999,
+  "environment": "mainnet",
+  "generatedAt": "2026-11-03T04:41:25.027Z",
+  "referenceBlock": "50247836",
+  "referenceBlockHash": "0xe54db8ebe2055138ce5fd824dd3af9340ef4b905e21bdaa764b79cebaed66d29",
+  "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "configManager": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+  "configRegistry": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+  "quoteToken": "0x5555555555555555555555555555555555555555",
+  "proposedPresetId": "1",
+  "preset": {
+    "familyId": "0x5c4fbae9a6e965b20cfdefc09ab4290de8e71ea0687f1764093f43c6fa78a75e",
+    "dbcTemplateId": "1",
+    "quoteToken": "0x5555555555555555555555555555555555555555",
+    "maximumTotalTradeFeeBps": 300,
+    "graduationDestination": 1,
+    "creatorAccess": 0,
+    "maximumLaunches": 1000
+  },
+  "startingNonce": 57,
+  "nextNonce": 59,
+  "actions": [
+    {
+      "name": "allow-hype-quote-token",
+      "data": "0x19d72a3500000000000000000000000055555555555555555555555555555555555555550000000000000000000000000000000000000000000000000000000000000001",
+      "target": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+      "nonce": 57,
+      "calldataHash": "0xcb3204e0982fea77741c68579821644cd3ea04cdd8a017d6bba50494e129d5e9",
+      "gasEstimate": "56077",
+      "guardedGas": "84115"
+    },
+    {
+      "name": "create-damm-hype-preset-v1",
+      "data": "0x57aa83635c4fbae9a6e965b20cfdefc09ab4290de8e71ea0687f1764093f43c6fa78a75e00000000000000000000000000000000000000000000000000000000000000010000000000000000000000005555555555555555555555555555555555555555000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e8",
+      "target": "0x99bd43E3c19C5cBbFFf037441aBAaCb4263cABCa",
+      "nonce": 58,
+      "calldataHash": "0xdfc03b009453698705a84acce9120fd35e24ac8c036112b807e50160d614e243",
+      "gasEstimate": "200465",
+      "guardedGas": "300697"
+    }
+  ],
+  "gasPriceWei": "100577435",
+  "maximumFeeWei": "38703403917220",
+  "maximumFeeHype": "0.00003870340391722",
+  "balanceHype": "0.036483122669532122",
+  "safety": {
+    "directGovernanceSigner": true,
+    "assetMovement": false,
+    "dammOnly": true,
+    "dlmmEnabled": false,
+    "zkProofClaimsEnabled": false,
+    "broadcastAllowed": false,
+    "explicitApprovalRequired": true
+  }
+}

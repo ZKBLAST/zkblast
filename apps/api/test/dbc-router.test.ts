@@ -42,6 +42,7 @@ const service = new DbcService(
         segments: [{ initialPriceX18: 1n, slopeX18: 2n, saleCapacityX18: 3n }],
       },
     }),
+    tokenMetadata: async () => ({ symbol: "USDG", decimals: 6 }),
   },
   {
     abiVersion: 1,

@@ -58,12 +58,14 @@ export function LaunchActions({
   const [allowanceRaw, setAllowanceRaw] = useState<bigint | null>(null);
   const [executableMaxRaw, setExecutableMaxRaw] = useState<bigint | null>(null);
   const symbol = launch.symbol ?? "TOKEN";
+  const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
+  const quoteDecimals = economics?.quoteDecimals ?? 18;
   const tokenLogoUrl =
     launch.has_logo && launch.metadata_id
       ? `/api/v1/dbc/metadata/${launch.metadata_id}/logo`
       : `/asset-logo/${symbol}`;
-  const inputDecimals = side === "buy" ? 6 : 18;
-  const outputDecimals = side === "buy" ? 18 : 6;
+  const inputDecimals = side === "buy" ? quoteDecimals : 18;
+  const outputDecimals = side === "buy" ? 18 : quoteDecimals;
   useEffect(() => {
     setQuote(null);
     setQuoteAt(0);
@@ -448,10 +450,13 @@ export function LaunchActions({
             <div className="mt-3 flex items-center gap-3">
               <div className="flex -space-x-2">
                 <AssetLogo url={tokenLogoUrl} label={symbol} />
-                <AssetLogo url="/asset-logo/USDG" label="USDG" />
+                <AssetLogo
+                  url={`/asset-logo/${quoteSymbol}`}
+                  label={quoteSymbol}
+                />
               </div>
               <div>
-                <p className="font-mono text-sm">{symbol}/USDG</p>
+                <p className="font-mono text-sm">{symbol}/{quoteSymbol}</p>
                 <p className="text-xs text-muted">
                   Bonding curve · template {launch.template_id}
                 </p>
@@ -474,7 +479,7 @@ export function LaunchActions({
             <label className="mt-4 block">
               <span className="flex justify-between text-xs text-muted">
                 <span>You pay</span>
-                <span>{side === "buy" ? "USDG" : symbol}</span>
+                <span>{side === "buy" ? quoteSymbol : symbol}</span>
               </span>
               <input
                 value={amount}
@@ -522,7 +527,7 @@ export function LaunchActions({
               <p className="mt-2 break-all font-mono text-lg">
                 {output}{" "}
                 <span className="text-xs">
-                  {side === "buy" ? symbol : "USDG"}
+                  {side === "buy" ? symbol : quoteSymbol}
                 </span>
               </p>
             </div>
@@ -539,7 +544,7 @@ export function LaunchActions({
               </select>
             </label>
             <button
-              disabled={busy || !amount || launch.lifecycle !== 1}
+              disabled={busy || !amount || !economics || launch.lifecycle !== 1}
               onClick={() => void (quote ? executeTrade() : getQuote())}
               className="mt-5 flex w-full items-center justify-center gap-2 bg-lime py-3 font-mono text-xs uppercase text-lime-ink disabled:opacity-40"
             >
@@ -651,9 +656,9 @@ export function LaunchActions({
                 Claim creator fees ·{" "}
                 {formatTokenAmount(
                   BigInt(launch.creator_claimable_raw ?? "0"),
-                  6,
+                  quoteDecimals,
                 )}{" "}
-                USDG
+                {quoteSymbol}
               </button>
               <button
                 disabled={
@@ -665,9 +670,9 @@ export function LaunchActions({
                 Trigger protocol payout ·{" "}
                 {formatTokenAmount(
                   BigInt(launch.protocol_claimable_raw ?? "0"),
-                  6,
+                  quoteDecimals,
                 )}{" "}
-                USDG
+                {quoteSymbol}
               </button>
               {graduation?.allocations.map((allocation) => (
                 <button
@@ -697,7 +702,7 @@ export function LaunchActions({
               value={
                 balanceRaw === null
                   ? "Unavailable"
-                  : `${formatTokenAmount(balanceRaw, inputDecimals)} ${side === "buy" ? "USDG" : symbol}`
+                  : `${formatTokenAmount(balanceRaw, inputDecimals)} ${side === "buy" ? quoteSymbol : symbol}`
               }
             />
             {side === "sell" && (

@@ -24,7 +24,7 @@ import { LaunchpadBuilder } from "./LaunchpadBuilder";
 import { LaunchpadOwnerDashboard } from "./LaunchpadOwnerDashboard";
 import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import { LaunchTradeHistory } from "./LaunchTradeHistory";
-import type { DbcLaunch, DbcTemplate } from "./types";
+import type { DbcLaunch, DbcTemplate, TemplateEconomics } from "./types";
 import { useApp } from "@/components/shell/AppProvider";
 
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
@@ -214,6 +214,25 @@ export function Launchpad() {
   );
   const selected =
     visible.find((item) => item.launch_id === selectedId) ?? visible[0] ?? null;
+  const [selectedEconomics, setSelectedEconomics] =
+    useState<TemplateEconomics | null>(null);
+  useEffect(() => {
+    if (!selected) {
+      setSelectedEconomics(null);
+      return;
+    }
+    const controller = new AbortController();
+    void apiRequest<TemplateEconomics>(
+      webPublicConfig.apiUrl,
+      `/v1/dbc/templates/${selected.template_id}/economics`,
+      { signal: controller.signal },
+    )
+      .then(setSelectedEconomics)
+      .catch(() => setSelectedEconomics(null));
+    return () => controller.abort();
+  }, [config?.chainId, selected?.template_id]);
+  const selectedQuoteSymbol = selectedEconomics?.quoteSymbol ?? "QUOTE";
+  const selectedQuoteDecimals = selectedEconomics?.quoteDecimals ?? 18;
 
   const selectView = useCallback(
     (next: "markets" | "build" | "manage") => {
@@ -461,16 +480,18 @@ export function Launchpad() {
                 <LaunchChart
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
+                  quoteSymbol={selectedQuoteSymbol}
+                  quoteDecimals={selectedQuoteDecimals}
                   refreshKey={selected.updated_block}
                 />
                 <div className="grid border-t border-line sm:grid-cols-5">
                   <Metric
                     label="Curve reserve"
-                    value={`${formatTokenAmount(BigInt(selected.real_quote_reserve_raw), 6)} USDG`}
+                    value={`${formatTokenAmount(BigInt(selected.real_quote_reserve_raw), selectedQuoteDecimals)} ${selectedQuoteSymbol}`}
                   />
                   <Metric
                     label="Recorded volume"
-                    value={`${formatTokenAmount(BigInt(selected.volume_raw ?? "0"), 6)} USDG`}
+                    value={`${formatTokenAmount(BigInt(selected.volume_raw ?? "0"), selectedQuoteDecimals)} ${selectedQuoteSymbol}`}
                   />
                   <Metric
                     label="Trades"
@@ -488,6 +509,8 @@ export function Launchpad() {
                 <LaunchTradeHistory
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
+                  quoteSymbol={selectedQuoteSymbol}
+                  quoteDecimals={selectedQuoteDecimals}
                   refreshKey={selected.updated_block}
                 />
               </>

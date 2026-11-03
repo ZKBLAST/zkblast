@@ -32,6 +32,8 @@ type PendingInitialBuy = Readonly<{
   recipient: `0x${string}`;
   amountRaw: bigint;
   symbol: string;
+  quoteSymbol: string;
+  quoteDecimals: number;
   phase: "approve" | "buy";
 }>;
 
@@ -81,6 +83,8 @@ export function LaunchWizard({
     [templates, templateId],
   );
   const walletRecipient = recipient || address || "";
+  const quoteSymbol = economics?.quoteSymbol ?? "Quote token";
+  const quoteDecimals = economics?.quoteDecimals ?? 18;
   useEffect(() => {
     if (!templateId) {
       setEconomics(null);
@@ -120,14 +124,16 @@ export function LaunchWizard({
     !xUrl || /^https:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/.+/iu.test(xUrl);
   const initialBuyRaw = useMemo(() => {
     try {
-      return initialBuy ? parseTokenAmount(initialBuy, 6) : 0n;
+      return initialBuy ? parseTokenAmount(initialBuy, quoteDecimals) : 0n;
     } catch {
       return -1n;
     }
-  }, [initialBuy]);
+  }, [initialBuy, quoteDecimals]);
   const validInitialBuy =
     initialBuyRaw >= 0n &&
-    (!economics || initialBuyRaw <= BigInt(economics.graduationThresholdRaw));
+    (initialBuyRaw === 0n ||
+      (economics !== null &&
+        initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
   const canContinue =
     step === 0
       ? Boolean(selected)
@@ -266,13 +272,15 @@ export function LaunchWizard({
           recipient: getAddress(walletRecipient),
           amountRaw: initialBuyRaw,
           symbol: symbol.trim().toUpperCase(),
+          quoteSymbol,
+          quoteDecimals,
           phase: "approve",
         });
         setInitialBuyStatus("");
         toast({
           kind: "success",
           title: "Launch created",
-          body: "Continue with the explicit USDG approval and initial buy steps.",
+          body: `Continue with the explicit ${quoteSymbol} approval and initial buy steps.`,
         });
         return;
       }
@@ -300,7 +308,7 @@ export function LaunchWizard({
   async function approveInitialBuy() {
     if (!pendingInitialBuy || !address || !config || !window.ethereum) return;
     setInitialBuyBusy(true);
-    setInitialBuyStatus("Waiting for USDG approval");
+    setInitialBuyStatus(`Waiting for ${pendingInitialBuy.quoteSymbol} approval`);
     try {
       await executeDbcTransactions({
         provider: window.ethereum,
@@ -317,7 +325,7 @@ export function LaunchWizard({
         onStatus: setInitialBuyStatus,
       });
       setPendingInitialBuy({ ...pendingInitialBuy, phase: "buy" });
-      setInitialBuyStatus("USDG approved");
+      setInitialBuyStatus(`${pendingInitialBuy.quoteSymbol} approved`);
     } catch (error) {
       setInitialBuyStatus(
         error instanceof Error ? error.message : "APPROVAL_FAILED",
@@ -448,7 +456,7 @@ export function LaunchWizard({
                   />
                   <Review
                     label="Threshold"
-                    value={`${formatTokenAmount(BigInt(economics.graduationThresholdRaw), 6)} USDG`}
+                    value={`${formatTokenAmount(BigInt(economics.graduationThresholdRaw), quoteDecimals)} ${quoteSymbol}`}
                   />
                   <Review
                     label="Trade fee"
@@ -560,18 +568,18 @@ export function LaunchWizard({
             </div>
             <div className="sm:col-span-2">
               <Field
-                label="Initial buy · optional (USDG)"
+                label={`Initial buy · optional (${quoteSymbol})`}
                 value={initialBuy}
                 onChange={setInitialBuy}
                 placeholder="0.01"
               />
               <p className="mt-2 text-[11px] leading-5 text-muted">
-                After launch creation, your wallet approves USDG and performs
+                After launch creation, your wallet approves {quoteSymbol} and performs
                 the first curve buy. Leave empty to create without buying.
               </p>
               {!validInitialBuy && (
                 <p className="mt-1 text-xs text-danger">
-                  Enter a valid USDG amount within the graduation threshold.
+                  Enter a valid {quoteSymbol} amount within the graduation threshold.
                 </p>
               )}
             </div>
@@ -608,7 +616,7 @@ export function LaunchWizard({
                 label="Graduation"
                 value={
                   economics
-                    ? `${formatTokenAmount(BigInt(economics.graduationThresholdRaw), 6)} USDG · ±${economics.terminalPriceToleranceBps / 100}%`
+                    ? `${formatTokenAmount(BigInt(economics.graduationThresholdRaw), quoteDecimals)} ${quoteSymbol} · ±${economics.terminalPriceToleranceBps / 100}%`
                     : "Unavailable"
                 }
               />
@@ -626,7 +634,7 @@ export function LaunchWizard({
               <Review label="Logo" value={logo ? "Ready" : "Not provided"} />
               <Review
                 label="Initial buy"
-                value={initialBuyRaw > 0n ? `${initialBuy} USDG` : "None"}
+                value={initialBuyRaw > 0n ? `${initialBuy} ${quoteSymbol}` : "None"}
               />
             </div>
             <p className="text-xs leading-5 text-muted">
@@ -686,7 +694,7 @@ export function LaunchWizard({
               <p className="text-sm text-fg">Your launch is already onchain.</p>
               <p className="mt-2 text-xs leading-5 text-muted">
                 Complete the optional{" "}
-                {formatTokenAmount(pendingInitialBuy.amountRaw, 6)} USDG initial
+                {formatTokenAmount(pendingInitialBuy.amountRaw, pendingInitialBuy.quoteDecimals)} {pendingInitialBuy.quoteSymbol} initial
                 buy using two explicit wallet confirmations.
               </p>
             </div>
@@ -694,7 +702,7 @@ export function LaunchWizard({
               <div
                 className={`border p-3 font-mono text-[10px] uppercase ${pendingInitialBuy.phase === "approve" ? "border-lime text-fg" : "border-line text-muted"}`}
               >
-                1. Approve USDG
+                1. Approve {pendingInitialBuy.quoteSymbol}
               </div>
               <div
                 className={`border p-3 font-mono text-[10px] uppercase ${pendingInitialBuy.phase === "buy" ? "border-lime text-fg" : "border-line text-muted"}`}
@@ -717,7 +725,7 @@ export function LaunchWizard({
               {initialBuyBusy
                 ? initialBuyStatus || "Waiting for wallet"
                 : pendingInitialBuy.phase === "approve"
-                  ? "Approve USDG"
+                  ? `Approve ${pendingInitialBuy.quoteSymbol}`
                   : "Confirm initial buy"}
             </button>
             <button

@@ -56,6 +56,9 @@ export interface DbcQuoteReader {
   ): Promise<unknown>;
   templateEconomics(templateId: bigint): Promise<unknown>;
   templateConfig(templateId: bigint): Promise<unknown>;
+  tokenMetadata(token: Address): Promise<
+    Readonly<{ symbol: string; decimals: number }>
+  >;
 }
 
 export class DbcService {
@@ -140,8 +143,13 @@ export class DbcService {
       }));
     if (curveSegments.length !== segmentCount || segmentCount < 1)
       throw new Error("DBC_TEMPLATE_CURVE_INVALID");
+    const quoteMetadata = await this.quoteReader.tokenMetadata(
+      quoteToken as Address,
+    );
     return {
       quoteToken,
+      quoteSymbol: quoteMetadata.symbol,
+      quoteDecimals: quoteMetadata.decimals,
       totalSupplyRaw,
       baseInventoryRaw,
       graduationThresholdRaw,
