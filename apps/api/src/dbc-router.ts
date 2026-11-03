@@ -79,6 +79,11 @@ const metadataUpload = z
     (value) => (value.logoMime === null) === (value.logoBase64 === null),
     "Logo payload is incomplete",
   );
+const protectedPreview = z.object({
+  policyId: z.string().regex(/^[1-9]\d*$/u).transform(BigInt),
+  baseInventoryRaw: z.string().regex(/^[1-9]\d*$/u).transform(BigInt),
+  currentBlock: z.string().regex(/^\d+$/u).transform(BigInt),
+}).strict();
 
 export function createDbcRouter(service: DbcService) {
   const router = Router();
@@ -166,6 +171,20 @@ export function createDbcRouter(service: DbcService) {
       next(error);
     }
   });
+  router.get("/protection/policies", async (request, response, next) => {
+    try {
+      response.json({ items: await service.protectionPolicies(page.parse(request.query)) });
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.post("/protection/preview", async (request, response, next) => {
+    try {
+      response.json(jsonSafe(await service.protectedLaunchPreview(protectedPreview.parse(request.body))));
+    } catch (error) {
+      next(error);
+    }
+  });
   router.get(
     "/templates/:templateId/economics",
     async (request, response, next) => {
@@ -196,6 +215,22 @@ export function createDbcRouter(service: DbcService) {
       response
         .status(item ? 200 : 404)
         .json(item ?? { error: { code: "DBC_LAUNCH_NOT_FOUND" } });
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.get("/launches/:launchId/security", async (request, response, next) => {
+    try {
+      const item = await service.protectedLaunchSecurity(launchId.parse(request.params.launchId));
+      response.status(item ? 200 : 404).json(item ?? { error: { code: "PROTECTED_LAUNCH_NOT_FOUND" } });
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.get("/launches/:launchId/identity", async (request, response, next) => {
+    try {
+      const item = await service.protectedLaunchIdentity(launchId.parse(request.params.launchId));
+      response.status(item ? 200 : 404).json(item ?? { error: { code: "PROTECTED_IDENTITY_NOT_FOUND" } });
     } catch (error) {
       next(error);
     }

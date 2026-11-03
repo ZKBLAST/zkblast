@@ -34,6 +34,64 @@ export type TemplateEconomics = Readonly<{
     saleCapacityX18: string;
   }>[];
 }>;
+export type ProtectionPolicy = Readonly<{
+  chain_id: number;
+  policy_id: string;
+  family_id: string;
+  policy_hash: string;
+  version: number;
+  protection_blocks: string;
+  max_buy_bps_per_transaction: number;
+  max_buy_bps_per_address: number;
+  initial_fee_bps: number;
+  base_fee_bps: number;
+  lp_lock_seconds: string;
+  enabled: boolean;
+  used: boolean;
+}>;
+export type ProtectedLaunchPreview = Readonly<{
+  chainId: number;
+  policyId: string;
+  policyHash: string;
+  policyVersion: number;
+  protectionStartBlock: string;
+  protectionEndBlock: string;
+  maximumPerTransactionRaw: string;
+  maximumPerAddressRaw: string;
+  initialFeeBps: number;
+  baseFeeBps: number;
+  lpLockSeconds: string;
+  enforcement: "onchain";
+}>;
+export type ProtectedLaunchSecurity = Readonly<{
+  chain_id: number;
+  launch_id: string;
+  policy_id: string;
+  policy_hash: string;
+  policy_version: number;
+  protection_start_block: string;
+  protection_blocks: string;
+  max_buy_bps_per_transaction: number;
+  max_buy_bps_per_address: number;
+  initial_fee_bps: number;
+  base_fee_bps: number;
+  lp_lock_seconds: string;
+  migration_id: string | null;
+  creator_unlock_at: string | null;
+  creator_claimed: boolean | null;
+  protocol_claimed: boolean | null;
+  accounting_reconciles: boolean | null;
+}>;
+export type ProtectedLaunchIdentity = Readonly<{
+  chain_id: number;
+  launch_id: string;
+  canonical_hash: string;
+  token_runtime_code_hash: string;
+  token_template_version: number;
+  duplicate_name: boolean;
+  duplicate_symbol: boolean;
+  transaction_hash: string;
+}>;
 export type DbcLaunch = Readonly<{
   launch_id: string;
   template_id: string;

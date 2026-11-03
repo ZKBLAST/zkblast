@@ -89,6 +89,20 @@ const configuredLaunchpadAddresses = manifest.launchpad
       manifest.launchpad.tokenFactory,
     ].filter((address): address is string => Boolean(address))
   : [];
+const configuredProtectedLaunchAddresses = manifest.protectedLaunch
+  ? [
+      manifest.protectedLaunch.policyRegistry,
+      manifest.protectedLaunch.launchFactory,
+      manifest.protectedLaunch.launchRouter,
+      manifest.protectedLaunch.tokenDeployer,
+      manifest.protectedLaunch.virtualPoolDeployer,
+      manifest.protectedLaunch.lpEscrow,
+      manifest.protectedLaunch.graduationManager,
+      manifest.protectedLaunch.dammGraduationAdapter,
+      manifest.protectedLaunch.dlmmGraduationAdapter,
+      manifest.protectedLaunch.identityRegistry,
+    ].filter((address): address is string => Boolean(address))
+  : [];
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -101,6 +115,7 @@ const addresses = [
   ...configuredPerpsAddresses,
   ...configuredDbcAddresses,
   ...configuredLaunchpadAddresses,
+  ...configuredProtectedLaunchAddresses,
 ]
   .map(getAddress)
   .filter((address, index, all) => all.indexOf(address) === index);
@@ -112,7 +127,11 @@ const repository = new PostgresIndexerRepository(
   runner.SUPABASE_DIRECT_DATABASE_URL,
   config.SUPABASE_SCHEMA,
   "protocol",
-  [...configuredDbcAddresses, ...configuredLaunchpadAddresses].map(getAddress),
+  [
+    ...configuredDbcAddresses,
+    ...configuredLaunchpadAddresses,
+    ...configuredProtectedLaunchAddresses,
+  ].map(getAddress),
 );
 const trackedLaunchContracts = manifest.dbc
   ? await repository.dbcLaunchContractAddresses()

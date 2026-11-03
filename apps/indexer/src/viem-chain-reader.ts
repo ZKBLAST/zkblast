@@ -1,4 +1,4 @@
-import { protocolAbis } from "@zkblast/abi";
+import { launchProtectionPolicyRegistryAbi, protocolAbis } from "@zkblast/abi";
 import {
   decodeEventLog,
   zeroAddress,
@@ -66,6 +66,7 @@ export class ViemChainReader implements ChainReader {
     ]);
     const events: IndexedEvent[] = [];
     this.decodeLogs(logs, blockNumber, block.timestamp, events);
+    await this.enrichProtectedPolicies(events, blockNumber);
     if (!suppliedLogs) {
       const discovered = events
         .filter((event) => event.eventName === "TokenLaunched")
@@ -138,6 +139,38 @@ export class ViemChainReader implements ChainReader {
       parentHash: block.parentHash,
       events,
     };
+  }
+
+  private async enrichProtectedPolicies(
+    events: IndexedEvent[],
+    blockNumber: bigint,
+  ): Promise<void> {
+    for (let index = 0; index < events.length; index++) {
+      const event = events[index]!;
+      if (event.eventName !== "ProtectionPolicyCreated") continue;
+      const policyId = event.payload.policyId;
+      if (typeof policyId !== "string" || !/^\d+$/u.test(policyId))
+        throw new Error("INVALID_PROTECTED_POLICY_ID");
+      const policy = await this.client.readContract({
+        address: event.contractAddress,
+        abi: launchProtectionPolicyRegistryAbi,
+        functionName: "policy",
+        args: [BigInt(policyId)],
+        blockNumber,
+      });
+      events[index] = {
+        ...event,
+        payload: {
+          ...event.payload,
+          protectionBlocks: policy.protectionBlocks.toString(),
+          maxBuyBpsPerTransaction: policy.maxBuyBpsPerTransaction.toString(),
+          maxBuyBpsPerAddress: policy.maxBuyBpsPerAddress.toString(),
+          initialFeeBps: policy.initialFeeBps.toString(),
+          baseFeeBps: policy.baseFeeBps.toString(),
+          lpLockSeconds: policy.lpLockSeconds.toString(),
+        },
+      };
+    }
   }
 
   private decodeLogs(

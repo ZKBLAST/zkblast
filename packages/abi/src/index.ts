@@ -11,6 +11,14 @@ export {
   zkBlastVaultAbi,
   shieldedStateRegistryAbi,
   shieldedLPManagerAbi,
+  launchProtectionPolicyRegistryAbi,
+  protectedLaunchFactoryAbi,
+  protectedLaunchTokenAbi,
+  protectedVirtualPoolAbi,
+  protectedLaunchRouterAbi,
+  protectedLpAllocationEscrowAbi,
+  protectedGraduationManagerAbi,
+  protectedLaunchIdentityRegistryAbi,
 } from "./generated.js";
 export {
   liquidityVaultUsdGAbi,
@@ -52,6 +60,13 @@ import {
   zkBlastVaultAbi,
   shieldedStateRegistryAbi,
   shieldedLPManagerAbi,
+  launchProtectionPolicyRegistryAbi,
+  protectedLaunchFactoryAbi,
+  protectedLaunchTokenAbi,
+  protectedVirtualPoolAbi,
+  protectedLpAllocationEscrowAbi,
+  protectedGraduationManagerAbi,
+  protectedLaunchIdentityRegistryAbi,
 } from "./generated.js";
 import { perpsEventsAbi } from "./perps.js";
 import { dbcEventsAbi } from "./dbc.js";
@@ -73,4 +88,11 @@ export const protocolAbis = {
   Perps: perpsEventsAbi,
   DBC: dbcEventsAbi,
   Launchpad: [...launchpadTokenFactoryAbi, ...launchpadEventsAbi, ...launchpadFeePolicyEventsAbi],
+  ProtectedPolicy: launchProtectionPolicyRegistryAbi,
+  ProtectedFactory: protectedLaunchFactoryAbi,
+  ProtectedToken: protectedLaunchTokenAbi,
+  ProtectedPool: protectedVirtualPoolAbi,
+  ProtectedEscrow: protectedLpAllocationEscrowAbi,
+  ProtectedGraduation: protectedGraduationManagerAbi,
+  ProtectedIdentity: protectedLaunchIdentityRegistryAbi,
 } as const;

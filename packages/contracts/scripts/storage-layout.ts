@@ -26,10 +26,13 @@ const v2 = process.argv.includes("--v2");
 const perps = process.argv.includes("--perps");
 const dbc = process.argv.includes("--dbc");
 const launchpad = process.argv.includes("--launchpad");
+const protection = process.argv.includes("--protection");
 const baselinePath = path.join(
   root,
   "storage-layout",
-  launchpad
+  protection
+    ? "baseline-protection.json"
+    : launchpad
     ? "baseline-launchpad.json"
     : dbc
     ? "baseline-dbc.json"
@@ -39,7 +42,15 @@ const baselinePath = path.join(
         ? "baseline-v2.json"
         : "baseline.json",
 );
-const contracts = launchpad
+const contracts = protection
+  ? [
+      "LaunchProtectionPolicyRegistry",
+      "ProtectedLaunchFactory",
+      "ProtectedLPAllocationEscrow",
+      "ProtectedGraduationManager",
+      "ProtectedLaunchIdentityRegistry",
+    ]
+  : launchpad
   ? [
       "LaunchpadRegistry",
       "LaunchpadConfigManager",

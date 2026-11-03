@@ -55,3 +55,17 @@ Governance, verifier registration, adapter authorization and upgrade execution
 are separate control domains. Production changes use explicit roles,
 chain-specific manifests, transaction receipts and implementation identities so
 each change can be independently inspected against its deployed network.
+
+## Protected Launch anti-concentration boundary
+
+Protected Launch enforces maximum output per transaction and cumulative output
+per recipient during the configured protection window. The bound is applied to
+the actual token recipient, including direct-pool, router, contract-wallet and
+same-transaction bundled execution. Dynamic fees and creator LP locks are also
+enforced by the deployed contracts rather than API or UI state.
+
+The per-address allocation is not proof of unique human identity. A participant
+controlling multiple independent addresses can receive one allocation per
+address. The interface therefore presents the control as an address-level
+concentration bound and never as Sybil prevention. Canonical token, policy,
+runtime-code and LP-lock identities remain independently inspectable onchain.

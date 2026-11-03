@@ -78,6 +78,15 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   RevenueSnapshotRegistered: "launch",
   AuthorizationCommitmentUpdated: "launch",
   ProofClaimVerified: "launch",
+  ProtectionPolicyCreated: "launch",
+  ProtectionPolicyStatusUpdated: "launch",
+  ProtectionPolicyUsed: "launch",
+  ProtectedTokenLaunched: "launch",
+  ProtectedLaunchMetadataPublished: "launch",
+  ProtectedPurchaseRecorded: "launch",
+  ProtectedAllocationRegistered: "launch",
+  ProtectedAllocationClaimed: "launch",
+  ProtectedLaunchIdentityRegistered: "launch",
 };
 
 export function classifyProtocolEvent(

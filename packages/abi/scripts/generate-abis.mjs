@@ -22,6 +22,14 @@ const contracts = [
   ["shieldedStateRegistryAbi", "ShieldedStateRegistry"],
   ["shieldedLPManagerAbi", "ShieldedLPManager"],
   ["privateVaultV2Abi", "PrivateVaultV2"],
+  ["launchProtectionPolicyRegistryAbi", "LaunchProtectionPolicyRegistry"],
+  ["protectedLaunchFactoryAbi", "ProtectedLaunchFactory"],
+  ["protectedLaunchTokenAbi", "ProtectedLaunchToken"],
+  ["protectedVirtualPoolAbi", "ProtectedVirtualPool"],
+  ["protectedLaunchRouterAbi", "ProtectedLaunchRouter"],
+  ["protectedLpAllocationEscrowAbi", "ProtectedLPAllocationEscrow"],
+  ["protectedGraduationManagerAbi", "ProtectedGraduationManager"],
+  ["protectedLaunchIdentityRegistryAbi", "ProtectedLaunchIdentityRegistry"],
   ["erc20Abi", "IERC20Metadata"],
 ];
 

@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4663,
+  "sourcePlanSha256": "0515f6514b1625e90dda691bca0482405fdc7f8364a7a106c93e114457343008",
+  "referenceNonce": 605,
+  "deploymentTransactions": 16,
+  "governanceTransactions": 8,
+  "totalGasUsed": "20821143",
+  "passed": true,
+  "checks": {
+    "sequentialDeployment": true,
+    "predictedAddresses": true,
+    "governanceConfiguration": true,
+    "runtimeBytecodeHashes": true,
+    "proxyImplementationSlots": true,
+    "existingTemplateRegistryStubbed": true,
+    "privateKeysRead": false,
+    "broadcastAllowed": false
+  },
+  "receipts": [
+    {
+      "description": "policyRegistryImplementation",
+      "hash": "0xf2a90af56d0828e7a89c936ab15ce295130892465f9845ea68581842622ed197",
+      "gasUsed": "1104928",
+      "contractAddress": "0xDCAf1806d9FBD571f504b4bB4F1822CAbD5B6203",
+      "blockNumber": "1"
+    },
+    {
+      "description": "policyRegistry",
+      "hash": "0x8bca0ef80c4ec6261c4ebe60434099049f48fe6d253785e8af1316451a0da40d",
+      "gasUsed": "213053",
+      "contractAddress": "0xAA4b3B6A3Dab4C42b0FE501dEF47aB77099C4a7f",
+      "blockNumber": "2"
+    },
+    {
+      "description": "lpEscrowImplementation",
+      "hash": "0x4fbf3bd7614565b78a370c411f71a98a6926ac805b0306a12606f3b27b8c0663",
+      "gasUsed": "1403201",
+      "contractAddress": "0x280F5642A25ae4652ae2C142af424f83140F8c04",
+      "blockNumber": "3"
+    },
+    {
+      "description": "lpEscrow",
+      "hash": "0x78e73807ebf7ab0283315905115b4eccb9626cf1ad0b9da208e4392ff8fc4e62",
+      "gasUsed": "188128",
+      "contractAddress": "0xec2a8A4A20364ffB912aA5bf3eaC817e708B9FD7",
+      "blockNumber": "4"
+    },
+    {
+      "description": "identityRegistryImplementation",
+      "hash": "0x4db172fa0c9dac668cf5b3aa01b1a972f663507cf4a8a899c4e0ff1123585601",
+      "gasUsed": "1097239",
+      "contractAddress": "0xe8a74CEA2E9Cf188eF98Ce8176C07a4577718b40",
+      "blockNumber": "5"
+    },
+    {
+      "description": "identityRegistry",
+      "hash": "0xc30f67cd5ccb60cd9de0b6019d5b0c6f86fa18cf7ca8215798ede04e27626898",
+      "gasUsed": "212909",
+      "contractAddress": "0x0AA5D2dbDa6beA6fbBdCFE768106a614ec9382F2",
+      "blockNumber": "6"
+    },
+    {
+      "description": "tokenDeployer",
+      "hash": "0x6f6537bc69805896334b42a2c1d6931df0e3b85f09f04cba45b3e4945c363e2f",
+      "gasUsed": "1478866",
+      "contractAddress": "0x15A7D031AB2795E7122Ee9b5A88A9d84aD7f5fF6",
+      "blockNumber": "7"
+    },
+    {
+      "description": "virtualPoolDeployer",
+      "hash": "0x24e8769b946e433d961edda064190832cf1d74a0cee9275503bf6063798db1d7",
+      "gasUsed": "3989200",
+      "contractAddress": "0x09c4dD578F0Bc71c88839eD3c9699C814ff0a701",
+      "blockNumber": "8"
+    },
+    {
+      "description": "factoryImplementation",
+      "hash": "0xa48c3fd48b119f960204dd3eb75c927c813a65ec01c9b1e07f391014906160cf",
+      "gasUsed": "3100607",
+      "contractAddress": "0xa75704e370CEF0d87127c648E81A2B25d01CD113",
+      "blockNumber": "9"
+    },
+    {
+      "description": "factory",
+      "hash": "0x59c1b74fe01c61c6b79d6f541a60817b27aa3cbd5508da8604c806a439a4e4df",
+      "gasUsed": "314440",
+      "contractAddress": "0x98D8546bb60d4d5fF791fB6b904A611691D86beF",
+      "blockNumber": "10"
+    },
+    {
+      "description": "routerImplementation",
+      "hash": "0x19b5f48689eaa9c2319f5f8b1365cf12a9179d22c4a0a3e99608f5e6208bfc77",
+      "gasUsed": "1107804",
+      "contractAddress": "0xD3BF853065c0Fc2F834421a5f73cB3E488752E34",
+      "blockNumber": "11"
+    },
+    {
+      "description": "router",
+      "hash": "0x5fbcf6fb0f28182d3adee01bdaaab592ab28dd79bdfcd9be3350d09a6d157365",
+      "gasUsed": "213401",
+      "contractAddress": "0xdb95b8CEe663baAd9dF839171e353265aF2884AA",
+      "blockNumber": "12"
+    },
+    {
+      "description": "graduationManagerImplementation",
+      "hash": "0xeac46cda346773cfd41ca0d1d90ee47519f995a63bfb7e400879287c8429eb67",
+      "gasUsed": "3942475",
+      "contractAddress": "0x96d3ad3F51C494f538ecc8D263044E0E5565D910",
+      "blockNumber": "13"
+    },
+    {
+      "description": "graduationManager",
+      "hash": "0x21486718dbe12d9d08cb1511026855ea39c98f2e68e6e24c03931d85cc6ae651",
+      "gasUsed": "233949",
+      "contractAddress": "0xE83203279e4e8Db4Aa747213aC28260418Ff2E83",
+      "blockNumber": "14"
+    },
+    {
+      "description": "dammGraduationAdapter",
+      "hash": "0xf8b8234a65774f0b54dc699d19ed245375daf212d64eda42411e65c7cd2126d7",
+      "gasUsed": "744616",
+      "contractAddress": "0x4D78A76696b4AdB62aC1843Fb9ddB2E2312E5910",
+      "blockNumber": "15"
+    },
+    {
+      "description": "dlmmGraduationAdapter",
+      "hash": "0x4d58ad4d9acbb6e72ac33cba0bf9994d5345fcdfe6206f7939ea97c3e8a57042",
+      "gasUsed": "1095666",
+      "contractAddress": "0x28A31686370Fd1490EDB2C7221f7C3c46847d835",
+      "blockNumber": "16"
+    },
+    {
+      "description": "Bind Protected token deployer",
+      "hash": "0xff25b8a2618d4dc4a9eaad7dd567fd066d778e5a53eae3f7cbf1a3c6cce3cf90",
+      "gasUsed": "43921",
+      "contractAddress": null,
+      "blockNumber": "17"
+    },
+    {
+      "description": "Bind Protected pool deployer",
+      "hash": "0xcb295673eb51993a83fcd756c0994762053e39c8278fb17a69cffc4e43abc7c2",
+      "gasUsed": "43921",
+      "contractAddress": null,
+      "blockNumber": "18"
+    },
+    {
+      "description": "Authorize Protected factory on DBC template registry",
+      "hash": "0xdfffa08cf58b657e386952d2acdc1ddf965a6c81435e8775af6258fe7d050d6c",
+      "gasUsed": "23710",
+      "contractAddress": null,
+      "blockNumber": "19"
+    },
+    {
+      "description": "Authorize Protected factory on policy registry",
+      "hash": "0xa6a42531d351dc590fa3061e1a07c7cf714296d93e6fa7373b5c54ad7328d3b0",
+      "gasUsed": "53624",
+      "contractAddress": null,
+      "blockNumber": "20"
+    },
+    {
+      "description": "Authorize Protected graduation manager on LP escrow",
+      "hash": "0xa1af7ee32bc737686348b3b6eee4605dc2c602b87430be6763212b416f1f8df6",
+      "gasUsed": "53548",
+      "contractAddress": null,
+      "blockNumber": "21"
+    },
+    {
+      "description": "Bind Protected graduation manager to factory",
+      "hash": "0xa211e4efd6d9dc012d16acb08bdbaf21086918c9e5da33ef2b67ff3177a4a07f",
+      "gasUsed": "51383",
+      "contractAddress": null,
+      "blockNumber": "22"
+    },
+    {
+      "description": "Allow DAMM graduation adapter",
+      "hash": "0xc001817710e2dcc950906ef453f3210154800fc30a3408015efbb4599ac00ad3",
+      "gasUsed": "55277",
+      "contractAddress": null,
+      "blockNumber": "23"
+    },
+    {
+      "description": "Allow DLMM graduation adapter",
+      "hash": "0x5f7a1809b0d65ee6024c94932709944b4a1f14c19882ff458011f6ee9f3ed7ff",
+      "gasUsed": "55277",
+      "contractAddress": null,
+      "blockNumber": "24"
+    }
+  ],
+  "reportSha256": "cae47af2addec901543fe3a292d221923135f0379968910cdf727007eeb7062c"
+}

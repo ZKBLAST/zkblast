@@ -844,6 +844,20 @@
     "lpAllocationEscrow": "0x13A41EEE494b198d8F5E428283a0A274699C9b60",
     "launchFactoryImplementation": "0x211a30E7D2837B04Fc72DD81fbaf15dc19CceEe6"
   },
+  "protectedLaunch": {
+    "abiVersion": 1,
+    "deploymentBlock": 105179979,
+    "policyRegistry": "0xAA4b3B6A3Dab4C42b0FE501dEF47aB77099C4a7f",
+    "launchFactory": "0x98D8546bb60d4d5fF791fB6b904A611691D86beF",
+    "launchRouter": "0xdb95b8CEe663baAd9dF839171e353265aF2884AA",
+    "tokenDeployer": "0x15A7D031AB2795E7122Ee9b5A88A9d84aD7f5fF6",
+    "virtualPoolDeployer": "0x09c4dD578F0Bc71c88839eD3c9699C814ff0a701",
+    "lpEscrow": "0xec2a8A4A20364ffB912aA5bf3eaC817e708B9FD7",
+    "graduationManager": "0xE83203279e4e8Db4Aa747213aC28260418Ff2E83",
+    "dammGraduationAdapter": "0x4D78A76696b4AdB62aC1843Fb9ddB2E2312E5910",
+    "dlmmGraduationAdapter": "0x28A31686370Fd1490EDB2C7221f7C3c46847d835",
+    "identityRegistry": "0x0AA5D2dbDa6beA6fbBdCFE768106a614ec9382F2"
+  },
   "launchpad": {
     "abiVersion": 1,
     "status": "contracts-active-services-pending",

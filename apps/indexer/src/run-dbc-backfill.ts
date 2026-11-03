@@ -7,13 +7,13 @@ import {
   createPublicClient,
   decodeEventLog,
   getAddress,
-  http,
   type Address,
   type Log,
 } from "viem";
 import { z } from "zod";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
 import { ViemChainReader } from "./viem-chain-reader.js";
+import { createIndexerTransport } from "./rpc-transport.js";
 
 const runtime = z
   .object({
@@ -44,10 +44,24 @@ const addresses = [
         manifest.launchpad.revenueSplitter,
       ].filter((address): address is string => Boolean(address))
     : []),
+  ...(manifest.protectedLaunch
+    ? [
+        manifest.protectedLaunch.policyRegistry,
+        manifest.protectedLaunch.launchFactory,
+        manifest.protectedLaunch.launchRouter,
+        manifest.protectedLaunch.tokenDeployer,
+        manifest.protectedLaunch.virtualPoolDeployer,
+        manifest.protectedLaunch.lpEscrow,
+        manifest.protectedLaunch.graduationManager,
+        manifest.protectedLaunch.dammGraduationAdapter,
+        manifest.protectedLaunch.dlmmGraduationAdapter,
+        manifest.protectedLaunch.identityRegistry,
+      ].filter((address): address is string => Boolean(address))
+    : []),
 ].map(getAddress);
 const client = createPublicClient({
   cacheTime: 0,
-  transport: http(config.RPC_URL, { timeout: 20_000, retryCount: 1 }),
+  transport: createIndexerTransport(config.RPC_URL),
 });
 const repository = new PostgresIndexerRepository(
   runtime.SUPABASE_DIRECT_DATABASE_URL,
@@ -66,8 +80,11 @@ const head =
   (await client.getBlockNumber()) - BigInt(runtime.INDEXER_CONFIRMATIONS);
 let events = 0,
   blocks = 0;
-const backfillFrom =
-  runtime.DBC_BACKFILL_FROM_BLOCK ?? BigInt(manifest.dbc.deploymentBlock);
+const protectedDeploymentBlock = manifest.protectedLaunch?.deploymentBlock;
+const defaultBackfillFrom = protectedDeploymentBlock === undefined
+  ? BigInt(manifest.dbc.deploymentBlock)
+  : BigInt(Math.min(manifest.dbc.deploymentBlock, protectedDeploymentBlock));
+const backfillFrom = runtime.DBC_BACKFILL_FROM_BLOCK ?? defaultBackfillFrom;
 for (let from = backfillFrom; from <= head; from += 2_000n) {
   const to = from + 1_999n > head ? head : from + 1_999n;
   const logs = await client.getLogs({
@@ -83,7 +100,10 @@ for (let from = backfillFrom; from <= head; from += 2_000n) {
         data: log.data,
         topics: log.topics,
       });
-      if (decoded.eventName !== "TokenLaunched") continue;
+      if (
+        decoded.eventName !== "TokenLaunched" &&
+        decoded.eventName !== "ProtectedTokenLaunched"
+      ) continue;
       const args = decoded.args as { token: Address; virtualPool: Address };
       for (const candidate of [
         getAddress(args.token),
@@ -138,3 +158,5 @@ console.log(
     2,
   ),
 );
+await repository.close();
+process.exit(0);

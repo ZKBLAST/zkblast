@@ -1,0 +1,172 @@
+[
+  {
+    "stage": "deployment",
+    "label": "policyRegistryImplementation",
+    "transactionHash": "0x94ba94bf62d31b27c941263131acaa53f46ef63a13c5dc68c7b97b60effa78d9",
+    "blockNumber": "105179979",
+    "gasUsed": "1187682",
+    "effectiveGasPriceWei": "20234000",
+    "totalFeeWei": "24031557588000",
+    "contractAddress": "0xDCAf1806d9FBD571f504b4bB4F1822CAbD5B6203"
+  },
+  {
+    "stage": "deployment",
+    "label": "policyRegistry",
+    "transactionHash": "0xc5033ef4a7e213f8b1ee84aa9cac4968f63de1adfdb2221731de184a247dd089",
+    "blockNumber": "105179996",
+    "gasUsed": "231299",
+    "effectiveGasPriceWei": "20572000",
+    "totalFeeWei": "4758283028000",
+    "contractAddress": "0xAA4b3B6A3Dab4C42b0FE501dEF47aB77099C4a7f"
+  },
+  {
+    "stage": "deployment",
+    "label": "lpEscrowImplementation",
+    "transactionHash": "0xa3059a14eb4a0edf416ba1926a207f5b8e9bc1b4154aaf7f6956a4dd32a2baae",
+    "blockNumber": "105180016",
+    "gasUsed": "1499473",
+    "effectiveGasPriceWei": "20340000",
+    "totalFeeWei": "30499280820000",
+    "contractAddress": "0x280F5642A25ae4652ae2C142af424f83140F8c04"
+  },
+  {
+    "stage": "deployment",
+    "label": "lpEscrow",
+    "transactionHash": "0x9c7d3865172dacbefbc6c25f56f89a829f29b0ed419c715b75df465c5559e507",
+    "blockNumber": "105180035",
+    "gasUsed": "206438",
+    "effectiveGasPriceWei": "20292000",
+    "totalFeeWei": "4189039896000",
+    "contractAddress": "0xec2a8A4A20364ffB912aA5bf3eaC817e708B9FD7"
+  },
+  {
+    "stage": "deployment",
+    "label": "identityRegistryImplementation",
+    "transactionHash": "0x1b9da034fd6715c6e811e6d7c6c2a4c59651ee3ac97526d0b80d08e4c6a14fd7",
+    "blockNumber": "105180046",
+    "gasUsed": "1178419",
+    "effectiveGasPriceWei": "20586000",
+    "totalFeeWei": "24258933534000",
+    "contractAddress": "0xe8a74CEA2E9Cf188eF98Ce8176C07a4577718b40"
+  },
+  {
+    "stage": "deployment",
+    "label": "identityRegistry",
+    "transactionHash": "0x5b764ceac3027af074efc90115a8d203d5cc53e79dfec085c3277cfa62c5d137",
+    "blockNumber": "105180069",
+    "gasUsed": "231654",
+    "effectiveGasPriceWei": "20374000",
+    "totalFeeWei": "4719718596000",
+    "contractAddress": "0x0AA5D2dbDa6beA6fbBdCFE768106a614ec9382F2"
+  },
+  {
+    "stage": "deployment",
+    "label": "tokenDeployer",
+    "transactionHash": "0x7cc536d9fc6a5f52f6f8d3518b225f4c33bb5f5ffa6d730f08481d0585251a33",
+    "blockNumber": "105180087",
+    "gasUsed": "1576600",
+    "effectiveGasPriceWei": "20192000",
+    "totalFeeWei": "31834707200000",
+    "contractAddress": "0x15A7D031AB2795E7122Ee9b5A88A9d84aD7f5fF6"
+  },
+  {
+    "stage": "deployment",
+    "label": "virtualPoolDeployer",
+    "transactionHash": "0x0e70826d94d2d9a7e874039aa6511d89596b9e299d01434ccb21b52e1d76d51d",
+    "blockNumber": "105180106",
+    "gasUsed": "4253997",
+    "effectiveGasPriceWei": "20174000",
+    "totalFeeWei": "85820135478000",
+    "contractAddress": "0x09c4dD578F0Bc71c88839eD3c9699C814ff0a701"
+  },
+  {
+    "stage": "deployment",
+    "label": "factoryImplementation",
+    "transactionHash": "0xf381b58dad63a1d4a6b8758f6578c82f277ba60bce8f9327747486026f015870",
+    "blockNumber": "105180127",
+    "gasUsed": "3297689",
+    "effectiveGasPriceWei": "20226000",
+    "totalFeeWei": "66699057714000",
+    "contractAddress": "0xa75704e370CEF0d87127c648E81A2B25d01CD113"
+  },
+  {
+    "stage": "deployment",
+    "label": "factory",
+    "transactionHash": "0xd428de52ea6c18d1e7c40e0f298aa26c4c3d2939402d6899d5e5611b4339cf31",
+    "blockNumber": "105181487",
+    "gasUsed": "314440",
+    "effectiveGasPriceWei": "20226000",
+    "totalFeeWei": "6359863440000",
+    "contractAddress": "0x98D8546bb60d4d5fF791fB6b904A611691D86beF"
+  },
+  {
+    "stage": "deployment",
+    "label": "routerImplementation",
+    "transactionHash": "0x11a2ff812c9299267cbf27d6a44dae88d34163e2aada9cb987d9e1095047cdc7",
+    "blockNumber": "105183038",
+    "gasUsed": "1107804",
+    "effectiveGasPriceWei": "20472000",
+    "totalFeeWei": "22678963488000",
+    "contractAddress": "0xD3BF853065c0Fc2F834421a5f73cB3E488752E34"
+  },
+  {
+    "stage": "deployment",
+    "label": "router",
+    "transactionHash": "0x0a313aedd4a8ffc58bfd8f3c7887b49f34e3a9c69f00b8ae989d35ee232e1b39",
+    "blockNumber": "105183052",
+    "gasUsed": "213401",
+    "effectiveGasPriceWei": "20150000",
+    "totalFeeWei": "4300030150000",
+    "contractAddress": "0xdb95b8CEe663baAd9dF839171e353265aF2884AA"
+  },
+  {
+    "stage": "deployment",
+    "label": "graduationManagerImplementation",
+    "transactionHash": "0xf312d3c273d3a402fe41efa6b39021942aef5efe52b9a2a26106f32d6a73167f",
+    "blockNumber": "105184124",
+    "gasUsed": "3942475",
+    "effectiveGasPriceWei": "20380000",
+    "totalFeeWei": "80347640500000",
+    "contractAddress": "0x96d3ad3F51C494f538ecc8D263044E0E5565D910"
+  },
+  {
+    "stage": "deployment",
+    "label": "graduationManager",
+    "transactionHash": "0x6b2821c76208db2e7c6ab71c38a3787ddd294685ef806b3ed6f1c11cf5c835fe",
+    "blockNumber": "105184453",
+    "gasUsed": "233949",
+    "effectiveGasPriceWei": "20458000",
+    "totalFeeWei": "4786128642000",
+    "contractAddress": "0xE83203279e4e8Db4Aa747213aC28260418Ff2E83"
+  },
+  {
+    "stage": "deployment",
+    "label": "dammGraduationAdapter",
+    "transactionHash": "0xa335ee574ac302862a5567ab066502124ee42407671c5f84b494f611bb550bb3",
+    "blockNumber": "105184466",
+    "gasUsed": "744616",
+    "effectiveGasPriceWei": "20736000",
+    "totalFeeWei": "15440357376000",
+    "contractAddress": "0x4D78A76696b4AdB62aC1843Fb9ddB2E2312E5910"
+  },
+  {
+    "stage": "deployment",
+    "label": "dlmmGraduationAdapter",
+    "transactionHash": "0x27b00a8ac8e6b68f7900b526e4b0b3eb692f7c18d80ccaaa5bc697e30159c110",
+    "blockNumber": "105184480",
+    "gasUsed": "1095666",
+    "effectiveGasPriceWei": "20210000",
+    "totalFeeWei": "22143409860000",
+    "contractAddress": "0x28A31686370Fd1490EDB2C7221f7C3c46847d835"
+  },
+  {
+    "stage": "configuration",
+    "label": "safe-multisend",
+    "transactionHash": "0x5e24d6af27e358870f672ac59455e279ce5df53a09d92706ad1a4790c6afc78f",
+    "blockNumber": "105184497",
+    "gasUsed": "322804",
+    "effectiveGasPriceWei": "20552000",
+    "totalFeeWei": "6634267808000",
+    "contractAddress": null
+  }
+]

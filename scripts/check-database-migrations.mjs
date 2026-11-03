@@ -52,6 +52,35 @@ for (const { environment, schema, chainId, chainKey, forbiddenSchemas } of envir
     }
   }
 
+  if (environment !== "hyperevm-mainnet") {
+    const protectedLaunch = migrations.find(({ path }) =>
+      path.endsWith("202611030002_protected_launch.sql"),
+    );
+    if (!protectedLaunch) {
+      throw new Error(`${directory}: protected launch migration is missing`);
+    }
+    for (const fragment of [
+      `${schema}.protected_launch_policies`,
+      `${schema}.protected_launches`,
+      `${schema}.protected_launch_identities`,
+      `${schema}.protected_buy_allocations`,
+      `${schema}.protected_lp_allocations`,
+      `${schema}.protected_graduation_migrations`,
+      `${schema}.protected_invariant_alerts`,
+      `check (chain_id = ${chainId})`,
+      "enable row level security",
+      "revoke all on",
+      "grant select,insert,update,delete",
+    ]) {
+      if (!protectedLaunch.sql.includes(fragment)) {
+        throw new Error(`${protectedLaunch.path}: missing ${fragment}`);
+      }
+    }
+    if (/\b(drop|truncate)\s+(table|schema)\b/iu.test(protectedLaunch.sql)) {
+      throw new Error(`${protectedLaunch.path}: destructive DDL is forbidden`);
+    }
+  }
+
   const chainRegistry = migrations.find(({ path }) =>
     path.endsWith("202611020004_multichain_registry.sql"),
   );

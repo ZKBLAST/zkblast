@@ -138,6 +138,22 @@ export const deploymentManifestSchema = z
         lpAllocationEscrow: addressSchema,
       })
       .optional(),
+    protectedLaunch: z
+      .object({
+        abiVersion: z.literal(1),
+        deploymentBlock: z.number().int().nonnegative(),
+        policyRegistry: addressSchema,
+        launchFactory: addressSchema,
+        launchRouter: addressSchema,
+        tokenDeployer: addressSchema,
+        virtualPoolDeployer: addressSchema,
+        lpEscrow: addressSchema,
+        graduationManager: addressSchema,
+        dammGraduationAdapter: addressSchema,
+        dlmmGraduationAdapter: addressSchema.optional(),
+        identityRegistry: addressSchema,
+      })
+      .optional(),
     launchpad: z
       .object({
         abiVersion: z.literal(1),

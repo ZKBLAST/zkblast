@@ -37,6 +37,15 @@ export const dbcEventNames = new Set([
   "RevenueSnapshotRegistered",
   "AuthorizationCommitmentUpdated",
   "ProofClaimVerified",
+  "ProtectionPolicyCreated",
+  "ProtectionPolicyStatusUpdated",
+  "ProtectionPolicyUsed",
+  "ProtectedTokenLaunched",
+  "ProtectedLaunchMetadataPublished",
+  "ProtectedPurchaseRecorded",
+  "ProtectedAllocationRegistered",
+  "ProtectedAllocationClaimed",
+  "ProtectedLaunchIdentityRegistered",
 ]);
 
 export type DbcLaunchBinding = Readonly<{

@@ -90,7 +90,10 @@ export class PostgresDbcReadStore implements DbcReadStore {
   }
   async launchByPool(pool: `0x${string}`) {
     const rows = await this.#sql.unsafe<{ lifecycle: number }[]>(
-      `select lifecycle from ${this.schema}.dbc_launches where chain_id=$1 and virtual_pool=$2 limit 1`,
+      `select lifecycle from ${this.schema}.dbc_launches where chain_id=$1 and virtual_pool=$2
+       union all
+       select lifecycle from ${this.schema}.protected_launches where chain_id=$1 and pool_address=$2 and canonical
+       limit 1`,
       [this.chainId, pool.toLowerCase()],
     );
     return rows[0] ?? null;
@@ -163,6 +166,45 @@ export class PostgresDbcReadStore implements DbcReadStore {
           logoBytes: row.logo_bytes,
         }
       : null;
+  }
+  protectionPolicies(page: DbcPage) {
+    return this.#sql.unsafe(
+      `select chain_id,policy_id::text,family_id,policy_hash,version,protection_blocks::text,max_buy_bps_per_transaction,max_buy_bps_per_address,initial_fee_bps,base_fee_bps,lp_lock_seconds::text,enabled,used
+       from ${this.schema}.protected_launch_policies where chain_id=$1 and ($2::numeric is null or policy_id<$2::numeric)
+       order by policy_id desc limit $3`,
+      [this.chainId,page.cursor ?? null,page.limit],
+    );
+  }
+  async protectionPolicy(policyId: bigint) {
+    const rows = await this.#sql.unsafe<Record<string, unknown>[]>(
+      `select chain_id,policy_id::text,family_id,policy_hash,version,protection_blocks::text,max_buy_bps_per_transaction,max_buy_bps_per_address,initial_fee_bps,base_fee_bps,lp_lock_seconds::text,enabled,used
+       from ${this.schema}.protected_launch_policies where chain_id=$1 and policy_id=$2 limit 1`,
+      [this.chainId,policyId.toString()],
+    );
+    return rows[0] ?? null;
+  }
+  async protectedLaunchSecurity(launchId: string) {
+    const rows = await this.#sql.unsafe(
+      `select l.chain_id,l.launch_id,l.token_address,l.pool_address,l.policy_id::text,l.policy_hash,l.protection_start_block::text,l.lifecycle,
+       p.version policy_version,p.protection_blocks::text,p.max_buy_bps_per_transaction,p.max_buy_bps_per_address,p.initial_fee_bps,p.base_fee_bps,p.lp_lock_seconds::text,
+       a.migration_id,a.creator_unlock_at,a.is_dlmm,a.bin_id,a.creator_claimed,a.protocol_claimed,
+       g.status graduation_status,g.attempts graduation_attempts,g.accounting_reconciles
+       from ${this.schema}.protected_launches l
+       join ${this.schema}.protected_launch_policies p on p.chain_id=l.chain_id and p.policy_id=l.policy_id
+       left join ${this.schema}.protected_graduation_migrations g on g.chain_id=l.chain_id and g.launch_id=l.launch_id
+       left join ${this.schema}.protected_lp_allocations a on a.chain_id=g.chain_id and a.migration_id=g.migration_id
+       where l.chain_id=$1 and l.launch_id=$2 and l.canonical limit 1`,
+      [this.chainId,launchId],
+    );
+    return rows[0] ?? null;
+  }
+  async protectedLaunchIdentity(launchId: string) {
+    const rows = await this.#sql.unsafe(
+      `select chain_id,launch_id,canonical_hash,name_commitment,symbol_commitment,metadata_hash,social_hash,token_runtime_code_hash,launchpad_id::text,token_template_version,duplicate_name,duplicate_symbol,transaction_hash,block_number::text
+       from ${this.schema}.protected_launch_identities where chain_id=$1 and launch_id=$2 and canonical limit 1`,
+      [this.chainId,launchId],
+    );
+    return rows[0] ?? null;
   }
   close() {
     return this.#sql.end();

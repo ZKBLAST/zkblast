@@ -102,7 +102,12 @@ const descriptors = [
     environment: "mainnet",
     name: "Robinhood Chain",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    publicRpcUrls: ["https://rpc.mainnet.chain.robinhood.com"],
+    publicRpcUrls: [
+      "https://robinhood-rpc.publicnode.com",
+      "https://robinhood.drpc.org",
+      "https://robinhood.rpc.pinax.network",
+      "https://rpc.mainnet.chain.robinhood.com",
+    ],
     explorerUrl: "https://robinhoodchain.blockscout.com",
     indexer: {
       confirmations: 12,

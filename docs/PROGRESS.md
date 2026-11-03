@@ -3073,3 +3073,47 @@ Slice L16 advances to **81.8% (9/11)** and overall progress advances to **92.5% 
 
 Next: observe indexer/RPC/webhook behavior over a sustained window, then publish final
 contract and capability documentation with current limitations.
+
+## 2026-11-03 — Protected Launch mainnet canary completed
+
+Slice PL12 advances to **75% (6/8)** and the Protected Launch roadmap advances to
+**98.1% (103/105)**.
+
+- Executed the approved plan
+  `28d5d732c08854f2d7fe083d6a1f8bef48295b84e4473cdd43bda2602f9d206c`.
+- Created policy `1` through the Governance Safe and launched protected token
+  `0x1C656193a53CD68F81321d10d7cbD4dcbF96E83F` with protected pool
+  `0x2d26aea4547eE799567bB76EDdC6efc697d7C9E1`.
+- Confirmed the per-transaction cap rejects an oversized buy, while bounded buy
+  and sell operations succeed after the protection window.
+- Reached the 1 USDG threshold, graduated to DAMM pool
+  `0x4fdF584464112850F2DAD2F0737955D3f10940F0`, rejected the creator claim before
+  unlock, then completed it after the policy-bound 300-second lock.
+- Onchain migration accounting reconciles. Actual gas was
+  **0.000184679087826 ETH** and gross authorized quote input was
+  **1.003210 USDG**, both below their approved limits.
+- The resume-safe evidence journal is stored at
+  `deployments/mainnet/protected-launch/canary-execution.json` without private
+  keys or Safe signatures.
+
+Next: reconcile the new event family through indexer/API/UI, then publish the
+prepared public source and policy references after explicit commit/push approval.
+
+## 2026-11-04 — Protected Launch release reconciliation completed
+
+Slice PL12 and the Protected Launch roadmap are now **100% (8/8; 105/105)**.
+
+- Applied additive migrations `202611030001_chain_event_reconciliation.sql`
+  and `202611030002_protected_launch.sql`; global schema verification passed
+  for 32 backend-only tables with RLS.
+- Added deterministic policy enrichment from the historical onchain policy
+  record, static and dynamic Protected contract tracking, protected market
+  discovery, metadata, holder, chart, lifecycle and graduation projection.
+- Backfilled 42 canonical events across 15 relevant blocks. The canary is
+  discoverable with three indexed swaps, lifecycle `GRADUATED`, canonical
+  identity, creator LP claim and reconciled migration accounting.
+- API, indexer and web typechecks pass; focused Protected projection tests pass
+  9/9 and focused API route tests pass 3/3.
+- Public contract sources, deployment addresses and policy/threat-model
+  references are included in the release without credentials or private
+  operational evidence.

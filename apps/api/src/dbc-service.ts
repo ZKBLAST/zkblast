@@ -49,6 +49,10 @@ export interface DbcReadStore {
   graduation(launchId: string): Promise<unknown>;
   saveMetadata(input: DbcLaunchMetadata): Promise<void>;
   metadata(metadataId: string): Promise<DbcLaunchMetadata | null>;
+  protectionPolicies(page: DbcPage): Promise<readonly unknown[]>;
+  protectionPolicy(policyId: bigint): Promise<Record<string, unknown> | null>;
+  protectedLaunchSecurity(launchId: string): Promise<unknown>;
+  protectedLaunchIdentity(launchId: string): Promise<unknown>;
 }
 export interface DbcQuoteReader {
   quote(
@@ -97,6 +101,43 @@ export class DbcService {
   }
   metadata(metadataId: string) {
     return this.store.metadata(metadataId);
+  }
+  protectionPolicies(page: DbcPage) {
+    return this.store.protectionPolicies(page);
+  }
+  protectedLaunchSecurity(launchId: string) {
+    return this.store.protectedLaunchSecurity(launchId);
+  }
+  protectedLaunchIdentity(launchId: string) {
+    return this.store.protectedLaunchIdentity(launchId);
+  }
+  async protectedLaunchPreview(input: Readonly<{
+    policyId: bigint;
+    baseInventoryRaw: bigint;
+    currentBlock: bigint;
+  }>) {
+    const policy = await this.store.protectionPolicy(input.policyId);
+    if (!policy) throw new Error("PROTECTION_POLICY_NOT_FOUND");
+    if (policy.enabled !== true || policy.used === true)
+      throw new Error("PROTECTION_POLICY_UNAVAILABLE");
+    const protectionBlocks = BigInt(String(policy.protection_blocks));
+    const transactionBps = BigInt(String(policy.max_buy_bps_per_transaction));
+    const addressBps = BigInt(String(policy.max_buy_bps_per_address));
+    return {
+      chainId: Number(policy.chain_id),
+      policyId: String(policy.policy_id),
+      policyHash: String(policy.policy_hash),
+      policyVersion: Number(policy.version),
+      protectionStartBlock: input.currentBlock,
+      protectionEndBlock: input.currentBlock + protectionBlocks,
+      maximumPerTransactionRaw:
+        (input.baseInventoryRaw * transactionBps) / 10_000n,
+      maximumPerAddressRaw: (input.baseInventoryRaw * addressBps) / 10_000n,
+      initialFeeBps: Number(policy.initial_fee_bps),
+      baseFeeBps: Number(policy.base_fee_bps),
+      lpLockSeconds: String(policy.lp_lock_seconds),
+      enforcement: "onchain",
+    };
   }
   async quote(pool: Address, side: "buy" | "sell", amountRaw: bigint) {
     const launch = await this.store.launchByPool(pool);

@@ -1,0 +1,85 @@
+{
+  "status": "complete",
+  "transactions": [
+    {
+      "stage": "create-policy",
+      "hash": "0xacaeec42e4e3e9c33715f4eeca8141233fcbfbf906f6327ef2022bb80be927c0",
+      "blockNumber": "105206723",
+      "gasUsed": "185413",
+      "feeWei": "3741634340000"
+    },
+    {
+      "stage": "create-launch",
+      "hash": "0x8e15d78b1728bf9200fe6c12854bd5e12a7072ccbe0cd6c133f6ea393e1d7e0c",
+      "blockNumber": "105206739",
+      "gasUsed": "4970172",
+      "feeWei": "99880576512000"
+    },
+    {
+      "stage": "approve-usdg",
+      "hash": "0x0911fc892056d10797f1101d034f19bfc808251d7c6986b877d77b8cf4b7d01d",
+      "blockNumber": "105208785",
+      "gasUsed": "61520",
+      "feeWei": "1238151520000"
+    },
+    {
+      "stage": "protected-buy",
+      "hash": "0x52868dd7b1ee6a2a8646af931e19b2263f75acdf6c8ec834d4c08282a63f589c",
+      "blockNumber": "105208802",
+      "gasUsed": "430051",
+      "feeWei": "8683589792000"
+    },
+    {
+      "stage": "approve-zkpc",
+      "hash": "0x47a236d06ba393f419316855e8afaa9c1b3a018cac24f5c3913a4941c83ed1f3",
+      "blockNumber": "105208816",
+      "gasUsed": "49805",
+      "feeWei": "999885180000"
+    },
+    {
+      "stage": "protected-sell",
+      "hash": "0x997c48627e65bb61bb47a3e3d9747a76c0cda348d244d2d57fd1a2720812f0ff",
+      "blockNumber": "105208832",
+      "gasUsed": "251151",
+      "feeWei": "5071743294000"
+    },
+    {
+      "stage": "reach-threshold",
+      "hash": "0x6134538ef5afe34f04a5eae570e5f783d15ead1c7e25ffac7fe5f83067de9aea",
+      "blockNumber": "105208848",
+      "gasUsed": "328838",
+      "feeWei": "6605040068000"
+    },
+    {
+      "stage": "graduate-damm",
+      "hash": "0xe31d38e05a1a6cd5075cc71dbef425c89899f2c0e117cce6622d43fa8c78ffce",
+      "blockNumber": "105209120",
+      "gasUsed": "2752897",
+      "feeWei": "55569978842000"
+    },
+    {
+      "stage": "claim-creator-lp",
+      "hash": "0xb76edfc1bcb12eee0cec81fa910509bfcbda8fc9523d68f6b6f6930511a92e81",
+      "blockNumber": "105212177",
+      "gasUsed": "143663",
+      "feeWei": "2888488278000"
+    }
+  ],
+  "grossUsdgAuthorizedRaw": "1003210",
+  "checks": {
+    "capRejection": true,
+    "preUnlockRejected": true,
+    "accountingReconciles": true
+  },
+  "planSha256": "28d5d732c08854f2d7fe083d6a1f8bef48295b84e4473cdd43bda2602f9d206c",
+  "approvedGasCapEth": "0.0003",
+  "approvedUsdgCap": "1.01",
+  "totalFeeWei": "184679087826000",
+  "totalFeeEth": "0.000184679087826",
+  "launchId": "0x3e7c68dcee51dde3d2164d47a53bf95f1cac864284ea5adccc299d0541fd1e66",
+  "token": "0x1C656193a53CD68F81321d10d7cbD4dcbF96E83F",
+  "pool": "0x2d26aea4547eE799567bB76EDdC6efc697d7C9E1",
+  "migrationId": "0xe0b7890f30f6f6ece5400713a0e6db9d483dd9e9c2d62429445a0d49be9442f4",
+  "destinationPool": "0x4fdF584464112850F2DAD2F0737955D3f10940F0",
+  "creatorUnlockAt": "1793724585"
+}

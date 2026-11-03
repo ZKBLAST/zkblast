@@ -5,6 +5,7 @@ import {
   dbcSwapFromEvent,
   validateDbcEvent,
 } from "./dbc-projection.js";
+import { persistProtectedLaunchEvent } from "./persist-protected-launch-event.js";
 
 function value(event: IndexedEvent, key: string): string {
   const result = event.payload[key];
@@ -69,6 +70,7 @@ export async function persistDbcEvent(
       observedAt,
     ],
   );
+  if (await persistProtectedLaunchEvent(sql, schema, event)) return true;
   if (event.eventName === "LaunchpadCreated") {
     const owner = value(event, "owner");
     await sql.unsafe(
@@ -292,7 +294,14 @@ export async function persistDbcEvent(
       [event.contractAddress.toLowerCase()],
     );
     const tokenLaunchId = launches[0]?.launch_id;
-    if (!tokenLaunchId) throw new Error("DBC_TRANSFER_TOKEN_NOT_REGISTERED");
+    if (!tokenLaunchId) {
+      const protectedLaunches = await sql.unsafe<{ launch_id: string }[]>(
+        `select launch_id from ${schema}.protected_launches where chain_id=$1 and token_address=$2 and canonical limit 1`,
+        [event.chainId, event.contractAddress.toLowerCase()],
+      );
+      if (protectedLaunches.length > 0) return true;
+      throw new Error("DBC_TRANSFER_TOKEN_NOT_REGISTERED");
+    }
     const from = value(event, "from");
     const to = value(event, "to");
     const amount = value(event, "value");
@@ -415,6 +424,12 @@ export async function persistDbcEvent(
         event.blockNumber.toString(),
         observedAt,
       ],
+    );
+  if (event.eventName === "GraduationReady")
+    await sql.unsafe(
+      `update ${schema}.dbc_launches set graduation_threshold_raw=$3,lifecycle=3,updated_block=$4,updated_at=now()
+       where chain_id=$1 and launch_id=$2`,
+      [event.chainId, launchId, value(event, "thresholdRaw"), event.blockNumber.toString()],
     );
   if (event.eventName === "FeeClaimed")
     await sql.unsafe(

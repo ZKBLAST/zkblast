@@ -13,6 +13,7 @@ import { getAddress, type Address, type Hex } from "viem";
 
 import type { PreparedContractCall } from "./calls.js";
 import { SdkError } from "./errors.js";
+import type { ProtectedLaunchAddresses } from "./protected-launch.js";
 
 export type DbcAddresses = Readonly<{
   abiVersion: 1;
@@ -25,6 +26,7 @@ export type DbcAddresses = Readonly<{
   graduationManager: Address;
   dammGraduationAdapter: Address;
   lpAllocationEscrow: Address;
+  protectedLaunch?: ProtectedLaunchAddresses;
 }>;
 
 export type DbcLaunchRequest = Readonly<{
@@ -84,6 +86,17 @@ export function resolveDbcAddresses(
     graduationManager: getAddress(manifest.dbc.graduationManager),
     dammGraduationAdapter: getAddress(manifest.dbc.dammGraduationAdapter),
     lpAllocationEscrow: getAddress(manifest.dbc.lpAllocationEscrow),
+    ...(manifest.protectedLaunch
+      ? { protectedLaunch: {
+          chainId: manifest.chainId,
+          policyRegistry: getAddress(manifest.protectedLaunch.policyRegistry),
+          launchFactory: getAddress(manifest.protectedLaunch.launchFactory),
+          launchRouter: getAddress(manifest.protectedLaunch.launchRouter),
+          lpEscrow: getAddress(manifest.protectedLaunch.lpEscrow),
+          graduationManager: getAddress(manifest.protectedLaunch.graduationManager),
+          identityRegistry: getAddress(manifest.protectedLaunch.identityRegistry),
+        } }
+      : {}),
   };
 }
 

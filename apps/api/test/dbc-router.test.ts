@@ -17,6 +17,14 @@ const store: DbcReadStore = {
   graduation: async () => null,
   saveMetadata: async () => undefined,
   metadata: async () => null,
+  protectionPolicies: async () => [{ chain_id:4663,policy_id:"1",policy_hash:`0x${"2".repeat(64)}` }],
+  protectionPolicy: async () => ({
+    chain_id:4663,policy_id:"1",policy_hash:`0x${"2".repeat(64)}`,version:1,
+    protection_blocks:"10",max_buy_bps_per_transaction:100,max_buy_bps_per_address:500,
+    initial_fee_bps:500,base_fee_bps:30,lp_lock_seconds:"86400",enabled:true,used:false,
+  }),
+  protectedLaunchSecurity: async (id) => ({ launch_id:id,policy_hash:`0x${"2".repeat(64)}` }),
+  protectedLaunchIdentity: async (id) => ({ launch_id:id,token_template_version:1 }),
 };
 const service = new DbcService(
   store,
@@ -88,4 +96,23 @@ test("DBC candle API rejects unbounded ranges and invalid intervals", async () =
     .query({ interval: "2m", from: "2026-01-01", to: "2026-03-01" });
   assert.equal(response.status, 500);
   assert.ok(response.error);
+});
+
+test("protected launch API returns exact policy identity and bounded preview", async () => {
+  const catalog = await request(app).get("/v1/dbc/protection/policies?limit=10");
+  assert.equal(catalog.status, 200);
+  assert.equal(catalog.body.items[0].chain_id, 4663);
+
+  const preview = await request(app).post("/v1/dbc/protection/preview").send({
+    policyId:"1",baseInventoryRaw:"1000000",currentBlock:"100",
+  });
+  assert.equal(preview.status, 200);
+  assert.equal(preview.body.protectionEndBlock, "110");
+  assert.equal(preview.body.maximumPerTransactionRaw, "10000");
+  assert.equal(preview.body.maximumPerAddressRaw, "50000");
+  assert.equal(preview.body.enforcement, "onchain");
+
+  const id = `0x${"1".repeat(64)}`;
+  assert.equal((await request(app).get(`/v1/dbc/launches/${id}/security`)).status, 200);
+  assert.equal((await request(app).get(`/v1/dbc/launches/${id}/identity`)).status, 200);
 });

@@ -15,6 +15,8 @@ import {
   getAddress,
 } from "viem";
 import type { DbcAddresses } from "@zkblast/sdk";
+import { ProtectedLaunchClient } from "@zkblast/sdk";
+import { protectedLaunchTokenAbi } from "@zkblast/abi";
 import { AssetLogo } from "@/components/markets/AssetLogo";
 import { useApp } from "@/components/shell/AppProvider";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
@@ -32,16 +34,23 @@ import {
   executeDbcTransactions,
   type DbcQuoteResponse,
 } from "@/lib/dbc-transactions";
-import type { DbcGraduation, DbcLaunch, TemplateEconomics } from "./types";
+import type {
+  DbcGraduation,
+  DbcLaunch,
+  ProtectedLaunchSecurity,
+  TemplateEconomics,
+} from "./types";
 
 type Tab = "trade" | "graduation" | "claims";
 export function LaunchActions({
   launch,
   deployment,
+  security,
   onComplete,
 }: {
   launch: DbcLaunch;
   deployment: DbcAddresses;
+  security?: ProtectedLaunchSecurity | null;
   onComplete: () => void;
 }) {
   const { address, config, connect, toast } = useApp();
@@ -58,6 +67,9 @@ export function LaunchActions({
   const [balanceRaw, setBalanceRaw] = useState<bigint | null>(null);
   const [allowanceRaw, setAllowanceRaw] = useState<bigint | null>(null);
   const [executableMaxRaw, setExecutableMaxRaw] = useState<bigint | null>(null);
+  const [remainingProtectedRaw, setRemainingProtectedRaw] = useState<bigint | null>(null);
+  const [maximumProtectedTransactionRaw, setMaximumProtectedTransactionRaw] = useState<bigint | null>(null);
+  const [protectionActive, setProtectionActive] = useState(false);
   const symbol = launch.symbol ?? "TOKEN";
   const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
   const quoteDecimals = economics?.quoteDecimals ?? 18;
@@ -99,6 +111,40 @@ export function LaunchActions({
       .catch(() => setEconomics(null));
     return () => controller.abort();
   }, [launch.template_id]);
+  useEffect(() => {
+    if (!security || !address || !window.ethereum) {
+      setRemainingProtectedRaw(null);
+      setMaximumProtectedTransactionRaw(null);
+      setProtectionActive(false);
+      return;
+    }
+    let cancelled = false;
+    const token = getAddress(launch.token_address);
+    const owner = getAddress(address);
+    const read = async (functionName: "remainingProtectedAllocation" | "maximumBuyPerTransaction" | "protectionActive", args: readonly [`0x${string}`] | readonly [] = []) => {
+      const data = encodeFunctionData({ abi: protectedLaunchTokenAbi, functionName, args });
+      const result = await window.ethereum!.request({ method:"eth_call", params:[{ to:token,data },"latest"] });
+      return decodeFunctionResult({ abi:protectedLaunchTokenAbi, functionName, data:result as `0x${string}` });
+    };
+    void Promise.all([
+      read("remainingProtectedAllocation",[owner]),
+      read("maximumBuyPerTransaction"),
+      read("protectionActive"),
+    ]).then(([remaining,maximum,active]) => {
+      if (!cancelled) {
+        setRemainingProtectedRaw(remaining as bigint);
+        setMaximumProtectedTransactionRaw(maximum as bigint);
+        setProtectionActive(active as boolean);
+      }
+    }).catch(() => {
+      if (!cancelled) {
+        setRemainingProtectedRaw(null);
+        setMaximumProtectedTransactionRaw(null);
+        setProtectionActive(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [address,launch.token_address,launch.updated_block,security]);
   useEffect(() => {
     if (!address || !window.ethereum) {
       setBalanceRaw(null);
@@ -233,6 +279,13 @@ export function LaunchActions({
             }),
           },
         );
+        if (side === "buy" && protectionActive && result.baseOutRaw) {
+          const output = BigInt(result.baseOutRaw);
+          if (maximumProtectedTransactionRaw !== null && output > maximumProtectedTransactionRaw)
+            throw new Error("This buy exceeds the protected per-transaction limit. Reduce the amount.");
+          if (remainingProtectedRaw !== null && output > remainingProtectedRaw)
+            throw new Error("This buy exceeds your remaining protected allocation. Reduce the amount.");
+        }
         setQuote(result);
         setQuoteAt(Date.now());
         setStatus("");
@@ -248,6 +301,9 @@ export function LaunchActions({
       inputDecimals,
       launch.lifecycle,
       launch.virtual_pool,
+      maximumProtectedTransactionRaw,
+      protectionActive,
+      remainingProtectedRaw,
       side,
       spendableRaw,
     ],
@@ -316,6 +372,9 @@ export function LaunchActions({
     try {
       if (Date.now() - quoteAt > 60_000)
         throw new Error("QUOTE_EXPIRED_REFRESH_REQUIRED");
+      const protectedClient = security && deployment.protectedLaunch
+        ? new ProtectedLaunchClient(deployment.protectedLaunch)
+        : null;
       const client = dbcClient(deployment);
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 900);
       const raw = parseTokenAmount(amount, inputDecimals);
@@ -329,20 +388,23 @@ export function LaunchActions({
       const tokenIn = getAddress(
         side === "buy" ? launch.quote_token : launch.token_address,
       );
+      const spender = protectedClient
+        ? deployment.protectedLaunch!.launchRouter
+        : getAddress(launch.virtual_pool);
       const calls =
         allowanceRaw !== null && allowanceRaw >= raw
           ? []
           : [
               approvalTransaction(
                 tokenIn,
-                getAddress(launch.virtual_pool),
+                spender,
                 raw,
               ),
             ];
       calls.push(
         contractCallTransaction(
           side === "buy"
-            ? client.buyExactInput({
+            ? (protectedClient ?? client).buyExactInput({
                 pool: getAddress(launch.virtual_pool),
                 grossQuoteInRaw: raw,
                 minimumBaseOutRaw: minimum,
@@ -352,7 +414,7 @@ export function LaunchActions({
                 recipient: getAddress(address),
                 deadline,
               })
-            : client.sellExactInput({
+            : (protectedClient ?? client).sellExactInput({
                 pool: getAddress(launch.virtual_pool),
                 baseInRaw: raw,
                 minimumQuoteOutRaw: minimum,
@@ -519,6 +581,14 @@ export function LaunchActions({
                     be sold before matching curve demand exists.
                   </span>
                 )}
+              {side === "buy" && protectionActive && remainingProtectedRaw !== null && (
+                <span className="mt-2 block border border-line bg-white/[.02] px-3 py-2 text-[10px] leading-4 text-muted">
+                  Remaining protected allocation · {formatTokenAmount(remainingProtectedRaw, 18)} {symbol}
+                  {maximumProtectedTransactionRaw !== null
+                    ? ` · per transaction ${formatTokenAmount(maximumProtectedTransactionRaw, 18)} ${symbol}`
+                    : ""}
+                </span>
+              )}
             </label>
             <div className="my-3 grid place-items-center">
               <ArrowDownUp className="size-4 text-muted" />

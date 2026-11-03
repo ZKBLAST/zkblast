@@ -26,7 +26,13 @@ import { LaunchpadBuilder } from "./LaunchpadBuilder";
 import { LaunchpadOwnerDashboard } from "./LaunchpadOwnerDashboard";
 import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import { LaunchTradeHistory } from "./LaunchTradeHistory";
-import type { DbcLaunch, DbcTemplate, TemplateEconomics } from "./types";
+import type {
+  DbcLaunch,
+  DbcTemplate,
+  ProtectedLaunchIdentity,
+  ProtectedLaunchSecurity,
+  TemplateEconomics,
+} from "./types";
 import { useApp } from "@/components/shell/AppProvider";
 
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
@@ -214,6 +220,10 @@ export function Launchpad() {
     visible.find((item) => item.launch_id === selectedId) ?? visible[0] ?? null;
   const [selectedEconomics, setSelectedEconomics] =
     useState<TemplateEconomics | null>(null);
+  const [selectedSecurity, setSelectedSecurity] =
+    useState<ProtectedLaunchSecurity | null>(null);
+  const [selectedIdentity, setSelectedIdentity] =
+    useState<ProtectedLaunchIdentity | null>(null);
   const economicsTemplateId =
     selected?.template_id ?? templates[0]?.template_id ?? null;
   useEffect(() => {
@@ -231,6 +241,32 @@ export function Launchpad() {
       .catch(() => setSelectedEconomics(null));
     return () => controller.abort();
   }, [config?.chainId, economicsTemplateId]);
+  useEffect(() => {
+    if (!selected?.launch_id) {
+      setSelectedSecurity(null);
+      setSelectedIdentity(null);
+      return;
+    }
+    const controller = new AbortController();
+    void Promise.all([
+      apiRequest<ProtectedLaunchSecurity>(
+        webPublicConfig.apiUrl,
+        `/v1/dbc/launches/${selected.launch_id}/security`,
+        { signal: controller.signal, cache: "no-store" },
+      ).catch(() => null),
+      apiRequest<ProtectedLaunchIdentity>(
+        webPublicConfig.apiUrl,
+        `/v1/dbc/launches/${selected.launch_id}/identity`,
+        { signal: controller.signal, cache: "no-store" },
+      ).catch(() => null),
+    ]).then(([security, identity]) => {
+      if (!controller.signal.aborted) {
+        setSelectedSecurity(security);
+        setSelectedIdentity(identity);
+      }
+    });
+    return () => controller.abort();
+  }, [config?.chainId, selected?.launch_id, selected?.updated_block]);
   const selectedQuoteSymbol = selectedEconomics?.quoteSymbol ?? "QUOTE";
   const selectedQuoteDecimals = selectedEconomics?.quoteDecimals ?? 18;
 
@@ -487,6 +523,12 @@ export function Launchpad() {
                     {lifecycle[selected.lifecycle]}
                   </span>
                 </div>
+                {selectedSecurity && (
+                  <ProtectedSecurityPanel
+                    security={selectedSecurity}
+                    identity={selectedIdentity}
+                  />
+                )}
                 <LaunchChart
                   launchId={selected.launch_id}
                   symbol={selected.symbol ?? "TOKEN"}
@@ -569,6 +611,7 @@ export function Launchpad() {
             <LaunchActions
               launch={selected}
               deployment={deployment}
+              security={selectedSecurity}
               onComplete={refresh}
             />
           ) : (
@@ -609,5 +652,49 @@ function Metric({ label, value }: { label: string; value: string }) {
       <p className="label">{label}</p>
       <p className="mt-2 break-all font-mono text-sm">{value}</p>
     </div>
+  );
+}
+
+function ProtectedSecurityPanel({
+  security,
+  identity,
+}: Readonly<{
+  security: ProtectedLaunchSecurity;
+  identity: ProtectedLaunchIdentity | null;
+}>) {
+  const unlock = security.creator_unlock_at
+    ? new Date(security.creator_unlock_at).toLocaleString()
+    : `${Math.ceil(Number(BigInt(security.lp_lock_seconds)) / 86_400)} day lock`;
+  const duplicate = Boolean(identity?.duplicate_name || identity?.duplicate_symbol);
+  return (
+    <section className="border-b border-line bg-white/[.015] p-4 sm:p-5" aria-label="Protected launch security">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="flex items-center gap-2 font-mono text-xs uppercase">
+          <ShieldCheck className="size-4 text-lime" /> Verified protected launch
+        </span>
+        <span className="font-mono text-[10px] text-muted">
+          Policy {security.policy_id} · v{security.policy_version} · chain {security.chain_id}
+        </span>
+      </div>
+      <div className="mt-4 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <Metric label="Per transaction" value={`${security.max_buy_bps_per_transaction / 100}% inventory`} />
+        <Metric label="Per address" value={`${security.max_buy_bps_per_address / 100}% inventory`} />
+        <Metric label="Dynamic fee" value={`${security.initial_fee_bps / 100}% → ${security.base_fee_bps / 100}%`} />
+        <Metric label="Creator LP unlock" value={unlock} />
+      </div>
+      <div className="mt-3 grid gap-2 text-[11px] text-muted sm:grid-cols-2">
+        <p className="break-all">Policy hash · {security.policy_hash}</p>
+        <p className="break-all">
+          {identity
+            ? `Template v${identity.token_template_version} · runtime ${identity.token_runtime_code_hash}`
+            : "Canonical identity is indexed with the launch transaction."}
+        </p>
+      </div>
+      {duplicate && (
+        <p className="mt-3 border border-warning/40 bg-warning/5 px-3 py-2 text-xs text-warning">
+          This launch reuses an existing {identity?.duplicate_name ? "name" : "symbol"}. Verify the token contract before trading.
+        </p>
+      )}
+    </section>
   );
 }

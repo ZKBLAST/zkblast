@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { decodeEventLog, getAddress, zeroAddress } from "viem";
 import {
@@ -7,10 +7,11 @@ import {
   LaunchpadClient,
   minimumAmountOut,
   parseTokenAmount,
+  ProtectedLaunchClient,
   type DbcAddresses,
   type LaunchpadAddresses,
 } from "@zkblast/sdk";
-import { dbcEventsAbi } from "@zkblast/abi";
+import { dbcEventsAbi, protectedLaunchFactoryAbi } from "@zkblast/abi";
 import { Modal } from "@/components/ui/Modal";
 import {
   executeDbcTransactions,
@@ -23,7 +24,13 @@ import {
 import { useApp } from "@/components/shell/AppProvider";
 import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
-import type { DbcLaunch, DbcTemplate, TemplateEconomics } from "./types";
+import type {
+  DbcLaunch,
+  DbcTemplate,
+  ProtectedLaunchPreview,
+  ProtectionPolicy,
+  TemplateEconomics,
+} from "./types";
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
 
 type PendingInitialBuy = Readonly<{
@@ -72,6 +79,11 @@ export function LaunchWizard({
   const [status, setStatus] = useState("");
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [economicsLoading, setEconomicsLoading] = useState(false);
+  const [launchProtection, setLaunchProtection] = useState<"standard" | "protected">("standard");
+  const [protectionPolicies, setProtectionPolicies] = useState<readonly ProtectionPolicy[]>([]);
+  const [protectionPolicyId, setProtectionPolicyId] = useState("");
+  const [protectionPreview, setProtectionPreview] = useState<ProtectedLaunchPreview | null>(null);
+  const [protectionLoading, setProtectionLoading] = useState(false);
   const [pendingInitialBuy, setPendingInitialBuy] =
     useState<PendingInitialBuy | null>(null);
   const [launchpadConfiguration, setLaunchpadConfiguration] =
@@ -105,6 +117,50 @@ export function LaunchWizard({
     return () => controller.abort();
   }, [config?.chainId, templateId]);
   useEffect(() => {
+    if (!open) return;
+    const controller = new AbortController();
+    void apiRequest<{ items: readonly ProtectionPolicy[] }>(
+      webPublicConfig.apiUrl,
+      "/v1/dbc/protection/policies?limit=100",
+      { signal: controller.signal, cache: "no-store" },
+    )
+      .then(({ items }) => {
+        const available = items.filter((item) => item.enabled && !item.used);
+        setProtectionPolicies(available);
+        setProtectionPolicyId((current) => current || available[0]?.policy_id || "");
+      })
+      .catch(() => setProtectionPolicies([]));
+    return () => controller.abort();
+  }, [config?.chainId, open]);
+  useEffect(() => {
+    if (launchProtection !== "protected" || !protectionPolicyId || !economics || !config) {
+      setProtectionPreview(null);
+      return;
+    }
+    const controller = new AbortController();
+    setProtectionLoading(true);
+    void window.ethereum?.request({ method: "eth_blockNumber" })
+      .then((block) => apiRequest<ProtectedLaunchPreview>(
+        webPublicConfig.apiUrl,
+        "/v1/dbc/protection/preview",
+        {
+          method: "POST",
+          signal: controller.signal,
+          body: JSON.stringify({
+            policyId: protectionPolicyId,
+            baseInventoryRaw: economics.baseInventoryRaw,
+            currentBlock: BigInt(String(block)).toString(),
+          }),
+        },
+      ))
+      .then(setProtectionPreview)
+      .catch(() => setProtectionPreview(null))
+      .finally(() => {
+        if (!controller.signal.aborted) setProtectionLoading(false);
+      });
+    return () => controller.abort();
+  }, [config, economics, launchProtection, protectionPolicyId]);
+  useEffect(() => {
     if (!open || !launchpadId) {
       setLaunchpadConfiguration(null);
       return;
@@ -130,7 +186,9 @@ export function LaunchWizard({
     }
   }, [initialBuy, quoteDecimals]);
   const validInitialBuy =
-    initialBuyRaw >= 0n &&
+    launchProtection === "protected"
+      ? initialBuyRaw === 0n
+      : initialBuyRaw >= 0n &&
     (initialBuyRaw === 0n ||
       (economics !== null &&
         initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
@@ -149,6 +207,8 @@ export function LaunchWizard({
   async function submit() {
     if (!address) return connect();
     if (!window.ethereum || !config || !selected) return;
+    if (launchProtection === "protected" && !deployment.protectedLaunch)
+      return setStatus("PROTECTED_DEPLOYMENT_NOT_CONFIGURED");
     setStatus("preparing");
     let launchCreated = false;
     try {
@@ -176,13 +236,19 @@ export function LaunchWizard({
         metadataUri: metadata.metadataUri,
         creatorTokenRecipient: getAddress(walletRecipient),
       } as const;
-      const call = launchpadId
-        ? new LaunchpadClient(launchpadConfiguration!).createToken({
+      const call = launchProtection === "protected"
+        ? new ProtectedLaunchClient(deployment.protectedLaunch!).createProtectedLaunch({
+            ...launchRequest,
+            policyId: BigInt(protectionPolicyId),
+            deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
+          })
+        : launchpadId
+          ? new LaunchpadClient(launchpadConfiguration!).createToken({
             launchpadId: BigInt(launchpadId),
             ...launchRequest,
             referralRecipient: zeroAddress,
           })
-        : dbcClient(deployment).createLaunch(launchRequest);
+          : dbcClient(deployment).createLaunch(launchRequest);
       const createHash = await executeDbcTransactions({
         provider: window.ethereum,
         account: address,
@@ -203,16 +269,22 @@ export function LaunchWizard({
           topics: [] | [`0x${string}`, ...`0x${string}`[]];
         }>[];
       } | null;
+      const launchFactory = launchProtection === "protected"
+        ? deployment.protectedLaunch!.launchFactory
+        : deployment.launchFactory;
+      const eventAbi = launchProtection === "protected"
+        ? protectedLaunchFactoryAbi
+        : dbcEventsAbi;
       const launched = receipt?.logs
         ?.filter(
           (log) =>
             log.address.toLowerCase() ===
-            deployment.launchFactory.toLowerCase(),
+            launchFactory.toLowerCase(),
         )
         .map((log) => {
           try {
             return decodeEventLog({
-              abi: dbcEventsAbi,
+              abi: eventAbi,
               data: log.data,
               topics: log.topics,
             });
@@ -220,12 +292,17 @@ export function LaunchWizard({
             return null;
           }
         })
-        .find((event) => event?.eventName === "TokenLaunched");
+        .find((event) =>
+          launchProtection === "protected"
+            ? event?.eventName === "ProtectedTokenLaunched"
+            : event?.eventName === "TokenLaunched",
+        );
       const blockNumber = receipt?.blockNumber
         ? BigInt(receipt.blockNumber).toString()
         : "0";
       const optimisticLaunch: DbcLaunch | undefined =
-        launched?.eventName === "TokenLaunched"
+        launched?.eventName === "TokenLaunched" ||
+        launched?.eventName === "ProtectedTokenLaunched"
           ? {
               launch_id: launched.args.launchId,
               template_id: launched.args.templateId.toString(),
@@ -244,7 +321,9 @@ export function LaunchWizard({
               real_quote_reserve_raw: "0",
               base_sold_raw: "0",
               graduation_threshold_raw:
-                launched.args.graduationThresholdRaw.toString(),
+                launched.eventName === "TokenLaunched"
+                  ? launched.args.graduationThresholdRaw.toString()
+                  : economics?.graduationThresholdRaw ?? null,
               progress_bps: 0,
               created_block: blockNumber,
               updated_block: blockNumber,
@@ -412,6 +491,56 @@ export function LaunchWizard({
         </div>
         {step === 0 && (
           <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Launch protection">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={launchProtection === "standard"}
+                onClick={() => setLaunchProtection("standard")}
+                className={`border p-4 text-left ${launchProtection === "standard" ? "border-lime bg-white/[.03]" : "border-line"}`}
+              >
+                <span className="font-mono text-xs uppercase">Standard</span>
+                <span className="mt-2 block text-[11px] leading-5 text-muted">Governed curve and graduation rules.</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={launchProtection === "protected"}
+                disabled={
+                  protectionPolicies.length === 0 ||
+                  Boolean(launchpadId) ||
+                  !deployment.protectedLaunch
+                }
+                onClick={() => setLaunchProtection("protected")}
+                className={`border p-4 text-left disabled:cursor-not-allowed disabled:opacity-40 ${launchProtection === "protected" ? "border-lime bg-white/[.03]" : "border-line"}`}
+              >
+                <span className="flex items-center gap-2 font-mono text-xs uppercase"><ShieldCheck className="size-4" /> Protected</span>
+                <span className="mt-2 block text-[11px] leading-5 text-muted">Buy caps, dynamic launch fee and locked creator LP.</span>
+              </button>
+            </div>
+            {launchProtection === "protected" && (
+              <div className="panel-inset space-y-3 p-4">
+                <label className="block">
+                  <span className="label">Protection policy</span>
+                  <select
+                    value={protectionPolicyId}
+                    onChange={(event) => setProtectionPolicyId(event.target.value)}
+                    className="mt-2 w-full border border-line bg-bg px-3 py-3 text-sm outline-none focus:border-lime"
+                  >
+                    {protectionPolicies.map((policy) => (
+                      <option key={policy.policy_id} value={policy.policy_id}>
+                        Policy {policy.policy_id} · v{policy.version}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {protectionLoading ? (
+                  <div className="h-20 animate-pulse bg-white/[.04]" />
+                ) : protectionPreview ? (
+                  <ProtectionSummary preview={protectionPreview} decimals={18} />
+                ) : null}
+              </div>
+            )}
             <div>
               <p className="label">Governed template</p>
               <p className="mt-2 text-sm text-muted">
@@ -570,12 +699,13 @@ export function LaunchWizard({
               <Field
                 label={`Initial buy · optional (${quoteSymbol})`}
                 value={initialBuy}
-                onChange={setInitialBuy}
+                onChange={launchProtection === "protected" ? () => undefined : setInitialBuy}
                 placeholder="0.01"
               />
               <p className="mt-2 text-[11px] leading-5 text-muted">
-                After launch creation, your wallet approves {quoteSymbol} and performs
-                the first curve buy. Leave empty to create without buying.
+                {launchProtection === "protected"
+                  ? "Create the protected market first, then buy within its verified per-transaction and per-address limits."
+                  : `After launch creation, your wallet approves ${quoteSymbol} and performs the first curve buy. Leave empty to create without buying.`}
               </p>
               {!validInitialBuy && (
                 <p className="mt-1 text-xs text-danger">
@@ -596,6 +726,16 @@ export function LaunchWizard({
                 label="Template"
                 value={`#${templateId} · v${selected?.version ?? "—"}`}
               />
+              <Review
+                label="Launch protection"
+                value={launchProtection === "protected" ? `Protected · policy ${protectionPolicyId}` : "Standard"}
+              />
+              {protectionPreview && (
+                <Review
+                  label="Verified policy"
+                  value={`v${protectionPreview.policyVersion} · ${protectionPreview.policyHash}`}
+                />
+              )}
               <Review
                 label="Supply / inventory"
                 value={
@@ -644,13 +784,15 @@ export function LaunchWizard({
             </p>
             <button
               disabled={
-                !economics || (Boolean(status) && status !== "confirmed")
+                !economics ||
+                (launchProtection === "protected" && (!deployment.protectedLaunch || !protectionPreview)) ||
+                (Boolean(status) && status !== "confirmed")
               }
               onClick={() => void submit()}
               className="flex w-full items-center justify-center gap-2 bg-lime py-3 font-mono text-xs uppercase text-lime-ink disabled:opacity-50"
             >
               <Rocket className="size-4" />
-              {status || "Create launch"}
+              {status || (launchProtection === "protected" ? "Create protected launch" : "Create launch")}
             </button>
           </div>
         )}
@@ -762,6 +904,38 @@ function Field({
         className="mt-2 h-12 w-full border border-line bg-bg px-3 text-sm outline-none focus:border-lime/70"
       />
     </label>
+  );
+}
+
+function ProtectionSummary({
+  preview,
+  decimals,
+}: Readonly<{
+  preview: ProtectedLaunchPreview;
+  decimals: number;
+}>) {
+  const lockDays = Math.ceil(Number(BigInt(preview.lpLockSeconds)) / 86_400);
+  return (
+    <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
+      <Review
+        label="Per transaction"
+        value={formatTokenAmount(BigInt(preview.maximumPerTransactionRaw), decimals)}
+      />
+      <Review
+        label="Per address"
+        value={formatTokenAmount(BigInt(preview.maximumPerAddressRaw), decimals)}
+      />
+      <Review
+        label="Protection window"
+        value={`${preview.protectionStartBlock}–${preview.protectionEndBlock}`}
+      />
+      <Review
+        label="Launch fee"
+        value={`${preview.initialFeeBps / 100}% → ${preview.baseFeeBps / 100}%`}
+      />
+      <Review label="Creator LP lock" value={`${lockDays} days`} />
+      <Review label="Chain" value={String(preview.chainId)} />
+    </div>
   );
 }
 function Review({ label, value }: { label: string; value: string }) {

@@ -28,6 +28,18 @@ const launchpadProjectionEvents = [
   "FeePolicySnapshotted",
   "RevenueSnapshotRegistered",
   "ProofClaimVerified",
+  "ProtectionPolicyCreated",
+  "ProtectionPolicyStatusUpdated",
+  "ProtectionPolicyUsed",
+  "ProtectedTokenLaunched",
+  "ProtectedPurchaseRecorded",
+  "ProtectedAllocationRegistered",
+  "ProtectedAllocationClaimed",
+  "ProtectedLaunchIdentityRegistered",
+  "GraduationAttemptStarted",
+  "GraduationAttemptPending",
+  "GraduationNeedsReview",
+  "GraduationCompleted",
 ] as const;
 
 
@@ -67,7 +79,10 @@ export class PostgresIndexerRepository implements IndexerRepository {
     const rows = await this.sql.unsafe<
       { token_address: string; virtual_pool: string }[]
     >(
-      `select token_address, virtual_pool from ${this.schema}.dbc_launches order by created_block`,
+      `select token_address, virtual_pool from ${this.schema}.dbc_launches
+       union
+       select token_address, pool_address as virtual_pool
+       from ${this.schema}.protected_launches where canonical`,
     );
     return rows
       .flatMap((row) => [row.token_address, row.virtual_pool])
@@ -79,7 +94,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
     const blockDbcContracts = new Set(this.dbcContracts);
     const projectionEvents = [...events].sort((left, right) => {
       const priority = (eventName: string) =>
-        eventName === "TokenLaunched"
+        eventName === "TokenLaunched" || eventName === "ProtectedTokenLaunched"
           ? -1
           : eventName === "AllocationRegistered"
             ? 1
@@ -95,7 +110,8 @@ export class PostgresIndexerRepository implements IndexerRepository {
           blockDbcContracts,
         );
         if (
-          event.eventName === "TokenLaunched" &&
+          (event.eventName === "TokenLaunched" ||
+            event.eventName === "ProtectedTokenLaunched") &&
           typeof event.payload.token === "string"
         ) {
           blockDbcContracts.add(getAddress(event.payload.token).toLowerCase());
@@ -298,6 +314,19 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `delete from ${this.schema}.launchpads where chain_id=$1`,
         [chainId],
       );
+      for (const table of [
+        "protected_launch_identities",
+        "protected_buy_allocations",
+        "protected_lp_allocations",
+        "protected_graduation_migrations",
+        "protected_invariant_alerts",
+        "protected_launches",
+        "protected_launch_policies",
+      ])
+        await transaction.unsafe(
+          `delete from ${this.schema}.${table} where chain_id=$1`,
+          [chainId],
+        );
       const replayContracts = new Set(this.dbcContracts);
       for (const row of launchpadEvents)
         replayContracts.add(row.contract_address.toLowerCase());

@@ -42,11 +42,23 @@ test("resolves DBC only from the selected network manifest", async () => {
     dammGraduationAdapter: address("106"),
     lpAllocationEscrow: address("107"),
   } as const;
+  const protectedLaunch = {
+    abiVersion: 1,
+    deploymentBlock: 124,
+    policyRegistry: address("201"),
+    launchFactory: address("202"),
+    launchRouter: address("203"),
+    lpEscrow: address("204"),
+    graduationManager: address("205"),
+    identityRegistry: address("206"),
+  } as const;
   const resolved = resolveDbcAddresses(
-    { ...manifest, dbc },
+    { ...manifest, dbc, protectedLaunch },
     { environment: "testnet", chainId: 46_630 },
   );
   assert.equal(resolved.launchFactory, dbc.launchFactory);
+  assert.equal(resolved.protectedLaunch?.chainId, 46_630);
+  assert.equal(resolved.protectedLaunch?.policyRegistry, protectedLaunch.policyRegistry);
   assert.throws(
     () =>
       resolveDbcAddresses(manifestWithoutDbc, {
