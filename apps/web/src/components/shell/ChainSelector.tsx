@@ -1,14 +1,22 @@
 "use client";
 
-import { Check, ChevronDown, CircleDot } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cx } from "@/lib/format";
 import { useApp } from "./AppProvider";
+import { NetworkLogo } from "./NetworkLogo";
 
 export function ChainSelector() {
   const { chains, config, selectChain, busy } = useApp();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const mainnetChains = useMemo(
+    () => chains.filter((chain) => chain.environment === "mainnet"),
+    [chains],
+  );
+  const activeChain = mainnetChains.find(
+    (chain) => chain.chainId === config?.chainId,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -29,7 +37,11 @@ export function ChainSelector() {
         onClick={() => setOpen((current) => !current)}
         className="flex h-9 cursor-pointer items-center gap-2 border border-line bg-raised px-2.5 font-mono text-[11px] uppercase tracking-wide text-muted transition-colors hover:border-line-strong hover:text-fg"
       >
-        <span className="size-1.5 rounded-full bg-lime shadow-[0_0_8px_rgba(223,227,238,0.8)]" />
+        {activeChain ? (
+          <NetworkLogo family={activeChain.family} className="size-5" />
+        ) : (
+          <span className="size-1.5 rounded-full bg-lime shadow-[0_0_8px_rgba(223,227,238,0.8)]" />
+        )}
         <span className="max-w-36 truncate">{config?.chainName ?? "API sync"}</span>
         <ChevronDown
           className={cx("size-3 transition-transform", open && "rotate-180")}
@@ -46,16 +58,16 @@ export function ChainSelector() {
           <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
             Network
           </p>
-          {chains.map((chain) => {
+          {mainnetChains.map((chain) => {
             const active = chain.chainId === config?.chainId;
             const available = chain.capabilities.launchpad && chain.configured;
             const content = (
               <>
-                <CircleDot className="size-4 shrink-0" aria-hidden />
+                <NetworkLogo family={chain.family} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-xs">{chain.name}</span>
                   <span className="block text-[10px] uppercase text-faint">
-                    {chain.environment} · {chain.chainId}
+                    Mainnet · {chain.chainId}
                   </span>
                 </span>
                 {active ? (
@@ -89,7 +101,7 @@ export function ChainSelector() {
               </button>
             );
           })}
-          {chains.length === 0 && (
+          {mainnetChains.length === 0 && (
             <p className="px-3 py-3 font-mono text-xs text-faint">
               Loading network catalog…
             </p>

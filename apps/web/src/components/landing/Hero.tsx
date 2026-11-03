@@ -10,6 +10,7 @@ import { ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { ContractAddressBadge } from "@/components/ui/ContractAddressBadge";
+import { NetworkLogo } from "@/components/shell/NetworkLogo";
 import { easeOut } from "@/lib/motion";
 import { MerkleField } from "./MerkleField";
 import { EventStream, PoolRail } from "./HeroRails";
@@ -142,7 +143,7 @@ export function Hero() {
         <div className="relative flex min-h-[calc(100svh-var(--header-h)-50px)] min-w-0 flex-col xl:min-h-0">
           <div className="hidden h-11 shrink-0 items-center justify-between border-b border-line px-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint xl:flex">
             <span>ZKBLAST / Liquidity infrastructure</span>
-            <span>Built on Robinhood Chain</span>
+            <span>Robinhood Chain + HyperEVM</span>
           </div>
           <div
             aria-hidden
@@ -165,13 +166,23 @@ export function Hero() {
               <motion.div {...rise(0.05)} className="panel ticks p-2.5">
                 <div className="panel-inset px-4 py-6 text-center sm:px-8 sm:py-8">
                   <ContractAddressBadge className="mb-3 justify-center" />
-                  <p className="label mb-3 flex items-center justify-center gap-2">
-                    <span
-                      className="size-1.5 bg-lime motion-safe:animate-blink"
-                      aria-hidden
-                    />{" "}
-                    Zero-knowledge liquidity · Robinhood Chain
-                  </p>
+                  <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
+                    <span className="label flex items-center gap-2">
+                      <span
+                        className="size-1.5 bg-lime motion-safe:animate-blink"
+                        aria-hidden
+                      />
+                      Zero-knowledge liquidity
+                    </span>
+                    <span className="hidden text-faint sm:inline" aria-hidden>·</span>
+                    <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                      <span className="flex -space-x-1.5" aria-hidden>
+                        <NetworkLogo family="robinhood" className="size-6" />
+                        <NetworkLogo family="hyperevm" className="size-6" />
+                      </span>
+                      Robinhood + HyperEVM
+                    </span>
+                  </div>
                   <h1 className="display">
                     <span className="block text-[clamp(1.9rem,4.6vw,2.9rem)] text-fg/55">
                       Provide

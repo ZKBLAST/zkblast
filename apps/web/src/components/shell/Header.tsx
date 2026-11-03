@@ -15,6 +15,7 @@ import { XIcon } from "@/components/ui/Icons";
 import { useApp } from "./AppProvider";
 import { Logo } from "./Logo";
 import { ChainSelector } from "./ChainSelector";
+import { NetworkLogo } from "./NetworkLogo";
 
 export function Header() {
   const path = usePathname();
@@ -36,6 +37,9 @@ export function Header() {
   const [acct, setAcct] = useState(false);
   const { scrollY } = useScroll();
   const visibleNav = nav.filter((item) => !item.mode || Boolean(config?.perps));
+  const mainnetChains = chains.filter(
+    (chain) => chain.environment === "mainnet",
+  );
   const isNavActive = (item: (typeof nav)[number]) => {
     const navPath = item.href.split("?")[0] ?? item.href;
     if (item.mode) return path === navPath && tradeMode === item.mode;
@@ -308,7 +312,7 @@ export function Header() {
                 <p className="px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
                   Networks
                 </p>
-                {chains.map((chain) => {
+                {mainnetChains.map((chain) => {
                   const active = chain.chainId === config?.chainId;
                   return (
                     <button
@@ -327,13 +331,16 @@ export function Header() {
                         (!chain.configured || busy) && "cursor-not-allowed opacity-55",
                       )}
                     >
-                      <span>{chain.name}</span>
+                      <span className="flex items-center gap-2">
+                        <NetworkLogo family={chain.family} className="size-6" />
+                        {chain.name}
+                      </span>
                       <span className="text-[10px] uppercase">
                         {active
                           ? "Current"
                           : chain.configured
-                            ? `${chain.environment} · open`
-                            : `${chain.environment} · soon`}
+                            ? "mainnet · open"
+                            : "mainnet · soon"}
                       </span>
                     </button>
                   );
