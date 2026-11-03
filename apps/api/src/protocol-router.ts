@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { ProtocolService } from "./protocol-service.js";
 import type { SwapService } from "./swap-service.js";
 import type { LiquidityService } from "./liquidity-service.js";
-import type { OperationsService } from "./operations-service.js";
+import type { OperationsHealthService } from "./operations-service.js";
 
 const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(25),
@@ -80,7 +80,7 @@ export function createProtocolRouter(
   service: ProtocolService,
   swapService?: SwapService,
   liquidityService?: LiquidityService,
-  operationsService?: OperationsService,
+  operationsService?: OperationsHealthService,
   operationsToken?: string,
 ) {
   const router = Router();

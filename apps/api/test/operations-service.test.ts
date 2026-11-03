@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { Address } from "viem";
-import { OperationsService } from "../src/operations-service.js";
+import {
+  IndexerOperationsService,
+  OperationsService,
+} from "../src/operations-service.js";
 
 const pool = "0x0000000000000000000000000000000000000001" as Address;
 
@@ -92,5 +95,56 @@ test("operations health remains healthy inside thresholds", async () => {
   assert.equal(
     result.alerts.some((alert) => alert.active),
     false,
+  );
+});
+
+test("indexer-only operations health stays independent from pool accounting", async () => {
+  const service = new IndexerOperationsService(
+    {
+      readiness: async () => ({
+        ready: true,
+        rpcAvailable: true,
+        rpcHead: "105",
+        indexedBlock: "103",
+        finalizedBlock: "103",
+        lag: "2",
+        checkpointUpdatedAt: "2026-11-03T04:03:20.000Z",
+      }),
+    } as never,
+    999,
+    { rpcLagBlocks: 25n, checkpointAgeSeconds: 120 },
+    () => new Date("2026-11-03T04:03:30.000Z"),
+  );
+
+  const result = await service.health();
+  assert.equal(result.status, "healthy");
+  assert.equal(result.chainId, 999);
+  assert.equal(result.readiness.lag, "2");
+  assert.equal(result.alerts.some((alert) => alert.active), false);
+});
+
+test("indexer-only operations health reports unavailable RPC and stale checkpoint", async () => {
+  const service = new IndexerOperationsService(
+    {
+      readiness: async () => ({
+        ready: false,
+        rpcAvailable: false,
+        rpcHead: "100",
+        indexedBlock: "100",
+        finalizedBlock: "100",
+        lag: null,
+        checkpointUpdatedAt: "2026-11-03T04:00:00.000Z",
+      }),
+    } as never,
+    999,
+    { rpcLagBlocks: 25n, checkpointAgeSeconds: 120 },
+    () => new Date("2026-11-03T04:03:30.000Z"),
+  );
+
+  const result = await service.health();
+  assert.equal(result.status, "alert");
+  assert.deepEqual(
+    result.alerts.filter((alert) => alert.active).map((alert) => alert.code),
+    ["RPC_UNAVAILABLE", "RPC_LAG", "INDEXING_DRIFT"],
   );
 });

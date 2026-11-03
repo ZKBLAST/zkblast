@@ -24,7 +24,7 @@ import { createProtocolRouter } from "./protocol-router.js";
 import type { ProtocolService } from "./protocol-service.js";
 import type { SwapService } from "./swap-service.js";
 import type { LiquidityService } from "./liquidity-service.js";
-import type { OperationsService } from "./operations-service.js";
+import type { OperationsHealthService } from "./operations-service.js";
 import { createShieldedRouter } from "./shielded-router.js";
 import type { ShieldedService } from "./shielded-service.js";
 import { createExternalMarketRouter } from "./external-market-router.js";
@@ -194,7 +194,7 @@ export type ApiDependencies = Readonly<{
     protocolService?: ProtocolService;
     swapService?: SwapService;
     liquidityService?: LiquidityService;
-    operationsService?: OperationsService;
+    operationsService?: OperationsHealthService;
     shieldedService?: ShieldedService;
     shieldedV2Service?: ShieldedService;
     externalMarketService?: ExternalMarketService;

@@ -601,6 +601,8 @@ const additionalChainContexts = serviceConfig.ENABLE_HYPEREVM_MAINNET
         rpcUrl: serviceConfig.HYPEREVM_MAINNET_RPC_URL,
         webOrigin: serviceConfig.WEB_ORIGIN,
         operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
+        rpcLagBlocks: serviceConfig.ALERT_RPC_LAG_BLOCKS,
+        checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
       }),
     ]
   : [];

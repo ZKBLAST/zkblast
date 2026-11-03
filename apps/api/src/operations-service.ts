@@ -33,7 +33,77 @@ type Alert = Readonly<{
   threshold: string | number | boolean;
 }>;
 
-export class OperationsService {
+export interface OperationsHealthService {
+  health(): Promise<Readonly<{
+    status: "healthy" | "alert";
+    checkedAt: string;
+    alerts: readonly Alert[];
+  }>>;
+}
+
+export class IndexerOperationsService implements OperationsHealthService {
+  constructor(
+    private readonly protocol: ProtocolService,
+    private readonly chainId: number,
+    private readonly thresholds: Pick<
+      OperationsThresholds,
+      "rpcLagBlocks" | "checkpointAgeSeconds"
+    >,
+    private readonly now: () => Date = () => new Date(),
+  ) {}
+
+  async health() {
+    const readiness = await this.protocol.readiness();
+    const rpcLag = readiness.lag === null ? null : BigInt(readiness.lag);
+    const checkpointAge = readiness.checkpointUpdatedAt
+      ? Math.max(
+          0,
+          Math.floor(
+            (this.now().getTime() -
+              new Date(readiness.checkpointUpdatedAt).getTime()) /
+              1_000,
+          ),
+        )
+      : null;
+    const alerts: Alert[] = [
+      {
+        code: "RPC_UNAVAILABLE",
+        severity: "critical",
+        active: !readiness.rpcAvailable,
+        observed: readiness.rpcAvailable,
+        threshold: true,
+      },
+      {
+        code: "RPC_LAG",
+        severity: "warning",
+        active:
+          rpcLag === null || rpcLag > this.thresholds.rpcLagBlocks,
+        observed: rpcLag?.toString() ?? "missing",
+        threshold: this.thresholds.rpcLagBlocks.toString(),
+      },
+      {
+        code: "INDEXING_DRIFT",
+        severity: "critical",
+        active:
+          checkpointAge === null ||
+          checkpointAge > this.thresholds.checkpointAgeSeconds,
+        observed: checkpointAge ?? "missing",
+        threshold: this.thresholds.checkpointAgeSeconds,
+      },
+    ];
+    return {
+      status: alerts.some((item) => item.active)
+        ? ("alert" as const)
+        : ("healthy" as const),
+      checkedAt: this.now().toISOString(),
+      chainId: this.chainId,
+      readiness,
+      alerts,
+    } as const;
+  }
+}
+
+export class OperationsService implements OperationsHealthService {
   constructor(
     private readonly protocol: ProtocolService,
     private readonly liquidity: LiquidityService,
@@ -113,7 +183,9 @@ export class OperationsService {
       ),
     ];
     return {
-      status: alerts.some((item) => item.active) ? "alert" : "healthy",
+      status: alerts.some((item) => item.active)
+        ? ("alert" as const)
+        : ("healthy" as const),
       checkedAt: this.now().toISOString(),
       pool: this.pool,
       alerts,

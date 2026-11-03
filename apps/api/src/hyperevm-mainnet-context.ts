@@ -19,6 +19,7 @@ import { DbcService } from "./dbc-service.js";
 import { LaunchpadCatalogService } from "./launchpad-catalog-service.js";
 import { LaunchpadReadService } from "./launchpad-read-service.js";
 import { LiquidityService } from "./liquidity-service.js";
+import { IndexerOperationsService } from "./operations-service.js";
 import { PoolCreationService } from "./pool-creation-service.js";
 import { PostgresDbcReadStore } from "./postgres-dbc-read-store.js";
 import { PostgresLaunchpadReadStore } from "./postgres-launchpad-read-store.js";
@@ -35,6 +36,8 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
   rpcUrl: string;
   webOrigin: string;
   operationsToken?: string;
+  rpcLagBlocks: number;
+  checkpointAgeSeconds: number;
 }>): Promise<ApiChainContext> {
   const root = fileURLToPath(new URL("../../../", import.meta.url));
   const manifest = await loadDeploymentManifestFile(resolve(root, MANIFEST_PATH), {
@@ -63,6 +66,14 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
   const protocolService = new ProtocolService(
     new PostgresProtocolReadStore(input.databaseUrl, SCHEMA),
     () => client.getBlockNumber(),
+  );
+  const operationsService = new IndexerOperationsService(
+    protocolService,
+    CHAIN_ID,
+    {
+      rpcLagBlocks: BigInt(input.rpcLagBlocks),
+      checkpointAgeSeconds: input.checkpointAgeSeconds,
+    },
   );
   const poolRegistered = (pool: `0x${string}`) =>
     client.readContract({
@@ -206,6 +217,7 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
     },
     dependencies: {
       protocolService,
+      operationsService,
       swapService,
       liquidityService,
       poolCreationService,
