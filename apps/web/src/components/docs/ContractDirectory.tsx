@@ -108,7 +108,7 @@ export function ContractDirectory() {
                 </p>
               </div>
               <span className="rounded-full border border-line px-2.5 py-1 font-mono text-[10px] uppercase text-muted">
-                {contract.verification.implementation}
+                {contract.proxyKind === "uups" ? "Proxy" : "Onchain"}
               </span>
             </div>
             <div className="space-y-3">

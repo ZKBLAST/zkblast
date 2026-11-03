@@ -28,6 +28,7 @@ import { PostgresLaunchpadBrandingStore } from "./postgres-launchpad-branding-st
 import { PostgresLaunchpadReadStore } from "./postgres-launchpad-read-store.js";
 import { PostgresProtocolReadStore } from "./postgres-protocol-read-store.js";
 import { ProtocolService } from "./protocol-service.js";
+import { publicContractDirectory } from "./public-contract-directory.js";
 import { SwapService } from "./swap-service.js";
 
 const CHAIN_ID = 999;
@@ -240,16 +241,7 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
       explorerUrl: "https://www.hyperscan.com",
       webOrigin: input.webOrigin,
       ...(input.operationsToken ? { operationsToken: input.operationsToken } : {}),
-      contracts: Object.values(manifest.contracts)
-        .map((contract) => ({
-          name: contract.contractName,
-          proxyKind: contract.proxyKind,
-          address: contract.proxyAddress ?? contract.implementationAddress,
-          proxyAddress: contract.proxyAddress,
-          implementationAddress: contract.implementationAddress,
-          verification: contract.verification,
-        }))
-        .sort((left, right) => left.name.localeCompare(right.name)),
+      contracts: publicContractDirectory(manifest),
     },
     dependencies: {
       protocolService,

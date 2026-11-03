@@ -59,6 +59,7 @@ import { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
 import { PostgresLaunchpadDeveloperStore } from "./postgres-launchpad-developer-store.js";
 import { probeWebhookOwnership } from "./launchpad-developer-security.js";
 import { createHyperEvmMainnetContext } from "./hyperevm-mainnet-context.js";
+import { publicContractDirectory } from "./public-contract-directory.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -640,16 +641,7 @@ const app = createApp(
     ...(manifest.shieldedV2 ? { shieldedV2: manifest.shieldedV2 } : {}),
     ...(manifest.perps ? { perps: manifest.perps } : {}),
     operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
-    contracts: Object.values(manifest.contracts)
-      .map((contract) => ({
-        name: contract.contractName,
-        proxyKind: contract.proxyKind,
-        address: contract.proxyAddress ?? contract.implementationAddress,
-        proxyAddress: contract.proxyAddress,
-        implementationAddress: contract.implementationAddress,
-        verification: contract.verification,
-      }))
-      .sort((left, right) => left.name.localeCompare(right.name)),
+    contracts: publicContractDirectory(manifest),
     ...(manifest.shielded
       ? {
           shielded: {
