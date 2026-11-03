@@ -17,12 +17,14 @@ import {
 import { createPublicClient, http } from "viem";
 import type { ApiChainContext } from "./app.js";
 import { DbcService } from "./dbc-service.js";
+import { LaunchpadBrandingService } from "./launchpad-branding-service.js";
 import { LaunchpadCatalogService } from "./launchpad-catalog-service.js";
 import { LaunchpadReadService } from "./launchpad-read-service.js";
 import { LiquidityService } from "./liquidity-service.js";
 import { IndexerOperationsService } from "./operations-service.js";
 import { PoolCreationService } from "./pool-creation-service.js";
 import { PostgresDbcReadStore } from "./postgres-dbc-read-store.js";
+import { PostgresLaunchpadBrandingStore } from "./postgres-launchpad-branding-store.js";
 import { PostgresLaunchpadReadStore } from "./postgres-launchpad-read-store.js";
 import { PostgresProtocolReadStore } from "./postgres-protocol-read-store.js";
 import { ProtocolService } from "./protocol-service.js";
@@ -211,6 +213,24 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
     dbcService,
     () => client.getBlockNumber(),
   );
+  const launchpadBrandingService = new LaunchpadBrandingService(
+    CHAIN_ID,
+    new PostgresLaunchpadBrandingStore(input.databaseUrl, SCHEMA, CHAIN_ID),
+    {
+      launchpad: async (launchpadId) => {
+        const record = await client.readContract({
+          address: launchpadAddresses.registry,
+          abi: launchpadRegistryAbi,
+          functionName: "launchpad",
+          args: [launchpadId],
+        });
+        return {
+          owner: record.owner,
+          metadataHash: record.metadataHash,
+        };
+      },
+    },
+  );
 
   return {
     config: {
@@ -240,6 +260,7 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
       dbcService,
       launchpadCatalogService,
       launchpadReadService,
+      launchpadBrandingService,
     },
   };
 }
