@@ -67,7 +67,7 @@ const hyperEvmMainnetCapabilities: ChainCapabilities = {
   dlmmGraduation: false,
   zkClaimAuthorization: false,
   customDomains: false,
-  metadataUpload: false,
+  metadataUpload: true,
 };
 
 const descriptors = [

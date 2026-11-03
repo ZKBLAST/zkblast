@@ -18,6 +18,7 @@ test("exposes isolated Robinhood and HyperEVM chain descriptors", () => {
   assert.equal(getChainDescriptor(999).capabilities.dbc, true);
   assert.equal(getChainDescriptor(999).capabilities.dammGraduation, true);
   assert.equal(getChainDescriptor(999).capabilities.dlmmGraduation, false);
+  assert.equal(getChainDescriptor(999).capabilities.metadataUpload, true);
   assert.equal(getChainDescriptor(998).capabilities.metadataUpload, false);
   assert.equal(getChainDescriptor(998).execution.fastBlockGasLimit, 2_000_000);
   assert.equal(getChainDescriptor(998).indexer.maximumLogRange, 50);
