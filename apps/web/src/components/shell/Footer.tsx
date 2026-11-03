@@ -104,11 +104,12 @@ export function Footer() {
               </div>
             </div>
             <div className="font-mono text-[12px] leading-relaxed text-faint md:text-right">
-              <p className="inline-flex items-center gap-2 uppercase tracking-[0.06em] md:justify-end">
-                {activeFamily && (
-                  <NetworkLogo family={activeFamily} className="size-5" />
-                )}
-                Built on {config?.chainName ?? "supported networks"}
+              <p className="inline-flex flex-wrap items-center gap-2 uppercase tracking-[0.06em] md:justify-end">
+                <span className="flex -space-x-1.5" aria-hidden>
+                  <NetworkLogo family="robinhood" className="size-5" />
+                  <NetworkLogo family="hyperevm" className="size-5" />
+                </span>
+                <span>Built on Robinhood Chain + HyperEVM</span>
               </p>
               <p className="mt-2">
                 Using smart contracts carries risk, including loss of funds.
@@ -133,7 +134,7 @@ export function Footer() {
             <span aria-hidden className="h-px flex-1 bg-line" />
             <span className="text-faint/70">© 2026 ZKBLAST</span>
             <span aria-hidden className="h-px flex-1 bg-line" />
-            <span>{config?.chainName ?? "Multichain"}</span>
+            <span>Robinhood Chain + HyperEVM</span>
           </div>
         </div>
       </div>
