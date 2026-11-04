@@ -125,7 +125,9 @@ export function LaunchWizard({
       { signal: controller.signal, cache: "no-store" },
     )
       .then(({ items }) => {
-        const available = items.filter((item) => item.enabled && !item.used);
+        // `used` makes a policy immutable/auditable; it does not make the
+        // policy single-use. Every enabled policy remains selectable.
+        const available = items.filter((item) => item.enabled);
         setProtectionPolicies(available);
         setProtectionPolicyId((current) => current || available[0]?.policy_id || "");
       })
@@ -237,11 +239,20 @@ export function LaunchWizard({
         creatorTokenRecipient: getAddress(walletRecipient),
       } as const;
       const call = launchProtection === "protected"
-        ? new ProtectedLaunchClient(deployment.protectedLaunch!).createProtectedLaunch({
-            ...launchRequest,
-            policyId: BigInt(protectionPolicyId),
-            deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
-          })
+        ? launchpadId
+          ? new LaunchpadClient(launchpadConfiguration!).createProtectedToken({
+              launchpadId: BigInt(launchpadId),
+              ...launchRequest,
+              creator: getAddress(address),
+              policyId: BigInt(protectionPolicyId),
+              deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
+              referralRecipient: zeroAddress,
+            })
+          : new ProtectedLaunchClient(deployment.protectedLaunch!).createProtectedLaunch({
+              ...launchRequest,
+              policyId: BigInt(protectionPolicyId),
+              deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
+            })
         : launchpadId
           ? new LaunchpadClient(launchpadConfiguration!).createToken({
             launchpadId: BigInt(launchpadId),
@@ -508,8 +519,8 @@ export function LaunchWizard({
                 aria-checked={launchProtection === "protected"}
                 disabled={
                   protectionPolicies.length === 0 ||
-                  Boolean(launchpadId) ||
-                  !deployment.protectedLaunch
+                  !deployment.protectedLaunch ||
+                  (Boolean(launchpadId) && !launchpadConfiguration)
                 }
                 onClick={() => setLaunchProtection("protected")}
                 className={`border p-4 text-left disabled:cursor-not-allowed disabled:opacity-40 ${launchProtection === "protected" ? "border-lime bg-white/[.03]" : "border-line"}`}

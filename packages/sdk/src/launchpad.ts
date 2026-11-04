@@ -4,12 +4,13 @@ import {
   launchpadFeeCollectorAbi,
   launchpadFeeControllerAbi,
   launchpadTokenFactoryAbi,
+  protectedLaunchFactoryAbi,
 } from "@zkblast/abi";
 import {
   parseDeploymentManifest,
   type DeploymentManifest,
 } from "@zkblast/config";
-import { getAddress, type Address, type Hex } from "viem";
+import { encodeFunctionData, getAddress, type Address, type Hex } from "viem";
 
 import type { PreparedContractCall } from "./calls.js";
 import { SdkError } from "./errors.js";
@@ -36,6 +37,13 @@ export type LaunchpadTokenRequest = Readonly<{
   creatorTokenRecipient: Address;
   referralRecipient: Address;
 }>;
+
+export type ProtectedLaunchpadTokenRequest = LaunchpadTokenRequest &
+  Readonly<{
+    creator: Address;
+    policyId: bigint;
+    deadline: bigint;
+  }>;
 
 export type CreateLaunchpadRequest = Readonly<{
   owner: Address;
@@ -152,6 +160,39 @@ export class LaunchpadClient {
         },
       ],
     };
+  }
+
+  createProtectedToken(
+    input: ProtectedLaunchpadTokenRequest,
+  ): PreparedContractCall {
+    const protectedFactoryCall = encodeFunctionData({
+      abi: protectedLaunchFactoryAbi,
+      functionName: "createLaunchFor",
+      args: [
+        {
+          templateId: input.templateId,
+          policyId: input.policyId,
+          salt: input.salt,
+          deadline: input.deadline,
+          name: input.name,
+          symbol: input.symbol,
+          metadataURI: input.metadataUri,
+          creatorTokenRecipient: getAddress(input.creatorTokenRecipient),
+        },
+        getAddress(input.creator),
+        this.addresses.feeCollector,
+      ],
+    });
+    return {
+      address: this.addresses.tokenFactory,
+      abi: launchpadTokenFactoryAbi,
+      functionName: "createProtectedLaunch",
+      args: [
+        input.launchpadId,
+        protectedFactoryCall,
+        getAddress(input.referralRecipient),
+      ],
+    } as PreparedContractCall;
   }
 
   setFeePolicy(input: LaunchpadFeePolicyRequest): PreparedContractCall {

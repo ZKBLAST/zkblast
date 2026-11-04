@@ -3117,3 +3117,25 @@ Slice PL12 and the Protected Launch roadmap are now **100% (8/8; 105/105)**.
 - Public contract sources, deployment addresses and policy/threat-model
   references are included in the release without credentials or private
   operational evidence.
+
+## 2026-11-04 — Hosted launchpad Protected execution activated
+
+Slice PL13 and the expanded Protected Launch roadmap are **100% (8/8; 113/113)**.
+
+- Enabled hosted launchpad owners to select Standard or Protected execution
+  without treating an already-used immutable policy as unavailable.
+- Routed Protected creation through the canonical launchpad token factory so
+  ownership, fee snapshots, referral attribution and hosted discovery remain
+  consistent with Standard launches.
+- Added one-time canonical identity binding, ABI/SDK support and indexer
+  projection for the binding event.
+- Upgraded the token factory and identity registry implementations through the
+  five-minute timelock, connected the Protected factory and granted only the
+  required factory and binder roles.
+- All seven deployment/configuration receipts are confirmed. Actual gas was
+  **0.000076232191298 ETH**, below the approved **0.00025 ETH** cap. No web,
+  API or indexer deployment and no commit/push was performed.
+
+Next: publish the reviewed code through the normal Git deployment path after
+explicit commit/push approval, then execute one minimum-value Protected launch
+from **My Launchpads** and reconcile its identity and hosted attribution.

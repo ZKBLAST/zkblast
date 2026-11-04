@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.26;
 
 import { ProtocolAccess } from "../access/ProtocolAccess.sol";
 import { DbcTypes } from "../dbc/DbcTypes.sol";
@@ -13,6 +13,8 @@ import { LaunchpadFeeController } from "./LaunchpadFeeController.sol";
 import { LaunchpadFeeCollector } from "./LaunchpadFeeCollector.sol";
 import { LaunchpadTypes } from "./LaunchpadTypes.sol";
 import { RevenueSplitter } from "./RevenueSplitter.sol";
+import { ProtectedLaunchFactory } from "./protection/ProtectedLaunchFactory.sol";
+import { ProtectedVirtualPool } from "../dbc/ProtectedVirtualPool.sol";
 
 /// @notice Versioned DBC launch entry point that atomically binds immutable launchpad economics.
 contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
@@ -42,6 +44,12 @@ contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
         LaunchpadConfigManager.GraduationDestination graduationDestination;
     }
 
+    struct LaunchpadContext {
+        LaunchpadTypes.Record launchpad;
+        LaunchpadConfigManager.Preset preset;
+        uint256 nextCount;
+    }
+
     ILaunchpadRegistry public registry;
     LaunchpadConfigManager public configManager;
     LaunchFactory public dbcFactory;
@@ -52,6 +60,8 @@ contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
     mapping(bytes32 launchId => LaunchBinding binding) private _bindings;
     mapping(address token => bytes32 launchId) public launchByToken;
     mapping(address pool => bytes32 launchId) public launchByPool;
+    // Appended for storage compatibility with the deployed UUPS proxy.
+    ProtectedLaunchFactory public protectedFactory;
 
     event LaunchpadTokenBound(
         bytes32 indexed launchId,
@@ -66,6 +76,7 @@ contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
         bytes32 configHash,
         LaunchpadConfigManager.GraduationDestination graduationDestination
     );
+    event ProtectedFactoryConfigured(address indexed protectedFactory);
 
     constructor() {
         _disableInitializers();
@@ -100,33 +111,104 @@ contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
         external
         returns (bytes32 launchId, address token, address virtualPool, bytes32 feeSnapshotId)
     {
-        LaunchpadTypes.Record memory launchpad = registry.launchpad(request.launchpadId);
-        if (launchpad.status != LaunchpadTypes.Status.ACTIVE) {
-            revert UnauthorizedLaunchpadCaller();
-        }
-        LaunchpadConfigManager.Preset memory preset =
-            configManager.preset(launchpad.configPresetId);
-        if (
-            preset.creatorAccess == LaunchpadConfigManager.CreatorAccess.OWNER_OR_OPERATOR
-                && msg.sender != launchpad.owner && msg.sender != launchpad.operator
-        ) revert UnauthorizedLaunchpadCaller();
-        uint256 nextCount = launchCountByLaunchpad[request.launchpadId] + 1;
-        if (!preset.enabled || nextCount > preset.maximumLaunches) {
-            revert LaunchCapacityExceeded();
-        }
-        _validateCompatibility(request.dbc.templateId, preset, request.launchpadId);
+        LaunchpadContext memory context =
+            _launchpadContext(request.launchpadId, request.dbc.templateId);
 
         (launchId, token, virtualPool) =
             dbcFactory.createLaunchFor(request.dbc, msg.sender, address(feeCollector));
+        feeSnapshotId = _bindLaunch(
+            launchId,
+            token,
+            virtualPool,
+            request.launchpadId,
+            request.referralRecipient,
+            context
+        );
+    }
+
+    /// @notice Creates a Protected token while preserving launchpad attribution and fee policy.
+    function createProtectedLaunch(
+        uint256 launchpadId,
+        bytes calldata protectedFactoryCall,
+        address referralRecipient
+    )
+        external
+        returns (bytes32 launchId, address token, address virtualPool, bytes32 feeSnapshotId)
+    {
+        if (address(protectedFactory) == address(0)) revert IncompatibleConfiguration();
+        bytes4 selector;
+        if (protectedFactoryCall.length < 4) revert InvalidLaunchRequest();
+        assembly ("memory-safe") {
+            selector := calldataload(protectedFactoryCall.offset)
+        }
+        if (selector != ProtectedLaunchFactory.createLaunchFor.selector) {
+            revert InvalidLaunchRequest();
+        }
+        (bool success, bytes memory result) =
+            address(protectedFactory).call(protectedFactoryCall);
+        if (!success) {
+            assembly ("memory-safe") {
+                revert(add(result, 0x20), mload(result))
+            }
+        }
+        (launchId, token, virtualPool) = abi.decode(result, (bytes32, address, address));
+        (address creator,,, uint256 templateId,,,) = protectedFactory.launches(launchId);
+        if (
+            creator != msg.sender
+                || ProtectedVirtualPool(virtualPool).feeCollector() != address(feeCollector)
+        ) revert InvalidLaunchRequest();
+        LaunchpadContext memory context = _launchpadContext(launchpadId, templateId);
+        protectedFactory.identityRegistry().bindLaunchpad(launchId, launchpadId);
+        feeSnapshotId = _bindLaunch(
+            launchId,
+            token,
+            virtualPool,
+            launchpadId,
+            referralRecipient,
+            context
+        );
+    }
+
+    function _launchpadContext(uint256 launchpadId, uint256 templateId)
+        private
+        view
+        returns (LaunchpadContext memory context)
+    {
+        context.launchpad = registry.launchpad(launchpadId);
+        if (context.launchpad.status != LaunchpadTypes.Status.ACTIVE) {
+            revert UnauthorizedLaunchpadCaller();
+        }
+        context.preset = configManager.preset(context.launchpad.configPresetId);
+        if (
+            context.preset.creatorAccess
+                == LaunchpadConfigManager.CreatorAccess.OWNER_OR_OPERATOR
+                && msg.sender != context.launchpad.owner
+                && msg.sender != context.launchpad.operator
+        ) revert UnauthorizedLaunchpadCaller();
+        context.nextCount = launchCountByLaunchpad[launchpadId] + 1;
+        if (!context.preset.enabled || context.nextCount > context.preset.maximumLaunches) {
+            revert LaunchCapacityExceeded();
+        }
+        _validateCompatibility(templateId, context.preset, launchpadId);
+    }
+
+    function _bindLaunch(
+        bytes32 launchId,
+        address token,
+        address virtualPool,
+        uint256 launchpadId,
+        address referralRecipient,
+        LaunchpadContext memory context
+    ) private returns (bytes32 feeSnapshotId) {
         if (
             _bindings[launchId].creator != address(0) || launchByToken[token] != bytes32(0)
                 || launchByPool[virtualPool] != bytes32(0)
         ) revert LaunchAlreadyBound();
         feeSnapshotId = feeController.snapshotPolicy(
-            request.launchpadId,
+            launchpadId,
             virtualPool,
-            launchpad.treasury,
-            request.referralRecipient
+            context.launchpad.treasury,
+            referralRecipient
         );
         revenueSplitter.registerSnapshot(
             feeSnapshotId,
@@ -138,32 +220,41 @@ contract LaunchpadTokenFactory is ProtocolAccess, UUPSUpgradeable {
         );
 
         _bindings[launchId] = LaunchBinding({
-            launchpadId: request.launchpadId,
-            configPresetId: launchpad.configPresetId,
-            configHash: preset.configHash,
+            launchpadId: launchpadId,
+            configPresetId: context.launchpad.configPresetId,
+            configHash: context.preset.configHash,
             feeSnapshotId: feeSnapshotId,
             creator: msg.sender,
-            treasury: launchpad.treasury,
+            treasury: context.launchpad.treasury,
             token: token,
             virtualPool: virtualPool,
-            graduationDestination: preset.graduationDestination
+            graduationDestination: context.preset.graduationDestination
         });
         launchByToken[token] = launchId;
         launchByPool[virtualPool] = launchId;
-        launchCountByLaunchpad[request.launchpadId] = nextCount;
+        launchCountByLaunchpad[launchpadId] = context.nextCount;
         emit LaunchpadTokenBound(
             launchId,
-            request.launchpadId,
+            launchpadId,
             feeSnapshotId,
             BINDING_SCHEMA_VERSION,
             msg.sender,
-            launchpad.treasury,
+            context.launchpad.treasury,
             token,
             virtualPool,
-            launchpad.configPresetId,
-            preset.configHash,
-            preset.graduationDestination
+            context.launchpad.configPresetId,
+            context.preset.configHash,
+            context.preset.graduationDestination
         );
+    }
+
+    function setProtectedFactory(ProtectedLaunchFactory protectedFactory_)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (address(protectedFactory_).code.length == 0) revert InvalidLaunchRequest();
+        protectedFactory = protectedFactory_;
+        emit ProtectedFactoryConfigured(address(protectedFactory_));
     }
 
     function binding(bytes32 launchId) external view returns (LaunchBinding memory item) {

@@ -113,6 +113,21 @@ export async function persistProtectedLaunchEvent(
     );
     return true;
   }
+  if (event.eventName === "ProtectedLaunchIdentityBoundToLaunchpad") {
+    await sql.unsafe(
+      `update ${schema}.protected_launch_identities
+       set launchpad_id=$3,canonical_hash=$4,transaction_hash=$5,log_index=$6,block_number=$7,block_hash=$8,canonical=true,observed_at=$9
+       where chain_id=$1 and launch_id=$2`,
+      [event.chainId,value(event,"launchId"),value(event,"launchpadId"),value(event,"canonicalHash"),...receipt],
+    );
+    await sql.unsafe(
+      `update ${schema}.dbc_launches
+       set launchpad_bound=true,launchpad_id=$3,updated_block=$4,updated_at=now()
+       where chain_id=$1 and launch_id=$2`,
+      [event.chainId,value(event,"launchId"),value(event,"launchpadId"),event.blockNumber.toString()],
+    );
+    return true;
+  }
   if (event.eventName === "LifecycleUpdated") {
     await sql.unsafe(
       `update ${schema}.protected_launches set lifecycle=$3,transaction_hash=$4,log_index=$5,block_number=$6,block_hash=$7,canonical=true,observed_at=$8

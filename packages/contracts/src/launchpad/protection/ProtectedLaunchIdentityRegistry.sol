@@ -8,6 +8,8 @@ import { UUPSUpgradeable } from "../../proxy/UUPSUpgradeable.sol";
 contract ProtectedLaunchIdentityRegistry is ProtocolAccess, UUPSUpgradeable {
     bytes32 public constant IDENTITY_CONSUMER_ROLE =
         keccak256("ZKBLAST_PROTECTED_IDENTITY_CONSUMER_ROLE");
+    bytes32 public constant LAUNCHPAD_BINDER_ROLE =
+        keccak256("ZKBLAST_PROTECTED_LAUNCHPAD_BINDER_ROLE");
 
     error IdentityAlreadyRegistered();
     error InvalidIdentity();
@@ -59,6 +61,11 @@ contract ProtectedLaunchIdentityRegistry is ProtocolAccess, UUPSUpgradeable {
         uint32 tokenTemplateVersion,
         bool duplicateName,
         bool duplicateSymbol
+    );
+    event ProtectedLaunchIdentityBoundToLaunchpad(
+        bytes32 indexed launchId,
+        uint256 indexed launchpadId,
+        bytes32 indexed canonicalHash
     );
 
     constructor() {
@@ -143,6 +150,48 @@ contract ProtectedLaunchIdentityRegistry is ProtocolAccess, UUPSUpgradeable {
         Identity memory item = _identities[launchId];
         if (item.token == address(0)) revert InvalidIdentity();
         return item;
+    }
+
+    /// @notice Atomically completes hosted-launchpad attribution after factory creation.
+    function bindLaunchpad(bytes32 launchId, uint256 launchpadId)
+        external
+        onlyRole(LAUNCHPAD_BINDER_ROLE)
+        returns (bytes32 canonicalHash)
+    {
+        Identity storage item = _identities[launchId];
+        if (item.token == address(0) || item.launchpadId != 0 || launchpadId == 0) {
+            revert InvalidIdentity();
+        }
+        canonicalHash = _boundCanonicalHash(launchId, launchpadId, item);
+        item.launchpadId = launchpadId;
+        item.canonicalHash = canonicalHash;
+        emit ProtectedLaunchIdentityBoundToLaunchpad(
+            launchId, launchpadId, canonicalHash
+        );
+    }
+
+    function _boundCanonicalHash(
+        bytes32 launchId,
+        uint256 launchpadId,
+        Identity storage item
+    ) private view returns (bytes32 canonicalHash) {
+        assembly ("memory-safe") {
+            let pointer := mload(0x40)
+            mstore(pointer, chainid())
+            mstore(add(pointer, 0x20), and(sload(add(item.slot, 6)), 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(pointer, 0x40), launchId)
+            mstore(add(pointer, 0x60), and(sload(add(item.slot, 7)), 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(pointer, 0x80), and(sload(add(item.slot, 8)), 0xffffffffffffffffffffffffffffffffffffffff))
+            mstore(add(pointer, 0xa0), launchpadId)
+            mstore(add(pointer, 0xc0), sload(add(item.slot, 1)))
+            mstore(add(pointer, 0xe0), sload(add(item.slot, 2)))
+            mstore(add(pointer, 0x100), sload(add(item.slot, 3)))
+            mstore(add(pointer, 0x120), sload(add(item.slot, 4)))
+            mstore(add(pointer, 0x140), and(sload(add(item.slot, 10)), 0xffffffff))
+            mstore(add(pointer, 0x160), sload(add(item.slot, 5)))
+            mstore(0x40, add(pointer, 0x180))
+            canonicalHash := keccak256(pointer, 0x180)
+        }
     }
 
     function normalizedCommitment(string calldata value) external pure returns (bytes32) {

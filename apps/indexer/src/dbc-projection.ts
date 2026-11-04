@@ -46,6 +46,7 @@ export const dbcEventNames = new Set([
   "ProtectedAllocationRegistered",
   "ProtectedAllocationClaimed",
   "ProtectedLaunchIdentityRegistered",
+  "ProtectedLaunchIdentityBoundToLaunchpad",
 ]);
 
 export type DbcLaunchBinding = Readonly<{

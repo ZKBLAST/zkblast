@@ -36,6 +36,7 @@ const launchpadProjectionEvents = [
   "ProtectedAllocationRegistered",
   "ProtectedAllocationClaimed",
   "ProtectedLaunchIdentityRegistered",
+  "ProtectedLaunchIdentityBoundToLaunchpad",
   "GraduationAttemptStarted",
   "GraduationAttemptPending",
   "GraduationNeedsReview",

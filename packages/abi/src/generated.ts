@@ -13469,6 +13469,19 @@ export const protectedLaunchIdentityRegistryAbi = [
   },
   {
     type: "function",
+    name: "LAUNCHPAD_BINDER_ROLE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "UPGRADER_ROLE",
     inputs: [],
     outputs: [
@@ -13479,6 +13492,30 @@ export const protectedLaunchIdentityRegistryAbi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "bindLaunchpad",
+    inputs: [
+      {
+        name: "launchId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "launchpadId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "canonicalHash",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -13794,6 +13831,31 @@ export const protectedLaunchIdentityRegistryAbi = [
     ],
     outputs: [],
     stateMutability: "payable",
+  },
+  {
+    type: "event",
+    name: "ProtectedLaunchIdentityBoundToLaunchpad",
+    inputs: [
+      {
+        name: "launchId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "launchpadId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "canonicalHash",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
   },
   {
     type: "event",

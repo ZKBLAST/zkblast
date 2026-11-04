@@ -71,3 +71,24 @@ test("prepares a versioned launchpad token call and fee collection", () => {
     address("c"),
   );
 });
+
+test("prepares a protected token call through the canonical launchpad factory", () => {
+  const call = new LaunchpadClient(addresses).createProtectedToken({
+    launchpadId: 4n,
+    templateId: 2n,
+    policyId: 1n,
+    salt: `0x${"d".repeat(64)}`,
+    deadline: 1_900_000_000n,
+    name: "Protected Token",
+    symbol: "PRT",
+    metadataUri: "ipfs://protected",
+    creator: address("9"),
+    creatorTokenRecipient: address("9"),
+    referralRecipient: address("0"),
+  });
+  assert.equal(call.address, addresses.tokenFactory);
+  assert.equal(call.functionName, "createProtectedLaunch");
+  assert.equal(call.args[0], 4n);
+  assert.match(String(call.args[1]), /^0x[\da-f]+$/iu);
+  assert.equal(call.args[2], address("0"));
+});

@@ -16,6 +16,19 @@ contract IdentityRegistryActor {
         (success,) = address(registry)
             .call(abi.encodeCall(ProtectedLaunchIdentityRegistry.registerIdentity, (input)));
     }
+
+    function bindLaunchpad(
+        ProtectedLaunchIdentityRegistry registry,
+        bytes32 launchId,
+        uint256 launchpadId
+    ) external returns (bool success) {
+        (success,) = address(registry).call(
+            abi.encodeCall(
+                ProtectedLaunchIdentityRegistry.bindLaunchpad,
+                (launchId, launchpadId)
+            )
+        );
+    }
 }
 
 contract ProtectedLaunchIdentityRegistryTest {
@@ -111,6 +124,39 @@ contract ProtectedLaunchIdentityRegistryTest {
         second.pool = address(otherPool);
         bytes32 secondHash = registry.registerIdentity(second);
         require(firstHash != secondHash, "canonical collision");
+    }
+
+    function testBindsUnattributedIdentityToLaunchpadExactlyOnce() external {
+        bytes32 launchId = keccak256("HOSTED_PROTECTED");
+        ProtectedLaunchIdentityRegistry.IdentityInput memory input =
+            _input(launchId, "Hosted Protected", "HPRT");
+        input.launchpadId = 0;
+        bytes32 unboundHash = registry.registerIdentity(input);
+        registry.setRole(registry.LAUNCHPAD_BINDER_ROLE(), address(this), true);
+
+        bytes32 boundHash = registry.bindLaunchpad(launchId, 7);
+        ProtectedLaunchIdentityRegistry.Identity memory identity =
+            registry.identity(launchId);
+        require(identity.launchpadId == 7, "launchpad attribution missing");
+        require(boundHash == identity.canonicalHash, "bound hash mismatch");
+        require(boundHash != unboundHash, "canonical hash unchanged");
+
+        (bool repeated,) = address(registry).call(
+            abi.encodeCall(ProtectedLaunchIdentityRegistry.bindLaunchpad, (launchId, 8))
+        );
+        require(!repeated, "launchpad attribution overwritten");
+    }
+
+    function testRejectsUnauthorizedLaunchpadBinding() external {
+        bytes32 launchId = keccak256("UNAUTHORIZED_BINDING");
+        ProtectedLaunchIdentityRegistry.IdentityInput memory input =
+            _input(launchId, "Hosted Protected", "HPRT2");
+        input.launchpadId = 0;
+        registry.registerIdentity(input);
+        require(
+            !outsider.bindLaunchpad(registry, launchId, 7),
+            "unauthorized launchpad binding"
+        );
     }
 
     function _input(bytes32 launchId, string memory name, string memory symbol)

@@ -87,6 +87,7 @@ const eventKinds: Readonly<Record<string, ProtocolEventKind>> = {
   ProtectedAllocationRegistered: "launch",
   ProtectedAllocationClaimed: "launch",
   ProtectedLaunchIdentityRegistered: "launch",
+  ProtectedLaunchIdentityBoundToLaunchpad: "launch",
 };
 
 export function classifyProtocolEvent(

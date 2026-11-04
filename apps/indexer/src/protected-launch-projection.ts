@@ -28,6 +28,7 @@ const kinds = new Map<string, ProtectedProjection["kind"]>([
   ["ProtectedAllocationRegistered", "lp_allocation"],
   ["ProtectedAllocationClaimed", "lp_claim"],
   ["ProtectedLaunchIdentityRegistered", "identity"],
+  ["ProtectedLaunchIdentityBoundToLaunchpad", "identity"],
 ]);
 
 function optionalHash(event: IndexedEvent, key: string): Hex | undefined {
