@@ -118,7 +118,10 @@ export class DbcService {
   }>) {
     const policy = await this.store.protectionPolicy(input.policyId);
     if (!policy) throw new Error("PROTECTION_POLICY_NOT_FOUND");
-    if (policy.enabled !== true || policy.used === true)
+    // `used` is an audit marker proving that an immutable policy has been
+    // consumed at least once. Policies are reusable while governance keeps
+    // them enabled; treating `used` as single-use diverges from the registry.
+    if (policy.enabled !== true)
       throw new Error("PROTECTION_POLICY_UNAVAILABLE");
     const protectionBlocks = BigInt(String(policy.protection_blocks));
     const transactionBps = BigInt(String(policy.max_buy_bps_per_transaction));

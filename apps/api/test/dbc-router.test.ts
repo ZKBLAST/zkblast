@@ -21,7 +21,7 @@ const store: DbcReadStore = {
   protectionPolicy: async () => ({
     chain_id:4663,policy_id:"1",policy_hash:`0x${"2".repeat(64)}`,version:1,
     protection_blocks:"10",max_buy_bps_per_transaction:100,max_buy_bps_per_address:500,
-    initial_fee_bps:500,base_fee_bps:30,lp_lock_seconds:"86400",enabled:true,used:false,
+    initial_fee_bps:500,base_fee_bps:30,lp_lock_seconds:"86400",enabled:true,used:true,
   }),
   protectedLaunchSecurity: async (id) => ({ launch_id:id,policy_hash:`0x${"2".repeat(64)}` }),
   protectedLaunchIdentity: async (id) => ({ launch_id:id,token_template_version:1 }),
