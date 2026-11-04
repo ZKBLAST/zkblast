@@ -3139,3 +3139,23 @@ Slice PL13 and the expanded Protected Launch roadmap are **100% (8/8; 113/113)**
 Next: publish the reviewed code through the normal Git deployment path after
 explicit commit/push approval, then execute one minimum-value Protected launch
 from **My Launchpads** and reconcile its identity and hosted attribution.
+
+## 2026-11-04 — First hosted Protected launch reconciled
+
+Hosted Protected creation passed real mainnet acceptance in transaction
+`0xfff796c1a3933e7d2749b3c47e3cbfbfe640b927dd5c88f0ab0e6b36aebfdebb`.
+
+- Reconciled 11 canonical events for `Shield Guard / SGUARD`, launch ID
+  `0x93aa568d21acf04f3d99ba5129949b67c8e6de9c80ad76386c920a920228c927`,
+  token `0x9d75814f8ba1b3124c004e717c771686446c20b7`, and protected virtual pool
+  `0xdfc2b96bd07446618aaff4264bbf045795539144`.
+- Verified launchpad `3`, fee snapshot, metadata/logo, policy `1`, canonical
+  identity and active lifecycle through both the API origin and web proxy.
+- Recovered the main protocol checkpoint by **946,199 blocks** to the observed
+  finalized head. The previously missing launch now appears in both the hosted
+  launchpad catalog and the global Markets catalog.
+- Added Protected factory addresses to the recovery runner and taught fast
+  discovery to track both `TokenLaunched` and `ProtectedTokenLaunched` events.
+- Focused indexer tests pass **7/7** and indexer typecheck passes. Continuous
+  production indexing still requires publishing and restarting the indexer
+  service after explicit commit/push approval.

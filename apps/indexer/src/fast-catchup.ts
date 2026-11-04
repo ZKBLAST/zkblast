@@ -126,7 +126,10 @@ export async function fastCatchup(input: {
           data: log.data,
           topics: log.topics,
         });
-        if (decoded.eventName === "TokenLaunched") {
+        if (
+          decoded.eventName === "TokenLaunched" ||
+          decoded.eventName === "ProtectedTokenLaunched"
+        ) {
           const args = decoded.args as { token: Address; virtualPool: Address };
           for (const candidate of [
             getAddress(args.token),

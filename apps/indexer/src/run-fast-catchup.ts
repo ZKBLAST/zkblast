@@ -89,6 +89,12 @@ async function main() {
               typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
           )
         : []),
+      ...(manifest.protectedLaunch
+        ? Object.values(manifest.protectedLaunch).filter(
+            (value): value is string =>
+              typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
+          )
+        : []),
       ...(manifest.shielded
         ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
         : []),
@@ -108,6 +114,14 @@ async function main() {
         : []),
       ...(manifest.launchpad
         ? Object.values(manifest.launchpad)
+            .filter(
+              (value): value is string =>
+                typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
+            )
+            .map(getAddress)
+        : []),
+      ...(manifest.protectedLaunch
+        ? Object.values(manifest.protectedLaunch)
             .filter(
               (value): value is string =>
                 typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
