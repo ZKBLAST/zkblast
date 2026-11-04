@@ -77,6 +77,7 @@ export function LaunchWizard({
   const [recipient, setRecipient] = useState("");
   const [initialBuy, setInitialBuy] = useState("");
   const [status, setStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [economicsLoading, setEconomicsLoading] = useState(false);
   const [launchProtection, setLaunchProtection] = useState<"standard" | "protected">("standard");
@@ -211,6 +212,7 @@ export function LaunchWizard({
     if (!window.ethereum || !config || !selected) return;
     if (launchProtection === "protected" && !deployment.protectedLaunch)
       return setStatus("PROTECTED_DEPLOYMENT_NOT_CONFIGURED");
+    setSubmitting(true);
     setStatus("preparing");
     let launchCreated = false;
     try {
@@ -393,6 +395,8 @@ export function LaunchWizard({
         return;
       }
       setStatus(error instanceof Error ? error.message : "LAUNCH_FAILED");
+    } finally {
+      setSubmitting(false);
     }
   }
   async function approveInitialBuy() {
@@ -797,14 +801,23 @@ export function LaunchWizard({
               disabled={
                 !economics ||
                 (launchProtection === "protected" && (!deployment.protectedLaunch || !protectionPreview)) ||
-                (Boolean(status) && status !== "confirmed")
+                submitting
               }
               onClick={() => void submit()}
               className="flex w-full items-center justify-center gap-2 bg-lime py-3 font-mono text-xs uppercase text-lime-ink disabled:opacity-50"
             >
               <Rocket className="size-4" />
-              {status || (launchProtection === "protected" ? "Create protected launch" : "Create launch")}
+              {submitting
+                ? status || "Preparing wallet"
+                : launchProtection === "protected"
+                  ? "Create protected launch"
+                  : "Create launch"}
             </button>
+            {!submitting && status && status !== "confirmed" && (
+              <p role="alert" className="break-words text-xs leading-5 text-red-300">
+                The launch was not submitted. Review the details and try again.
+              </p>
+            )}
           </div>
         )}
         <div className="mt-6 flex justify-between border-t border-line pt-4">
@@ -828,7 +841,7 @@ export function LaunchWizard({
           {step === 2 && (
             <span className="flex items-center gap-2 text-xs text-muted">
               <Check className="size-4" />
-              Ready for wallet
+              {submitting ? "Wallet action in progress" : "Ready for wallet"}
             </span>
           )}
         </div>

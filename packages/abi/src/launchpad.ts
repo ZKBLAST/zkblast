@@ -364,6 +364,22 @@ export const launchpadTokenFactoryAbi = [
   },
   {
     type: "function",
+    name: "createProtectedLaunch",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "launchpadId", type: "uint256" },
+      { name: "protectedFactoryCall", type: "bytes" },
+      { name: "referralRecipient", type: "address" },
+    ],
+    outputs: [
+      { name: "launchId", type: "bytes32" },
+      { name: "token", type: "address" },
+      { name: "virtualPool", type: "address" },
+      { name: "feeSnapshotId", type: "bytes32" },
+    ],
+  },
+  {
+    type: "function",
     name: "binding",
     stateMutability: "view",
     inputs: [{ name: "launchId", type: "bytes32" }],

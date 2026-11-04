@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { encodeFunctionData } from "viem";
 
 import { LaunchpadClient, type LaunchpadAddresses } from "../src/launchpad.js";
 
@@ -91,4 +92,12 @@ test("prepares a protected token call through the canonical launchpad factory", 
   assert.equal(call.args[0], 4n);
   assert.match(String(call.args[1]), /^0x[\da-f]+$/iu);
   assert.equal(call.args[2], address("0"));
+  assert.match(
+    encodeFunctionData({
+      abi: call.abi,
+      functionName: call.functionName,
+      args: call.args,
+    }),
+    /^0x[\da-f]+$/iu,
+  );
 });
