@@ -7,6 +7,7 @@ import {
   encodeEventTopics,
   parseAbiParameters,
 } from "viem";
+import { isIndexerConsumer } from "../src/postgres-indexer-repository.js";
 
 test("Assistance Fund events are available to the shared indexer decoder", () => {
   const routeId = `0x${"11".repeat(32)}` as const;
@@ -31,4 +32,9 @@ test("Assistance Fund events are available to the shared indexer decoder", () =>
 
   assert.equal(decoded.eventName, "BuybackExecuted");
   assert.equal((decoded.args as { amountIn: bigint }).amountIn, 29n);
+});
+
+test("Assistance Fund backfill uses a bounded independent cursor", () => {
+  assert.equal(isIndexerConsumer(`assistance-fund-${"ab".repeat(20)}`), true);
+  assert.equal(isIndexerConsumer("assistance-fund-unbounded"), false);
 });

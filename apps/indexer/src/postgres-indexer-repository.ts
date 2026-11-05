@@ -44,6 +44,11 @@ const launchpadProjectionEvents = [
   "GraduationCompleted",
 ] as const;
 
+export const isIndexerConsumer = (consumer: string): boolean =>
+  /^(protocol|shielded-v2-[a-f0-9]{40}|assistance-fund-[a-f0-9]{40})$/u.test(
+    consumer,
+  );
+
 export class PostgresIndexerRepository implements IndexerRepository {
   private readonly sql;
   private readonly schema: string;
@@ -56,7 +61,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
   ) {
     if (!isSupportedDatabaseSchema(schema))
       throw new Error("INVALID_DATABASE_SCHEMA");
-    if (!/^(protocol|shielded-v2-[a-f0-9]{40})$/u.test(consumer))
+    if (!isIndexerConsumer(consumer))
       throw new Error("INVALID_INDEXER_CONSUMER");
     this.schema = schema;
     this.dbcContracts = new Set(
