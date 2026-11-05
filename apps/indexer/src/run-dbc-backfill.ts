@@ -7,6 +7,7 @@ import {
   createPublicClient,
   decodeEventLog,
   getAddress,
+  http,
   type Address,
   type Log,
 } from "viem";
@@ -20,6 +21,8 @@ const runtime = z
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
     INDEXER_CONFIRMATIONS: z.coerce.number().int().min(1).default(5),
     DBC_BACKFILL_FROM_BLOCK: z.coerce.bigint().min(0n).optional(),
+    INDEXER_RPC_URL: z.string().url().optional(),
+    INDEXER_PRIMARY_ONLY: z.coerce.boolean().default(false),
   })
   .parse(process.env);
 const config = loadServerConfig(process.env);
@@ -69,7 +72,11 @@ const addresses = [
 ].map(getAddress);
 const client = createPublicClient({
   cacheTime: 0,
-  transport: createIndexerTransport(config.RPC_URL),
+  transport: runtime.INDEXER_RPC_URL
+    ? http(runtime.INDEXER_RPC_URL, { timeout: 30_000, retryCount: 2 })
+    : runtime.INDEXER_PRIMARY_ONLY
+      ? http(config.RPC_URL, { timeout: 30_000, retryCount: 2 })
+    : createIndexerTransport(config.RPC_URL),
 });
 const repository = new PostgresIndexerRepository(
   runtime.SUPABASE_DIRECT_DATABASE_URL,

@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
-import { createPublicClient, getAddress, type Log } from "viem";
+import { createPublicClient, getAddress, http, type Log } from "viem";
 import { z } from "zod";
 
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
@@ -16,6 +16,8 @@ const runtime = z
     INDEXER_CONFIRMATIONS: z.coerce.number().int().min(1).default(5),
     STOCK_QUOTE_BACKFILL_FROM_BLOCK: z.coerce.bigint().min(0n).optional(),
     STOCK_QUOTE_BACKFILL_TO_BLOCK: z.coerce.bigint().min(0n).optional(),
+    INDEXER_RPC_URL: z.string().url().optional(),
+    INDEXER_PRIMARY_ONLY: z.coerce.boolean().default(false),
   })
   .parse(process.env);
 const config = loadServerConfig(process.env);
@@ -33,7 +35,11 @@ const addresses = [
 ].map(getAddress);
 const client = createPublicClient({
   cacheTime: 0,
-  transport: createIndexerTransport(config.RPC_URL),
+  transport: runtime.INDEXER_RPC_URL
+    ? http(runtime.INDEXER_RPC_URL, { timeout: 30_000, retryCount: 2 })
+    : runtime.INDEXER_PRIMARY_ONLY
+      ? http(config.RPC_URL, { timeout: 30_000, retryCount: 2 })
+    : createIndexerTransport(config.RPC_URL),
 });
 const confirmedHead =
   (await client.getBlockNumber()) - BigInt(runtime.INDEXER_CONFIRMATIONS);

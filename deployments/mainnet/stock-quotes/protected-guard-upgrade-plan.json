@@ -5,10 +5,10 @@
   "chainId": 4663,
   "broadcastAllowed": false,
   "graduationAllowed": false,
-  "observedBlock": "106866345",
+  "observedBlock": "106873172",
   "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "deployerNonce": 695,
-  "deployerBalanceWei": "193423848595704",
+  "deployerBalanceWei": "3353509489419491",
   "safe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
   "safeNonce": "130",
   "timelock": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
@@ -65,13 +65,13 @@
     "verify-onchain"
   ],
   "gas": {
-    "sampledGasPriceWei": "22538000",
-    "configRegistryDeployment": "10360063",
-    "launchFactoryDeployment": "11445393",
+    "sampledGasPriceWei": "22198000",
+    "configRegistryDeployment": "2139305",
+    "launchFactoryDeployment": "2429366",
     "safeGasCeilingPerOperation": "600000",
-    "modeledTotal": "24205456",
-    "feeCeilingWei": "1091085134656000",
-    "feeCeilingEth": "0.001091085134656"
+    "modeledTotal": "6968671",
+    "feeCeilingWei": "309381117716000",
+    "feeCeilingEth": "0.000309381117716"
   },
-  "planSha256": "b1cedc7ef55d1f0ce00e8d56428d5459aaee22c99b4e835844a2e8b794d89849"
+  "planSha256": "616093383ef8cb26508cd30495d493a15c9bbc05072e7481b5879648d711ad9d"
 }
