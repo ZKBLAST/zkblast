@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "feature": "zkblast-assistance-fund",
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": 106361553,
+  "policy": {
+    "buybackBps": 9900,
+    "treasuryBps": 100,
+    "activationMode": "fail_closed",
+    "crossChainCustody": false,
+    "reserveYieldEnabled": false
+  },
+  "governance": {
+    "admin": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "upgraderTimelock": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+    "minimumDelaySeconds": 300,
+    "verifiedRoleCoverage": [
+      "LaunchConfigRegistry",
+      "LaunchFactory",
+      "LaunchpadRouter",
+      "LPAllocationEscrow",
+      "GraduationManager",
+      "LaunchpadFeeController",
+      "RevenueSplitter",
+      "LaunchpadFeeCollector"
+    ]
+  },
+  "protocolToken": {
+    "address": "0x3f9ff9f1d40369f99c281375bd19d6ecbebfecd7",
+    "name": "ZKBLAST",
+    "symbol": "ZKBLAST",
+    "decimals": 18,
+    "totalSupplyRawAtReferenceBlock": "1000000000000000000000000000",
+    "runtimeBytecodeHash": "0x656f3976f3887c8ca0a0bbf29c65672307b07158adbd1771eb6ba535ff86bc83",
+    "selectorCapabilities": {
+      "burn": true,
+      "burnFrom": true,
+      "totalSupply": true,
+      "mint": false
+    },
+    "activationStatus": "pending_burn_delta_acceptance"
+  },
+  "dbc": {
+    "launchFactory": "0xB6BD21A7E9E573F30f0e5175551Ab1be009a545B",
+    "launchFactoryImplementation": "0x211a30e7d2837b04fc72dd81fbaf15dc19cceee6",
+    "launchConfigRegistry": "0xd680c010873257f05EAAbdde583b2d6DE4FA6e33",
+    "launchTokenDeployer": "0x763290A45dde9527e2713e41231bB02b0391106f",
+    "boundVirtualPoolDeployer": "0x3086f8699ca40aFAb009A6156efb75aF4612E10f",
+    "launchpadRouter": "0x6d208744Ff0Ec74b04Bb76576b32A8A2ccB9f181",
+    "graduationManager": "0x7DD70C9C9DFA592a4d1617F6cb2e8DB816eCd37c",
+    "feeOwnership": "creator_partner_protocol_liabilities_are_separate",
+    "eligibleAmount": "protocolFeeLiabilityRaw_only",
+    "activationStatus": "candidate"
+  },
+  "hostedLaunchpad": {
+    "feeController": "0x0B7de982ecEab02b25bFcdc88581f3FF133FfDE1",
+    "revenueSplitter": "0xB7582AE80429357E58b8E43B9B91Cd4485B99C96",
+    "feeCollector": "0x4238729198c97394ca7F1d49ADC3468313E0800e",
+    "currentProtocolRecipient": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+    "eligibleAmount": "RevenueSplitter.FeeAccrued.protocolAmount_only",
+    "historicalSnapshots": "preserve_existing_recipient_and_claimability",
+    "activationStatus": "candidate_requires_scoped_forwarding_or_future_snapshot_recipient"
+  },
+  "ammSources": [
+    {
+      "sourceId": "zkblast-usdg-dlmm",
+      "model": "dlmm",
+      "pool": "0xe6197894d4d4a4e0b1eef50501d1e9c3dd37bd9f",
+      "token0": "0x3f9Ff9f1D40369f99c281375bD19D6EcbEbFeCd7",
+      "token1": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "currentProtocolFeeRecipient": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "protocolFees0RawAtReferenceBlock": "0",
+      "protocolFees1RawAtReferenceBlock": "0",
+      "eligibleAmount": "protocolFees0_and_protocolFees1_only",
+      "activationStatus": "blocked_recipient_not_assistance_collector"
+    }
+  ],
+  "excludedSources": [
+    "user_deposits",
+    "shielded_notes",
+    "lp_principal",
+    "lp_owned_fees",
+    "creator_fees",
+    "operator_fees",
+    "referral_fees",
+    "partner_fees",
+    "user_refunds",
+    "perps_margin",
+    "perps_liquidity_vault_principal",
+    "perps_insurance_fund",
+    "protocol_escrow_liabilities",
+    "unrealized_or_unverified_yield",
+    "unsolicited_token_transfers"
+  ],
+  "futureSources": {
+    "perps": "disabled_until_a_separate_protocol_owned_fee_is_proven",
+    "reserveYield": "disabled_pending_separate_approval_and_review",
+    "hyperEvm": "disabled_requires_independent_chain_deployment"
+  }
+}

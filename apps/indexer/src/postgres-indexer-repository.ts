@@ -12,6 +12,7 @@ import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
 import { persistPerpsEvent } from "./persist-perps-event.js";
 import { persistDbcEvent } from "./persist-dbc-event.js";
 import type { IndexedEvent } from "./domain.js";
+import { persistAssistanceFundEvent } from "./persist-assistance-fund-event.js";
 
 const launchpadProjectionEvents = [
   "LaunchpadCreated",
@@ -43,7 +44,6 @@ const launchpadProjectionEvents = [
   "GraduationCompleted",
 ] as const;
 
-
 export class PostgresIndexerRepository implements IndexerRepository {
   private readonly sql;
   private readonly schema: string;
@@ -54,7 +54,8 @@ export class PostgresIndexerRepository implements IndexerRepository {
     private readonly consumer = "protocol",
     dbcContracts: readonly Address[] = [],
   ) {
-    if (!isSupportedDatabaseSchema(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+    if (!isSupportedDatabaseSchema(schema))
+      throw new Error("INVALID_DATABASE_SCHEMA");
     if (!/^(protocol|shielded-v2-[a-f0-9]{40})$/u.test(consumer))
       throw new Error("INVALID_INDEXER_CONSUMER");
     this.schema = schema;
@@ -214,6 +215,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         const observation = transactionObservation(event);
         await persistPoolSwap(transaction, this.schema, event);
         await persistPerpsEvent(transaction, this.schema, event);
+        await persistAssistanceFundEvent(transaction, this.schema, event);
         if (event.eventName === "AllocationRegistered")
           deferredDbcEvents.push(event);
         else
@@ -294,6 +296,18 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `update ${this.schema}.dbc_events set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
+      for (const table of [
+        "assistance_fee_sources",
+        "assistance_revenue_receipts",
+        "assistance_allocations",
+        "assistance_buyback_receipts",
+        "assistance_burn_receipts",
+        "assistance_reconciliation_snapshots",
+      ])
+        await transaction.unsafe(
+          `delete from ${this.schema}.${table} where chain_id=$1 and block_number >= $2`,
+          [chainId, fromBlock.toString()],
+        );
       const launchpadEvents = await transaction.unsafe<
         {
           chain_id: number;

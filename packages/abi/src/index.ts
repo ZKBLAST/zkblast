@@ -46,6 +46,13 @@ export {
   launchpadRevenueSplitterAbi,
   launchpadTokenFactoryAbi,
 } from "./launchpad.js";
+export {
+  assistanceFeeCollectorAbi,
+  assistanceFundExecutorAbi,
+  burnModuleAbi,
+  buybackRouteRegistryAbi,
+  treasuryControllerAbi,
+} from "./assistance-fund.js";
 
 import {
   privateVaultV2Abi,
@@ -71,6 +78,13 @@ import {
 import { perpsEventsAbi } from "./perps.js";
 import { dbcEventsAbi } from "./dbc.js";
 import { launchpadEventsAbi, launchpadFeePolicyEventsAbi, launchpadTokenFactoryAbi } from "./launchpad.js";
+import {
+  assistanceFeeCollectorAbi,
+  assistanceFundExecutorAbi,
+  burnModuleAbi,
+  buybackRouteRegistryAbi,
+  treasuryControllerAbi,
+} from "./assistance-fund.js";
 
 export const protocolAbis = {
   PrivateVaultV2: privateVaultV2Abi,
@@ -95,4 +109,11 @@ export const protocolAbis = {
   ProtectedEscrow: protectedLpAllocationEscrowAbi,
   ProtectedGraduation: protectedGraduationManagerAbi,
   ProtectedIdentity: protectedLaunchIdentityRegistryAbi,
+  AssistanceFund: [
+    ...assistanceFeeCollectorAbi,
+    ...assistanceFundExecutorAbi,
+    ...burnModuleAbi,
+    ...buybackRouteRegistryAbi,
+    ...treasuryControllerAbi,
+  ],
 } as const;

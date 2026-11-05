@@ -31,22 +31,25 @@ library FullMath {
             product0 := sub(product0, remainder)
         }
 
-        uint256 twos = denominator & (~denominator + 1);
-        assembly ("memory-safe") {
-            denominator := div(denominator, twos)
-            product0 := div(product0, twos)
-            twos := add(div(sub(0, twos), twos), 1)
-        }
-        product0 |= product1 * twos;
+        unchecked {
+            uint256 twos = denominator & (~denominator + 1);
+            assembly ("memory-safe") {
+                denominator := div(denominator, twos)
+                product0 := div(product0, twos)
+                twos := add(div(sub(0, twos), twos), 1)
+            }
+            product0 |= product1 * twos;
 
-        uint256 inverse = (3 * denominator) ^ 2;
-        inverse *= 2 - denominator * inverse;
-        inverse *= 2 - denominator * inverse;
-        inverse *= 2 - denominator * inverse;
-        inverse *= 2 - denominator * inverse;
-        inverse *= 2 - denominator * inverse;
-        inverse *= 2 - denominator * inverse;
-        result = product0 * inverse;
+            // Newton-Raphson inversion intentionally wraps modulo 2^256.
+            uint256 inverse = (3 * denominator) ^ 2;
+            inverse *= 2 - denominator * inverse;
+            inverse *= 2 - denominator * inverse;
+            inverse *= 2 - denominator * inverse;
+            inverse *= 2 - denominator * inverse;
+            inverse *= 2 - denominator * inverse;
+            inverse *= 2 - denominator * inverse;
+            result = product0 * inverse;
+        }
     }
 
     function mulDivRoundingUp(uint256 x, uint256 y, uint256 denominator)

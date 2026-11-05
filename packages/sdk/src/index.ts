@@ -38,3 +38,4 @@ export * from "./launchpad.js";
 export * from "./launchpad-proof-claim.js";
 export * from "./launchpad-api.js";
 export * from "./protected-launch.js";
+export * from "./assistance-fund.js";

@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "feature": "zkblast-assistance-fund",
+  "chainId": 4663,
+  "sourcePlanSha256": "9548a7fe15248d6c77a5f094acdab310c7b5ae17e488145bf5b7734d1e333f57",
+  "deterministicRehearsal": true,
+  "deploymentTransactions": 12,
+  "governanceTransactions": 8,
+  "totalGasUsed": "10281450",
+  "passed": true,
+  "checks": {
+    "predictedAddresses": true,
+    "initializers": true,
+    "governanceConfiguration": true,
+    "proxyImplementationSlots": true,
+    "sourceActivationCount": 0,
+    "routeActivationCount": 0,
+    "broadcastAllowed": false
+  },
+  "receipts": [
+    {
+      "description": "registryImplementation",
+      "hash": "0xe96f38d095fc4f26e683e126781d915f07d0f0462ac1d1798718da416f702481",
+      "gasUsed": "998774",
+      "contractAddress": "0x0475A0dcB43e69f4CE70Ba1A832cAcA08f16D7b8"
+    },
+    {
+      "description": "registry",
+      "hash": "0x5cca46005a31b2e80bd07bbd1414a1ffae920ddafda21350bd457261aa792728",
+      "gasUsed": "203628",
+      "contractAddress": "0xCbdBc0F8271bF4F04Ff5E34eEfa0D5162dc08B7c"
+    },
+    {
+      "description": "collectorImplementation",
+      "hash": "0xaee71a1662f9e54f10202a54c775fb88b97d3156ea1e0df74fea4545b66767d9",
+      "gasUsed": "1873071",
+      "contractAddress": "0x6bAb699D5594e73425c730aF89C1aE7D68d09036"
+    },
+    {
+      "description": "collector",
+      "hash": "0x33bc47cdf4636e8c60da2341e68adbb65dd50e52ff6ef155d6907ffc38996522",
+      "gasUsed": "206927",
+      "contractAddress": "0xBE8f4c9c1FE2f7e485f6D3b0c4963e519C10dD57"
+    },
+    {
+      "description": "treasuryControllerImplementation",
+      "hash": "0x8353bd5f68f81301a6e97ae9f78b3815df4fe66f5db21dc7dbc26c36cd4c48ba",
+      "gasUsed": "1077120",
+      "contractAddress": "0x5dc7A3f351B96d2d80B01BDFBec8b2b175419659"
+    },
+    {
+      "description": "treasuryController",
+      "hash": "0x342827204ca4b4f4ae0ea358ede2f1877422f66d4e9bbf0ee587095fc1af0e04",
+      "gasUsed": "231061",
+      "contractAddress": "0x9B18faCa161bc2192f81731dd4c06D18c62D81e8"
+    },
+    {
+      "description": "routeRegistryImplementation",
+      "hash": "0x6edf63b930dcfceb62287eb8cabb8df3162914607ed2413ae591e0490a7e4a4f",
+      "gasUsed": "2055799",
+      "contractAddress": "0x332a0Ab9642d40cCc62097278Dc229E89bDC969a"
+    },
+    {
+      "description": "routeRegistry",
+      "hash": "0xeddbddf24d64e37a3ea3a7966a90bc43eac5ec6aa8339432b4984bb36861e651",
+      "gasUsed": "184242",
+      "contractAddress": "0xb9C3d4e5F34ae0D10c280328C448898D0EF577bb"
+    },
+    {
+      "description": "burnModule",
+      "hash": "0x2f1777a499ec7e4fc5396378b7bfa026d4d842f446520da57a9710998741c492",
+      "gasUsed": "408557",
+      "contractAddress": "0xF6d197741522dAa2866272Fd91bC71286D019822"
+    },
+    {
+      "description": "executorImplementation",
+      "hash": "0x9bc41cfbb16301d6730fa8c9cd11b3866b45d8e67042f3e40a1f1dffe718a060",
+      "gasUsed": "1417506",
+      "contractAddress": "0x82b280cBB026d4F523b7170E8bA6Be295bCA00d8"
+    },
+    {
+      "description": "executor",
+      "hash": "0xd5f2f91a51c5f2134b80300b837e598e00c6eb11f6a7a90f16c5e7169619eccb",
+      "gasUsed": "285420",
+      "contractAddress": "0xC7142C335F2570B00b8454248b3AbB861d433951"
+    },
+    {
+      "description": "routerAdapter",
+      "hash": "0x4948014212d478d6b310d395eb0d90862819df83de68c393566e09639fbac8ca",
+      "gasUsed": "912721",
+      "contractAddress": "0xf166363a18a0755dD7d8b259d59C2bbEebF5c5D8"
+    },
+    {
+      "description": "Bind the 1% treasury controller",
+      "hash": "0x10b15324b394b3234fb22d13605192a84ad6224426b1f5ee8bd536b0efaec6ce",
+      "gasUsed": "54889",
+      "contractAddress": null
+    },
+    {
+      "description": "Bind the 99% buyback executor",
+      "hash": "0xb976b2c1ff12eeb2c59f89de526104e2b9f225ed44160aefd72ccae5adc2b1f6",
+      "gasUsed": "54957",
+      "contractAddress": null
+    },
+    {
+      "description": "Bind executor to immutable burn module",
+      "hash": "0x3092e35a116a98bb9ee367348ab68fe6c6940eecc4fb3852f74f103eedfea3a4",
+      "gasUsed": "47900",
+      "contractAddress": null
+    },
+    {
+      "description": "Grant upgrader role on 0xCbdBc0F8271bF4F04Ff5E34eEfa0D5162dc08B7c",
+      "hash": "0x813c06b744f4bed7f58e666fced43afd55617b8f9fb81c4cd69327aed7cbff14",
+      "gasUsed": "53788",
+      "contractAddress": null
+    },
+    {
+      "description": "Grant upgrader role on 0xBE8f4c9c1FE2f7e485f6D3b0c4963e519C10dD57",
+      "hash": "0x0f24edf06eccf5edc58d5e37d59b89ae16b69bf0c76a9b61cb67d5fa86ee603f",
+      "gasUsed": "53759",
+      "contractAddress": null
+    },
+    {
+      "description": "Grant upgrader role on 0x9B18faCa161bc2192f81731dd4c06D18c62D81e8",
+      "hash": "0x62dc8d146471876cd66ff86b73457c36daa2ddd2dc5d3f66847a312946ae544a",
+      "gasUsed": "53747",
+      "contractAddress": null
+    },
+    {
+      "description": "Grant upgrader role on 0xb9C3d4e5F34ae0D10c280328C448898D0EF577bb",
+      "hash": "0xd76b7a143cb45dfbe097b9426d715f8e4dcd5145935a3bba136490d6c1b17a0d",
+      "gasUsed": "53803",
+      "contractAddress": null
+    },
+    {
+      "description": "Grant upgrader role on 0xC7142C335F2570B00b8454248b3AbB861d433951",
+      "hash": "0xfea767a887537607d2c500af136c5e55151ce1e507add8bd029bfa7bae1644c7",
+      "gasUsed": "53781",
+      "contractAddress": null
+    }
+  ],
+  "reportSha256": "f2d46a9c9c4566754c1a61ed341bfc244047c874f21c5a8fc75cf04483c06c7c"
+}

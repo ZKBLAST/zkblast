@@ -60,6 +60,7 @@ import { PostgresLaunchpadDeveloperStore } from "./postgres-launchpad-developer-
 import { probeWebhookOwnership } from "./launchpad-developer-security.js";
 import { createHyperEvmMainnetContext } from "./hyperevm-mainnet-context.js";
 import { publicContractDirectory } from "./public-contract-directory.js";
+import { PostgresAssistanceFundService } from "./postgres-assistance-fund-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -140,6 +141,12 @@ const manifest = await loadDeploymentManifestFile(
   resolve(projectRoot, serverConfig.DEPLOYMENT_MANIFEST_PATH),
   { environment: serverConfig.APP_ENV, chainId: serverConfig.CHAIN_ID },
 );
+const assistanceFundService = manifest.assistanceFund
+  ? new PostgresAssistanceFundService(
+      directDatabaseUrl,
+      serverConfig.SUPABASE_SCHEMA,
+    )
+  : undefined;
 const protocolAddresses = resolveProtocolAddresses(manifest, {
   environment: serverConfig.APP_ENV,
   chainId: serverConfig.CHAIN_ID,
@@ -678,6 +685,7 @@ const app = createApp(
     ...(launchpadBrandingService ? { launchpadBrandingService } : {}),
     ...(launchpadDomainService ? { launchpadDomainService } : {}),
     ...(launchpadDeveloperService ? { launchpadDeveloperService } : {}),
+    ...(assistanceFundService ? { assistanceFundService } : {}),
   },
   additionalChainContexts,
 );

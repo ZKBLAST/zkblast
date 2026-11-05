@@ -103,6 +103,16 @@ const configuredProtectedLaunchAddresses = manifest.protectedLaunch
       manifest.protectedLaunch.identityRegistry,
     ].filter((address): address is string => Boolean(address))
   : [];
+const configuredAssistanceFundAddresses = manifest.assistanceFund
+  ? [
+      manifest.assistanceFund.registry,
+      manifest.assistanceFund.collector,
+      manifest.assistanceFund.treasuryController,
+      manifest.assistanceFund.routeRegistry,
+      manifest.assistanceFund.executor,
+      manifest.assistanceFund.burnModule,
+    ]
+  : [];
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -116,6 +126,7 @@ const addresses = [
   ...configuredDbcAddresses,
   ...configuredLaunchpadAddresses,
   ...configuredProtectedLaunchAddresses,
+  ...configuredAssistanceFundAddresses,
 ]
   .map(getAddress)
   .filter((address, index, all) => all.indexOf(address) === index);

@@ -9,12 +9,16 @@ export function activeChainId(): number | null {
 
 export function networkScopedPath(path: string): string {
   if (typeof window === "undefined") return path;
-  if (!/^\/v1\/(protocol|dbc|launchpads)(?:\/|\?|$)/u.test(path))
+  if (
+    !/^\/v1\/(protocol|dbc|launchpads|assistance-fund)(?:\/|\?|$)/u.test(path)
+  )
     return path;
   const chainId = activeChainId();
-  if (!chainId || chainId === 4663)
-    return path;
-  return path.replace(/^\/v1\/(protocol|dbc|launchpads)/u, `/v2/chains/${chainId}/$1`);
+  if (!chainId || chainId === 4663) return path;
+  return path.replace(
+    /^\/v1\/(protocol|dbc|launchpads|assistance-fund)/u,
+    `/v2/chains/${chainId}/$1`,
+  );
 }
 
 export function apiProxyAssetPath(path: string): string {

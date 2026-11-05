@@ -844,6 +844,17 @@
     "lpAllocationEscrow": "0x13A41EEE494b198d8F5E428283a0A274699C9b60",
     "launchFactoryImplementation": "0x211a30E7D2837B04Fc72DD81fbaf15dc19CceEe6"
   },
+  "assistanceFund": {
+    "abiVersion": 1,
+    "deploymentBlock": 106440334,
+    "registry": "0xCbdBc0F8271bF4F04Ff5E34eEfa0D5162dc08B7c",
+    "collector": "0xBE8f4c9c1FE2f7e485f6D3b0c4963e519C10dD57",
+    "treasuryController": "0x9B18faCa161bc2192f81731dd4c06D18c62D81e8",
+    "routeRegistry": "0xb9C3d4e5F34ae0D10c280328C448898D0EF577bb",
+    "executor": "0xC7142C335F2570B00b8454248b3AbB861d433951",
+    "burnModule": "0xF6d197741522dAa2866272Fd91bC71286D019822",
+    "protocolToken": "0x3f9ff9f1d40369f99c281375bd19d6ecbebfecd7"
+  },
   "protectedLaunch": {
     "abiVersion": 1,
     "deploymentBlock": 105179979,

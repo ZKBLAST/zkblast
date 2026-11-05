@@ -8,6 +8,7 @@ import { useApp } from "@/components/shell/AppProvider";
 import { PageHeader, Stat } from "@/components/ui/PageHeader";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import { useProtocolData } from "@/lib/use-protocol-data";
+import { AssistanceFundDashboard } from "@/components/analytics/AssistanceFundDashboard";
 
 export function AnalyticsView() {
   const { config } = useApp();
@@ -71,6 +72,7 @@ export function AnalyticsView() {
             })}
           </ul>
         ) : null}
+        <AssistanceFundDashboard />
       </div>
     </>
   );

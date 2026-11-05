@@ -168,6 +168,19 @@ export const deploymentManifestSchema = z
         tokenFactory: addressSchema.optional(),
       })
       .optional(),
+    assistanceFund: z
+      .object({
+        abiVersion: z.literal(1),
+        deploymentBlock: z.number().int().nonnegative(),
+        registry: addressSchema,
+        collector: addressSchema,
+        treasuryController: addressSchema,
+        routeRegistry: addressSchema,
+        executor: addressSchema,
+        burnModule: addressSchema,
+        protocolToken: addressSchema,
+      })
+      .optional(),
     shieldedV2: privateVaultV2ConfigSchema.optional(),
     perps: privatePerpsConfigSchema.optional(),
     shielded: z

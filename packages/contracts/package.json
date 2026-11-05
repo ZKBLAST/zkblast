@@ -129,7 +129,12 @@
     "seed:testnet-external-markets": "node --experimental-strip-types scripts/seed-external-market-pools.ts",
     "verify:manifest": "node --import tsx scripts/verify-manifest.ts",
     "verify:mainnet-rehearsal": "node --import tsx scripts/verify-manifest.ts --rehearsal",
-    "audit:deployment": "node --import tsx scripts/audit-deployment.ts"
+    "audit:deployment": "node --import tsx scripts/audit-deployment.ts",
+    "plan:assistance-fund:mainnet": "node --import tsx scripts/prepare-assistance-fund-deployment.ts",
+    "preflight:assistance-fund:mainnet": "node --import tsx scripts/preflight-assistance-fund-mainnet.ts",
+    "simulate:assistance-fund:mainnet": "node --import tsx scripts/simulate-assistance-fund-deployment.ts",
+    "broadcast:assistance-fund:mainnet": "node --import tsx scripts/broadcast-assistance-fund-deployment.ts",
+    "verify:assistance-fund:mainnet": "node --import tsx scripts/verify-assistance-fund-mainnet.ts"
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.7.0",

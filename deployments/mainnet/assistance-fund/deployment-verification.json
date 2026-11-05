@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "feature": "zkblast-assistance-fund",
+  "chainId": 4663,
+  "planSha256": "9548a7fe15248d6c77a5f094acdab310c7b5ae17e488145bf5b7734d1e333f57",
+  "deploymentBlock": 106440334,
+  "latestBlock": 106440981,
+  "codeHashes": {
+    "registryImplementation": "0xd7cc6310b01babe73f4d24ebd9e319a4529f68cda43f9bdffe580d7554f6e2b8",
+    "registry": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+    "collectorImplementation": "0xa1fbccc072f540a3982f27115bc8a0ee22228421584e3febbc650ea8acce30f4",
+    "collector": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+    "treasuryControllerImplementation": "0x6771cc18271dec9f18ef3028c4bfb333a3ab7fe23da3ae973096bed98f58ecb2",
+    "treasuryController": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+    "routeRegistryImplementation": "0x380e80c83e1232edb8c8a71c65b4ae012efa74bce1bf2fd485704d7365ccf4f5",
+    "routeRegistry": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+    "burnModule": "0xd6bd2f46e9fe3d18169bd43d08dcdf7c35dac095eda87a9cd145ee963c0e76ef",
+    "executorImplementation": "0xa179299a487fb0c9f4aaab00d26a4e6b58bc66d759ed77333f7b91932b787181",
+    "executor": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
+    "routerAdapter": "0x76b6be8d02aee5362b09708fd3f5a163a57e08c35d2febf329f1b9e869153870"
+  },
+  "checks": {
+    "deployedCode": true,
+    "proxyImplementationSlots": true,
+    "collectorBindings": true,
+    "burnBinding": true,
+    "executorBindings": true,
+    "upgraderRoles": true,
+    "sourcesRegistered": 0,
+    "routesEnabled": 0
+  },
+  "transactionHashes": [
+    "0x9ab64f5314239b52ae573ba1623cf1eef08213b5be608c56808283973f4d2695",
+    "0xd73bc16a523c09e11213cfc617a3c62770155ba2a3f37bf255c3609a86d3b73a",
+    "0x838c2283a13896d8de67f1b7a2af03148a7c4a251e818e2c22bba98ae1c70bd0",
+    "0x35220baed954159502f7d09ce2cd09453fe69b1e41709b72e4e78bef642156de",
+    "0x12f3c5b9eaeecc97dc8087112d5d2614c06f3302e5c395d4fcf812d7bac21147",
+    "0xf9aa2e94299e27528159f7ae3c77c967e63ff2552857c51867f1fa0c3f1f5a48",
+    "0xc241529bf8e33decd3776a687abd62ff90676ccd7fcf1680e63c82d51f6544a7",
+    "0xda4ca2d76950878b4f1623b4396f79d5c6422176159f4e1f9f0f323a836b5d29",
+    "0xd7010cf1064952da0eb1236d7bca538c380cf6e61b958492c6b172d0832be6cc",
+    "0xef3ed7cd84a899dc810e62a41b3a51a30c3f87496283f780e8371286d95c5670",
+    "0x0aff90e51ad99cc03c8f4f136e4ab21672df7e4b44c6b7bd267580edd2f3ec3d",
+    "0x9b8085880ae9f0e066479bc15c530b955c611e005b459d097f9d3d0b6a768217",
+    "0xb3a26f1a89d00052af8f5d0beb6e6dd964c6b6154b2194dddd82d767a0dc44c0"
+  ],
+  "reportSha256": "9613783c410a2ca04a9e79d854c635feee8a563131a830c998371d62f4d464ea"
+}

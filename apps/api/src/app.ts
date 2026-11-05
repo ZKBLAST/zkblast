@@ -45,6 +45,8 @@ import type { LaunchpadCatalogService } from "./launchpad-catalog-service.js";
 import type { LaunchpadReadService } from "./launchpad-read-service.js";
 import { createLaunchpadDeveloperRouter } from "./launchpad-developer-router.js";
 import type { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
+import { createAssistanceFundRouter } from "./assistance-fund-router.js";
+import type { AssistanceFundService } from "./assistance-fund-service.js";
 
 export type ApiPublicConfig = Readonly<{
   shieldedV2?: PrivateVaultV2Config;
@@ -189,25 +191,26 @@ const publicConfigResponseSchema = z
   });
 
 export type ApiDependencies = Readonly<{
-    authService?: AuthService;
-    identityService?: IdentityService;
-    protocolService?: ProtocolService;
-    swapService?: SwapService;
-    liquidityService?: LiquidityService;
-    operationsService?: OperationsHealthService;
-    shieldedService?: ShieldedService;
-    shieldedV2Service?: ShieldedService;
-    externalMarketService?: ExternalMarketService;
-    tradeReceiptService?: TradeReceiptService;
-    poolCreationService?: PoolCreationService;
-    perpsService?: PerpsService;
-    dbcService?: DbcService;
-    launchpadBrandingService?: LaunchpadBrandingService;
-    launchpadDomainService?: LaunchpadDomainService;
-    launchpadCatalogService?: LaunchpadCatalogService;
-    launchpadReadService?: LaunchpadReadService;
-    launchpadDeveloperService?: LaunchpadDeveloperService;
-  }>;
+  authService?: AuthService;
+  identityService?: IdentityService;
+  protocolService?: ProtocolService;
+  swapService?: SwapService;
+  liquidityService?: LiquidityService;
+  operationsService?: OperationsHealthService;
+  shieldedService?: ShieldedService;
+  shieldedV2Service?: ShieldedService;
+  externalMarketService?: ExternalMarketService;
+  tradeReceiptService?: TradeReceiptService;
+  poolCreationService?: PoolCreationService;
+  perpsService?: PerpsService;
+  dbcService?: DbcService;
+  launchpadBrandingService?: LaunchpadBrandingService;
+  launchpadDomainService?: LaunchpadDomainService;
+  launchpadCatalogService?: LaunchpadCatalogService;
+  launchpadReadService?: LaunchpadReadService;
+  launchpadDeveloperService?: LaunchpadDeveloperService;
+  assistanceFundService?: AssistanceFundService;
+}>;
 
 export type ApiChainContext = Readonly<{
   config: ApiPublicConfig;
@@ -385,16 +388,31 @@ export function createApp(
       );
     app.use("/v1/protocol", createCurrentProtocolRouter());
   }
-  mountChainRouters("/v2/chains/:chainId/protocol", ({ config: chainConfig, dependencies: chainDependencies }) =>
-    chainDependencies.protocolService
-      ? createProtocolRouter(
-          chainDependencies.protocolService,
-          chainDependencies.swapService,
-          chainDependencies.liquidityService,
-          chainDependencies.operationsService,
-          chainConfig.operationsToken,
-        )
-      : undefined,
+  if (dependencies.assistanceFundService) {
+    app.use(
+      "/v1/assistance-fund",
+      createAssistanceFundRouter(dependencies.assistanceFundService),
+    );
+  }
+  mountChainRouters(
+    "/v2/chains/:chainId/assistance-fund",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.assistanceFundService
+        ? createAssistanceFundRouter(chainDependencies.assistanceFundService)
+        : undefined,
+  );
+  mountChainRouters(
+    "/v2/chains/:chainId/protocol",
+    ({ config: chainConfig, dependencies: chainDependencies }) =>
+      chainDependencies.protocolService
+        ? createProtocolRouter(
+            chainDependencies.protocolService,
+            chainDependencies.swapService,
+            chainDependencies.liquidityService,
+            chainDependencies.operationsService,
+            chainConfig.operationsToken,
+          )
+        : undefined,
   );
   mountChainRouters(
     "/v2/chains/:chainId/protocol/pool-creation",
