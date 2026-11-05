@@ -145,6 +145,9 @@ importers:
 
   apps/keeper:
     dependencies:
+      '@zkblast/abi':
+        specifier: workspace:*
+        version: link:../../packages/abi
       '@zkblast/config':
         specifier: workspace:*
         version: link:../../packages/config

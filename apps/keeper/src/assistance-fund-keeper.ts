@@ -6,10 +6,7 @@ export type AssistanceExecutionCandidate = Readonly<{
 
 export type AssistanceSimulation =
   | Readonly<{ executable: false; retryable: boolean; reason: string }>
-  | Readonly<{
-      executable: true;
-      transaction: Readonly<Record<string, unknown>>;
-    }>;
+  | Readonly<{ executable: true; transaction: Readonly<Record<string, unknown>> }>;
 
 export type AssistanceKeeperMetrics = Readonly<{
   discovered: number;
@@ -21,9 +18,7 @@ export type AssistanceKeeperMetrics = Readonly<{
 
 export interface AssistanceKeeperPort {
   discover(): Promise<readonly AssistanceExecutionCandidate[]>;
-  simulate(
-    candidate: AssistanceExecutionCandidate,
-  ): Promise<AssistanceSimulation>;
+  simulate(candidate: AssistanceExecutionCandidate): Promise<AssistanceSimulation>;
   pendingNonce(): Promise<number>;
   submit(
     transaction: Readonly<Record<string, unknown>>,
@@ -51,13 +46,7 @@ export function isRetryableAssistanceError(error: unknown): boolean {
 export class AssistanceFundKeeper {
   private readonly completed = new Set<string>();
   private running = false;
-  private counters = {
-    discovered: 0,
-    simulated: 0,
-    submitted: 0,
-    retryable: 0,
-    failed: 0,
-  };
+  private counters = { discovered: 0, simulated: 0, submitted: 0, retryable: 0, failed: 0 };
 
   constructor(
     private readonly port: AssistanceKeeperPort,
@@ -76,11 +65,7 @@ export class AssistanceFundKeeper {
       const hashes: `0x${string}`[] = [];
       let nonce = await this.port.pendingNonce();
       for (const candidate of candidates) {
-        if (
-          hashes.length >= this.maximumExecutionsPerRun ||
-          this.completed.has(candidate.idempotencyKey)
-        )
-          continue;
+        if (hashes.length >= this.maximumExecutionsPerRun || this.completed.has(candidate.idempotencyKey)) continue;
         try {
           const simulation = await this.port.simulate(candidate);
           this.counters.simulated += 1;
@@ -90,41 +75,22 @@ export class AssistanceFundKeeper {
           }
           let hash: `0x${string}`;
           try {
-            hash = await this.port.submit(
-              simulation.transaction,
-              nonce,
-              "initial",
-            );
+            hash = await this.port.submit(simulation.transaction, nonce, "initial");
           } catch (error) {
-            const message =
-              error instanceof Error
-                ? error.message.toUpperCase()
-                : String(error).toUpperCase();
+            const message = error instanceof Error ? error.message.toUpperCase() : String(error).toUpperCase();
             if (message.includes("REPLACEMENT_UNDERPRICED")) {
-              hash = await this.port.submit(
-                simulation.transaction,
-                nonce,
-                "replacement",
-              );
+              hash = await this.port.submit(simulation.transaction, nonce, "replacement");
             } else if (message.includes("NONCE_TOO_LOW")) {
               nonce = await this.port.pendingNonce();
-              hash = await this.port.submit(
-                simulation.transaction,
-                nonce,
-                "initial",
-              );
-            } else {
-              throw error;
-            }
+              hash = await this.port.submit(simulation.transaction, nonce, "initial");
+            } else throw error;
           }
           nonce += 1;
           hashes.push(hash);
           this.completed.add(candidate.idempotencyKey);
           this.counters.submitted += 1;
         } catch (error) {
-          this.counters[
-            isRetryableAssistanceError(error) ? "retryable" : "failed"
-          ] += 1;
+          this.counters[isRetryableAssistanceError(error) ? "retryable" : "failed"] += 1;
         }
       }
       return hashes;

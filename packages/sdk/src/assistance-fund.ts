@@ -173,7 +173,8 @@ export function previewAssistanceExecution(
     executable: true,
     amountIn: input.amountIn,
     minimumAmountOut:
-      (input.quotedAmountOut * BigInt(10_000 - input.maximumSlippageBps)) /
+      (input.quotedAmountOut * BigInt(10_000 - input.maximumSlippageBps) +
+        9_999n) /
       10_000n,
     reason: "ready",
   };

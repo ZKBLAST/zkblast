@@ -74,6 +74,17 @@ export const assistanceFeeCollectorAbi = [
 export const buybackRouteRegistryAbi = [
   {
     type: "function",
+    name: "spendWindow",
+    stateMutability: "view",
+    inputs: [{ name: "routeId", type: "bytes32" }],
+    outputs: [
+      { name: "day", type: "uint64" },
+      { name: "lastExecutionAt", type: "uint64" },
+      { name: "spent", type: "uint256" },
+    ],
+  },
+  {
+    type: "function",
     name: "getRoute",
     stateMutability: "view",
     inputs: [{ name: "routeId", type: "bytes32" }],
