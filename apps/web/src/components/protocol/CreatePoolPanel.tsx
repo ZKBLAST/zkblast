@@ -60,7 +60,7 @@ export function CreatePoolPanel({
     tokenA: "",
     tokenB: "",
     feePercent: "0.3",
-    binStep: "10",
+    binStep: "25",
     initialPrice: "",
   });
   const [review, setReview] = useState<{
