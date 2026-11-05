@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "viem";
 import { SdkError } from "./errors.js";
 
 export const BASIS_POINTS = 10_000n;
+export const X18 = 10n ** 18n;
 
 function assertDecimals(decimals: number): void {
   if (!Number.isInteger(decimals) || decimals < 0 || decimals > 255) {
@@ -47,6 +48,18 @@ export function formatTokenAmount(value: bigint, decimals: number): string {
   if (value < 0n)
     throw new SdkError("INVALID_AMOUNT", "Token amount cannot be negative");
   return formatUnits(value, decimals);
+}
+
+export function tokenRawToX18(value: bigint, decimals: number): bigint {
+  assertDecimals(decimals);
+  if (value < 0n)
+    throw new SdkError("INVALID_AMOUNT", "Token amount cannot be negative");
+  if (decimals > 18)
+    throw new SdkError(
+      "INVALID_DECIMALS",
+      "X18 normalization supports token decimals up to 18",
+    );
+  return value * 10n ** BigInt(18 - decimals);
 }
 
 export function minimumAmountOut(
