@@ -5,13 +5,14 @@ import {
   createWalletClient,
   defineChain,
   getAddress,
-  http,
   TransactionReceiptNotFoundError,
   type Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { getChainDescriptor } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { PerpsRelayerWorker, type PerpsRelayChain } from "./perps-relayer.js";
+import { createKeeperTransport, keeperRpcUrls } from "./rpc-transport.js";
 
 const required = (name: string) => {
   const value = process.env[name]?.trim();
@@ -38,14 +39,26 @@ export async function startPerpsRelayerFromEnv(): Promise<() => Promise<void>> {
     throw new Error("PERPS_RELAYER_ACCOUNT_MISMATCH");
   }
   const rpcUrl = required("RPC_URL");
+  const rpcUrls = keeperRpcUrls(
+    rpcUrl,
+    process.env.RPC_FALLBACK_URLS,
+    getChainDescriptor(chainId).publicRpcUrls,
+  );
   const chain = defineChain({
     id: chainId,
     name: required("CHAIN_NAME"),
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: { default: { http: [rpcUrl] } },
+    rpcUrls: { default: { http: rpcUrls } },
   });
-  const publicClient = createPublicClient({ chain, transport: http(rpcUrl, { timeout: 20_000, retryCount: 1 }) });
-  const walletClient = createWalletClient({ account, chain, transport: http(rpcUrl, { timeout: 20_000, retryCount: 1 }) });
+  const publicClient = createPublicClient({
+    chain,
+    transport: createKeeperTransport(rpcUrls),
+  });
+  const walletClient = createWalletClient({
+    account,
+    chain,
+    transport: createKeeperTransport(rpcUrls),
+  });
   if (await publicClient.getChainId() !== chainId) throw new Error("PERPS_RELAYER_RPC_MISMATCH");
   const relayChain: PerpsRelayChain = {
     simulate: async ({ from, to, data }) => { await publicClient.call({ account: from, to, data }); },

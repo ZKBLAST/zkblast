@@ -30,11 +30,17 @@ if (isMain) {
       .then(({ startPerpsRelayerFromEnv }) => startPerpsRelayerFromEnv())
       .then((stop) => { stopRelayer = stop; })
       .catch((error: unknown) => {
+        const errorCode =
+          error instanceof Error && /^[A-Z_]{4,80}$/u.test(error.message)
+            ? error.message
+            : error instanceof Error
+              ? error.name
+              : "PERPS_RELAYER_START_FAILED";
         console.error(JSON.stringify({
           service: "keeper",
           component: "perps-relayer",
           status: "error",
-          error: error instanceof Error ? error.message : "PERPS_RELAYER_START_FAILED",
+          error: errorCode,
         }));
         process.exitCode = 1;
       });
