@@ -29,9 +29,12 @@ import type {
   DbcTemplate,
   ProtectedLaunchPreview,
   ProtectionPolicy,
+  StockQuoteAssetView,
+  StockQuoteDestinationView,
   TemplateEconomics,
 } from "./types";
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
+import { StockQuoteAssetSummary } from "./StockQuoteAssetSummary";
 
 type PendingInitialBuy = Readonly<{
   pool: `0x${string}`;
@@ -80,6 +83,10 @@ export function LaunchWizard({
   const [submitting, setSubmitting] = useState(false);
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [economicsLoading, setEconomicsLoading] = useState(false);
+  const [stockQuoteAsset, setStockQuoteAsset] = useState<StockQuoteAssetView | null>(null);
+  const [stockDestinations, setStockDestinations] = useState<readonly StockQuoteDestinationView[]>([]);
+  const [stockQuoteCatalog, setStockQuoteCatalog] = useState<readonly StockQuoteAssetView[]>([]);
+  const [stockQuoteCatalogLoading, setStockQuoteCatalogLoading] = useState(false);
   const [launchProtection, setLaunchProtection] = useState<"standard" | "protected">("standard");
   const [protectionPolicies, setProtectionPolicies] = useState<readonly ProtectionPolicy[]>([]);
   const [protectionPolicyId, setProtectionPolicyId] = useState("");
@@ -98,6 +105,15 @@ export function LaunchWizard({
   const walletRecipient = recipient || address || "";
   const quoteSymbol = economics?.quoteSymbol ?? "Quote token";
   const quoteDecimals = economics?.quoteDecimals ?? 18;
+  const selectedMigrationMode = economics?.migrationMode === 1 ? "dlmm" : "damm";
+  const selectedStockDestination = stockDestinations.find(
+    (item) => item.migrationMode === selectedMigrationMode,
+  );
+  const stockTemplateAvailable =
+    !stockQuoteAsset ||
+    (stockQuoteAsset.quoteTradingEnabled &&
+      stockQuoteAsset.graduationEnabled &&
+      selectedStockDestination?.enabled === true);
   useEffect(() => {
     if (!templateId) {
       setEconomics(null);
@@ -117,6 +133,60 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [config?.chainId, templateId]);
+  useEffect(() => {
+    if (!open || config?.chainId !== 4663) {
+      setStockQuoteCatalog([]);
+      setStockQuoteCatalogLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setStockQuoteCatalogLoading(true);
+    void apiRequest<{ items: readonly StockQuoteAssetView[] }>(
+      webPublicConfig.apiUrl,
+      "/v1/stock-quotes/assets?limit=100",
+      { signal: controller.signal, cache: "no-store" },
+    )
+      .then(({ items }) => setStockQuoteCatalog(items))
+      .catch(() => {
+        if (!controller.signal.aborted) setStockQuoteCatalog([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setStockQuoteCatalogLoading(false);
+      });
+    return () => controller.abort();
+  }, [config?.chainId, open]);
+  useEffect(() => {
+    const quoteToken = economics?.quoteToken;
+    if (!quoteToken || config?.chainId !== 4663) {
+      setStockQuoteAsset(null);
+      setStockDestinations([]);
+      return;
+    }
+    const controller = new AbortController();
+    void Promise.all([
+      apiRequest<StockQuoteAssetView>(
+        webPublicConfig.apiUrl,
+        `/v1/stock-quotes/assets/${quoteToken}`,
+        { signal: controller.signal, cache: "no-store" },
+      ),
+      apiRequest<{ items: readonly StockQuoteDestinationView[] }>(
+        webPublicConfig.apiUrl,
+        `/v1/stock-quotes/assets/${quoteToken}/destinations`,
+        { signal: controller.signal, cache: "no-store" },
+      ),
+    ])
+      .then(([asset, destinations]) => {
+        setStockQuoteAsset(asset);
+        setStockDestinations(destinations.items);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setStockQuoteAsset(null);
+          setStockDestinations([]);
+        }
+      });
+    return () => controller.abort();
+  }, [config?.chainId, economics?.quoteToken]);
   useEffect(() => {
     if (!open) return;
     const controller = new AbortController();
@@ -197,7 +267,7 @@ export function LaunchWizard({
         initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
   const canContinue =
     step === 0
-      ? Boolean(selected)
+      ? Boolean(selected) && stockTemplateAvailable
       : step === 1
         ? name.trim().length > 0 &&
           symbol.trim().length > 0 &&
@@ -559,10 +629,55 @@ export function LaunchWizard({
             <div>
               <p className="label">Governed template</p>
               <p className="mt-2 text-sm text-muted">
-                Templates lock supply, curve, fees, quote asset and DAMM
-                migration policy before launch.
+                Templates lock supply, curve, fees, quote asset and the verified
+                DAMM or DLMM migration policy before launch.
               </p>
             </div>
+            {(stockQuoteCatalogLoading || stockQuoteCatalog.length > 0) && (
+              <div className="panel-inset space-y-3 p-4">
+                <div>
+                  <p className="label">Tokenized stock quote catalog</p>
+                  <p className="mt-2 text-[11px] leading-5 text-muted">
+                    Address-verified issuer assets appear here before governance
+                    enables a corresponding launch template.
+                  </p>
+                </div>
+                {stockQuoteCatalogLoading ? (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <span className="content-shimmer h-16" aria-hidden />
+                    <span className="content-shimmer h-16" aria-hidden />
+                  </div>
+                ) : (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {stockQuoteCatalog.map((asset) => (
+                      <div key={asset.contractAddress} className="border border-line bg-bg p-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-xs text-fg">
+                              {asset.instrumentName}
+                            </p>
+                            <p className="mt-1 font-mono text-[10px] text-muted">
+                              {asset.symbol} · {asset.marketState.replaceAll("_", " ")}
+                            </p>
+                          </div>
+                          <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted">
+                            {asset.availability}
+                          </span>
+                        </div>
+                        <p className="mt-3 break-all font-mono text-[9px] text-muted">
+                          {asset.contractAddress}
+                        </p>
+                        <p className="mt-2 text-[10px] text-muted">
+                          {asset.quoteTradingEnabled && asset.graduationEnabled
+                            ? "Governance policy active"
+                            : "Cataloged · launch template disabled"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {templates
               .filter((t) => t.enabled)
               .map((item) => (
@@ -607,7 +722,7 @@ export function LaunchWizard({
                     value={`${economics.tradeFeeBps / 100}%`}
                   />
                   <Review
-                    label="DAMM fee"
+                    label={`${economics.migrationMode === 1 ? "DLMM" : "DAMM"} fee`}
                     value={`${economics.destinationFeePips / 10_000}%`}
                   />
                   <Review
@@ -616,6 +731,13 @@ export function LaunchWizard({
                   />
                 </div>
               )
+            )}
+            {stockQuoteAsset && economics && (
+              <StockQuoteAssetSummary
+                asset={stockQuoteAsset}
+                destinations={stockDestinations}
+                selectedMigrationMode={selectedMigrationMode}
+              />
             )}
           </div>
         )}

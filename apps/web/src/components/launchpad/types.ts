@@ -17,6 +17,7 @@ export type TemplateEconomics = Readonly<{
   quoteToken: string;
   quoteSymbol: string;
   quoteDecimals: number;
+  migrationMode: 0 | 1;
   totalSupplyRaw: string;
   baseInventoryRaw: string;
   graduationThresholdRaw: string;
@@ -33,6 +34,42 @@ export type TemplateEconomics = Readonly<{
     slopeX18: string;
     saleCapacityX18: string;
   }>[];
+}>;
+export type StockQuoteAssetView = Readonly<{
+  chainId: number;
+  contractAddress: string;
+  issuerAssetId: string;
+  symbol: string;
+  instrumentName: string;
+  issuerName: string;
+  tokenDecimals: number;
+  currentMultiplier: string;
+  pendingMultiplier: string | null;
+  availability:
+    | "discovered"
+    | "verified"
+    | "eligible"
+    | "listed"
+    | "suspended"
+    | "disabled";
+  marketState:
+    | "active"
+    | "after_hours"
+    | "closed"
+    | "halted"
+    | "degraded"
+    | "emergency";
+  quoteTradingEnabled: boolean;
+  graduationEnabled: boolean;
+  priceFeedAddress: string | null;
+  maxOracleAgeSeconds: number | null;
+  sourceObservedAt: string;
+  updatedAt: string;
+}>;
+export type StockQuoteDestinationView = Readonly<{
+  migrationMode: "damm" | "dlmm";
+  enabled: boolean;
+  fundedAcceptanceHash: string | null;
 }>;
 export type ProtectionPolicy = Readonly<{
   chain_id: number;
