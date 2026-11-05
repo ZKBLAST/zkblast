@@ -14,6 +14,14 @@ export function parseRpcFallbackUrls(value: string | undefined): string[] {
   return [...new Set(urls)];
 }
 
+export function resolveRpcFallbackUrls(
+  configuredValue: string | undefined,
+  chainDefaults: readonly string[],
+): string[] {
+  const configured = parseRpcFallbackUrls(configuredValue);
+  return configured.length > 0 ? configured : [...chainDefaults];
+}
+
 export function createIndexerTransport(
   primaryUrl: string,
   fallbackUrls = parseRpcFallbackUrls(process.env.RPC_FALLBACK_URLS),

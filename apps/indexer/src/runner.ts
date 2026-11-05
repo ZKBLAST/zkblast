@@ -15,7 +15,10 @@ import {
   deploymentAddress,
   PerpsStateSynchronizer,
 } from "./perps-state-sync.js";
-import { createIndexerTransport } from "./rpc-transport.js";
+import {
+  createIndexerTransport,
+  resolveRpcFallbackUrls,
+} from "./rpc-transport.js";
 
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
@@ -132,7 +135,13 @@ const addresses = [
   .filter((address, index, all) => all.indexOf(address) === index);
 const client = createPublicClient({
   cacheTime: 0,
-  transport: createIndexerTransport(config.RPC_URL),
+  transport: createIndexerTransport(
+    config.RPC_URL,
+    resolveRpcFallbackUrls(
+      process.env.RPC_FALLBACK_URLS,
+      descriptor.publicRpcUrls,
+    ),
+  ),
 });
 const repository = new PostgresIndexerRepository(
   runner.SUPABASE_DIRECT_DATABASE_URL,
