@@ -18,7 +18,7 @@ export function assistanceFundSynchronizer(input: {
   const repository = new PostgresIndexerRepository(
     input.databaseUrl,
     input.schema,
-    `assistance-fund-${input.addresses[0]!.slice(2).toLowerCase()}`,
+    `assistance-fund-v2-${input.addresses[0]!.slice(2).toLowerCase()}`,
   );
   return {
     close: () => repository.close(),

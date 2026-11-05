@@ -45,7 +45,7 @@ const launchpadProjectionEvents = [
 ] as const;
 
 export const isIndexerConsumer = (consumer: string): boolean =>
-  /^(protocol|shielded-v2-[a-f0-9]{40}|assistance-fund-[a-f0-9]{40})$/u.test(
+  /^(protocol|shielded-v2-[a-f0-9]{40}|assistance-fund(?:-v\d+)?-[a-f0-9]{40})$/u.test(
     consumer,
   );
 

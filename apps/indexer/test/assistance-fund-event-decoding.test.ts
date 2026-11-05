@@ -8,6 +8,7 @@ import {
   parseAbiParameters,
 } from "viem";
 import { isIndexerConsumer } from "../src/postgres-indexer-repository.js";
+import { classifyProtocolEvent } from "../src/classifier.js";
 
 test("Assistance Fund events are available to the shared indexer decoder", () => {
   const routeId = `0x${"11".repeat(32)}` as const;
@@ -32,9 +33,14 @@ test("Assistance Fund events are available to the shared indexer decoder", () =>
 
   assert.equal(decoded.eventName, "BuybackExecuted");
   assert.equal((decoded.args as { amountIn: bigint }).amountIn, 29n);
+  assert.equal(classifyProtocolEvent(decoded.eventName), "fee");
 });
 
 test("Assistance Fund backfill uses a bounded independent cursor", () => {
   assert.equal(isIndexerConsumer(`assistance-fund-${"ab".repeat(20)}`), true);
+  assert.equal(
+    isIndexerConsumer(`assistance-fund-v2-${"ab".repeat(20)}`),
+    true,
+  );
   assert.equal(isIndexerConsumer("assistance-fund-unbounded"), false);
 });
