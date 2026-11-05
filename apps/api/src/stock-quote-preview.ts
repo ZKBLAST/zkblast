@@ -63,7 +63,8 @@ function operationAllowed(
   asset: z.infer<typeof assetSchema>,
   operation: z.infer<typeof stockQuotePreviewRequestSchema>["operation"],
 ) {
-  if (asset.availability !== "listed") return false;
+  if (!["listed", "eligible", "verified"].includes(asset.availability))
+    return false;
   if (operation === "graduate" && !asset.graduationEnabled) return false;
   if (
     ["create_launch", "fund", "buy"].includes(operation) &&
@@ -95,6 +96,7 @@ export function buildStockQuotePreview(
   const destination = destinations.find(
     (item) => item.migrationMode === input.request.migrationMode,
   );
+  const destinationRequired = input.request.operation === "graduate";
   const amountRaw = BigInt(input.request.amountRaw);
   const multiplierX18 = parseUnits(asset.currentMultiplier, 18);
   const allowed = operationAllowed(asset, input.request.operation);
@@ -103,7 +105,8 @@ export function buildStockQuotePreview(
   );
   const reasons: PreviewReason[] = [];
 
-  if (asset.availability !== "listed") reasons.push("ASSET_NOT_LISTED");
+  if (!["listed", "eligible", "verified"].includes(asset.availability))
+    reasons.push("ASSET_NOT_LISTED");
   if (
     ["create_launch", "fund", "buy"].includes(input.request.operation) &&
     !asset.quoteTradingEnabled
@@ -114,7 +117,8 @@ export function buildStockQuotePreview(
     reasons.push("GRADUATION_DISABLED");
   }
   if (!allowed && !reasons.length) reasons.push("MARKET_SESSION_RESTRICTED");
-  if (destination?.enabled !== true) reasons.push("DESTINATION_DISABLED");
+  if (destinationRequired && destination?.enabled !== true)
+    reasons.push("DESTINATION_DISABLED");
   if (!oracleConfigured) reasons.push("ORACLE_NOT_CONFIGURED");
   else reasons.push("VALIDATED_ORACLE_PRICE_UNAVAILABLE");
 
@@ -132,6 +136,7 @@ export function buildStockQuotePreview(
     operation: input.request.operation,
     operationAllowed: allowed,
     migrationMode: input.request.migrationMode,
+    destinationRequired,
     destinationEnabled: destination?.enabled === true,
     oracleConfigured,
     usdNotionalX18: null,
@@ -162,7 +167,7 @@ export function applyValidatedStockQuoteObservation(
     usdNotionalX18: observation.notionalX18,
     executable:
       preview.operationAllowed &&
-      preview.destinationEnabled &&
+      (!preview.destinationRequired || preview.destinationEnabled) &&
       preview.oracleConfigured,
     reasons: preview.reasons.filter(
       (reason) => reason !== "VALIDATED_ORACLE_PRICE_UNAVAILABLE",

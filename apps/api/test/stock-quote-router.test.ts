@@ -116,7 +116,6 @@ test("previews stock quantity and policy state without inventing an oracle notio
   assert.equal(preview.body.usdNotionalX18, null);
   assert.equal(preview.body.executable, false);
   assert.deepEqual(preview.body.reasons, [
-    "ASSET_NOT_LISTED",
     "QUOTE_TRADING_DISABLED",
     "ORACLE_NOT_CONFIGURED",
   ]);
@@ -135,7 +134,7 @@ test("returns a validated onchain USD notional only after every policy gate pass
         availability: "listed",
         marketState: "active",
         quoteTradingEnabled: true,
-        graduationEnabled: true,
+        graduationEnabled: false,
         priceFeedAddress: `0x${"44".repeat(20)}`,
         maxOracleAgeSeconds: 3_600,
       };
@@ -165,6 +164,7 @@ test("returns a validated onchain USD notional only after every policy gate pass
   assert.equal(preview.body.usdNotionalX18, "525000000000000000000");
   assert.equal(preview.body.oracleRoundId, "42");
   assert.equal(preview.body.executable, true);
+  assert.equal(preview.body.destinationRequired, false);
   assert.deepEqual(preview.body.reasons, []);
 });
 

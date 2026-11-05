@@ -103,6 +103,9 @@ export function LaunchWizard({
     useState(false);
   const [stockCatalogQuery, setStockCatalogQuery] = useState("");
   const [catalogStockAddress, setCatalogStockAddress] = useState("");
+  const [stockTemplateIds, setStockTemplateIds] = useState<
+    Readonly<Record<string, string>>
+  >({});
   const [catalogStockDestinations, setCatalogStockDestinations] = useState<
     readonly StockQuoteDestinationView[]
   >([]);
@@ -133,9 +136,6 @@ export function LaunchWizard({
   const quoteDecimals = economics?.quoteDecimals ?? 18;
   const selectedMigrationMode =
     economics?.migrationMode === 1 ? "dlmm" : "damm";
-  const selectedStockDestination = stockDestinations.find(
-    (item) => item.migrationMode === selectedMigrationMode,
-  );
   const filteredStockQuoteCatalog = useMemo(() => {
     const query = stockCatalogQuery.trim().toLowerCase();
     if (!query) return stockQuoteCatalog;
@@ -160,10 +160,7 @@ export function LaunchWizard({
     ? stockDestinations
     : catalogStockDestinations;
   const stockTemplateAvailable =
-    !stockQuoteAsset ||
-    (stockQuoteAsset.quoteTradingEnabled &&
-      stockQuoteAsset.graduationEnabled &&
-      selectedStockDestination?.enabled === true);
+    !stockQuoteAsset || stockQuoteAsset.quoteTradingEnabled;
   useEffect(() => {
     if (!templateId) {
       setEconomics(null);
@@ -212,6 +209,39 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [config?.chainId, open]);
+  useEffect(() => {
+    if (!open || config?.chainId !== 4663) {
+      setStockTemplateIds({});
+      return;
+    }
+    const controller = new AbortController();
+    void Promise.all(
+      templates
+        .filter((item) => item.enabled)
+        .map(async (item) => ({
+          templateId: item.template_id,
+          economics: await apiRequest<TemplateEconomics>(
+            webPublicConfig.apiUrl,
+            `/v1/dbc/templates/${item.template_id}/economics`,
+            { signal: controller.signal, cache: "no-store" },
+          ),
+        })),
+    )
+      .then((items) =>
+        setStockTemplateIds(
+          Object.fromEntries(
+            items.map((item) => [
+              item.economics.quoteToken.toLowerCase(),
+              item.templateId,
+            ]),
+          ),
+        ),
+      )
+      .catch(() => {
+        if (!controller.signal.aborted) setStockTemplateIds({});
+      });
+    return () => controller.abort();
+  }, [config?.chainId, open, templates]);
   useEffect(() => {
     if (!catalogStockAddress || config?.chainId !== 4663) {
       setCatalogStockDestinations([]);
@@ -782,9 +812,15 @@ export function LaunchWizard({
                           aria-pressed={
                             catalogStockAddress === asset.contractAddress
                           }
-                          onClick={() =>
-                            setCatalogStockAddress(asset.contractAddress)
-                          }
+                          onClick={() => {
+                            setCatalogStockAddress(asset.contractAddress);
+                            const matchingTemplate =
+                              stockTemplateIds[
+                                asset.contractAddress.toLowerCase()
+                              ];
+                            if (matchingTemplate)
+                              setTemplateId(matchingTemplate);
+                          }}
                           className={`border bg-bg p-3 text-left ${catalogStockAddress === asset.contractAddress ? "border-lime/70" : "border-line"}`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -805,10 +841,13 @@ export function LaunchWizard({
                             {asset.contractAddress}
                           </p>
                           <p className="mt-2 text-[10px] text-muted">
-                            {asset.quoteTradingEnabled &&
-                            asset.graduationEnabled
-                              ? "Governance policy active"
-                              : "Cataloged · launch template disabled"}
+                            {stockTemplateIds[
+                              asset.contractAddress.toLowerCase()
+                            ]
+                              ? asset.quoteTradingEnabled
+                                ? "Protected launch template active"
+                                : "Template ready · trading disabled"
+                              : "Cataloged · launch template unavailable"}
                           </p>
                         </button>
                       ))}

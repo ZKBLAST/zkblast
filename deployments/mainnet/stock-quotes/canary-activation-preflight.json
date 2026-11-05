@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "planSha256": "4b968f2c79fcbdba3a9c2bbf46cf10097f3485dc4f33ff2ea43097fc23c4477b",
+  "referenceBlock": "106859909",
+  "safeNonce": "127",
+  "actionCount": 5,
+  "individuallyCallable": [
+    "enable-capped-msft-quote-trading",
+    "open-msft-session",
+    "allow-msft-dbc-quote-token"
+  ],
+  "oracle": {
+    "roundId": "18446744073709552768",
+    "answer": "53595113104",
+    "updatedAt": "1793894186",
+    "ageSeconds": "134"
+  },
+  "funding": {
+    "deployerBalanceWei": "238455877481704",
+    "deployerBalanceEth": "0.000238455877481704",
+    "stockAssetBalanceRaw": "0",
+    "stockAssetRequiredForCreateOnly": "0",
+    "stockAssetRequiredForBuySell": ">0"
+  },
+  "gas": {
+    "gasPriceWei": "22266000",
+    "conservativeGasCeiling": "2100000",
+    "estimatedMaximumFeeWei": "46758600000000",
+    "estimatedMaximumFeeEth": "0.0000467586",
+    "proposedApprovalCapEth": "0.00008"
+  },
+  "checks": {
+    "chain": true,
+    "governanceCalls": true,
+    "oracleFresh": true,
+    "createLaunchCanBeFundless": true,
+    "buySellFunded": false,
+    "forkSimulationComplete": false
+  },
+  "broadcastAllowed": false
+}

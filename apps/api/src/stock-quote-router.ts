@@ -197,7 +197,7 @@ export function createStockQuoteRouter(service: StockQuoteService) {
       });
       if (
         preview.operationAllowed &&
-        preview.destinationEnabled &&
+        (!preview.destinationRequired || preview.destinationEnabled) &&
         preview.oracleConfigured &&
         service.validatedUsdNotional
       ) {

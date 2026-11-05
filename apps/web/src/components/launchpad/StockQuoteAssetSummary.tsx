@@ -64,10 +64,9 @@ export function StockQuoteAssetSummary({
   const selectedDestination = destinations.find(
     (item) => item.migrationMode === selectedMigrationMode,
   );
-  const executable =
-    asset.quoteTradingEnabled &&
-    asset.graduationEnabled &&
-    selectedDestination?.enabled === true;
+  const launchExecutable = asset.quoteTradingEnabled;
+  const graduationExecutable =
+    asset.graduationEnabled && selectedDestination?.enabled === true;
 
   async function loadPreview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -266,11 +265,17 @@ export function StockQuoteAssetSummary({
         <p className="break-all">Contract {asset.contractAddress}</p>
         <p className="break-all">Issuer asset {asset.issuerAssetId}</p>
       </div>
-      {!executable && (
+      {!launchExecutable && (
         <p className="border border-line bg-white/[.02] p-3 text-[11px] leading-5 text-muted">
           Creation with this quote asset is disabled until governance activates
-          trading, graduation, oracle policy, and the{" "}
-          {selectedMigrationMode.toUpperCase()} capability receipt.
+          its trading and oracle policy.
+        </p>
+      )}
+      {launchExecutable && !graduationExecutable && (
+        <p className="border border-line bg-white/[.02] p-3 text-[11px] leading-5 text-muted">
+          Launch creation and curve trading are enabled. Graduation remains
+          disabled until the {selectedMigrationMode.toUpperCase()} destination
+          receives its separate capability receipt.
         </p>
       )}
     </section>
