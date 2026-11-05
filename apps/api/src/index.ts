@@ -6,6 +6,7 @@ import {
   perpEngineAbi,
   poolRegistryAbi,
   shieldedPerpAdapterAbi,
+  stockQuoteOracleGuardAbi,
   virtualPoolAbi,
 } from "@zkblast/abi";
 import { getChainDescriptor, loadServerConfig } from "@zkblast/config";
@@ -148,10 +149,48 @@ const assistanceFundService = manifest.assistanceFund
       serverConfig.SUPABASE_SCHEMA,
     )
   : undefined;
+const stockQuoteOperationIds = {
+  create_launch: 0,
+  fund: 1,
+  buy: 2,
+  sell: 3,
+  graduate: 4,
+  exit: 5,
+} as const;
+const stockQuoteMarketStates = [
+  "active",
+  "after_hours",
+  "closed",
+  "halted",
+  "degraded",
+  "emergency",
+] as const;
 const stockQuoteService = manifest.stockQuoteAssets
   ? new PostgresStockQuoteService(
       directDatabaseUrl,
       serverConfig.SUPABASE_SCHEMA,
+      async (contractAddress, operation, amountRaw) => {
+        const observation = await chainClient.readContract({
+          address: getAddress(manifest.stockQuoteAssets!.oracleGuard),
+          abi: stockQuoteOracleGuardAbi,
+          functionName: "validatedUsdNotional",
+          args: [
+            getAddress(contractAddress),
+            stockQuoteOperationIds[operation],
+            BigInt(amountRaw),
+          ],
+        });
+        const marketState = stockQuoteMarketStates[observation.marketState];
+        if (!marketState) throw new Error("INVALID_STOCK_QUOTE_MARKET_STATE");
+        return {
+          priceX18: observation.priceX18.toString(),
+          notionalX18: observation.notionalX18.toString(),
+          updatedAt: observation.updatedAt.toString(),
+          roundId: observation.roundId.toString(),
+          marketState,
+          multiplierX18: observation.multiplierX18.toString(),
+        };
+      },
     )
   : undefined;
 const protocolAddresses = resolveProtocolAddresses(manifest, {

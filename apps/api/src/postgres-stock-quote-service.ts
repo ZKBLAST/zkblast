@@ -5,16 +5,47 @@ import type {
   StockQuoteAssetQuery,
   StockQuoteReceiptQuery,
   StockQuoteService,
+  ValidatedStockQuoteObservation,
 } from "./stock-quote-service.js";
 
 export class PostgresStockQuoteService implements StockQuoteService {
   readonly #sql;
   readonly #schema: string;
+  readonly #validatedNotional?: (
+    contractAddress: string,
+    operation: "create_launch" | "fund" | "buy" | "sell" | "graduate" | "exit",
+    amountRaw: string,
+  ) => Promise<ValidatedStockQuoteObservation>;
 
-  constructor(databaseUrl: string, schema: string) {
-    if (!isSupportedDatabaseSchema(schema)) throw new Error("INVALID_DATABASE_SCHEMA");
+  constructor(
+    databaseUrl: string,
+    schema: string,
+    validatedNotional?: (
+      contractAddress: string,
+      operation:
+        "create_launch" | "fund" | "buy" | "sell" | "graduate" | "exit",
+      amountRaw: string,
+    ) => Promise<ValidatedStockQuoteObservation>,
+  ) {
+    if (!isSupportedDatabaseSchema(schema))
+      throw new Error("INVALID_DATABASE_SCHEMA");
     this.#schema = schema;
-    this.#sql = postgres(databaseUrl, { max: 1, prepare: false, idle_timeout: 10 });
+    this.#sql = postgres(databaseUrl, {
+      max: 1,
+      prepare: false,
+      idle_timeout: 10,
+    });
+    if (validatedNotional) this.#validatedNotional = validatedNotional;
+  }
+
+  validatedUsdNotional(
+    contractAddress: string,
+    operation: "create_launch" | "fund" | "buy" | "sell" | "graduate" | "exit",
+    amountRaw: string,
+  ) {
+    if (!this.#validatedNotional)
+      throw new Error("VALIDATED_ORACLE_PRICE_UNAVAILABLE");
+    return this.#validatedNotional(contractAddress, operation, amountRaw);
   }
 
   assets(query: StockQuoteAssetQuery) {
@@ -29,7 +60,11 @@ export class PostgresStockQuoteService implements StockQuoteService {
        where ($1::text is null or availability=$1)
          and ($2::boolean is null or quote_trading_enabled=$2)
        order by quote_trading_enabled desc,symbol asc limit $3`,
-      [query.availability ?? null, query.quoteTradingEnabled ?? null, query.limit],
+      [
+        query.availability ?? null,
+        query.quoteTradingEnabled ?? null,
+        query.limit,
+      ],
     );
   }
 
@@ -80,7 +115,10 @@ export class PostgresStockQuoteService implements StockQuoteService {
       `select chain_id as "chainId",transaction_hash as "transactionHash",log_index as "logIndex",
         launch_id as "launchId",quote_asset_address as "quoteAssetAddress",policy_identity as "policyIdentity",
         is_buy as "isBuy",quote_amount_raw::text as "quoteAmountRaw",block_number::text as "blockNumber",
-        block_hash as "blockHash",observed_at as "observedAt"
+        block_hash as "blockHash",observed_at as "observedAt",
+        quote_token_decimals as "quoteTokenDecimals",multiplier_x18::text as "multiplierX18",
+        oracle_price_x18::text as "oraclePriceX18",usd_notional_x18::text as "usdNotionalX18",
+        oracle_updated_at as "oracleUpdatedAt",oracle_round_id::text as "oracleRoundId"
        from ${this.#schema}.stock_quote_execution_receipts
        where canonical=true
          and ($1::text is null or launch_id=$1)

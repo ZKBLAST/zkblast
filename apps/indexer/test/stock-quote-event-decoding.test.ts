@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { protocolAbis } from "@zkblast/abi";
-import { decodeEventLog, encodeAbiParameters, encodeEventTopics, parseAbiParameters } from "viem";
+import {
+  decodeEventLog,
+  encodeAbiParameters,
+  encodeEventTopics,
+  parseAbiParameters,
+} from "viem";
 
 import { classifyProtocolEvent } from "../src/classifier.js";
 import { persistStockQuoteEvent } from "../src/persist-stock-quote-event.js";
@@ -17,7 +22,10 @@ test("decodes and classifies stock quote policy events", () => {
     eventName: "QuoteAssetListed",
     args: { asset, issuerAssetId, priceFeed },
   });
-  const data = encodeAbiParameters(parseAbiParameters("uint32,bytes32"), [1, configurationHash]);
+  const data = encodeAbiParameters(parseAbiParameters("uint32,bytes32"), [
+    1,
+    configurationHash,
+  ]);
   const decoded = decodeEventLog({
     abi: Object.values(protocolAbis).flat(),
     topics: topics as [`0x${string}`, ...`0x${string}`[]],
@@ -49,13 +57,22 @@ test("persists versioned stock quote events idempotently", async () => {
     payload: {
       asset: `0x${"11".repeat(20)}`,
       version: "2",
+      state: "0",
+      multiplierX18: "1000412952576205964",
+      observedAt: "1793836800",
       blockTimestamp: "1800000000",
     },
   };
-  assert.equal(await persistStockQuoteEvent(sql as never, "zkblast_mainnet", event), true);
+  assert.equal(
+    await persistStockQuoteEvent(sql as never, "zkblast_mainnet", event),
+    true,
+  );
   assert.equal(calls.length, 1);
   assert.equal(calls[0]!.parameters[4], "2");
   assert.equal(calls[0]!.parameters[5], "session_updated");
+  assert.equal(calls[0]!.parameters[10], "active");
+  assert.equal(calls[0]!.parameters[11], "1000412952576205964");
+  assert.ok(calls[0]!.parameters[12] instanceof Date);
 });
 
 test("persists DAMM and DLMM capability receipts independently", async () => {
@@ -165,6 +182,8 @@ test("persists launch-bound policy identity and execution receipts", async () =>
     true,
   );
   assert.match(calls[1]!.query, /stock_quote_execution_receipts/u);
+  assert.match(calls[1]!.query, /quote_token_decimals/u);
+  assert.match(calls[1]!.query, /multiplier_x18/u);
   assert.equal(calls[1]!.parameters[6], true);
   assert.equal(calls[1]!.parameters[7], "1250000");
 });

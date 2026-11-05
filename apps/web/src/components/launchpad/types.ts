@@ -53,12 +53,7 @@ export type StockQuoteAssetView = Readonly<{
     | "suspended"
     | "disabled";
   marketState:
-    | "active"
-    | "after_hours"
-    | "closed"
-    | "halted"
-    | "degraded"
-    | "emergency";
+    "active" | "after_hours" | "closed" | "halted" | "degraded" | "emergency";
   quoteTradingEnabled: boolean;
   graduationEnabled: boolean;
   priceFeedAddress: string | null;
@@ -70,6 +65,29 @@ export type StockQuoteDestinationView = Readonly<{
   migrationMode: "damm" | "dlmm";
   enabled: boolean;
   fundedAcceptanceHash: string | null;
+}>;
+export type StockQuotePreviewView = Readonly<{
+  chainId: number;
+  contractAddress: string;
+  symbol: string;
+  amountRaw: string;
+  amount: string;
+  tokenDecimals: number;
+  multiplier: string;
+  multiplierX18: string;
+  marketState: StockQuoteAssetView["marketState"];
+  availability: StockQuoteAssetView["availability"];
+  operation: "create_launch" | "fund" | "buy" | "sell" | "graduate" | "exit";
+  operationAllowed: boolean;
+  migrationMode: "damm" | "dlmm";
+  destinationEnabled: boolean;
+  oracleConfigured: boolean;
+  oraclePriceX18?: string;
+  oracleUpdatedAt?: string;
+  oracleRoundId?: string;
+  usdNotionalX18: string | null;
+  executable: boolean;
+  reasons: readonly string[];
 }>;
 export type ProtectionPolicy = Readonly<{
   chain_id: number;
