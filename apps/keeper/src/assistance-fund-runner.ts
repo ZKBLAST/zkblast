@@ -34,12 +34,15 @@ const revenueAdapterAbi = [
 
 const required = (name: string) => {
   const value = process.env[name]?.trim();
-  if (!value) throw new Error(`ASSISTANCE_FUND_${name}_REQUIRED`);
+  if (!value) throw new Error(`${name.startsWith("ASSISTANCE_FUND_") ? name : `ASSISTANCE_FUND_${name}`}_REQUIRED`);
   return value;
 };
 
+const assistanceRequired = (name: string) =>
+  required(`ASSISTANCE_FUND_${name}`);
+
 const hexList = (name: string, bytes: number): Hex[] => {
-  const values = required(name).split(",").map((value) => value.trim()).filter(Boolean);
+  const values = assistanceRequired(name).split(",").map((value) => value.trim()).filter(Boolean);
   if (values.length === 0 || values.some((value) => !new RegExp(`^0x[0-9a-f]{${bytes * 2}}$`, "iu").test(value))) {
     throw new Error(`ASSISTANCE_FUND_${name}_INVALID`);
   }
@@ -68,10 +71,10 @@ export async function startAssistanceFundKeeperFromEnv(): Promise<() => Promise<
   const account = privateKeyToAccount(privateKey);
   const routeIds = hexList("ROUTE_IDS", 32);
   const revenueAdapters = hexList("REVENUE_ADAPTERS", 20).map((value) => getAddress(value));
-  const maximumGas = BigInt(required("KEEPER_MAX_GAS"));
+  const maximumGas = BigInt(assistanceRequired("KEEPER_MAX_GAS"));
   const configuredMaximum = process.env.ASSISTANCE_FUND_KEEPER_MAX_AMOUNT_RAW?.trim();
   const operatorMaximum = configuredMaximum ? BigInt(configuredMaximum) : undefined;
-  const pollMs = Number(required("KEEPER_POLL_MS"));
+  const pollMs = Number(assistanceRequired("KEEPER_POLL_MS"));
   if (!Number.isInteger(pollMs) || pollMs < 15_000 || pollMs > 3_600_000) throw new Error("ASSISTANCE_FUND_KEEPER_POLL_INVALID");
 
   const rpcUrls = keeperRpcUrls(required("RPC_URL"), process.env.RPC_FALLBACK_URLS, getChainDescriptor(chainId).publicRpcUrls);
