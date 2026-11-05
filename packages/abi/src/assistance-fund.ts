@@ -1,5 +1,41 @@
 export const assistanceFeeCollectorAbi = [
   {
+    type: "event",
+    name: "ProtocolFeeSourceUpdated",
+    inputs: [
+      { name: "sourceId", type: "bytes32", indexed: true },
+      { name: "source", type: "address", indexed: true },
+      { name: "asset", type: "address", indexed: true },
+      { name: "adapterId", type: "bytes32", indexed: false },
+      { name: "status", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "ProtocolRevenueRecorded",
+    inputs: [
+      { name: "sourceId", type: "bytes32", indexed: true },
+      { name: "epochId", type: "bytes32", indexed: true },
+      { name: "asset", type: "address", indexed: true },
+      { name: "kind", type: "uint8", indexed: false },
+      { name: "grossAmount", type: "uint256", indexed: false },
+      { name: "excludedObligations", type: "uint256", indexed: false },
+      { name: "eligibleAmount", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "ProtocolFeeAllocated",
+    inputs: [
+      { name: "sourceId", type: "bytes32", indexed: true },
+      { name: "epochId", type: "bytes32", indexed: true },
+      { name: "asset", type: "address", indexed: true },
+      { name: "eligibleAmount", type: "uint256", indexed: false },
+      { name: "buybackAmount", type: "uint256", indexed: false },
+      { name: "treasuryAmount", type: "uint256", indexed: false },
+    ],
+  },
+  {
     type: "function",
     name: "assetLedger",
     stateMutability: "view",
@@ -83,6 +119,20 @@ export const buybackRouteRegistryAbi = [
 
 export const assistanceFundExecutorAbi = [
   {
+    type: "event",
+    name: "BuybackExecuted",
+    inputs: [
+      { name: "routeId", type: "bytes32", indexed: true },
+      { name: "assetIn", type: "address", indexed: true },
+      { name: "protocolToken", type: "address", indexed: true },
+      { name: "amountIn", type: "uint256", indexed: false },
+      { name: "amountOut", type: "uint256", indexed: false },
+      { name: "referencePriceX18", type: "uint256", indexed: false },
+      { name: "executionPriceX18", type: "uint256", indexed: false },
+      { name: "executor", type: "address", indexed: false },
+    ],
+  },
+  {
     type: "function",
     name: "executeBuyback",
     stateMutability: "nonpayable",
@@ -110,6 +160,18 @@ export const treasuryControllerAbi = [
 ] as const;
 
 export const burnModuleAbi = [
+  {
+    type: "event",
+    name: "ProtocolTokensBurned",
+    inputs: [
+      { name: "protocolToken", type: "address", indexed: true },
+      { name: "method", type: "uint8", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+      { name: "totalSupplyBefore", type: "uint256", indexed: false },
+      { name: "totalSupplyAfter", type: "uint256", indexed: false },
+      { name: "executor", type: "address", indexed: true },
+    ],
+  },
   {
     type: "function",
     name: "protocolToken",

@@ -11,6 +11,7 @@ import { ViemChainReader } from "./viem-chain-reader.js";
 import { marketChartSynchronizer } from "./market-chart-sync.js";
 import { fastCatchup } from "./fast-catchup.js";
 import { privateV2Synchronizer } from "./private-v2-sync.js";
+import { assistanceFundSynchronizer } from "./assistance-fund-sync.js";
 import {
   deploymentAddress,
   PerpsStateSynchronizer,
@@ -24,13 +25,13 @@ import {
 const runnerSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
   INDEXER_CONFIRMATIONS: z.preprocess(
-    (value) => value === "" ? undefined : value,
+    (value) => (value === "" ? undefined : value),
     z.coerce.number().int().min(1).optional(),
   ),
   INDEXER_POLL_INTERVAL_MS: z.coerce.number().int().min(1_000).default(1_000),
   INDEXER_BATCH_SIZE: z.coerce.number().int().min(1).max(1_000).default(20),
   INDEXER_CATCHUP_CHUNK_SIZE: z.preprocess(
-    (value) => value === "" ? undefined : value,
+    (value) => (value === "" ? undefined : value),
     z.coerce.bigint().min(1n).max(10000n).optional(),
   ),
   INDEXER_CATCHUP_MAX_BLOCKS: z.coerce
@@ -188,6 +189,20 @@ const privateV2 = manifest.shieldedV2
       maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,
     })
   : undefined;
+const assistanceFund = manifest.assistanceFund
+  ? assistanceFundSynchronizer({
+      client,
+      databaseUrl: runner.SUPABASE_DIRECT_DATABASE_URL,
+      schema: config.SUPABASE_SCHEMA,
+      chainId: config.CHAIN_ID,
+      registry: getAddress(manifest.integration.poolRegistry),
+      addresses: configuredAssistanceFundAddresses.map(getAddress),
+      deploymentBlock: manifest.assistanceFund.deploymentBlock,
+      confirmations,
+      chunkSize: catchupChunkSize,
+      maximumBlocks: runner.INDEXER_CATCHUP_MAX_BLOCKS,
+    })
+  : undefined;
 const perpsDeployments = {
   registry:
     manifest.perps?.registry ??
@@ -246,7 +261,8 @@ async function reconcileRecentDbcEvents(): Promise<void> {
   const fromBlock =
     recentStart > deploymentBlock ? recentStart : deploymentBlock;
   for (let from = fromBlock; from <= head; from += catchupChunkSize) {
-    const to = from + catchupChunkSize - 1n > head ? head : from + catchupChunkSize - 1n;
+    const to =
+      from + catchupChunkSize - 1n > head ? head : from + catchupChunkSize - 1n;
     const logs = await client.getLogs({
       address: dynamicContracts,
       fromBlock: from,
@@ -273,6 +289,7 @@ async function synchronize(): Promise<void> {
   syncing = true;
   try {
     await privateV2?.synchronize();
+    await assistanceFund?.synchronize();
     const pools = await repository.registeredPoolAddresses(config.CHAIN_ID);
     for (const pool of pools) {
       if (!addresses.includes(pool)) addresses.push(pool);
