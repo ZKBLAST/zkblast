@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "elysium-testnet-manifest-candidate",
+  "generatedAt": "2026-11-04T12:52:49.013Z",
+  "chainId": 99801,
+  "environment": "testnet",
+  "referenceBlock": 23204226,
+  "referenceBlockHash": "0x1b0c353fea4325c52fc36e63e99c7c39926db1bc6484eba3a64532c40fe4584b",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": {
+    "timelock": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "minimumDelaySeconds": "300"
+  },
+  "transactionCount": 63,
+  "startingNonce": 0,
+  "nextNonce": 63,
+  "plans": {
+    "dbc": {
+      "sha256": "03cdf38cb40754e76e7d5618abde12d0ed967177390fe91d4fbc02e5867d382d",
+      "transactionCount": 21,
+      "addresses": {
+        "configRegistryImplementation": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+        "configRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+        "launchTokenDeployer": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+        "virtualPoolDeployer": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+        "launchFactoryImplementation": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+        "launchFactory": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+        "launchpadRouterImplementation": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+        "launchpadRouter": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+        "lpAllocationEscrowImplementation": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+        "lpAllocationEscrow": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+        "graduationManagerImplementation": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+        "graduationManager": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+        "curveQuoter": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD"
+      }
+    },
+    "launchpad": {
+      "sha256": "588263a5c25c95e8e33f9f56e7238d63aed0cae0905693f28f445b8ccb9608ad",
+      "transactionCount": 21,
+      "addresses": {
+        "registryImplementation": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1",
+        "registry": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+        "configManagerImplementation": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888",
+        "configManager": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+        "factoryImplementation": "0xeB371680b19363872F9e364f306F8E024d996cfe",
+        "factory": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+        "feeControllerImplementation": "0xB8b04B3583A92dd66950086F8e3bd34455E62039",
+        "feeController": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+        "revenueSplitterImplementation": "0x2a4D288A6c92E55A631CB987d7Af79099933b596",
+        "revenueSplitter": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+        "feeCollectorImplementation": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+        "feeCollector": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+        "tokenFactoryImplementation": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+        "tokenFactory": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+        "lens": "0x3C87569210706b413101ad6a30E9E623e38d8051"
+      }
+    },
+    "protectedLaunch": {
+      "sha256": "3e33de9df7c1dc883083586009f3c6c766db2a5c08b2ac8d9580d71dd744be29",
+      "transactionCount": 20,
+      "addresses": {
+        "policyRegistryImplementation": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+        "policyRegistry": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+        "lpEscrowImplementation": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+        "lpEscrow": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+        "identityRegistryImplementation": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "identityRegistry": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+        "tokenDeployer": "0x8A0f7231aDf54B555513bCE315bd1aad38c5Df51",
+        "virtualPoolDeployer": "0x39c834CC8Fd725a409dDDEB758b49Fc45e79d14E",
+        "factoryImplementation": "0x0417D16c327807A671bC246E75b9BF5b53ea7659",
+        "factory": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+        "routerImplementation": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+        "router": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+        "graduationManagerImplementation": "0x2ECE215E0672d1D8c460409d631b506CE0D84c65",
+        "graduationManager": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868"
+      }
+    }
+  },
+  "gas": {
+    "timelockGasUsed": "1356855",
+    "planGasUsed": "52439492",
+    "combinedGasUsed": "53796347",
+    "sampledGasPriceWei": "100320000",
+    "measuredCostWei": "5396849531040000",
+    "recommendedMaximumSpendWei": "6746061913800000",
+    "retryBufferBps": 2500
+  },
+  "capabilities": {
+    "dbc": true,
+    "launchpad": true,
+    "protectedLaunch": true,
+    "graduation": false,
+    "graduationStatus": "pending-adapter",
+    "publicDeployment": false
+  },
+  "gates": {
+    "localForkAccepted": true,
+    "publicBroadcastApproved": false,
+    "broadcastAllowed": false
+  },
+  "candidateSha256": "5ee685bb343074df2ae3dc4eae471f3c53f6879cf8982e9a25d7d6ed2238e8d6"
+}

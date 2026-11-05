@@ -15,6 +15,7 @@ import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import { parsePublicConfig } from "@/lib/network-config";
 import { createWalletVerifyPayload } from "@/lib/wallet-auth";
+import { ensureWalletChain } from "@/lib/wallet-network";
 import type {
   ChainCatalogItem,
   PublicConfig,
@@ -188,12 +189,11 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     const activeConfig =
       config ??
       parsePublicConfig(await apiRequest<unknown>(apiUrl, "/v1/config"));
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: `0x${activeConfig.chainId.toString(16)}` }],
-    });
+    const target = chains.find((chain) => chain.chainId === activeConfig.chainId);
+    if (!target) throw new Error("CHAIN_CATALOG_MISSING");
+    await ensureWalletChain(window.ethereum, target);
     setWalletChainId(activeConfig.chainId);
-  }, [apiUrl, config]);
+  }, [apiUrl, chains, config]);
 
   const selectChain = useCallback(
     async (chainId: number) => {
@@ -207,10 +207,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
           await apiRequest<unknown>(apiUrl, `/v2/chains/${chainId}/config`),
         );
         if (window.ethereum) {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: `0x${chainId.toString(16)}` }],
-          });
+          await ensureWalletChain(window.ethereum, target);
           setWalletChainId(chainId);
         }
         window.localStorage.setItem("zkblast.activeChainId", String(chainId));
@@ -259,10 +256,11 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
         method: "eth_chainId",
       })) as string;
       if (Number.parseInt(walletChain, 16) !== activeConfig.chainId) {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: `0x${activeConfig.chainId.toString(16)}` }],
-        });
+        const target = chains.find(
+          (chain) => chain.chainId === activeConfig.chainId,
+        );
+        if (!target) throw new Error("CHAIN_CATALOG_MISSING");
+        await ensureWalletChain(window.ethereum, target);
       }
       const challenge = await apiRequest<{
         challengeId: string;
@@ -297,7 +295,7 @@ export function AppProvider({ children }: Readonly<{ children: ReactNode }>) {
     } finally {
       setBusy(false);
     }
-  }, [apiUrl, config, refreshAccount, toast]);
+  }, [apiUrl, chains, config, refreshAccount, toast]);
 
   const disconnect = useCallback(async () => {
     setBusy(true);

@@ -62,6 +62,26 @@ export function tokenRawToX18(value: bigint, decimals: number): bigint {
   return value * 10n ** BigInt(18 - decimals);
 }
 
+export function x18ToTokenRaw(
+  valueX18: bigint,
+  decimals: number,
+  rounding: "down" | "up" = "down",
+): bigint {
+  assertDecimals(decimals);
+  if (valueX18 < 0n)
+    throw new SdkError("INVALID_AMOUNT", "X18 amount cannot be negative");
+  if (decimals > 18)
+    throw new SdkError(
+      "INVALID_DECIMALS",
+      "X18 normalization supports token decimals up to 18",
+    );
+  const scale = 10n ** BigInt(18 - decimals);
+  const quotient = valueX18 / scale;
+  return rounding === "up" && valueX18 % scale !== 0n
+    ? quotient + 1n
+    : quotient;
+}
+
 export function minimumAmountOut(
   quotedAmount: bigint,
   slippageBps: number,

@@ -21,6 +21,10 @@ import {
 } from "../src/launchpad/protection/ProtectedVirtualPoolDeployer.sol";
 import { ERC1967Proxy } from "../src/proxy/ERC1967Proxy.sol";
 
+interface VmProtectedLaunchDomain {
+    function chainId(uint256 newChainId) external;
+}
+
 contract MockProtectedQuoteToken {
     uint8 public constant decimals = 6;
     uint256 public totalSupply;
@@ -137,6 +141,8 @@ contract MockStockExecutionGuard {
 }
 
 contract ProtectedLaunchFactoryTest {
+    VmProtectedLaunchDomain private constant VM =
+        VmProtectedLaunchDomain(address(uint160(uint256(keccak256("hevm cheat code")))));
     MockProtectedQuoteToken private quote;
     LaunchConfigRegistry private templateRegistry;
     LaunchProtectionPolicyRegistry private policyRegistry;
@@ -144,6 +150,24 @@ contract ProtectedLaunchFactoryTest {
     ProtectedLaunchIdentityRegistry private identityRegistry;
     uint256 private templateId;
     uint256 private policyId;
+
+    function testElysiumLaunchIdentifierIsChainQualified() external {
+        bytes32 salt = bytes32(uint256(99801));
+        VM.chainId(999);
+        bytes32 hyperEvmId = factory.launchIdentifier(address(this), templateId, policyId, salt);
+        VM.chainId(99801);
+        bytes32 elysiumId = factory.launchIdentifier(address(this), templateId, policyId, salt);
+        require(elysiumId != hyperEvmId, "protected launch domain collision");
+        require(
+            elysiumId
+                == keccak256(
+                    abi.encode(
+                        uint256(99801), address(factory), address(this), templateId, policyId, salt
+                    )
+                ),
+            "Elysium protected launch domain mismatch"
+        );
+    }
 
     function setUp() public {
         quote = new MockProtectedQuoteToken();

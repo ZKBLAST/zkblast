@@ -109,7 +109,13 @@ export function Launchpad() {
     },
     [refresh],
   );
-  useLaunchpadEventRefresh(refresh, config?.chainId);
+  const launchExecutionEnabled = Boolean(
+    config?.capabilities.launchpad && config.capabilities.dbc,
+  );
+  useLaunchpadEventRefresh(
+    refresh,
+    launchExecutionEnabled ? config?.chainId : null,
+  );
   const completeLaunch = useCallback(
     (launch?: DbcLaunch) => {
       if (launch) {
@@ -139,6 +145,11 @@ export function Launchpad() {
       setLoading(true);
     } else if (!loadedOnce.current) setLoading(true);
     setError("");
+    if (config && !launchExecutionEnabled) {
+      loadedOnce.current = true;
+      setLoading(false);
+      return () => controller.abort();
+    }
     void Promise.all([
       apiRequest<{ items: DbcTemplate[] }>(
         webPublicConfig.apiUrl,
@@ -182,7 +193,7 @@ export function Launchpad() {
         }
       });
     return () => controller.abort();
-  }, [config?.chainId, revision]);
+  }, [config, launchExecutionEnabled, revision]);
 
   const allLaunches = useMemo(
     () => [
@@ -338,7 +349,28 @@ export function Launchpad() {
           </button>
         ))}
       </nav>
-      {view === "build" ? (
+      {config && !launchExecutionEnabled ? (
+        <section className="panel ticks grid min-h-[28rem] place-items-center p-6 text-center">
+          <div className="max-w-xl">
+            <span className="mx-auto grid size-12 place-items-center border border-line bg-raised/70">
+              <ShieldCheck className="size-5 text-lime" aria-hidden />
+            </span>
+            <p className="label mt-5">{config.chainName}</p>
+            <h2 className="mt-2 text-xl">Launch execution is disabled</h2>
+            <p className="mt-3 text-sm leading-6 text-muted">
+              The network is connected and isolated. Launch creation, curve
+              trading and claims become available only after the deployed
+              contracts and canonical indexer receipts are installed for chain {" "}
+              {config.chainId}.
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-2 font-mono text-[10px] uppercase text-muted">
+              <span className="border border-line px-3 py-2">Wallet network ready</span>
+              <span className="border border-line px-3 py-2">Data isolation ready</span>
+              <span className="border border-line px-3 py-2">Execution locked</span>
+            </div>
+          </div>
+        </section>
+      ) : view === "build" ? (
         <LaunchpadBuilder
           onOpenMarkets={() => selectView("markets")}
           onOpenManage={() => selectView("manage")}

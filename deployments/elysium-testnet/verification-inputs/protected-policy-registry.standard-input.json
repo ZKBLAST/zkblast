@@ -1,0 +1,53 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.26;\n\nimport { ProtocolAccess } from \"../../access/ProtocolAccess.sol\";\nimport { UUPSUpgradeable } from \"../../proxy/UUPSUpgradeable.sol\";\n\n/// @notice Immutable, versioned policy catalog for newly created Protected Launches.\ncontract LaunchProtectionPolicyRegistry is ProtocolAccess, UUPSUpgradeable {\n    error InvalidPolicy();\n    error PolicyNotFound();\n\n    bytes32 public constant POLICY_ADMIN_ROLE = keccak256(\"ZKBLAST_PROTECTION_POLICY_ADMIN_ROLE\");\n    bytes32 public constant POLICY_CONSUMER_ROLE =\n        keccak256(\"ZKBLAST_PROTECTION_POLICY_CONSUMER_ROLE\");\n\n    uint16 public constant BPS = 10_000;\n    uint16 public constant MAX_LAUNCH_FEE_BPS = 500;\n    uint32 public constant MAX_PROTECTION_BLOCKS = 2_000_000;\n    uint64 public constant MAX_LP_LOCK_SECONDS = 10 * 365 days;\n\n    struct PolicyInput {\n        bytes32 familyId;\n        uint32 protectionBlocks;\n        uint16 maxBuyBpsPerTransaction;\n        uint16 maxBuyBpsPerAddress;\n        uint16 initialFeeBps;\n        uint16 baseFeeBps;\n        uint64 lpLockSeconds;\n        bool batchMode;\n    }\n\n    struct Policy {\n        bytes32 familyId;\n        bytes32 policyHash;\n        uint32 protectionBlocks;\n        uint16 maxBuyBpsPerTransaction;\n        uint16 maxBuyBpsPerAddress;\n        uint16 initialFeeBps;\n        uint16 baseFeeBps;\n        uint64 lpLockSeconds;\n        uint32 version;\n        bool batchMode;\n        bool enabled;\n        bool used;\n    }\n\n    uint256 public policyCount;\n    mapping(bytes32 familyId => uint32 version) public latestVersion;\n    mapping(uint256 policyId => Policy policy) private _policies;\n\n    event ProtectionPolicyCreated(\n        uint256 indexed policyId,\n        bytes32 indexed familyId,\n        uint32 indexed version,\n        bytes32 policyHash\n    );\n    event ProtectionPolicyStatusUpdated(uint256 indexed policyId, bool enabled);\n    event ProtectionPolicyUsed(uint256 indexed policyId);\n\n    constructor() {\n        _disableInitializers();\n    }\n\n    function initialize(address admin, address upgrader, address policyAdmin) external initializer {\n        if (policyAdmin == address(0)) revert InvalidAccount();\n        __ProtocolAccess_init(admin, upgrader);\n        _setRole(POLICY_ADMIN_ROLE, policyAdmin, true);\n    }\n\n    function createPolicy(PolicyInput calldata input)\n        external\n        onlyRole(POLICY_ADMIN_ROLE)\n        returns (uint256 policyId)\n    {\n        _validate(input);\n        uint32 version = latestVersion[input.familyId] + 1;\n        latestVersion[input.familyId] = version;\n        policyId = ++policyCount;\n        bytes32 policyHash = keccak256(abi.encode(block.chainid, address(this), input));\n        _policies[policyId] = Policy({\n            familyId: input.familyId,\n            policyHash: policyHash,\n            protectionBlocks: input.protectionBlocks,\n            maxBuyBpsPerTransaction: input.maxBuyBpsPerTransaction,\n            maxBuyBpsPerAddress: input.maxBuyBpsPerAddress,\n            initialFeeBps: input.initialFeeBps,\n            baseFeeBps: input.baseFeeBps,\n            lpLockSeconds: input.lpLockSeconds,\n            version: version,\n            batchMode: input.batchMode,\n            enabled: true,\n            used: false\n        });\n        emit ProtectionPolicyCreated(policyId, input.familyId, version, policyHash);\n    }\n\n    function setPolicyEnabled(uint256 policyId, bool enabled) external onlyRole(POLICY_ADMIN_ROLE) {\n        Policy storage item = _policy(policyId);\n        item.enabled = enabled;\n        emit ProtectionPolicyStatusUpdated(policyId, enabled);\n    }\n\n    function markPolicyUsed(uint256 policyId) external onlyRole(POLICY_CONSUMER_ROLE) {\n        Policy storage item = _policy(policyId);\n        if (!item.enabled) revert InvalidPolicy();\n        if (!item.used) {\n            item.used = true;\n            emit ProtectionPolicyUsed(policyId);\n        }\n    }\n\n    function policy(uint256 policyId) external view returns (Policy memory) {\n        return _policy(policyId);\n    }\n\n    function _validate(PolicyInput calldata input) private pure {\n        if (\n            input.familyId == bytes32(0) || input.protectionBlocks == 0\n                || input.protectionBlocks > MAX_PROTECTION_BLOCKS\n                || input.maxBuyBpsPerTransaction == 0\n                || input.maxBuyBpsPerTransaction > input.maxBuyBpsPerAddress\n                || input.maxBuyBpsPerAddress > BPS || input.initialFeeBps < input.baseFeeBps\n                || input.initialFeeBps > MAX_LAUNCH_FEE_BPS || input.lpLockSeconds == 0\n                || input.lpLockSeconds > MAX_LP_LOCK_SECONDS || input.batchMode\n        ) revert InvalidPolicy();\n    }\n\n    function _policy(uint256 policyId) private view returns (Policy storage item) {\n        item = _policies[policyId];\n        if (item.familyId == bytes32(0)) revert PolicyNotFound();\n    }\n\n    function _authorizeUpgrade(address) internal override onlyRole(UPGRADER_ROLE) { }\n}\n"
+    },
+    "src/access/ProtocolAccess.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nimport { Initializable } from \"../proxy/Initializable.sol\";\n\nabstract contract ProtocolAccess is Initializable {\n    error InvalidAccount();\n    error Unauthorized(bytes32 role, address account);\n\n    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;\n    bytes32 public constant UPGRADER_ROLE = keccak256(\"ZKBLAST_UPGRADER_ROLE\");\n    bytes32 public constant FACTORY_ROLE = keccak256(\"ZKBLAST_FACTORY_ROLE\");\n\n    mapping(bytes32 role => mapping(address account => bool enabled)) private _roles;\n\n    event RoleUpdated(bytes32 indexed role, address indexed account, bool enabled);\n\n    modifier onlyRole(bytes32 role) {\n        if (!_roles[role][msg.sender]) revert Unauthorized(role, msg.sender);\n        _;\n    }\n\n    function __ProtocolAccess_init(address admin, address upgrader) internal onlyInitializing {\n        if (admin == address(0) || upgrader == address(0)) revert InvalidAccount();\n        _setRole(DEFAULT_ADMIN_ROLE, admin, true);\n        _setRole(UPGRADER_ROLE, upgrader, true);\n    }\n\n    function hasRole(bytes32 role, address account) external view returns (bool) {\n        return _roles[role][account];\n    }\n\n    function setRole(bytes32 role, address account, bool enabled)\n        external\n        onlyRole(DEFAULT_ADMIN_ROLE)\n    {\n        if (account == address(0)) revert InvalidAccount();\n        _setRole(role, account, enabled);\n    }\n\n    function _setRole(bytes32 role, address account, bool enabled) internal {\n        _roles[role][account] = enabled;\n        emit RoleUpdated(role, account, enabled);\n    }\n}\n"
+    },
+    "src/proxy/UUPSUpgradeable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nabstract contract UUPSUpgradeable {\n    error InvalidImplementation();\n    error OnlyProxy();\n    error UnsupportedProxiableUUID();\n    error UpgradeCallFailed(bytes reason);\n\n    bytes32 internal constant IMPLEMENTATION_SLOT =\n        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;\n    address private immutable SELF = address(this);\n\n    event Upgraded(address indexed implementation);\n\n    modifier onlyProxy() {\n        if (address(this) == SELF || _implementation() != SELF) revert OnlyProxy();\n        _;\n    }\n\n    function proxiableUUID() external view returns (bytes32) {\n        if (address(this) != SELF) revert OnlyProxy();\n        return IMPLEMENTATION_SLOT;\n    }\n\n    function upgradeToAndCall(address implementation, bytes calldata data)\n        external\n        payable\n        onlyProxy\n    {\n        _authorizeUpgrade(implementation);\n        if (implementation.code.length == 0) revert InvalidImplementation();\n        (bool success, bytes memory result) =\n            implementation.staticcall(abi.encodeCall(this.proxiableUUID, ()));\n        if (!success || abi.decode(result, (bytes32)) != IMPLEMENTATION_SLOT) {\n            revert UnsupportedProxiableUUID();\n        }\n        assembly (\"memory-safe\") {\n            sstore(IMPLEMENTATION_SLOT, implementation)\n        }\n        emit Upgraded(implementation);\n        if (data.length != 0) {\n            (success, result) = implementation.delegatecall(data);\n            if (!success) revert UpgradeCallFailed(result);\n        }\n    }\n\n    function _implementation() private view returns (address implementation) {\n        assembly (\"memory-safe\") {\n            implementation := sload(IMPLEMENTATION_SLOT)\n        }\n    }\n\n    function _authorizeUpgrade(address implementation) internal virtual;\n}\n"
+    },
+    "src/proxy/Initializable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nabstract contract Initializable {\n    error AlreadyInitialized();\n    error NotInitializing();\n\n    uint64 private _initialized;\n    bool private _initializing;\n\n    modifier initializer() {\n        if (_initializing || _initialized != 0) revert AlreadyInitialized();\n        _initialized = 1;\n        _initializing = true;\n        _;\n        _initializing = false;\n    }\n\n    modifier onlyInitializing() {\n        if (!_initializing) revert NotInitializing();\n        _;\n    }\n\n    function _disableInitializers() internal {\n        if (_initializing) revert AlreadyInitialized();\n        _initialized = type(uint64).max;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "remappings": [
+      "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+      "forge-std/=lib/poseidon2-solidity/dependencies/forge-std-1.16.2/src/",
+      "poseidon2-solidity/=lib/poseidon2-solidity/src/"
+    ],
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "metadata": {
+      "useLiteralContent": false,
+      "bytecodeHash": "none",
+      "appendCBOR": true
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object",
+          "evm.bytecode.sourceMap",
+          "evm.bytecode.linkReferences",
+          "evm.deployedBytecode.object",
+          "evm.deployedBytecode.sourceMap",
+          "evm.deployedBytecode.linkReferences",
+          "evm.deployedBytecode.immutableReferences",
+          "evm.methodIdentifiers",
+          "metadata",
+          "storageLayout"
+        ]
+      }
+    },
+    "evmVersion": "cancun",
+    "viaIR": true,
+    "libraries": {}
+  }
+}

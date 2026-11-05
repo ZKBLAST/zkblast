@@ -203,4 +203,34 @@ contract AssistanceFeeCollectorTest {
         (bool exceeded,) = address(executor).call(abi.encodeCall(executor.release, (collector, address(asset), 1)));
         require(!exceeded, "buyback exceeded");
     }
+
+    function testStockQuoteRevenueStaysIsolatedInItsNativeAssetLedger() external {
+        ProtocolFeeRegistry registry = _registry();
+        AssistanceFeeCollector collector = _collector(registry);
+        AssistanceAssetMock msft = new AssistanceAssetMock(false);
+        AssistanceAssetMock aapl = new AssistanceAssetMock(false);
+        AssistanceRevenueSourceMock msftSource = new AssistanceRevenueSourceMock();
+        AssistanceRevenueSourceMock aaplSource = new AssistanceRevenueSourceMock();
+        bytes32 msftId = registry.registerSource(
+            address(msftSource),
+            address(msft),
+            AssistanceFundTypes.STOCK_QUOTE_DBC_PROTOCOL_REVENUE_V1
+        );
+        bytes32 aaplId = registry.registerSource(
+            address(aaplSource),
+            address(aapl),
+            AssistanceFundTypes.STOCK_QUOTE_DBC_PROTOCOL_REVENUE_V1
+        );
+        msft.mint(address(msftSource), 1_000);
+        aapl.mint(address(aaplSource), 2_000);
+        msftSource.record(collector, msft, msftId, 1, 1_000, 0, 1_000);
+        aaplSource.record(collector, aapl, aaplId, 1, 2_000, 0, 2_000);
+
+        AssistanceFundTypes.AssetLedger memory msftLedger = collector.assetLedger(address(msft));
+        AssistanceFundTypes.AssetLedger memory aaplLedger = collector.assetLedger(address(aapl));
+        require(msftLedger.collected == 1_000, "MSFT mixed");
+        require(aaplLedger.collected == 2_000, "AAPL mixed");
+        require(msft.balanceOf(address(collector)) == 1_000, "MSFT balance");
+        require(aapl.balanceOf(address(collector)) == 2_000, "AAPL balance");
+    }
 }

@@ -4,6 +4,10 @@ import { getChainDescriptor } from "./chains.js";
 const appEnvironmentSchema = z.enum(["testnet", "mainnet"]);
 export type AppEnvironment = z.infer<typeof appEnvironmentSchema>;
 const optionalUrlSchema = z.union([z.string().url(), z.literal("")]);
+const optionalServerUrlSchema = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.string().url().optional(),
+);
 const optionalAddressSchema = z.preprocess(
   (value) => (value === "" ? undefined : value),
   z.string().regex(/^0x[\da-f]{40}$/iu, "Invalid EVM address").optional(),
@@ -21,6 +25,8 @@ const publicConfigSchema = z.object({
 
 const serverConfigSchema = publicConfigSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  ELYSIUM_PRIVATE_RPC_URL: optionalServerUrlSchema,
+  ELYSIUM_WS_RPC_URL: optionalServerUrlSchema,
   EXECUTION_RESERVE_ASSET_ADDRESS: optionalAddressSchema,
   GRADUATION_POOL_FACTORY_ADDRESS: optionalAddressSchema,
   GRADUATION_SWAP_ROUTER_ADDRESS: optionalAddressSchema,
@@ -77,6 +83,45 @@ function assertServerIntegrationBoundary(config: ServerConfig): void {
       `${descriptor.slug} integration addresses are disabled until its launchpad capability is approved`,
     );
   }
+
+  const hasElysiumProvider = Boolean(
+    config.ELYSIUM_PRIVATE_RPC_URL || config.ELYSIUM_WS_RPC_URL,
+  );
+  if (descriptor.family !== "elysium" && hasElysiumProvider) {
+    throw new Error(
+      `${descriptor.slug} cannot use Elysium provider configuration`,
+    );
+  }
+  if (
+    descriptor.family === "elysium" &&
+    !descriptor.publicRpcUrls.includes(config.RPC_URL)
+  ) {
+    throw new Error(
+      `${descriptor.slug} RPC_URL must remain an approved public fallback; configure private access through ELYSIUM_PRIVATE_RPC_URL`,
+    );
+  }
+}
+
+export type ServerRpcSelection = Readonly<{
+  httpUrl: string;
+  websocketUrl?: string;
+  usesPrivateProvider: boolean;
+}>;
+
+export function resolveServerRpcSelection(
+  config: ServerConfig,
+): ServerRpcSelection {
+  const descriptor = getChainDescriptor(config.CHAIN_ID);
+  if (descriptor.family !== "elysium") {
+    return { httpUrl: config.RPC_URL, usesPrivateProvider: false };
+  }
+  return {
+    httpUrl: config.ELYSIUM_PRIVATE_RPC_URL ?? config.RPC_URL,
+    ...(config.ELYSIUM_WS_RPC_URL
+      ? { websocketUrl: config.ELYSIUM_WS_RPC_URL }
+      : {}),
+    usesPrivateProvider: Boolean(config.ELYSIUM_PRIVATE_RPC_URL),
+  };
 }
 
 export function loadPublicConfig(input: Record<string, unknown>): PublicConfig {

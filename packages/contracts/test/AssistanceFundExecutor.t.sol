@@ -72,8 +72,8 @@ contract ExecutorCollectorMock {
     }
 
     function releaseBuyback(address asset, address recipient, uint256 amount) external {
-        require(!failRelease && asset == address(inputAsset), "release");
-        inputAsset.transfer(recipient, amount);
+        require(!failRelease, "release");
+        IERC20Minimal(asset).transfer(recipient, amount);
     }
 }
 
@@ -181,6 +181,30 @@ contract AssistanceFundExecutorTest {
             address(executor).call(abi.encodeCall(executor.executeBuyback, (ROUTE_ID, 100, 199, block.timestamp + 30)));
         require(!accepted, "paused execution");
         require(input.balanceOf(address(collector)) == collectorBefore, "funds moved");
+    }
+
+    function testProtocolTokenRevenueBurnsWithoutAZeroValueSwapRoute() external {
+        protocolToken.mint(address(collector), 25);
+        uint256 supplyBefore = protocolToken.totalSupply();
+        uint256 supplyAfter = executor.executeDirectBurn(25);
+        require(supplyAfter == supplyBefore - 25, "supply");
+        require(protocolToken.balanceOf(address(executor)) == 0, "executor balance");
+        require(protocolToken.balanceOf(address(burnModule)) == 0, "module balance");
+    }
+
+    function testUnapprovedStockQuoteRouteCannotReleaseOrBurnRevenue() external {
+        bytes32 unapprovedStockRoute = keccak256("MSFT_ZKBLAST_UNAPPROVED");
+        uint256 collectorBefore = input.balanceOf(address(collector));
+        uint256 supplyBefore = protocolToken.totalSupply();
+        (bool accepted,) = address(executor).call(
+            abi.encodeCall(
+                executor.executeBuyback,
+                (unapprovedStockRoute, 100, 1, block.timestamp + 30)
+            )
+        );
+        require(!accepted, "unapproved stock route executed");
+        require(input.balanceOf(address(collector)) == collectorBefore, "stock revenue released");
+        require(protocolToken.totalSupply() == supplyBefore, "unexpected burn");
     }
 
     function _config() private returns (BuybackRouteRegistry.Route memory config) {

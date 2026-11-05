@@ -17,6 +17,12 @@ optimizer = true
 optimizer_runs = 1
 out = "out-hyperevm"
 
+[profile.elysium]
+via_ir = true
+optimizer = true
+optimizer_runs = 1
+out = "out-elysium"
+
 [fmt]
 line_length = 100
 tab_width = 4

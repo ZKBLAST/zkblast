@@ -7,10 +7,10 @@ import {
   supportedChains,
 } from "../src/chains.js";
 
-test("exposes isolated Robinhood and HyperEVM chain descriptors", () => {
+test("exposes isolated Robinhood, HyperEVM, and Elysium chain descriptors", () => {
   assert.deepEqual(
     supportedChains.map((chain) => chain.chainId),
-    [46_630, 4_663, 998, 999],
+    [46_630, 4_663, 99_801, 998, 999],
   );
   assert.equal(getChainDescriptor(998).family, "hyperevm");
   assert.equal(getChainDescriptor(998).nativeCurrency.symbol, "HYPE");
@@ -25,11 +25,20 @@ test("exposes isolated Robinhood and HyperEVM chain descriptors", () => {
   assert.equal(getChainDescriptor(999).execution.maximumQueuedNonces, 8);
   assert.equal(getChainDescriptor(999).indexer.officialWebsocket, false);
   assert.equal(getChainDescriptor(4_663).databaseSchema, "zkblast_mainnet");
+  const elysium = getChainDescriptor(99_801);
+  assert.equal(elysium.family, "elysium");
+  assert.equal(elysium.environment, "testnet");
+  assert.equal(elysium.databaseSchema, "zkblast_elysium_testnet");
+  assert.equal(elysium.deploymentManifestPath, "deployments/elysium-testnet/manifest.json");
+  assert.equal(elysium.indexer.maximumLogRange, 2_000);
+  assert.deepEqual(elysium.publicRpcUrls, ["https://testnet-rpc.elysium.kinetiq.xyz"]);
+  assert.equal(Object.values(elysium.capabilities).every((enabled) => !enabled), true);
 });
 
 test("recognizes only canonical isolated database schemas", () => {
   assert.equal(isSupportedDatabaseSchema("zkblast_mainnet"), true);
   assert.equal(isSupportedDatabaseSchema("zkblast_hyperevm_testnet"), true);
+  assert.equal(isSupportedDatabaseSchema("zkblast_elysium_testnet"), true);
   assert.equal(isSupportedDatabaseSchema("public"), false);
   assert.equal(isSupportedDatabaseSchema("zkblast_hyperevm_mainnet;drop"), false);
 });

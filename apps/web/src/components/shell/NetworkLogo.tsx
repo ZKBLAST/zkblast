@@ -11,6 +11,10 @@ const networkLogos: Record<ChainFamily, Readonly<{ src: string; alt: string }>> 
     src: "/images/networks/hyperliquid.png",
     alt: "Hyperliquid HyperEVM",
   },
+  elysium: {
+    src: "/images/networks/elysium.svg",
+    alt: "Kinetiq Elysium",
+  },
 };
 
 export function NetworkLogo({

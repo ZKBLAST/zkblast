@@ -90,10 +90,20 @@ contract GraduationAdapterRegistryTest {
         GraduationAdapterRegistry testnetRegistry = _registry();
         VM.chainId(999);
         GraduationAdapterRegistry mainnetRegistry = _registry();
+        VM.chainId(99801);
+        GraduationAdapterRegistry elysiumRegistry = _registry();
         address adapter = address(0x1234);
         require(
             testnetRegistry.recordId(adapter, 1) != mainnetRegistry.recordId(adapter, 1),
             "cross-chain collision"
+        );
+        require(
+            elysiumRegistry.recordId(adapter, 1) != testnetRegistry.recordId(adapter, 1),
+            "Elysium/testnet collision"
+        );
+        require(
+            elysiumRegistry.recordId(adapter, 1) != mainnetRegistry.recordId(adapter, 1),
+            "Elysium/mainnet collision"
         );
     }
 }

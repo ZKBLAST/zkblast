@@ -4,15 +4,37 @@ export {
   parseDeploymentManifest,
 } from "./deployment.js";
 export type { DeploymentManifest } from "./deployment.js";
-export { loadPublicConfig, loadServerConfig } from "./runtime.js";
+export {
+  loadPublicConfig,
+  loadServerConfig,
+  resolveServerRpcSelection,
+} from "./runtime.js";
 export { loadWebPublicConfig } from "./web-public.js";
-export type { AppEnvironment, PublicConfig, ServerConfig } from "./runtime.js";
+export type {
+  AppEnvironment,
+  PublicConfig,
+  ServerConfig,
+  ServerRpcSelection,
+} from "./runtime.js";
 export {
   getChainDescriptor,
   isSupportedDatabaseSchema,
   isSupportedChainId,
   supportedChains,
 } from "./chains.js";
+export {
+  ELYSIUM_TESTNET_BRIDGE_URL,
+  ELYSIUM_TESTNET_CHAIN_ID,
+  ELYSIUM_TESTNET_GATEWAY,
+  ELYSIUM_TESTNET_MULTICALL3,
+  assertElysiumAssetIdentity,
+  elysiumCanonicalAssets,
+  getElysiumCanonicalAsset,
+} from "./elysium.js";
+export type {
+  ElysiumBridgeState,
+  ElysiumCanonicalAsset,
+} from "./elysium.js";
 export type {
   ChainCapabilities,
   ChainDescriptor,

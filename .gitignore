@@ -18,6 +18,7 @@ coverage/
 !.env.mainnet.example
 !.env.hyperevm-testnet.example
 !.env.hyperevm-mainnet.example
+!.env.elysium-testnet.example
 
 # Local documentation, reports, and security/deployment evidence
 /docs/
@@ -61,6 +62,7 @@ packages/contracts/cache/
 packages/contracts/test/generated-v2-local/
 packages/contracts/out/
 packages/contracts/out-hyperevm/
+packages/contracts/out-elysium/
 packages/contracts/broadcast/
 packages/contracts/lib/
 !packages/contracts/lib/

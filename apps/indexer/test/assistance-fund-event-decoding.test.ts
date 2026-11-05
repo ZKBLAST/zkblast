@@ -27,7 +27,7 @@ test("Assistance Fund events are available to the shared indexer decoder", () =>
 
   const decoded = decodeEventLog({
     abi: Object.values(protocolAbis).flat(),
-    topics,
+    topics: topics as [`0x${string}`, ...`0x${string}`[]],
     data,
   });
 

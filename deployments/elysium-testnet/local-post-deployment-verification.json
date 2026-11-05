@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-04T12:57:49.204Z",
+  "chainId": 99801,
+  "nextNonce": 63,
+  "codeChecks": [
+    {
+      "group": "dbc",
+      "name": "configRegistryImplementation",
+      "address": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+      "runtimeBytes": 9140
+    },
+    {
+      "group": "dbc",
+      "name": "configRegistry",
+      "address": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "dbc",
+      "name": "launchTokenDeployer",
+      "address": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+      "runtimeBytes": 3991
+    },
+    {
+      "group": "dbc",
+      "name": "virtualPoolDeployer",
+      "address": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+      "runtimeBytes": 17976
+    },
+    {
+      "group": "dbc",
+      "name": "launchFactoryImplementation",
+      "address": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+      "runtimeBytes": 10441
+    },
+    {
+      "group": "dbc",
+      "name": "launchFactory",
+      "address": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "dbc",
+      "name": "launchpadRouterImplementation",
+      "address": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+      "runtimeBytes": 4558
+    },
+    {
+      "group": "dbc",
+      "name": "launchpadRouter",
+      "address": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "dbc",
+      "name": "lpAllocationEscrowImplementation",
+      "address": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+      "runtimeBytes": 5200
+    },
+    {
+      "group": "dbc",
+      "name": "lpAllocationEscrow",
+      "address": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "dbc",
+      "name": "graduationManagerImplementation",
+      "address": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+      "runtimeBytes": 16913
+    },
+    {
+      "group": "dbc",
+      "name": "graduationManager",
+      "address": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "dbc",
+      "name": "curveQuoter",
+      "address": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+      "runtimeBytes": 3004
+    },
+    {
+      "group": "launchpad",
+      "name": "registryImplementation",
+      "address": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1",
+      "runtimeBytes": 6053
+    },
+    {
+      "group": "launchpad",
+      "name": "registry",
+      "address": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "configManagerImplementation",
+      "address": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888",
+      "runtimeBytes": 5666
+    },
+    {
+      "group": "launchpad",
+      "name": "configManager",
+      "address": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "factoryImplementation",
+      "address": "0xeB371680b19363872F9e364f306F8E024d996cfe",
+      "runtimeBytes": 2554
+    },
+    {
+      "group": "launchpad",
+      "name": "factory",
+      "address": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "feeControllerImplementation",
+      "address": "0xB8b04B3583A92dd66950086F8e3bd34455E62039",
+      "runtimeBytes": 5550
+    },
+    {
+      "group": "launchpad",
+      "name": "feeController",
+      "address": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "revenueSplitterImplementation",
+      "address": "0x2a4D288A6c92E55A631CB987d7Af79099933b596",
+      "runtimeBytes": 6954
+    },
+    {
+      "group": "launchpad",
+      "name": "revenueSplitter",
+      "address": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "feeCollectorImplementation",
+      "address": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+      "runtimeBytes": 3673
+    },
+    {
+      "group": "launchpad",
+      "name": "feeCollector",
+      "address": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "tokenFactoryImplementation",
+      "address": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+      "runtimeBytes": 9222
+    },
+    {
+      "group": "launchpad",
+      "name": "tokenFactory",
+      "address": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "launchpad",
+      "name": "lens",
+      "address": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+      "runtimeBytes": 2872
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "policyRegistryImplementation",
+      "address": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+      "runtimeBytes": 4684
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "policyRegistry",
+      "address": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "lpEscrowImplementation",
+      "address": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+      "runtimeBytes": 5955
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "lpEscrow",
+      "address": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "identityRegistryImplementation",
+      "address": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+      "runtimeBytes": 5143
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "identityRegistry",
+      "address": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "tokenDeployer",
+      "address": "0x8A0f7231aDf54B555513bCE315bd1aad38c5Df51",
+      "runtimeBytes": 6605
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "virtualPoolDeployer",
+      "address": "0x39c834CC8Fd725a409dDDEB758b49Fc45e79d14E",
+      "runtimeBytes": 18275
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "factoryImplementation",
+      "address": "0x0417D16c327807A671bC246E75b9BF5b53ea7659",
+      "runtimeBytes": 13923
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "factory",
+      "address": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "routerImplementation",
+      "address": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+      "runtimeBytes": 4559
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "router",
+      "address": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+      "runtimeBytes": 132
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "graduationManagerImplementation",
+      "address": "0x2ECE215E0672d1D8c460409d631b506CE0D84c65",
+      "runtimeBytes": 17790
+    },
+    {
+      "group": "protectedLaunch",
+      "name": "graduationManager",
+      "address": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868",
+      "runtimeBytes": 132
+    }
+  ],
+  "proxyChecks": [
+    {
+      "name": "dbc.configRegistry",
+      "proxy": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+      "implementation": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB"
+    },
+    {
+      "name": "dbc.launchFactory",
+      "proxy": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+      "implementation": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3"
+    },
+    {
+      "name": "dbc.launchpadRouter",
+      "proxy": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+      "implementation": "0x07C76c1597D47981350Af10E3E74D831d595756d"
+    },
+    {
+      "name": "dbc.lpAllocationEscrow",
+      "proxy": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+      "implementation": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13"
+    },
+    {
+      "name": "dbc.graduationManager",
+      "proxy": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+      "implementation": "0xCB331f29163CEB7afECc5cB82083B988483992C7"
+    },
+    {
+      "name": "launchpad.registry",
+      "proxy": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+      "implementation": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1"
+    },
+    {
+      "name": "launchpad.configManager",
+      "proxy": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+      "implementation": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888"
+    },
+    {
+      "name": "launchpad.factory",
+      "proxy": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+      "implementation": "0xeB371680b19363872F9e364f306F8E024d996cfe"
+    },
+    {
+      "name": "launchpad.feeController",
+      "proxy": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+      "implementation": "0xB8b04B3583A92dd66950086F8e3bd34455E62039"
+    },
+    {
+      "name": "launchpad.revenueSplitter",
+      "proxy": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+      "implementation": "0x2a4D288A6c92E55A631CB987d7Af79099933b596"
+    },
+    {
+      "name": "launchpad.feeCollector",
+      "proxy": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+      "implementation": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B"
+    },
+    {
+      "name": "launchpad.tokenFactory",
+      "proxy": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "implementation": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389"
+    },
+    {
+      "name": "protected.policyRegistry",
+      "proxy": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+      "implementation": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA"
+    },
+    {
+      "name": "protected.lpEscrow",
+      "proxy": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+      "implementation": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175"
+    },
+    {
+      "name": "protected.identityRegistry",
+      "proxy": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+      "implementation": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93"
+    },
+    {
+      "name": "protected.factory",
+      "proxy": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+      "implementation": "0x0417D16c327807A671bC246E75b9BF5b53ea7659"
+    },
+    {
+      "name": "protected.router",
+      "proxy": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+      "implementation": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2"
+    },
+    {
+      "name": "protected.graduationManager",
+      "proxy": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868",
+      "implementation": "0x2ECE215E0672d1D8c460409d631b506CE0D84c65"
+    }
+  ],
+  "capabilities": {
+    "dbc": true,
+    "launchpad": true,
+    "protectedLaunch": true,
+    "graduation": false
+  },
+  "passed": true,
+  "broadcastAllowed": false
+}

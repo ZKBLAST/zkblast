@@ -60,6 +60,7 @@ import { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
 import { PostgresLaunchpadDeveloperStore } from "./postgres-launchpad-developer-store.js";
 import { probeWebhookOwnership } from "./launchpad-developer-security.js";
 import { createHyperEvmMainnetContext } from "./hyperevm-mainnet-context.js";
+import { createElysiumTestnetContext } from "./elysium-testnet-context.js";
 import { publicContractDirectory } from "./public-contract-directory.js";
 import { PostgresAssistanceFundService } from "./postgres-assistance-fund-service.js";
 import { PostgresStockQuoteService } from "./postgres-stock-quote-service.js";
@@ -80,7 +81,12 @@ const serviceSchema = z.object({
   LAUNCHPAD_WEBHOOK_ENCRYPTION_KEY: z.string().min(1).optional(),
   ROBINHOOD_MAINNET_WEB_URL: z.string().url().optional(),
   HYPEREVM_MAINNET_WEB_URL: z.string().url().optional(),
+  ELYSIUM_TESTNET_WEB_URL: z.string().url().optional(),
   ENABLE_HYPEREVM_MAINNET: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  ENABLE_ELYSIUM_TESTNET: z
     .enum(["true", "false"])
     .default("false")
     .transform((value) => value === "true"),
@@ -664,18 +670,23 @@ const shieldedV2Service = manifest.shieldedV2
       deploymentBlock: BigInt(manifest.shieldedV2.deploymentBlock),
     })
   : undefined;
-const additionalChainContexts = serviceConfig.ENABLE_HYPEREVM_MAINNET
-  ? [
-      await createHyperEvmMainnetContext({
-        databaseUrl: directDatabaseUrl,
-        rpcUrl: serviceConfig.HYPEREVM_MAINNET_RPC_URL,
-        webOrigin: serviceConfig.WEB_ORIGIN,
-        operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
-        rpcLagBlocks: serviceConfig.ALERT_RPC_LAG_BLOCKS,
-        checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
-      }),
-    ]
-  : [];
+const additionalChainContexts = [
+  ...(serviceConfig.ENABLE_HYPEREVM_MAINNET
+    ? [
+        await createHyperEvmMainnetContext({
+          databaseUrl: directDatabaseUrl,
+          rpcUrl: serviceConfig.HYPEREVM_MAINNET_RPC_URL,
+          webOrigin: serviceConfig.WEB_ORIGIN,
+          operationsToken: serviceConfig.OPERATIONS_API_TOKEN,
+          rpcLagBlocks: serviceConfig.ALERT_RPC_LAG_BLOCKS,
+          checkpointAgeSeconds: serviceConfig.ALERT_CHECKPOINT_AGE_SECONDS,
+        }),
+      ]
+    : []),
+  ...(serviceConfig.ENABLE_ELYSIUM_TESTNET
+    ? [createElysiumTestnetContext({ webOrigin: serviceConfig.WEB_ORIGIN })]
+    : []),
+];
 const app = createApp(
   {
     environment: serverConfig.APP_ENV,
@@ -689,6 +700,9 @@ const app = createApp(
         : {}),
       ...(serviceConfig.HYPEREVM_MAINNET_WEB_URL
         ? { 999: serviceConfig.HYPEREVM_MAINNET_WEB_URL }
+        : {}),
+      ...(serviceConfig.ELYSIUM_TESTNET_WEB_URL
+        ? { 99_801: serviceConfig.ELYSIUM_TESTNET_WEB_URL }
         : {}),
     },
     ...(manifest.shieldedV2 ? { shieldedV2: manifest.shieldedV2 } : {}),

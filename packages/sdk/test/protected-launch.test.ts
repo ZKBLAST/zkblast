@@ -4,9 +4,40 @@ import test from "node:test";
 import {
   ProtectedLaunchClient,
   assertProtectedLaunchCapability,
+  protectionBlocksForDuration,
   simulateProtectedBuy,
   type ProtectedLaunchAddresses,
 } from "../src/protected-launch.js";
+
+test("derives Elysium protection windows from measured cadence", () => {
+  assert.equal(
+    protectionBlocksForDuration({
+      durationSeconds: 60,
+      measuredBlockMilliseconds: 100,
+    }),
+    600,
+  );
+  assert.equal(
+    protectionBlocksForDuration({
+      durationSeconds: 1,
+      measuredBlockMilliseconds: 125,
+    }),
+    8,
+  );
+  assert.throws(() =>
+    protectionBlocksForDuration({
+      durationSeconds: 60,
+      measuredBlockMilliseconds: 100,
+      maximumBlocks: 500,
+    }),
+  );
+  assert.throws(() =>
+    protectionBlocksForDuration({
+      durationSeconds: 60,
+      measuredBlockMilliseconds: 0,
+    }),
+  );
+});
 
 const addresses: ProtectedLaunchAddresses = {
   chainId: 4663,

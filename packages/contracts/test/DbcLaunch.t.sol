@@ -141,13 +141,17 @@ contract DbcLaunchTest {
         bytes32 robinhoodId = factory.launchIdentifier(address(this), templateId, salt);
         vm.chainId(999);
         bytes32 hyperEvmId = factory.launchIdentifier(address(this), templateId, salt);
+        vm.chainId(99801);
+        bytes32 elysiumId = factory.launchIdentifier(address(this), templateId, salt);
         require(robinhoodId != hyperEvmId, "cross-chain launch id collision");
+        require(robinhoodId != elysiumId, "Elysium/Robinhood launch id collision");
+        require(hyperEvmId != elysiumId, "Elysium/HyperEVM launch id collision");
         require(
-            hyperEvmId
+            elysiumId
                 == keccak256(
-                    abi.encode(uint256(999), address(factory), address(this), templateId, salt)
+                    abi.encode(uint256(99801), address(factory), address(this), templateId, salt)
                 ),
-            "launch domain mismatch"
+            "Elysium launch domain mismatch"
         );
     }
 

@@ -1,10 +1,18 @@
 import { readdir, readFile } from "node:fs/promises";
 
-const environments = [
-  { environment: "testnet", schema: "zkblast_testnet", chainId: 46630, chainKey: "robinhood-testnet", forbiddenSchemas: ["zkblast_mainnet", "zkblast_hyperevm_mainnet"] },
-  { environment: "mainnet", schema: "zkblast_mainnet", chainId: 4663, chainKey: "robinhood-mainnet", forbiddenSchemas: ["zkblast_testnet", "zkblast_hyperevm_mainnet"] },
-  { environment: "hyperevm-mainnet", schema: "zkblast_hyperevm_mainnet", chainId: 999, chainKey: "hyperevm-mainnet", forbiddenSchemas: ["zkblast_testnet", "zkblast_mainnet"] },
+const definitions = [
+  { environment: "testnet", schema: "zkblast_testnet", chainId: 46630, chainKey: "robinhood-testnet" },
+  { environment: "mainnet", schema: "zkblast_mainnet", chainId: 4663, chainKey: "robinhood-mainnet" },
+  { environment: "hyperevm-mainnet", schema: "zkblast_hyperevm_mainnet", chainId: 999, chainKey: "hyperevm-mainnet" },
+  { environment: "elysium-testnet", schema: "zkblast_elysium_testnet", chainId: 99801, chainKey: "elysium-testnet" },
 ];
+
+const environments = definitions.map((definition) => ({
+  ...definition,
+  forbiddenSchemas: definitions
+    .filter(({ schema }) => schema !== definition.schema)
+    .map(({ schema }) => schema),
+}));
 
 for (const { environment, schema, chainId, chainKey, forbiddenSchemas } of environments) {
   const directory = `supabase/migrations/${environment}`;
@@ -100,7 +108,6 @@ for (const { environment, schema, chainId, chainKey, forbiddenSchemas } of envir
     }
   }
   for (const fragment of [
-    `default ${chainId} check (chain_id=${chainId})`,
     "dbc_launches_chain_identity_idx",
     "launchpad_branding_chain_identity_idx",
     "launchpad_webhook_deliveries_chain_event_idx",
@@ -109,7 +116,16 @@ for (const { environment, schema, chainId, chainKey, forbiddenSchemas } of envir
       throw new Error(`${chainQualified.path}: missing ${fragment}`);
     }
   }
-  for (const forbiddenChainId of [4663, 46630, 998, 999].filter((value) => value !== chainId)) {
+  const fixedChainPattern = new RegExp(
+    `default\\s+${chainId}\\s+check\\s*\\(chain_id\\s*=\\s*${chainId}\\)`,
+    "u",
+  );
+  if (!fixedChainPattern.test(chainQualified.sql)) {
+    throw new Error(
+      `${chainQualified.path}: missing fixed-chain default/check for ${chainId}`,
+    );
+  }
+  for (const forbiddenChainId of [4663, 46630, 998, 999, 99801].filter((value) => value !== chainId)) {
     if (chainQualified.sql.includes(`check (chain_id=${forbiddenChainId})`)) {
       throw new Error(
         `${chainQualified.path}: contains cross-network chain ${forbiddenChainId}`,

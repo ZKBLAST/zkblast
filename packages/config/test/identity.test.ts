@@ -29,6 +29,29 @@ test("identical addresses on different chains never share a key", () => {
     createChainEntityIdentity(4_663, "pool", address).key,
     createChainEntityIdentity(999, "pool", address).key,
   );
+  assert.notEqual(
+    createChainEntityIdentity(99_801, "pool", address).key,
+    createChainEntityIdentity(999, "pool", address).key,
+  );
+  assert.notEqual(
+    createChainObjectKey(99_801, "pool", address),
+    createChainObjectKey(998, "pool", address),
+  );
+});
+
+test("identical numeric launchpad IDs stay isolated on Elysium", () => {
+  assert.equal(
+    createChainEntityIdentity(99_801, "launchpad", "0007").key,
+    "99801:launchpad:7",
+  );
+  assert.equal(
+    createChainObjectKey(99_801, "launchpad", 7n),
+    "elysium-testnet/launchpad/7",
+  );
+  assert.notEqual(
+    createChainObjectKey(99_801, "launchpad", 7n),
+    createChainObjectKey(999, "launchpad", 7n),
+  );
 });
 
 test("rejects unsupported chains and malformed identifiers", () => {

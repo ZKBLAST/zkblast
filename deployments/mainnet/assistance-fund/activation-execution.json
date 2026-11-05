@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "status": "confirmed",
+  "planSha256": "398190b9eafc3966000944946869a5da994a1a9e9bd1711af594a717ca26dd92",
+  "approvedGasCapWei": "150000000000000",
+  "approvedGasCapEth": "0.00015",
+  "totalFeeWei": "67573720540000",
+  "totalFeeEth": "0.00006757372054",
+  "assetLimits": {
+    "liquidityZkblastRaw": "40000000000000000000",
+    "liquidityUsdgRaw": "402680",
+    "pilotSwapUsdgRaw": "100000",
+    "maximumBuybackUsdgRaw": "1000000",
+    "expectedPilotProtocolFeeUsdgRaw": "30",
+    "plannedPilotBuybackUsdgRaw": "29"
+  },
+  "transactions": [
+    {
+      "step": "deploy-reference-oracle",
+      "hash": "0xd60cd2178426a066778d6783e51b27b208d3fb31f0552119b4edee056c4a10ad",
+      "blockNumber": "106545640",
+      "gasUsed": "345944",
+      "effectiveGasPrice": "20364000",
+      "feeWei": "7044803616000",
+      "contractAddress": "0x878710226a5b7e08c92b3c113d09a8976cadccbd"
+    },
+    {
+      "step": "deploy-revenue-adapter",
+      "hash": "0xad6f75c5466ae53c1d864a9d49ff44ec00501a7427936d99d95ef7e521810ec8",
+      "blockNumber": "106545648",
+      "gasUsed": "676861",
+      "effectiveGasPrice": "20358000",
+      "feeWei": "13779536238000",
+      "contractAddress": "0xf4bbfa5abcacde2baf313596afd21b5e3bb142a2"
+    },
+    {
+      "step": "register-usdg-fee-source",
+      "hash": "0xc89c002b200da9e1f78d69e2d4ffeabc8689624fc4f8fded7da7ce850014a797",
+      "blockNumber": "106545658",
+      "gasUsed": "212227",
+      "effectiveGasPrice": "20354000",
+      "feeWei": "4319668358000",
+      "contractAddress": null
+    },
+    {
+      "step": "configure-buyback-route",
+      "hash": "0x38aacab213f12b6e7762c4ff136e840c2d8c4b39b97dfd8f433dac7cb3713792",
+      "blockNumber": "106545670",
+      "gasUsed": "361205",
+      "effectiveGasPrice": "20406000",
+      "feeWei": "7370749230000",
+      "contractAddress": null
+    },
+    {
+      "step": "approve-zkblast-liquidity",
+      "hash": "0xd92054654476a891e9e515076148bc3727e87abeef5d9bdbc3c5c3fe44aca0b3",
+      "blockNumber": "106545679",
+      "gasUsed": "45961",
+      "effectiveGasPrice": "20668000",
+      "feeWei": "949921948000",
+      "contractAddress": null
+    },
+    {
+      "step": "approve-usdg-liquidity",
+      "hash": "0x20f2467b7a08312bd9ceadf42a251a38436b192c9d31fbb60a6798c3606fd2e6",
+      "blockNumber": "106545692",
+      "gasUsed": "57976",
+      "effectiveGasPrice": "20418000",
+      "feeWei": "1183753968000",
+      "contractAddress": null
+    },
+    {
+      "step": "add-dlmm-liquidity-bin--6462",
+      "hash": "0x32033fc16924973dadb752ef9ee3da427a3cca21bb31b0142a8d5f5dd10f15dd",
+      "blockNumber": "106545707",
+      "gasUsed": "341639",
+      "effectiveGasPrice": "20396000",
+      "feeWei": "6968069044000",
+      "contractAddress": null
+    },
+    {
+      "step": "set-protocol-fee-10-percent-of-pool-fee",
+      "hash": "0x071fac8b27af44c8000a2322d24465ba074114477920f600654ca5507a41eaa5",
+      "blockNumber": "106545721",
+      "gasUsed": "30739",
+      "effectiveGasPrice": "20462000",
+      "feeWei": "628981418000",
+      "contractAddress": null
+    },
+    {
+      "step": "refresh-managed-price",
+      "hash": "0x48057fc108921d06fb5f401671a12723d7db675ee9cf16ecb1f2a67ed27e6f5d",
+      "blockNumber": "106545732",
+      "gasUsed": "44113",
+      "effectiveGasPrice": "20512000",
+      "feeWei": "904845856000",
+      "contractAddress": null
+    },
+    {
+      "step": "approve-pilot-usdg",
+      "hash": "0x4d0bee2622f8b572d04096bb0da0f9723834196cc13e565ba817bf867a2adfe4",
+      "blockNumber": "106545748",
+      "gasUsed": "57976",
+      "effectiveGasPrice": "20358000",
+      "feeWei": "1180275408000",
+      "contractAddress": null
+    },
+    {
+      "step": "pilot-usdg-to-zkblast-swap",
+      "hash": "0xdc58e51600fe3710ec0414aac7cf1ee5e792795410e3b2c61bb59aa242eb6ffb",
+      "blockNumber": "106545769",
+      "gasUsed": "195311",
+      "effectiveGasPrice": "20440000",
+      "feeWei": "3992156840000",
+      "contractAddress": null
+    },
+    {
+      "step": "collect-protocol-revenue",
+      "hash": "0xf0db119c08643dd270aabed53b3bbe05134659499a21386fef4f010f9ac65d0b",
+      "blockNumber": "106545780",
+      "gasUsed": "402380",
+      "effectiveGasPrice": "20396000",
+      "feeWei": "8206942480000",
+      "contractAddress": null
+    },
+    {
+      "step": "buyback-and-burn-collected-usdg",
+      "hash": "0xa3f39b9a84fa31de07e3f7da707a3a915f07b5db0faa9c9eb8a626e09b09087d",
+      "blockNumber": "106546096",
+      "gasUsed": "542011",
+      "effectiveGasPrice": "20376000",
+      "feeWei": "11044016136000",
+      "contractAddress": null
+    }
+  ],
+  "oracle": "0x878710226a5B7e08c92B3c113d09A8976cadccbD",
+  "revenueAdapter": "0xF4bBFA5AbCacDe2baf313596AFD21B5e3bB142A2",
+  "pool": "0xE6197894D4d4A4E0B1eef50501D1e9c3Dd37BD9F",
+  "routeId": "0x18bec5339653f1cc30e211b8cf78f50762ff4e3871abd84195982ae9cd7ec5af"
+}

@@ -18,13 +18,33 @@ if (mode !== "apply" && mode !== "verify") {
   throw new Error("Migration mode must be apply or verify");
 }
 
-const migrationTarget = chainId === 999 ? "hyperevm-mainnet" : environment;
+const migrationTarget =
+  chainId === 999
+    ? "hyperevm-mainnet"
+    : chainId === 99801
+      ? "elysium-testnet"
+      : environment;
 const expectedSchema =
   migrationTarget === "hyperevm-mainnet"
     ? "zkblast_hyperevm_mainnet"
+    : migrationTarget === "elysium-testnet"
+      ? "zkblast_elysium_testnet"
     : `zkblast_${environment}`;
 if (chainId === 999 && environment !== "mainnet") {
   throw new Error("HyperEVM chain 999 requires APP_ENV=mainnet");
+}
+if (chainId === 99801 && environment !== "testnet") {
+  throw new Error("Elysium chain 99801 requires APP_ENV=testnet");
+}
+if (
+  mode === "apply" &&
+  migrationTarget === "elysium-testnet" &&
+  process.env.CONFIRM_ELYSIUM_TESTNET_SCHEMA_WRITE !==
+    "APPLY_ZKBLAST_ELYSIUM_TESTNET_MIGRATIONS"
+) {
+  throw new Error(
+    "Elysium schema application requires explicit CONFIRM_ELYSIUM_TESTNET_SCHEMA_WRITE approval",
+  );
 }
 if (process.env.SUPABASE_SCHEMA !== expectedSchema) {
   throw new Error(`SUPABASE_SCHEMA must equal ${expectedSchema}`);
@@ -80,7 +100,7 @@ const expectedDbcTables = [
   "launchpad_fee_claim_receipts",
   "launchpad_proof_receipts",
 ];
-const expectedExternalMarketTables = migrationTarget === "hyperevm-mainnet" ? [] : [
+const expectedExternalMarketTables = ["hyperevm-mainnet", "elysium-testnet"].includes(migrationTarget) ? [] : [
   "external_market_curation_audit",
   "external_market_pairs",
   "external_market_price_points",
@@ -111,7 +131,7 @@ const requiredColumns = {
     "log_index",
     "transaction_hash",
   ],
-  ...(migrationTarget === "hyperevm-mainnet" ? {} : { external_market_pairs: [
+  ...(["hyperevm-mainnet", "elysium-testnet"].includes(migrationTarget) ? {} : { external_market_pairs: [
     "base_address",
     "execution_chain_id",
     "market_id",

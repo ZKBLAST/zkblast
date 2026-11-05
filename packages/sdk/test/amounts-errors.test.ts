@@ -7,6 +7,8 @@ import {
   minimumAmountOut,
   normalizeTransactionError,
   parseTokenAmount,
+  tokenRawToX18,
+  x18ToTokenRaw,
 } from "../src/index.js";
 
 test("token units and rounding rules are centralized", () => {
@@ -14,6 +16,14 @@ test("token units and rounding rules are centralized", () => {
   assert.equal(formatTokenAmount(1_250_000n, 6), "1.25");
   assert.equal(minimumAmountOut(101n, 100), 99n);
   assert.equal(maximumAmountIn(101n, 100), 103n);
+});
+
+test("normalizes Elysium USDC and WHYPE with explicit conservative rounding", () => {
+  assert.equal(tokenRawToX18(1_000_001n, 6), 1_000_001n * 10n ** 12n);
+  assert.equal(tokenRawToX18(1_000_000_000_000_000_001n, 18), 1_000_000_000_000_000_001n);
+  assert.equal(x18ToTokenRaw(1_000_000_000_000_000_001n, 6, "down"), 1_000_000n);
+  assert.equal(x18ToTokenRaw(1_000_000_000_000_000_001n, 6, "up"), 1_000_001n);
+  assert.equal(x18ToTokenRaw(1_000_000_000_000_000_001n, 18, "up"), 1_000_000_000_000_000_001n);
 });
 
 test("transaction errors have stable application codes", () => {

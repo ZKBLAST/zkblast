@@ -10,14 +10,20 @@ if (!requestedAction || !actions.has(requestedAction as Action))
 
 const chainId = Number(requestedChainId);
 const descriptor = getChainDescriptor(chainId);
-if (descriptor.environment !== "mainnet")
-  throw new Error("INDEXER_MAINNET_CHAIN_REQUIRED");
+if (descriptor.environment !== "mainnet" && descriptor.family !== "elysium")
+  throw new Error("INDEXER_CHAIN_NOT_ENABLED");
 
 const rpcUrl =
   descriptor.family === "hyperevm"
     ? process.env.HYPEREVM_MAINNET_RPC_URL
-    : process.env.RPC_URL;
+    : descriptor.family === "elysium"
+      ? (process.env.ELYSIUM_PRIVATE_RPC_URL ?? descriptor.publicRpcUrls[0])
+      : process.env.RPC_URL;
 if (!rpcUrl) throw new Error(`${descriptor.slug.toUpperCase()}_RPC_URL_REQUIRED`);
+const rpcFallbackUrls =
+  descriptor.family === "elysium"
+    ? descriptor.publicRpcUrls.filter((url) => url !== rpcUrl)
+    : [];
 
 const maximumLogRange = descriptor.indexer.maximumLogRange ?? 2_000;
 const confirmations = descriptor.indexer.confirmations ?? 1;
@@ -27,6 +33,10 @@ const childEnvironment = {
   CHAIN_ID: String(descriptor.chainId),
   CHAIN_NAME: descriptor.name,
   RPC_URL: rpcUrl,
+  RPC_FALLBACK_URLS:
+    rpcFallbackUrls.length > 0
+      ? rpcFallbackUrls.join(",")
+      : process.env.RPC_FALLBACK_URLS,
   BLOCK_EXPLORER_URL: descriptor.explorerUrl ?? "",
   DEPLOYMENT_MANIFEST_PATH: descriptor.deploymentManifestPath,
   SUPABASE_SCHEMA: descriptor.databaseSchema,
@@ -35,7 +45,9 @@ const childEnvironment = {
   INDEXER_RPC_RANGE_DELAY_MS:
     descriptor.family === "hyperevm"
       ? (process.env.HYPEREVM_INDEXER_RPC_RANGE_DELAY_MS ?? "500")
-      : (process.env.INDEXER_RPC_RANGE_DELAY_MS ?? "0"),
+      : descriptor.family === "elysium"
+        ? (process.env.ELYSIUM_INDEXER_RPC_RANGE_DELAY_MS ?? "100")
+        : (process.env.INDEXER_RPC_RANGE_DELAY_MS ?? "0"),
 };
 
 const child = spawn(

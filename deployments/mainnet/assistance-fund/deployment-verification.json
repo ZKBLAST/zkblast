@@ -4,7 +4,7 @@
   "chainId": 4663,
   "planSha256": "9548a7fe15248d6c77a5f094acdab310c7b5ae17e488145bf5b7734d1e333f57",
   "deploymentBlock": 106440334,
-  "latestBlock": 106440981,
+  "latestBlock": 106505540,
   "codeHashes": {
     "registryImplementation": "0xd7cc6310b01babe73f4d24ebd9e319a4529f68cda43f9bdffe580d7554f6e2b8",
     "registry": "0xbf5292598b1bede3dd486d56e78bbff2826a1ef995716827baee3e9b9672a76e",
@@ -44,5 +44,5 @@
     "0x9b8085880ae9f0e066479bc15c530b955c611e005b459d097f9d3d0b6a768217",
     "0xb3a26f1a89d00052af8f5d0beb6e6dd964c6b6154b2194dddd82d767a0dc44c0"
   ],
-  "reportSha256": "9613783c410a2ca04a9e79d854c635feee8a563131a830c998371d62f4d464ea"
+  "reportSha256": "4160e5ef9dd33d16e158f813e2c5a4f99667eeba6d2976e9366452481ca59d49"
 }

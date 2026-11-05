@@ -56,6 +56,36 @@ export type ProtectedBuySimulation = Readonly<{
   maximumPerAddressRaw: bigint;
 }>;
 
+export function protectionBlocksForDuration(input: Readonly<{
+  durationSeconds: number;
+  measuredBlockMilliseconds: number;
+  maximumBlocks?: number;
+}>): number {
+  if (
+    !Number.isFinite(input.durationSeconds) ||
+    input.durationSeconds <= 0 ||
+    !Number.isFinite(input.measuredBlockMilliseconds) ||
+    input.measuredBlockMilliseconds < 50 ||
+    input.measuredBlockMilliseconds > 60_000
+  ) {
+    throw new SdkError(
+      "INVALID_CURVE_CONFIG",
+      "Protection duration requires a measured positive block cadence",
+    );
+  }
+  const blocks = Math.ceil(
+    (input.durationSeconds * 1_000) / input.measuredBlockMilliseconds,
+  );
+  const maximumBlocks = input.maximumBlocks ?? 1_000_000;
+  if (!Number.isSafeInteger(blocks) || blocks < 1 || blocks > maximumBlocks) {
+    throw new SdkError(
+      "INVALID_CURVE_CONFIG",
+      "Protection block window exceeds the configured bound",
+    );
+  }
+  return blocks;
+}
+
 export function assertProtectedLaunchCapability(
   addresses: ProtectedLaunchAddresses,
   actualChainId: number,

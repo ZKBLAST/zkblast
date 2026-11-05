@@ -1,5 +1,5 @@
 export type ChainEnvironment = "testnet" | "mainnet";
-export type ChainFamily = "robinhood" | "hyperevm";
+export type ChainFamily = "robinhood" | "hyperevm" | "elysium";
 
 export type ChainCapabilities = Readonly<{
   launchpad: boolean;
@@ -9,6 +9,10 @@ export type ChainCapabilities = Readonly<{
   zkClaimAuthorization: boolean;
   customDomains: boolean;
   metadataUpload: boolean;
+  protectedLaunch: boolean;
+  xAttestation: boolean;
+  bridgeUx: boolean;
+  optionalZkModules: boolean;
 }>;
 
 export type ChainDescriptor = Readonly<{
@@ -48,6 +52,10 @@ const phaseOneCapabilities: ChainCapabilities = {
   zkClaimAuthorization: true,
   customDomains: true,
   metadataUpload: true,
+  protectedLaunch: true,
+  xAttestation: true,
+  bridgeUx: false,
+  optionalZkModules: true,
 };
 
 const phaseTwoDisabledCapabilities: ChainCapabilities = {
@@ -58,6 +66,10 @@ const phaseTwoDisabledCapabilities: ChainCapabilities = {
   zkClaimAuthorization: false,
   customDomains: false,
   metadataUpload: false,
+  protectedLaunch: false,
+  xAttestation: false,
+  bridgeUx: false,
+  optionalZkModules: false,
 };
 
 const hyperEvmMainnetCapabilities: ChainCapabilities = {
@@ -68,6 +80,10 @@ const hyperEvmMainnetCapabilities: ChainCapabilities = {
   zkClaimAuthorization: false,
   customDomains: false,
   metadataUpload: true,
+  protectedLaunch: true,
+  xAttestation: true,
+  bridgeUx: false,
+  optionalZkModules: false,
 };
 
 const descriptors = [
@@ -123,6 +139,30 @@ const descriptors = [
     databaseSchema: "zkblast_mainnet",
     deploymentManifestPath: "deployments/mainnet/manifest.json",
     capabilities: phaseOneCapabilities,
+  },
+  {
+    chainId: 99_801,
+    slug: "elysium-testnet",
+    family: "elysium",
+    environment: "testnet",
+    name: "Elysium Testnet",
+    nativeCurrency: { name: "HYPE", symbol: "HYPE", decimals: 18 },
+    publicRpcUrls: ["https://testnet-rpc.elysium.kinetiq.xyz"],
+    explorerUrl: "https://elysium.kinetiq.xyz/testnet-explorer",
+    indexer: {
+      confirmations: null,
+      pollIntervalMs: 250,
+      maximumLogRange: 2_000,
+      officialWebsocket: false,
+    },
+    execution: {
+      fastBlockGasLimit: null,
+      slowBlockGasLimit: null,
+      maximumQueuedNonces: null,
+    },
+    databaseSchema: "zkblast_elysium_testnet",
+    deploymentManifestPath: "deployments/elysium-testnet/manifest.json",
+    capabilities: phaseTwoDisabledCapabilities,
   },
   {
     chainId: 998,

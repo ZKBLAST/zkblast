@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "chainId": 99801,
+  "generatedAt": "2026-11-04T12:57:48.442Z",
+  "sourcePlanSha256": "3e33de9df7c1dc883083586009f3c6c766db2a5c08b2ac8d9580d71dd744be29",
+  "startingNonce": 43,
+  "nextNonce": 63,
+  "transactionCount": 20,
+  "totalGasUsed": "18846371",
+  "receipts": [
+    {
+      "nonce": 43,
+      "name": "policyRegistryImplementation",
+      "hash": "0xb5465e7d029f2f5a754c5150ed9331f53ced98bee00114bc45b5d53c5e88f861",
+      "estimatedGas": "1088699",
+      "gasUsed": "1088699",
+      "effectiveGasPrice": "1000281029",
+      "blockNumber": "23215271",
+      "contractAddress": "0xb6be5a7198a9459d393ccedf7594441c9117d6ba"
+    },
+    {
+      "nonce": 44,
+      "name": "policyRegistry",
+      "hash": "0x441a9c58b7345fb3c2e026660fc453578de63d0ea891ffcf024476d86370fddf",
+      "estimatedGas": "211451",
+      "gasUsed": "211451",
+      "effectiveGasPrice": "1000245901",
+      "blockNumber": "23215272",
+      "contractAddress": "0xe49b9c6b8aae69b017550c688310783168d2b48a"
+    },
+    {
+      "nonce": 45,
+      "name": "lpEscrowImplementation",
+      "hash": "0x5bc4a618b97784bec98b274c3194bc1a93a3697cffc741e0ead40c010ba6d817",
+      "estimatedGas": "1362992",
+      "gasUsed": "1362992",
+      "effectiveGasPrice": "1000215164",
+      "blockNumber": "23215273",
+      "contractAddress": "0x9c5932a8f990e601ad88236f3a3d5cdfbb1a6175"
+    },
+    {
+      "nonce": 46,
+      "name": "lpEscrow",
+      "hash": "0xfea298845cd4e3974fd310e67afc76170b45ab76b4a27aaface4b7e8afc94ea1",
+      "estimatedGas": "186590",
+      "gasUsed": "186590",
+      "effectiveGasPrice": "1000188269",
+      "blockNumber": "23215274",
+      "contractAddress": "0x1c939310385cf0f0d3bceddda543f7d81d96d59d"
+    },
+    {
+      "nonce": 47,
+      "name": "identityRegistryImplementation",
+      "hash": "0x8220a272be5a49de04912688dfb13420da0c9f99cecaaacc56c8d1afa560f5ee",
+      "estimatedGas": "1187423",
+      "gasUsed": "1187423",
+      "effectiveGasPrice": "1000164736",
+      "blockNumber": "23215275",
+      "contractAddress": "0xee5ec100f295b00d6146b134accd3da1bd831f93"
+    },
+    {
+      "nonce": 48,
+      "name": "identityRegistry",
+      "hash": "0xb460b77174f520a13bf4f8b902bd4291cd715cfcf62cc6012a81d7a98bafda4b",
+      "estimatedGas": "211351",
+      "gasUsed": "211351",
+      "effectiveGasPrice": "1000144145",
+      "blockNumber": "23215276",
+      "contractAddress": "0xac418a27ecc0e1fac5b86ec3d0a30951dcef8d21"
+    },
+    {
+      "nonce": 49,
+      "name": "tokenDeployer",
+      "hash": "0xfcb1a66ebfe5cd5c7617f0e0b7d185202e1ea40200707d907c0f6f6eb327cbfc",
+      "estimatedGas": "1476286",
+      "gasUsed": "1476286",
+      "effectiveGasPrice": "1000126127",
+      "blockNumber": "23215277",
+      "contractAddress": "0x8a0f7231adf54b555513bce315bd1aad38c5df51"
+    },
+    {
+      "nonce": 50,
+      "name": "virtualPoolDeployer",
+      "hash": "0x419a18f6500a39b2f4356c4bf087241820b8555c8ee92ded26d61763aee11f5b",
+      "estimatedGas": "3992748",
+      "gasUsed": "3992748",
+      "effectiveGasPrice": "1000110362",
+      "blockNumber": "23215278",
+      "contractAddress": "0x39c834cc8fd725a409dddeb758b49fc45e79d14e"
+    },
+    {
+      "nonce": 51,
+      "name": "factoryImplementation",
+      "hash": "0xc4480e40fe3ef53b6e34b7fe5838326474277f8d3f01d38d0cff8e822fbd9f32",
+      "estimatedGas": "3086883",
+      "gasUsed": "3086883",
+      "effectiveGasPrice": "1000096567",
+      "blockNumber": "23215279",
+      "contractAddress": "0x0417d16c327807a671bc246e75b9bf5b53ea7659"
+    },
+    {
+      "nonce": 52,
+      "name": "factory",
+      "hash": "0x5b809c944be70940c8dc8bf9e62203652f6f5af1fb37bc9ba6a3b8be5ab61b5f",
+      "estimatedGas": "312809",
+      "gasUsed": "312809",
+      "effectiveGasPrice": "1000084497",
+      "blockNumber": "23215280",
+      "contractAddress": "0xcd1e92764c996a562b6e8e87255cab6cc8a2e986"
+    },
+    {
+      "nonce": 53,
+      "name": "routerImplementation",
+      "hash": "0x03ebacd8b93297e44dee98cdc1b9f5dd0d706f717358c82b8ebbf54dfd07a30f",
+      "estimatedGas": "1061244",
+      "gasUsed": "1061244",
+      "effectiveGasPrice": "1000073935",
+      "blockNumber": "23215281",
+      "contractAddress": "0xa71a7cb4d6946fa6e3ddc2cee5732ab1a81066c2"
+    },
+    {
+      "nonce": 54,
+      "name": "router",
+      "hash": "0xf94c540fe142e21c141db2de55974f2cc99fc299b7a422f3f4635a51dcc32eeb",
+      "estimatedGas": "211895",
+      "gasUsed": "211895",
+      "effectiveGasPrice": "1000064694",
+      "blockNumber": "23215282",
+      "contractAddress": "0x1cbfd48f61b22995af9d2d94987fdd55499b8385"
+    },
+    {
+      "nonce": 55,
+      "name": "graduationManagerImplementation",
+      "hash": "0x0f70b46d96ee2c71f72c869a312770a1586f71055b30d73ab484a7bc7bccb91a",
+      "estimatedGas": "3923316",
+      "gasUsed": "3923316",
+      "effectiveGasPrice": "1000056608",
+      "blockNumber": "23215283",
+      "contractAddress": "0x2ece215e0672d1d8c460409d631b506ce0d84c65"
+    },
+    {
+      "nonce": 56,
+      "name": "graduationManager",
+      "hash": "0x5ecd0e310695d81f763788ff4a253cbbb7426a02e39e72af64edf18d451b24ca",
+      "estimatedGas": "232327",
+      "gasUsed": "232327",
+      "effectiveGasPrice": "1000049533",
+      "blockNumber": "23215284",
+      "contractAddress": "0x3e4d135e3865e4664ce894da9d46aadd4be25868"
+    },
+    {
+      "nonce": 57,
+      "name": "Bind Protected token deployer",
+      "hash": "0x08979fe83285764787680ad5d601124786534588aaa9230d981d152ba41aa5ef",
+      "estimatedGas": "43921",
+      "gasUsed": "43921",
+      "effectiveGasPrice": "1000043342",
+      "blockNumber": "23215285",
+      "contractAddress": null
+    },
+    {
+      "nonce": 58,
+      "name": "Bind Protected pool deployer",
+      "hash": "0xd04c32cdd283e2ef3236952d7e73ab9513e662c962073a560930d92a77d017e5",
+      "estimatedGas": "43921",
+      "gasUsed": "43921",
+      "effectiveGasPrice": "1000037925",
+      "blockNumber": "23215286",
+      "contractAddress": null
+    },
+    {
+      "nonce": 59,
+      "name": "Authorize Protected factory on DBC template registry",
+      "hash": "0x19d3b54245b216d6e51102f8dc376239431e231a5e0e0d7612e55fceb7a5a809",
+      "estimatedGas": "54154",
+      "gasUsed": "53759",
+      "effectiveGasPrice": "1000033185",
+      "blockNumber": "23215287",
+      "contractAddress": null
+    },
+    {
+      "nonce": 60,
+      "name": "Authorize Protected factory on policy registry",
+      "hash": "0xfe56a0433dc1dc40c06643668282471f7f3706708b2cf7df29189ca9da4eee03",
+      "estimatedGas": "54082",
+      "gasUsed": "53688",
+      "effectiveGasPrice": "1000029037",
+      "blockNumber": "23215288",
+      "contractAddress": null
+    },
+    {
+      "nonce": 61,
+      "name": "Authorize Protected graduation manager on LP escrow",
+      "hash": "0x050bef0c456a4c989a786fb34749293b131117f61039024d9f3bc063d22bfeae",
+      "estimatedGas": "54038",
+      "gasUsed": "53644",
+      "effectiveGasPrice": "1000025408",
+      "blockNumber": "23215289",
+      "contractAddress": null
+    },
+    {
+      "nonce": 62,
+      "name": "Bind Protected graduation manager to factory",
+      "hash": "0x6a7db7c4d7a20f5307d72c8be103c787594f5b97c011dde5895daa47d535b967",
+      "estimatedGas": "51793",
+      "gasUsed": "51424",
+      "effectiveGasPrice": "1000022233",
+      "blockNumber": "23215290",
+      "contractAddress": null
+    }
+  ],
+  "passed": true,
+  "graduationAdapterConfigured": false,
+  "broadcastAllowed": false
+}

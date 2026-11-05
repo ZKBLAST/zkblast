@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { loadServerConfig } from "../src/runtime.js";
+import {
+  loadServerConfig,
+  resolveServerRpcSelection,
+} from "../src/runtime.js";
 
 const base = {
   RPC_URL: "https://rpc.example",
@@ -59,6 +62,72 @@ test("accepts isolated HyperEVM runtime boundaries with disabled capabilities", 
       SUPABASE_SCHEMA: "zkblast_hyperevm_mainnet",
     }).CHAIN_ID,
     999,
+  );
+});
+
+test("accepts isolated Elysium testnet runtime with server-only provider fallback", () => {
+  const config = loadServerConfig({
+    ...base,
+    APP_ENV: "testnet",
+    CHAIN_ID: 99_801,
+    CHAIN_NAME: "Elysium Testnet",
+    RPC_URL: "https://testnet-rpc.elysium.kinetiq.xyz",
+    ELYSIUM_PRIVATE_RPC_URL: "https://elysium-provider.example/v2/private",
+    ELYSIUM_WS_RPC_URL: "wss://elysium-provider.example/v2/private",
+    BLOCK_EXPLORER_URL: "https://elysium.kinetiq.xyz/testnet-explorer",
+    DEPLOYMENT_MANIFEST_PATH: "deployments/elysium-testnet/manifest.json",
+    SUPABASE_SCHEMA: "zkblast_elysium_testnet",
+  });
+  assert.deepEqual(resolveServerRpcSelection(config), {
+    httpUrl: "https://elysium-provider.example/v2/private",
+    websocketUrl: "wss://elysium-provider.example/v2/private",
+    usesPrivateProvider: true,
+  });
+});
+
+test("rejects Elysium schema, manifest, provider, and integration crossover", () => {
+  const elysium = {
+    ...base,
+    APP_ENV: "testnet",
+    CHAIN_ID: 99_801,
+    CHAIN_NAME: "Elysium Testnet",
+    RPC_URL: "https://testnet-rpc.elysium.kinetiq.xyz",
+    BLOCK_EXPLORER_URL: "https://elysium.kinetiq.xyz/testnet-explorer",
+    DEPLOYMENT_MANIFEST_PATH: "deployments/elysium-testnet/manifest.json",
+    SUPABASE_SCHEMA: "zkblast_elysium_testnet",
+  } as const;
+  assert.throws(
+    () => loadServerConfig({ ...elysium, SUPABASE_SCHEMA: "zkblast_hyperevm_testnet" }),
+    /database schema/u,
+  );
+  assert.throws(
+    () => loadServerConfig({ ...elysium, DEPLOYMENT_MANIFEST_PATH: "deployments/testnet/manifest.json" }),
+    /requires manifest/u,
+  );
+  assert.throws(
+    () => loadServerConfig({ ...elysium, RPC_URL: "https://unapproved.example" }),
+    /approved public fallback/u,
+  );
+  assert.throws(
+    () => loadServerConfig({ ...elysium, EXECUTION_RESERVE_ASSET_ADDRESS: "0x5555555555555555555555555555555555555555" }),
+    /disabled until its launchpad capability/u,
+  );
+});
+
+test("does not allow Elysium provider variables on another chain", () => {
+  assert.throws(
+    () =>
+      loadServerConfig({
+        ...base,
+        APP_ENV: "mainnet",
+        CHAIN_ID: 4_663,
+        CHAIN_NAME: "Robinhood Chain",
+        BLOCK_EXPLORER_URL: "https://robinhoodchain.blockscout.com",
+        DEPLOYMENT_MANIFEST_PATH: "deployments/mainnet/manifest.json",
+        SUPABASE_SCHEMA: "zkblast_mainnet",
+        ELYSIUM_PRIVATE_RPC_URL: "https://elysium-provider.example/private",
+      }),
+    /cannot use Elysium provider/u,
   );
 });
 

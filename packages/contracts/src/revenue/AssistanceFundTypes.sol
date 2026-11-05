@@ -12,6 +12,8 @@ library AssistanceFundTypes {
         keccak256("ZKBLAST_DBC_PROTOCOL_REVENUE_V1");
     bytes32 internal constant DAMM_PROTOCOL_FEE_V1 = keccak256("ZKBLAST_DAMM_PROTOCOL_FEE_V1");
     bytes32 internal constant DLMM_PROTOCOL_FEE_V1 = keccak256("ZKBLAST_DLMM_PROTOCOL_FEE_V1");
+    bytes32 internal constant STOCK_QUOTE_DBC_PROTOCOL_REVENUE_V1 =
+        keccak256("ZKBLAST_STOCK_QUOTE_DBC_PROTOCOL_REVENUE_V1");
 
     enum RevenueKind {
         PROTOCOL_TRADE_FEE,

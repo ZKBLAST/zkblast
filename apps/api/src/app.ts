@@ -104,6 +104,10 @@ const publicConfigResponseSchema = z
       zkClaimAuthorization: z.boolean(),
       customDomains: z.boolean(),
       metadataUpload: z.boolean(),
+      protectedLaunch: z.boolean(),
+      xAttestation: z.boolean(),
+      bridgeUx: z.boolean(),
+      optionalZkModules: z.boolean(),
     }),
     contracts: z
       .array(
@@ -332,7 +336,9 @@ export function createApp(
   app.get("/v2/chains/:chainId/config", (request, response) => {
     const context = chainContexts.get(Number(request.params.chainId));
     if (!context)
-      return response.status(409).json({ error: { code: "CHAIN_NOT_CONFIGURED" } });
+      return response
+        .status(409)
+        .json({ error: { code: "CHAIN_NOT_CONFIGURED" } });
     return response.json(publicConfigBody(context.config));
   });
 
@@ -463,10 +469,12 @@ export function createApp(
   if (dependencies.dbcService) {
     app.use("/v1/dbc", createDbcRouter(dependencies.dbcService));
   }
-  mountChainRouters("/v2/chains/:chainId/dbc", ({ dependencies: chainDependencies }) =>
-    chainDependencies.dbcService
-      ? createDbcRouter(chainDependencies.dbcService)
-      : undefined,
+  mountChainRouters(
+    "/v2/chains/:chainId/dbc",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.dbcService
+        ? createDbcRouter(chainDependencies.dbcService)
+        : undefined,
   );
   if (dependencies.launchpadCatalogService) {
     const createCurrentLaunchpadCatalogRouter = () =>
@@ -492,28 +500,41 @@ export function createApp(
       createLaunchpadDeveloperRouter(dependencies.launchpadDeveloperService!);
     app.use("/v1/launchpads", createCurrentDeveloperRouter());
   }
-  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) => {
-    if (!chainDependencies.launchpadCatalogService) return undefined;
-    return createLaunchpadCatalogRouter(
-      chainDependencies.launchpadCatalogService,
-      chainDependencies.launchpadReadService,
-      chainDependencies.launchpadBrandingService,
-    );
-  });
-  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
-    chainDependencies.launchpadBrandingService
-      ? createLaunchpadBrandingRouter(chainDependencies.launchpadBrandingService)
-      : undefined,
+  mountChainRouters(
+    "/v2/chains/:chainId/launchpads",
+    ({ dependencies: chainDependencies }) => {
+      if (!chainDependencies.launchpadCatalogService) return undefined;
+      return createLaunchpadCatalogRouter(
+        chainDependencies.launchpadCatalogService,
+        chainDependencies.launchpadReadService,
+        chainDependencies.launchpadBrandingService,
+      );
+    },
   );
-  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
-    chainDependencies.launchpadDomainService
-      ? createLaunchpadDomainRouter(chainDependencies.launchpadDomainService)
-      : undefined,
+  mountChainRouters(
+    "/v2/chains/:chainId/launchpads",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.launchpadBrandingService
+        ? createLaunchpadBrandingRouter(
+            chainDependencies.launchpadBrandingService,
+          )
+        : undefined,
   );
-  mountChainRouters("/v2/chains/:chainId/launchpads", ({ dependencies: chainDependencies }) =>
-    chainDependencies.launchpadDeveloperService
-      ? createLaunchpadDeveloperRouter(chainDependencies.launchpadDeveloperService)
-      : undefined,
+  mountChainRouters(
+    "/v2/chains/:chainId/launchpads",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.launchpadDomainService
+        ? createLaunchpadDomainRouter(chainDependencies.launchpadDomainService)
+        : undefined,
+  );
+  mountChainRouters(
+    "/v2/chains/:chainId/launchpads",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.launchpadDeveloperService
+        ? createLaunchpadDeveloperRouter(
+            chainDependencies.launchpadDeveloperService,
+          )
+        : undefined,
   );
 
   app.use((_request, response) => {

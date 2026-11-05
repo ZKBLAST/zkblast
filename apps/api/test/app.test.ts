@@ -4,6 +4,7 @@ import request from "supertest";
 import { createApp } from "../src/app.js";
 import type { ExternalMarketService } from "../src/external-market-service.js";
 import type { SwapService } from "../src/swap-service.js";
+import { createElysiumTestnetContext } from "../src/elysium-testnet-context.js";
 
 const app = createApp({
   environment: "testnet",
@@ -54,6 +55,10 @@ test("public config excludes internal connection details", async () => {
       zkClaimAuthorization: true,
       customDomains: true,
       metadataUpload: true,
+      protectedLaunch: true,
+      xAttestation: true,
+      bridgeUx: false,
+      optionalZkModules: true,
     },
     contracts: [
       {
@@ -77,7 +82,16 @@ test("public config excludes internal connection details", async () => {
 test("chain catalog exposes capabilities without RPC or private configuration", async () => {
   const response = await request(app).get("/v2/chains");
   assert.equal(response.status, 200);
-  assert.equal(response.body.chains.length, 4);
+  assert.equal(response.body.chains.length, 5);
+  const elysium = response.body.chains.find(
+    (chain: { chainId: number }) => chain.chainId === 99_801,
+  );
+  assert.equal(elysium.family, "elysium");
+  assert.equal(elysium.environment, "testnet");
+  assert.equal(elysium.nativeCurrency.symbol, "HYPE");
+  assert.equal(elysium.configured, false);
+  assert.equal(Object.values(elysium.capabilities).every((value) => !value), true);
+  assert.equal("publicRpcUrls" in elysium, false);
   const hyperEvm = response.body.chains.find(
     (chain: { chainId: number }) => chain.chainId === 999,
   );
@@ -149,6 +163,48 @@ test("one API process exposes isolated config for multiple configured chains", a
   );
   assert.equal(unavailableFeature.status, 404);
   assert.equal(unavailableFeature.body.error.code, "FEATURE_NOT_CONFIGURED");
+});
+
+test("Elysium context is discoverable but all execution fails closed before deployment", async () => {
+  const elysiumContext = createElysiumTestnetContext({
+    webOrigin: "https://zkblast.tech",
+  });
+  const multichain = createApp(
+    {
+      environment: "mainnet",
+      chainId: 4663,
+      chainName: "Robinhood Chain",
+      explorerUrl: "https://robinhoodchain.blockscout.com",
+      webOrigin: "https://zkblast.tech",
+      chainAppUrls: { 99_801: "https://zkblast.tech" },
+    },
+    {},
+    [elysiumContext],
+  );
+
+  const configResponse = await request(multichain).get(
+    "/v2/chains/99801/config",
+  );
+  assert.equal(configResponse.status, 200);
+  assert.equal(configResponse.body.chainId, 99_801);
+  assert.equal(configResponse.body.chainName, "Elysium Testnet");
+  assert.equal(
+    Object.values(configResponse.body.capabilities).every((value) => !value),
+    true,
+  );
+  assert.equal("contracts" in configResponse.body, false);
+
+  const readiness = await request(multichain).get(
+    "/v2/chains/99801/ready",
+  );
+  assert.equal(readiness.status, 503);
+  assert.deepEqual(readiness.body, { ready: false });
+
+  const execution = await request(multichain).get(
+    "/v2/chains/99801/protocol/pools",
+  );
+  assert.equal(execution.status, 404);
+  assert.equal(execution.body.error.code, "FEATURE_NOT_CONFIGURED");
 });
 
 test("HyperEVM config is accepted only on its matching environment", async () => {

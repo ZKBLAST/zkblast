@@ -5,17 +5,27 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cx } from "@/lib/format";
 import { useApp } from "./AppProvider";
 import { NetworkLogo } from "./NetworkLogo";
+import { ELYSIUM_TESTNET_BRIDGE_URL } from "@zkblast/config";
+import { formatUnits } from "viem";
+import { useElysiumWalletBalances } from "@/lib/use-elysium-wallet-balances";
 
 export function ChainSelector() {
-  const { chains, config, selectChain, busy } = useApp();
+  const { chains, config, selectChain, busy, injectedAddress, walletChainId } = useApp();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
-  const mainnetChains = useMemo(
-    () => chains.filter((chain) => chain.environment === "mainnet"),
+  const visibleChains = useMemo(
+    () =>
+      chains.filter(
+        (chain) => chain.environment === "mainnet" || chain.chainId === 99_801,
+      ),
     [chains],
   );
-  const activeChain = mainnetChains.find(
+  const activeChain = visibleChains.find(
     (chain) => chain.chainId === config?.chainId,
+  );
+  const elysiumBalances = useElysiumWalletBalances(
+    injectedAddress,
+    walletChainId,
   );
 
   useEffect(() => {
@@ -58,23 +68,23 @@ export function ChainSelector() {
           <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
             Network
           </p>
-          {mainnetChains.map((chain) => {
+          {visibleChains.map((chain) => {
             const active = chain.chainId === config?.chainId;
-            const available = chain.capabilities.launchpad && chain.configured;
+            const available = chain.configured;
             const content = (
               <>
                 <NetworkLogo family={chain.family} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-xs">{chain.name}</span>
                   <span className="block text-[10px] uppercase text-faint">
-                    Mainnet · {chain.chainId}
+                    {chain.environment === "mainnet" ? "Mainnet" : "Testnet"} · {chain.chainId}
                   </span>
                 </span>
                 {active ? (
                   <Check className="size-3.5 text-lime" aria-label="Current network" />
                 ) : (
                   <span className="text-[9px] uppercase tracking-wide text-faint">
-                    {available ? "Open" : "Coming soon"}
+                    {available ? "Open" : "Unavailable"}
                   </span>
                 )}
               </>
@@ -101,10 +111,48 @@ export function ChainSelector() {
               </button>
             );
           })}
-          {mainnetChains.length === 0 && (
+          {visibleChains.length === 0 && (
             <p className="px-3 py-3 font-mono text-xs text-faint">
               Loading network catalog…
             </p>
+          )}
+          {config?.chainId === 99_801 && (
+            <div className="border-t border-line px-3 py-3 font-mono text-[10px] text-faint">
+              <div className="flex items-center justify-between gap-3">
+                <span>Gas balance</span>
+                <span className="text-fg">
+                  {elysiumBalances
+                    ? `${Number(formatUnits(elysiumBalances.nativeHype, 18)).toLocaleString(undefined, { maximumFractionDigits: 6 })} HYPE`
+                    : walletChainId === 99_801
+                      ? "Unavailable"
+                      : "Switch wallet network"}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span>WHYPE</span>
+                <span className="text-fg">
+                  {elysiumBalances
+                    ? Number(formatUnits(elysiumBalances.whype, 18)).toLocaleString(undefined, { maximumFractionDigits: 6 })
+                    : "—"}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span>USDC</span>
+                <span className="text-fg">
+                  {elysiumBalances
+                    ? Number(formatUnits(elysiumBalances.usdc, 6)).toLocaleString(undefined, { maximumFractionDigits: 6 })
+                    : "—"}
+                </span>
+              </div>
+              <a
+                href={ELYSIUM_TESTNET_BRIDGE_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 block border border-line px-3 py-2 text-center uppercase text-muted hover:border-line-strong hover:text-fg"
+              >
+                Official bridge
+              </a>
+            </div>
           )}
           <p className="border-t border-line px-3 pb-2 pt-3 text-[11px] leading-4 text-faint">
             One interface, with isolated manifests, databases and indexer state per network.

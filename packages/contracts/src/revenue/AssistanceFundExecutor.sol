@@ -23,6 +23,7 @@ contract AssistanceFundExecutor is ProtocolAccess, UUPSUpgradeable, ReentrancyGu
     bool public paused;
 
     event ExecutionPauseChanged(bool paused);
+    event DirectProtocolTokenBurned(uint256 amount, address indexed caller);
 
     constructor() {
         _disableInitializers();
@@ -81,6 +82,16 @@ contract AssistanceFundExecutor is ProtocolAccess, UUPSUpgradeable, ReentrancyGu
             executionPriceX18,
             msg.sender
         );
+    }
+
+    /// @notice Burns protocol-token revenue that is already allocated to buybacks.
+    /// @dev This avoids routing ZKBLAST through a meaningless ZKBLAST-to-ZKBLAST swap.
+    function executeDirectBurn(uint256 amount) external nonReentrant returns (uint256 totalSupplyAfter) {
+        if (paused || amount == 0) revert ExecutionUnavailable();
+        collector.releaseBuyback(protocolToken, address(this), amount);
+        protocolToken.pushExact(address(burnModule), amount);
+        totalSupplyAfter = burnModule.burn(amount);
+        emit DirectProtocolTokenBurned(amount, msg.sender);
     }
 
     function setPaused(bool paused_) external onlyRole(DEFAULT_ADMIN_ROLE) {

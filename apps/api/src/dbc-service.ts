@@ -168,6 +168,7 @@ export class DbcService {
       creatorLockSeconds,
     ] = parsed.data;
     const config = (await this.quoteReader.templateConfig(templateId)) as {
+      migrationMode?: number;
       curve?: {
         segmentCount?: number;
         segments?: readonly Readonly<{
@@ -194,6 +195,7 @@ export class DbcService {
       quoteToken,
       quoteSymbol: quoteMetadata.symbol,
       quoteDecimals: quoteMetadata.decimals,
+      migrationMode: Number(config.migrationMode ?? 0),
       totalSupplyRaw,
       baseInventoryRaw,
       graduationThresholdRaw,

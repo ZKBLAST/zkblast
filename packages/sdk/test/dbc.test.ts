@@ -48,8 +48,11 @@ test("resolves DBC only from the selected network manifest", async () => {
     policyRegistry: address("201"),
     launchFactory: address("202"),
     launchRouter: address("203"),
+    tokenDeployer: address("207"),
+    virtualPoolDeployer: address("208"),
     lpEscrow: address("204"),
     graduationManager: address("205"),
+    dammGraduationAdapter: address("209"),
     identityRegistry: address("206"),
   } as const;
   const resolved = resolveDbcAddresses(

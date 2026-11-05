@@ -1,0 +1,53 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/dbc/LaunchTokenDeployer.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nimport { LaunchToken } from \"./LaunchToken.sol\";\n\n/// @notice One-time-bound CREATE2 boundary that keeps token creation bytecode out of the factory.\ncontract LaunchTokenDeployer {\n    error Unauthorized();\n    error AlreadyBound();\n\n    address public immutable binder;\n    address public factory;\n\n    constructor(address binder_) {\n        if (binder_ == address(0)) revert Unauthorized();\n        binder = binder_;\n    }\n\n    function bindFactory(address factory_) external {\n        if (msg.sender != binder || factory_ == address(0)) revert Unauthorized();\n        if (factory != address(0)) revert AlreadyBound();\n        factory = factory_;\n    }\n\n    function deploy(\n        bytes32 salt,\n        string calldata name,\n        string calldata symbol,\n        string calldata metadataURI,\n        uint256 totalSupply,\n        address initialHolder\n    ) external returns (LaunchToken token) {\n        if (msg.sender != factory) revert Unauthorized();\n        token = new LaunchToken{ salt: salt }(name, symbol, metadataURI, totalSupply, initialHolder);\n    }\n}\n"
+    },
+    "src/dbc/LaunchToken.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nimport { IERC20Metadata } from \"../interfaces/IERC20Metadata.sol\";\n\n/// @notice Fixed-supply canonical token created by the ZKBLAST DBC factory.\ncontract LaunchToken is IERC20Metadata {\n    error InsufficientAllowance();\n    error InsufficientBalance();\n    error InvalidRecipient();\n    error InvalidSupply();\n\n    string public name;\n    string public symbol;\n    string public metadataURI;\n    uint8 public constant decimals = 18;\n    uint256 public immutable totalSupply;\n    mapping(address account => uint256 balance) public balanceOf;\n    mapping(address owner => mapping(address spender => uint256 amount)) public allowance;\n\n    event Transfer(address indexed sender, address indexed recipient, uint256 amount);\n    event Approval(address indexed owner, address indexed spender, uint256 amount);\n\n    constructor(\n        string memory name_,\n        string memory symbol_,\n        string memory metadataURI_,\n        uint256 totalSupply_,\n        address initialHolder\n    ) {\n        if (bytes(name_).length == 0 || bytes(symbol_).length == 0 || totalSupply_ == 0) {\n            revert InvalidSupply();\n        }\n        if (initialHolder == address(0)) revert InvalidRecipient();\n        name = name_;\n        symbol = symbol_;\n        metadataURI = metadataURI_;\n        totalSupply = totalSupply_;\n        balanceOf[initialHolder] = totalSupply_;\n        emit Transfer(address(0), initialHolder, totalSupply_);\n    }\n\n    function approve(address spender, uint256 amount) external returns (bool) {\n        allowance[msg.sender][spender] = amount;\n        emit Approval(msg.sender, spender, amount);\n        return true;\n    }\n\n    function transfer(address recipient, uint256 amount) external returns (bool) {\n        _transfer(msg.sender, recipient, amount);\n        return true;\n    }\n\n    function transferFrom(address sender, address recipient, uint256 amount)\n        external\n        returns (bool)\n    {\n        uint256 available = allowance[sender][msg.sender];\n        if (available != type(uint256).max) {\n            if (available < amount) revert InsufficientAllowance();\n            allowance[sender][msg.sender] = available - amount;\n            emit Approval(sender, msg.sender, available - amount);\n        }\n        _transfer(sender, recipient, amount);\n        return true;\n    }\n\n    function _transfer(address sender, address recipient, uint256 amount) private {\n        if (recipient == address(0)) revert InvalidRecipient();\n        uint256 available = balanceOf[sender];\n        if (available < amount) revert InsufficientBalance();\n        balanceOf[sender] = available - amount;\n        balanceOf[recipient] += amount;\n        emit Transfer(sender, recipient, amount);\n    }\n}\n"
+    },
+    "src/interfaces/IERC20Metadata.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\nimport { IERC20Minimal } from \"./IERC20Minimal.sol\";\n\n/// @notice Read-only token identity used by API and SDK consumers.\ninterface IERC20Metadata is IERC20Minimal {\n    function name() external view returns (string memory);\n    function symbol() external view returns (string memory);\n    function decimals() external view returns (uint8);\n}\n"
+    },
+    "src/interfaces/IERC20Minimal.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.26;\n\ninterface IERC20Minimal {\n    function balanceOf(address account) external view returns (uint256);\n    function allowance(address owner, address spender) external view returns (uint256);\n    function transfer(address recipient, uint256 amount) external returns (bool);\n    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\n    function approve(address spender, uint256 amount) external returns (bool);\n}\n"
+    }
+  },
+  "settings": {
+    "remappings": [
+      "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+      "forge-std/=lib/poseidon2-solidity/dependencies/forge-std-1.16.2/src/",
+      "poseidon2-solidity/=lib/poseidon2-solidity/src/"
+    ],
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "metadata": {
+      "useLiteralContent": false,
+      "bytecodeHash": "none",
+      "appendCBOR": true
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object",
+          "evm.bytecode.sourceMap",
+          "evm.bytecode.linkReferences",
+          "evm.deployedBytecode.object",
+          "evm.deployedBytecode.sourceMap",
+          "evm.deployedBytecode.linkReferences",
+          "evm.deployedBytecode.immutableReferences",
+          "evm.methodIdentifiers",
+          "metadata",
+          "storageLayout"
+        ]
+      }
+    },
+    "evmVersion": "cancun",
+    "viaIR": true,
+    "libraries": {}
+  }
+}
