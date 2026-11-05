@@ -156,7 +156,7 @@ export function AssistanceFundDashboard() {
                 <dt className="font-mono text-xs uppercase text-muted">
                   {label}
                 </dt>
-                <dd className="mt-3 font-mono text-lg">{compact(value!)}</dd>
+                <dd className="mt-3 font-mono text-lg">{compact(value)}</dd>
               </div>
             ))}
           </dl>
