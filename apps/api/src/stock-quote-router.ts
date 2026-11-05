@@ -140,6 +140,46 @@ export function createStockQuoteRouter(service: StockQuoteService) {
       }
     },
   );
+  router.get(
+    "/assets/:contractAddress/launches",
+    async (request, response, next) => {
+      try {
+        const contractAddress = address.parse(request.params.contractAddress);
+        const query = querySchema.pick({ limit: true }).parse(request.query);
+        const item = await service.asset(contractAddress);
+        if (!item)
+          return response
+            .status(404)
+            .json({ error: { code: "STOCK_QUOTE_NOT_FOUND" } });
+        return response.json({
+          contractAddress,
+          items: await service.launches(contractAddress, query.limit),
+        });
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+  router.get(
+    "/assets/:contractAddress/graduations",
+    async (request, response, next) => {
+      try {
+        const contractAddress = address.parse(request.params.contractAddress);
+        const query = querySchema.pick({ limit: true }).parse(request.query);
+        const item = await service.asset(contractAddress);
+        if (!item)
+          return response
+            .status(404)
+            .json({ error: { code: "STOCK_QUOTE_NOT_FOUND" } });
+        return response.json({
+          contractAddress,
+          items: await service.graduations(contractAddress, query.limit),
+        });
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
   router.post("/preview", async (request, response, next) => {
     try {
       const previewRequest = stockQuotePreviewRequestSchema.parse(request.body);

@@ -9,28 +9,13 @@ import { X18, tokenRawToX18 } from "./amounts.js";
 import { SdkError } from "./errors.js";
 
 export type StockQuoteAvailability =
-  | "discovered"
-  | "verified"
-  | "eligible"
-  | "listed"
-  | "suspended"
-  | "disabled";
+  "discovered" | "verified" | "eligible" | "listed" | "suspended" | "disabled";
 
 export type StockQuoteMarketState =
-  | "active"
-  | "after_hours"
-  | "closed"
-  | "halted"
-  | "degraded"
-  | "emergency";
+  "active" | "after_hours" | "closed" | "halted" | "degraded" | "emergency";
 
 export type StockQuoteOperation =
-  | "create_launch"
-  | "fund"
-  | "buy"
-  | "sell"
-  | "graduate"
-  | "exit";
+  "create_launch" | "fund" | "buy" | "sell" | "graduate" | "exit";
 
 export type StockQuoteContractAddresses = Readonly<{
   chainId: 4663;
@@ -72,7 +57,9 @@ export type StockQuoteAsset = Readonly<{
   maxOracleAgeSeconds?: number;
 }>;
 
-export function normalizeStockQuoteAsset(input: StockQuoteAsset): StockQuoteAsset {
+export function normalizeStockQuoteAsset(
+  input: StockQuoteAsset,
+): StockQuoteAsset {
   if (
     input.chainId !== 4663 ||
     !/^0x[0-9a-fA-F]{64}$/u.test(input.issuerAssetId) ||
@@ -105,7 +92,11 @@ export function normalizeStockQuoteAsset(input: StockQuoteAsset): StockQuoteAsse
       "Enabled stock quotes require a listed asset and oracle policy",
     );
   }
-  return { ...input, contractAddress, ...(priceFeedAddress ? { priceFeedAddress } : {}) };
+  return {
+    ...input,
+    contractAddress,
+    ...(priceFeedAddress ? { priceFeedAddress } : {}),
+  };
 }
 
 export function stockQuoteOperationAllowed(
@@ -135,20 +126,59 @@ export function stockQuoteOperationAllowed(
   return operation === "exit";
 }
 
-export function stockQuoteUsdNotionalX18(input: Readonly<{
-  rawAmount: bigint;
-  tokenDecimals: number;
-  priceX18: bigint;
-  multiplierX18: bigint;
-}>): bigint {
-  if (input.rawAmount < 0n || input.priceX18 <= 0n || input.multiplierX18 <= 0n) {
-    throw new SdkError("INVALID_AMOUNT", "Stock quote notional inputs are invalid");
+export function stockQuoteUsdNotionalX18(
+  input: Readonly<{
+    rawAmount: bigint;
+    tokenDecimals: number;
+    priceX18: bigint;
+    multiplierX18: bigint;
+  }>,
+): bigint {
+  if (
+    input.rawAmount < 0n ||
+    input.priceX18 <= 0n ||
+    input.multiplierX18 <= 0n
+  ) {
+    throw new SdkError(
+      "INVALID_AMOUNT",
+      "Stock quote notional inputs are invalid",
+    );
   }
-  const amountX18 =
+  const amount = stockQuoteAmountBreakdown(input);
+  return (amount.adjustedAmountX18 * input.priceX18) / X18;
+}
+
+/** Keeps native quote units separate from multiplier-adjusted display/exposure units. */
+export function stockQuoteAmountBreakdown(
+  input: Readonly<{
+    rawAmount: bigint;
+    tokenDecimals: number;
+    multiplierX18: bigint;
+  }>,
+) {
+  if (
+    input.rawAmount < 0n ||
+    !Number.isInteger(input.tokenDecimals) ||
+    input.tokenDecimals < 0 ||
+    input.tokenDecimals > 36 ||
+    input.multiplierX18 <= 0n
+  ) {
+    throw new SdkError(
+      "INVALID_AMOUNT",
+      "Stock quote amount metadata is invalid",
+    );
+  }
+  const nativeAmountX18 =
     input.tokenDecimals <= 18
       ? tokenRawToX18(input.rawAmount, input.tokenDecimals)
       : input.rawAmount / 10n ** BigInt(input.tokenDecimals - 18);
-  return (((amountX18 * input.priceX18) / X18) * input.multiplierX18) / X18;
+  return {
+    rawAmount: input.rawAmount,
+    tokenDecimals: input.tokenDecimals,
+    nativeAmountX18,
+    multiplierX18: input.multiplierX18,
+    adjustedAmountX18: (nativeAmountX18 * input.multiplierX18) / X18,
+  } as const;
 }
 
 /** Read-only calls used by clients to confirm onchain stock-quote authorization. */
@@ -212,7 +242,10 @@ export class StockQuoteClient {
     rawAmount: bigint,
   ) {
     if (rawAmount < 0n) {
-      throw new SdkError("INVALID_AMOUNT", "Raw stock quote amount cannot be negative");
+      throw new SdkError(
+        "INVALID_AMOUNT",
+        "Raw stock quote amount cannot be negative",
+      );
     }
     return {
       address: this.addresses.oracleGuard,

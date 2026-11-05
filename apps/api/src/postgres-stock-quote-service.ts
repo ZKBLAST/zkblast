@@ -96,6 +96,41 @@ export class PostgresStockQuoteService implements StockQuoteService {
     );
   }
 
+  launches(contractAddress: string, limit: number) {
+    return this.#sql.unsafe(
+      `select l.launch_id as "launchId",l.token_address as "tokenAddress",
+        l.virtual_pool as "virtualPool",l.quote_token as "quoteAssetAddress",
+        l.name,l.symbol,l.lifecycle,l.real_quote_reserve_raw::text as "realQuoteReserveRaw",
+        l.base_sold_raw::text as "baseSoldRaw",l.created_block::text as "createdBlock",
+        l.updated_block::text as "updatedBlock",b.policy_identity as "policyIdentity",
+        b.transaction_hash as "policyTransactionHash"
+       from ${this.#schema}.dbc_launches l
+       join ${this.#schema}.stock_quote_launch_policy_bindings b
+         on b.launch_id=l.launch_id and b.chain_id=$1 and b.canonical
+       where lower(l.quote_token)=$2
+       order by l.updated_block desc,l.launch_id limit $3`,
+      [4663, contractAddress, limit],
+    );
+  }
+
+  graduations(contractAddress: string, limit: number) {
+    return this.#sql.unsafe(
+      `select g.migration_id as "migrationId",g.launch_id as "launchId",
+        g.destination_pool as "destinationPool",g.base_migrated_raw::text as "baseMigratedRaw",
+        g.quote_migrated_raw::text as "quoteMigratedRaw",
+        g.destination_shares_raw::text as "destinationSharesRaw",
+        g.transaction_hash as "transactionHash",g.block_number::text as "blockNumber",
+        g.observed_at as "observedAt"
+       from ${this.#schema}.dbc_graduations g
+       join ${this.#schema}.dbc_launches l on l.launch_id=g.launch_id
+       join ${this.#schema}.stock_quote_launch_policy_bindings b
+         on b.launch_id=l.launch_id and b.chain_id=$1 and b.canonical
+       where lower(l.quote_token)=$2
+       order by g.block_number desc,g.migration_id limit $3`,
+      [4663, contractAddress, limit],
+    );
+  }
+
   launchPolicyBindings(query: StockQuoteReceiptQuery) {
     return this.#sql.unsafe(
       `select chain_id as "chainId",launch_id as "launchId",quote_asset_address as "quoteAssetAddress",

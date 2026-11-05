@@ -37,6 +37,12 @@ const service: StockQuoteService = {
         ]
       : [];
   },
+  async launches(address) {
+    return address === stock ? [{ launchId: `0x${"77".repeat(32)}` }] : [];
+  },
+  async graduations(address) {
+    return address === stock ? [{ migrationId: `0x${"88".repeat(32)}` }] : [];
+  },
   async launchPolicyBindings(query) {
     return [
       { launchId: query.launchId, quoteAssetAddress: query.quoteAssetAddress },
@@ -76,6 +82,16 @@ test("serves a bounded fail-closed stock quote catalog", async () => {
     { migrationMode: "damm", enabled: true },
     { migrationMode: "dlmm", enabled: false },
   ]);
+  const launches = await request(app).get(
+    `/v1/stock-quotes/assets/${stock}/launches`,
+  );
+  assert.equal(launches.status, 200);
+  assert.match(launches.body.items[0].launchId, /^0x[\da-f]{64}$/u);
+  const graduations = await request(app).get(
+    `/v1/stock-quotes/assets/${stock}/graduations`,
+  );
+  assert.equal(graduations.status, 200);
+  assert.match(graduations.body.items[0].migrationId, /^0x[\da-f]{64}$/u);
   const missing = await request(app).get(
     `/v1/stock-quotes/assets/0x${"22".repeat(20)}`,
   );

@@ -36,6 +36,14 @@ export interface StockQuoteService {
   destinationCapabilities(
     contractAddress: string,
   ): Promise<readonly Readonly<Record<string, unknown>>[]>;
+  launches(
+    contractAddress: string,
+    limit: number,
+  ): Promise<readonly Readonly<Record<string, unknown>>[]>;
+  graduations(
+    contractAddress: string,
+    limit: number,
+  ): Promise<readonly Readonly<Record<string, unknown>>[]>;
   launchPolicyBindings(
     query: StockQuoteReceiptQuery,
   ): Promise<readonly Readonly<Record<string, unknown>>[]>;

@@ -6,6 +6,7 @@ import type { Address, Hex } from "viem";
 import {
   StockQuoteClient,
   normalizeStockQuoteAsset,
+  stockQuoteAmountBreakdown,
   stockQuoteOperationAllowed,
   stockQuoteUsdNotionalX18,
   type StockQuoteAsset,
@@ -87,20 +88,51 @@ test("calculates multiplier-adjusted stock quote notional", () => {
   );
 });
 
+test("keeps raw, native and multiplier-adjusted stock quantities distinct", () => {
+  assert.deepEqual(
+    stockQuoteAmountBreakdown({
+      rawAmount: 125_000_000n,
+      tokenDecimals: 8,
+      multiplierX18: 2n * 10n ** 18n,
+    }),
+    {
+      rawAmount: 125_000_000n,
+      tokenDecimals: 8,
+      nativeAmountX18: 1_250_000_000_000_000_000n,
+      multiplierX18: 2n * 10n ** 18n,
+      adjustedAmountX18: 2_500_000_000_000_000_000n,
+    },
+  );
+  assert.throws(() =>
+    stockQuoteAmountBreakdown({
+      rawAmount: 1n,
+      tokenDecimals: 37,
+      multiplierX18: 10n ** 18n,
+    }),
+  );
+});
+
 test("builds address-bound onchain stock quote reads", () => {
   const client = new StockQuoteClient({
     chainId: 4663,
     assetRegistry: `0x${"44".repeat(20)}` as Address,
     oracleGuard: `0x${"55".repeat(20)}` as Address,
   });
-  assert.equal(client.assetConfig(asset.contractAddress).functionName, "quoteAssetConfig");
-  assert.equal(client.sessionPolicy(asset.contractAddress).functionName, "sessionPolicy");
-  assert.deepEqual(client.validatedNotional(asset.contractAddress, "buy", 12n).args, [
-    asset.contractAddress,
-    2,
-    12n,
-  ]);
-  assert.throws(() => client.validatedNotional(asset.contractAddress, "buy", -1n));
+  assert.equal(
+    client.assetConfig(asset.contractAddress).functionName,
+    "quoteAssetConfig",
+  );
+  assert.equal(
+    client.sessionPolicy(asset.contractAddress).functionName,
+    "sessionPolicy",
+  );
+  assert.deepEqual(
+    client.validatedNotional(asset.contractAddress, "buy", 12n).args,
+    [asset.contractAddress, 2, 12n],
+  );
+  assert.throws(() =>
+    client.validatedNotional(asset.contractAddress, "buy", -1n),
+  );
 });
 
 test("keeps DAMM and DLMM destination reads independently address-bound", () => {
@@ -111,12 +143,12 @@ test("keeps DAMM and DLMM destination reads independently address-bound", () => 
     oracleGuard: "0x0000000000000000000000000000000000000002",
     destinationRegistry,
   });
-  assert.deepEqual(client.destinationEnabled(asset.contractAddress, "damm").args, [
-    asset.contractAddress,
-    0,
-  ]);
-  assert.deepEqual(client.destinationEnabled(asset.contractAddress, "dlmm").args, [
-    asset.contractAddress,
-    1,
-  ]);
+  assert.deepEqual(
+    client.destinationEnabled(asset.contractAddress, "damm").args,
+    [asset.contractAddress, 0],
+  );
+  assert.deepEqual(
+    client.destinationEnabled(asset.contractAddress, "dlmm").args,
+    [asset.contractAddress, 1],
+  );
 });

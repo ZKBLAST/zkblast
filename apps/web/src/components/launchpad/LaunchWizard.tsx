@@ -1,5 +1,13 @@
 "use client";
-import { ArrowLeft, ArrowRight, Check, ImagePlus, Rocket, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ImagePlus,
+  Rocket,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { decodeEventLog, getAddress, zeroAddress } from "viem";
 import {
@@ -83,14 +91,32 @@ export function LaunchWizard({
   const [submitting, setSubmitting] = useState(false);
   const [economics, setEconomics] = useState<TemplateEconomics | null>(null);
   const [economicsLoading, setEconomicsLoading] = useState(false);
-  const [stockQuoteAsset, setStockQuoteAsset] = useState<StockQuoteAssetView | null>(null);
-  const [stockDestinations, setStockDestinations] = useState<readonly StockQuoteDestinationView[]>([]);
-  const [stockQuoteCatalog, setStockQuoteCatalog] = useState<readonly StockQuoteAssetView[]>([]);
-  const [stockQuoteCatalogLoading, setStockQuoteCatalogLoading] = useState(false);
-  const [launchProtection, setLaunchProtection] = useState<"standard" | "protected">("standard");
-  const [protectionPolicies, setProtectionPolicies] = useState<readonly ProtectionPolicy[]>([]);
+  const [stockQuoteAsset, setStockQuoteAsset] =
+    useState<StockQuoteAssetView | null>(null);
+  const [stockDestinations, setStockDestinations] = useState<
+    readonly StockQuoteDestinationView[]
+  >([]);
+  const [stockQuoteCatalog, setStockQuoteCatalog] = useState<
+    readonly StockQuoteAssetView[]
+  >([]);
+  const [stockQuoteCatalogLoading, setStockQuoteCatalogLoading] =
+    useState(false);
+  const [stockCatalogQuery, setStockCatalogQuery] = useState("");
+  const [catalogStockAddress, setCatalogStockAddress] = useState("");
+  const [catalogStockDestinations, setCatalogStockDestinations] = useState<
+    readonly StockQuoteDestinationView[]
+  >([]);
+  const [catalogStockDestinationsLoading, setCatalogStockDestinationsLoading] =
+    useState(false);
+  const [launchProtection, setLaunchProtection] = useState<
+    "standard" | "protected"
+  >("standard");
+  const [protectionPolicies, setProtectionPolicies] = useState<
+    readonly ProtectionPolicy[]
+  >([]);
   const [protectionPolicyId, setProtectionPolicyId] = useState("");
-  const [protectionPreview, setProtectionPreview] = useState<ProtectedLaunchPreview | null>(null);
+  const [protectionPreview, setProtectionPreview] =
+    useState<ProtectedLaunchPreview | null>(null);
   const [protectionLoading, setProtectionLoading] = useState(false);
   const [pendingInitialBuy, setPendingInitialBuy] =
     useState<PendingInitialBuy | null>(null);
@@ -105,10 +131,34 @@ export function LaunchWizard({
   const walletRecipient = recipient || address || "";
   const quoteSymbol = economics?.quoteSymbol ?? "Quote token";
   const quoteDecimals = economics?.quoteDecimals ?? 18;
-  const selectedMigrationMode = economics?.migrationMode === 1 ? "dlmm" : "damm";
+  const selectedMigrationMode =
+    economics?.migrationMode === 1 ? "dlmm" : "damm";
   const selectedStockDestination = stockDestinations.find(
     (item) => item.migrationMode === selectedMigrationMode,
   );
+  const filteredStockQuoteCatalog = useMemo(() => {
+    const query = stockCatalogQuery.trim().toLowerCase();
+    if (!query) return stockQuoteCatalog;
+    return stockQuoteCatalog.filter((asset) =>
+      [
+        asset.symbol,
+        asset.instrumentName,
+        asset.issuerName,
+        asset.contractAddress,
+      ].some((value) => value.toLowerCase().includes(query)),
+    );
+  }, [stockCatalogQuery, stockQuoteCatalog]);
+  const catalogStockAsset = useMemo(
+    () =>
+      stockQuoteCatalog.find(
+        (asset) => asset.contractAddress === catalogStockAddress,
+      ) ?? null,
+    [catalogStockAddress, stockQuoteCatalog],
+  );
+  const displayedStockAsset = stockQuoteAsset ?? catalogStockAsset;
+  const displayedStockDestinations = stockQuoteAsset
+    ? stockDestinations
+    : catalogStockDestinations;
   const stockTemplateAvailable =
     !stockQuoteAsset ||
     (stockQuoteAsset.quoteTradingEnabled &&
@@ -146,7 +196,14 @@ export function LaunchWizard({
       "/v1/stock-quotes/assets?limit=100",
       { signal: controller.signal, cache: "no-store" },
     )
-      .then(({ items }) => setStockQuoteCatalog(items))
+      .then(({ items }) => {
+        setStockQuoteCatalog(items);
+        setCatalogStockAddress((current) =>
+          current && items.some((item) => item.contractAddress === current)
+            ? current
+            : (items[0]?.contractAddress ?? ""),
+        );
+      })
       .catch(() => {
         if (!controller.signal.aborted) setStockQuoteCatalog([]);
       })
@@ -155,6 +212,30 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [config?.chainId, open]);
+  useEffect(() => {
+    if (!catalogStockAddress || config?.chainId !== 4663) {
+      setCatalogStockDestinations([]);
+      setCatalogStockDestinationsLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setCatalogStockDestinations([]);
+    setCatalogStockDestinationsLoading(true);
+    void apiRequest<{ items: readonly StockQuoteDestinationView[] }>(
+      webPublicConfig.apiUrl,
+      `/v1/stock-quotes/assets/${catalogStockAddress}/destinations`,
+      { signal: controller.signal, cache: "no-store" },
+    )
+      .then(({ items }) => setCatalogStockDestinations(items))
+      .catch(() => {
+        if (!controller.signal.aborted) setCatalogStockDestinations([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted)
+          setCatalogStockDestinationsLoading(false);
+      });
+    return () => controller.abort();
+  }, [catalogStockAddress, config?.chainId]);
   useEffect(() => {
     const quoteToken = economics?.quoteToken;
     if (!quoteToken || config?.chainId !== 4663) {
@@ -200,32 +281,42 @@ export function LaunchWizard({
         // policy single-use. Every enabled policy remains selectable.
         const available = items.filter((item) => item.enabled);
         setProtectionPolicies(available);
-        setProtectionPolicyId((current) => current || available[0]?.policy_id || "");
+        setProtectionPolicyId(
+          (current) => current || available[0]?.policy_id || "",
+        );
       })
       .catch(() => setProtectionPolicies([]));
     return () => controller.abort();
   }, [config?.chainId, open]);
   useEffect(() => {
-    if (launchProtection !== "protected" || !protectionPolicyId || !economics || !config) {
+    if (
+      launchProtection !== "protected" ||
+      !protectionPolicyId ||
+      !economics ||
+      !config
+    ) {
       setProtectionPreview(null);
       return;
     }
     const controller = new AbortController();
     setProtectionLoading(true);
-    void window.ethereum?.request({ method: "eth_blockNumber" })
-      .then((block) => apiRequest<ProtectedLaunchPreview>(
-        webPublicConfig.apiUrl,
-        "/v1/dbc/protection/preview",
-        {
-          method: "POST",
-          signal: controller.signal,
-          body: JSON.stringify({
-            policyId: protectionPolicyId,
-            baseInventoryRaw: economics.baseInventoryRaw,
-            currentBlock: BigInt(String(block)).toString(),
-          }),
-        },
-      ))
+    void window.ethereum
+      ?.request({ method: "eth_blockNumber" })
+      .then((block) =>
+        apiRequest<ProtectedLaunchPreview>(
+          webPublicConfig.apiUrl,
+          "/v1/dbc/protection/preview",
+          {
+            method: "POST",
+            signal: controller.signal,
+            body: JSON.stringify({
+              policyId: protectionPolicyId,
+              baseInventoryRaw: economics.baseInventoryRaw,
+              currentBlock: BigInt(String(block)).toString(),
+            }),
+          },
+        ),
+      )
       .then(setProtectionPreview)
       .catch(() => setProtectionPreview(null))
       .finally(() => {
@@ -262,9 +353,9 @@ export function LaunchWizard({
     launchProtection === "protected"
       ? initialBuyRaw === 0n
       : initialBuyRaw >= 0n &&
-    (initialBuyRaw === 0n ||
-      (economics !== null &&
-        initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
+        (initialBuyRaw === 0n ||
+          (economics !== null &&
+            initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
   const canContinue =
     step === 0
       ? Boolean(selected) && stockTemplateAvailable
@@ -310,28 +401,33 @@ export function LaunchWizard({
         metadataUri: metadata.metadataUri,
         creatorTokenRecipient: getAddress(walletRecipient),
       } as const;
-      const call = launchProtection === "protected"
-        ? launchpadId
-          ? new LaunchpadClient(launchpadConfiguration!).createProtectedToken({
-              launchpadId: BigInt(launchpadId),
-              ...launchRequest,
-              creator: getAddress(address),
-              policyId: BigInt(protectionPolicyId),
-              deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
-              referralRecipient: zeroAddress,
-            })
-          : new ProtectedLaunchClient(deployment.protectedLaunch!).createProtectedLaunch({
-              ...launchRequest,
-              policyId: BigInt(protectionPolicyId),
-              deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
-            })
-        : launchpadId
-          ? new LaunchpadClient(launchpadConfiguration!).createToken({
-            launchpadId: BigInt(launchpadId),
-            ...launchRequest,
-            referralRecipient: zeroAddress,
-          })
-          : dbcClient(deployment).createLaunch(launchRequest);
+      const call =
+        launchProtection === "protected"
+          ? launchpadId
+            ? new LaunchpadClient(launchpadConfiguration!).createProtectedToken(
+                {
+                  launchpadId: BigInt(launchpadId),
+                  ...launchRequest,
+                  creator: getAddress(address),
+                  policyId: BigInt(protectionPolicyId),
+                  deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
+                  referralRecipient: zeroAddress,
+                },
+              )
+            : new ProtectedLaunchClient(
+                deployment.protectedLaunch!,
+              ).createProtectedLaunch({
+                ...launchRequest,
+                policyId: BigInt(protectionPolicyId),
+                deadline: BigInt(Math.floor(Date.now() / 1_000) + 900),
+              })
+          : launchpadId
+            ? new LaunchpadClient(launchpadConfiguration!).createToken({
+                launchpadId: BigInt(launchpadId),
+                ...launchRequest,
+                referralRecipient: zeroAddress,
+              })
+            : dbcClient(deployment).createLaunch(launchRequest);
       const createHash = await executeDbcTransactions({
         provider: window.ethereum,
         account: address,
@@ -352,17 +448,17 @@ export function LaunchWizard({
           topics: [] | [`0x${string}`, ...`0x${string}`[]];
         }>[];
       } | null;
-      const launchFactory = launchProtection === "protected"
-        ? deployment.protectedLaunch!.launchFactory
-        : deployment.launchFactory;
-      const eventAbi = launchProtection === "protected"
-        ? protectedLaunchFactoryAbi
-        : dbcEventsAbi;
+      const launchFactory =
+        launchProtection === "protected"
+          ? deployment.protectedLaunch!.launchFactory
+          : deployment.launchFactory;
+      const eventAbi =
+        launchProtection === "protected"
+          ? protectedLaunchFactoryAbi
+          : dbcEventsAbi;
       const launched = receipt?.logs
         ?.filter(
-          (log) =>
-            log.address.toLowerCase() ===
-            launchFactory.toLowerCase(),
+          (log) => log.address.toLowerCase() === launchFactory.toLowerCase(),
         )
         .map((log) => {
           try {
@@ -406,7 +502,7 @@ export function LaunchWizard({
               graduation_threshold_raw:
                 launched.eventName === "TokenLaunched"
                   ? launched.args.graduationThresholdRaw.toString()
-                  : economics?.graduationThresholdRaw ?? null,
+                  : (economics?.graduationThresholdRaw ?? null),
               progress_bps: 0,
               created_block: blockNumber,
               updated_block: blockNumber,
@@ -472,7 +568,9 @@ export function LaunchWizard({
   async function approveInitialBuy() {
     if (!pendingInitialBuy || !address || !config || !window.ethereum) return;
     setInitialBuyBusy(true);
-    setInitialBuyStatus(`Waiting for ${pendingInitialBuy.quoteSymbol} approval`);
+    setInitialBuyStatus(
+      `Waiting for ${pendingInitialBuy.quoteSymbol} approval`,
+    );
     try {
       await executeDbcTransactions({
         provider: window.ethereum,
@@ -576,7 +674,11 @@ export function LaunchWizard({
         </div>
         {step === 0 && (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Launch protection">
+            <div
+              className="grid grid-cols-2 gap-2"
+              role="radiogroup"
+              aria-label="Launch protection"
+            >
               <button
                 type="button"
                 role="radio"
@@ -585,7 +687,9 @@ export function LaunchWizard({
                 className={`border p-4 text-left ${launchProtection === "standard" ? "border-lime bg-white/[.03]" : "border-line"}`}
               >
                 <span className="font-mono text-xs uppercase">Standard</span>
-                <span className="mt-2 block text-[11px] leading-5 text-muted">Governed curve and graduation rules.</span>
+                <span className="mt-2 block text-[11px] leading-5 text-muted">
+                  Governed curve and graduation rules.
+                </span>
               </button>
               <button
                 type="button"
@@ -599,8 +703,12 @@ export function LaunchWizard({
                 onClick={() => setLaunchProtection("protected")}
                 className={`border p-4 text-left disabled:cursor-not-allowed disabled:opacity-40 ${launchProtection === "protected" ? "border-lime bg-white/[.03]" : "border-line"}`}
               >
-                <span className="flex items-center gap-2 font-mono text-xs uppercase"><ShieldCheck className="size-4" /> Protected</span>
-                <span className="mt-2 block text-[11px] leading-5 text-muted">Buy caps, dynamic launch fee and locked creator LP.</span>
+                <span className="flex items-center gap-2 font-mono text-xs uppercase">
+                  <ShieldCheck className="size-4" /> Protected
+                </span>
+                <span className="mt-2 block text-[11px] leading-5 text-muted">
+                  Buy caps, dynamic launch fee and locked creator LP.
+                </span>
               </button>
             </div>
             {launchProtection === "protected" && (
@@ -609,7 +717,9 @@ export function LaunchWizard({
                   <span className="label">Protection policy</span>
                   <select
                     value={protectionPolicyId}
-                    onChange={(event) => setProtectionPolicyId(event.target.value)}
+                    onChange={(event) =>
+                      setProtectionPolicyId(event.target.value)
+                    }
                     className="mt-2 w-full border border-line bg-bg px-3 py-3 text-sm outline-none focus:border-lime"
                   >
                     {protectionPolicies.map((policy) => (
@@ -622,7 +732,10 @@ export function LaunchWizard({
                 {protectionLoading ? (
                   <div className="h-20 animate-pulse bg-white/[.04]" />
                 ) : protectionPreview ? (
-                  <ProtectionSummary preview={protectionPreview} decimals={18} />
+                  <ProtectionSummary
+                    preview={protectionPreview}
+                    decimals={18}
+                  />
                 ) : null}
               </div>
             )}
@@ -648,32 +761,64 @@ export function LaunchWizard({
                     <span className="content-shimmer h-16" aria-hidden />
                   </div>
                 ) : (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {stockQuoteCatalog.map((asset) => (
-                      <div key={asset.contractAddress} className="border border-line bg-bg p-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-xs text-fg">
-                              {asset.instrumentName}
-                            </p>
-                            <p className="mt-1 font-mono text-[10px] text-muted">
-                              {asset.symbol} · {asset.marketState.replaceAll("_", " ")}
-                            </p>
+                  <div className="space-y-3">
+                    <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60">
+                      <Search className="size-4 text-muted" aria-hidden />
+                      <input
+                        value={stockCatalogQuery}
+                        onChange={(event) =>
+                          setStockCatalogQuery(event.target.value)
+                        }
+                        placeholder="Search symbol, issuer or contract"
+                        className="min-w-0 flex-1 bg-transparent text-xs outline-none"
+                        aria-label="Search tokenized stock quote assets"
+                      />
+                    </label>
+                    <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+                      {filteredStockQuoteCatalog.map((asset) => (
+                        <button
+                          type="button"
+                          key={asset.contractAddress}
+                          aria-pressed={
+                            catalogStockAddress === asset.contractAddress
+                          }
+                          onClick={() =>
+                            setCatalogStockAddress(asset.contractAddress)
+                          }
+                          className={`border bg-bg p-3 text-left ${catalogStockAddress === asset.contractAddress ? "border-lime/70" : "border-line"}`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="truncate text-xs text-fg">
+                                {asset.instrumentName}
+                              </p>
+                              <p className="mt-1 font-mono text-[10px] text-muted">
+                                {asset.symbol} ·{" "}
+                                {asset.marketState.replaceAll("_", " ")}
+                              </p>
+                            </div>
+                            <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted">
+                              {asset.availability}
+                            </span>
                           </div>
-                          <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted">
-                            {asset.availability}
-                          </span>
-                        </div>
-                        <p className="mt-3 break-all font-mono text-[9px] text-muted">
-                          {asset.contractAddress}
-                        </p>
-                        <p className="mt-2 text-[10px] text-muted">
-                          {asset.quoteTradingEnabled && asset.graduationEnabled
-                            ? "Governance policy active"
-                            : "Cataloged · launch template disabled"}
-                        </p>
-                      </div>
-                    ))}
+                          <p className="mt-3 break-all font-mono text-[9px] text-muted">
+                            {asset.contractAddress}
+                          </p>
+                          <p className="mt-2 text-[10px] text-muted">
+                            {asset.quoteTradingEnabled &&
+                            asset.graduationEnabled
+                              ? "Governance policy active"
+                              : "Cataloged · launch template disabled"}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                    {filteredStockQuoteCatalog.length === 0 && (
+                      <p className="border border-line p-3 text-[11px] text-muted">
+                        No address-verified stock quote asset matches this
+                        search.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -732,13 +877,26 @@ export function LaunchWizard({
                 </div>
               )
             )}
-            {stockQuoteAsset && economics && (
-              <StockQuoteAssetSummary
-                asset={stockQuoteAsset}
-                destinations={stockDestinations}
-                selectedMigrationMode={selectedMigrationMode}
-              />
-            )}
+            {displayedStockAsset &&
+              catalogStockDestinationsLoading &&
+              !stockQuoteAsset && (
+                <div
+                  className="panel-inset grid gap-3 p-4 sm:grid-cols-2"
+                  aria-label="Loading stock quote policy"
+                >
+                  <span className="content-shimmer h-20" aria-hidden />
+                  <span className="content-shimmer h-20" aria-hidden />
+                </div>
+              )}
+            {displayedStockAsset &&
+              (!catalogStockDestinationsLoading || stockQuoteAsset) && (
+                <StockQuoteAssetSummary
+                  key={displayedStockAsset.contractAddress}
+                  asset={displayedStockAsset}
+                  destinations={displayedStockDestinations}
+                  selectedMigrationMode={selectedMigrationMode}
+                />
+              )}
           </div>
         )}
         {step === 1 && (
@@ -836,7 +994,11 @@ export function LaunchWizard({
               <Field
                 label={`Initial buy · optional (${quoteSymbol})`}
                 value={initialBuy}
-                onChange={launchProtection === "protected" ? () => undefined : setInitialBuy}
+                onChange={
+                  launchProtection === "protected"
+                    ? () => undefined
+                    : setInitialBuy
+                }
                 placeholder="0.01"
               />
               <p className="mt-2 text-[11px] leading-5 text-muted">
@@ -846,7 +1008,8 @@ export function LaunchWizard({
               </p>
               {!validInitialBuy && (
                 <p className="mt-1 text-xs text-danger">
-                  Enter a valid {quoteSymbol} amount within the graduation threshold.
+                  Enter a valid {quoteSymbol} amount within the graduation
+                  threshold.
                 </p>
               )}
             </div>
@@ -865,7 +1028,11 @@ export function LaunchWizard({
               />
               <Review
                 label="Launch protection"
-                value={launchProtection === "protected" ? `Protected · policy ${protectionPolicyId}` : "Standard"}
+                value={
+                  launchProtection === "protected"
+                    ? `Protected · policy ${protectionPolicyId}`
+                    : "Standard"
+                }
               />
               {protectionPreview && (
                 <Review
@@ -911,7 +1078,9 @@ export function LaunchWizard({
               <Review label="Logo" value={logo ? "Ready" : "Not provided"} />
               <Review
                 label="Initial buy"
-                value={initialBuyRaw > 0n ? `${initialBuy} ${quoteSymbol}` : "None"}
+                value={
+                  initialBuyRaw > 0n ? `${initialBuy} ${quoteSymbol}` : "None"
+                }
               />
             </div>
             <p className="text-xs leading-5 text-muted">
@@ -922,7 +1091,8 @@ export function LaunchWizard({
             <button
               disabled={
                 !economics ||
-                (launchProtection === "protected" && (!deployment.protectedLaunch || !protectionPreview)) ||
+                (launchProtection === "protected" &&
+                  (!deployment.protectedLaunch || !protectionPreview)) ||
                 submitting
               }
               onClick={() => void submit()}
@@ -936,7 +1106,10 @@ export function LaunchWizard({
                   : "Create launch"}
             </button>
             {!submitting && status && status !== "confirmed" && (
-              <p role="alert" className="break-words text-xs leading-5 text-red-300">
+              <p
+                role="alert"
+                className="break-words text-xs leading-5 text-red-300"
+              >
                 The launch was not submitted. Review the details and try again.
               </p>
             )}
@@ -982,8 +1155,12 @@ export function LaunchWizard({
               <p className="text-sm text-fg">Your launch is already onchain.</p>
               <p className="mt-2 text-xs leading-5 text-muted">
                 Complete the optional{" "}
-                {formatTokenAmount(pendingInitialBuy.amountRaw, pendingInitialBuy.quoteDecimals)} {pendingInitialBuy.quoteSymbol} initial
-                buy using two explicit wallet confirmations.
+                {formatTokenAmount(
+                  pendingInitialBuy.amountRaw,
+                  pendingInitialBuy.quoteDecimals,
+                )}{" "}
+                {pendingInitialBuy.quoteSymbol} initial buy using two explicit
+                wallet confirmations.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -1065,11 +1242,17 @@ function ProtectionSummary({
     <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
       <Review
         label="Per transaction"
-        value={formatTokenAmount(BigInt(preview.maximumPerTransactionRaw), decimals)}
+        value={formatTokenAmount(
+          BigInt(preview.maximumPerTransactionRaw),
+          decimals,
+        )}
       />
       <Review
         label="Per address"
-        value={formatTokenAmount(BigInt(preview.maximumPerAddressRaw), decimals)}
+        value={formatTokenAmount(
+          BigInt(preview.maximumPerAddressRaw),
+          decimals,
+        )}
       />
       <Review
         label="Protection window"
