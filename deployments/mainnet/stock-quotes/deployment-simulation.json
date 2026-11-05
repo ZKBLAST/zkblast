@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "planSha256": "ecf17b16b6badd0eeb54a7d308ada4a565223693e2c92fdf8b3df9d4863316fb",
+  "simulatedChainId": 4663,
+  "simulatedAt": "2026-11-05T12:11:54.685Z",
+  "transactions": 18,
+  "totalGasUsed": "14968017",
+  "addresses": {
+    "assetRegistry": "0x10fe7DAD356E796A7f89fad38AE983ec03335a8D",
+    "oracleGuard": "0x05ee581029C612Ac1E0d9b4Ea33Cbc64Dd1d2181",
+    "destinationRegistry": "0xDb6393e17fF8Fc7E5E163B0268f4F0E5d674cd14"
+  },
+  "assertions": {
+    "managerDestinationRegistryBound": true,
+    "canaryExecutionGuardBound": true,
+    "quoteTradingEnabled": false,
+    "graduationEnabled": false,
+    "dammEnabled": false,
+    "dlmmEnabled": false
+  },
+  "receipts": [
+    {
+      "kind": "deployment",
+      "name": "adapterRegistryImplementation",
+      "transactionHash": "0x2729b76c96ad56f53efdc964fc306232b4e45edeaa130cf3a2f35ac7a513058c",
+      "gasUsed": "938583",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "adapterRegistry",
+      "transactionHash": "0x60560b9addb1f6e4fe3ea838d7eae37ccfab5cfcf6625fadd5796b6ab270d40c",
+      "gasUsed": "208695",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "assetRegistryImplementation",
+      "transactionHash": "0x2be2213790772796edba98d3a08debeae51efb5871971a0c3f64c635ea8c5679",
+      "gasUsed": "1348087",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "assetRegistry",
+      "transactionHash": "0xfbb733865fb7f4887ee86db26674bc5e2f2c38d1e1539cebfd8414061cd535e6",
+      "gasUsed": "208717",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "oracleGuardImplementation",
+      "transactionHash": "0x80d29d8604d1ffbb584a426838c04b9461294cf3c8728462d24d699f8e224b5c",
+      "gasUsed": "1833113",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "oracleGuard",
+      "transactionHash": "0x65d3ebe19d1cb821be2441d2a910d32877f973e498bf33126b6d6cff219eb608",
+      "gasUsed": "236774",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "destinationRegistryImplementation",
+      "transactionHash": "0x86c9d454c8931cb2897582759d3afde352f22d2c0cc3e5f11f0477b48c1c2580",
+      "gasUsed": "1470837",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "destinationRegistry",
+      "transactionHash": "0x0da82db69fb694cc4fbfd5057550e5559fae5f58dd4aedee76cf87061a90dbdf",
+      "gasUsed": "259489",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "protectedLaunchFactoryImplementation",
+      "transactionHash": "0x543355b5b9b8f57ef5fb07ba5fded8041f9e2b110e96c727c6b957507cabbb20",
+      "gasUsed": "3324662",
+      "status": "success"
+    },
+    {
+      "kind": "deployment",
+      "name": "protectedGraduationManagerImplementation",
+      "transactionHash": "0x36cfc850d98a74b47a199ef6397177e89ec40a7f72ae5ebb937b2d278b3d8b69",
+      "gasUsed": "4258572",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Register canonical Protected DAMM adapter",
+      "transactionHash": "0x9e70cc99923b271d9050948eb3df48b954252331f4b8b0cdeac5045740267092",
+      "gasUsed": "224870",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Register canonical Protected DLMM adapter",
+      "transactionHash": "0x07b0998360a87e6c03761abafd971983fa4cb4ef4eed9d6a735c30e15e51772d",
+      "gasUsed": "225114",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "List MSFT stock quote in disabled fail-closed state",
+      "transactionHash": "0x9122b1d489e63bc68055b5d63a702f65acec5040222f489bde35a9bfa8b331ec",
+      "gasUsed": "142392",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Configure closed MSFT session without enabling trading",
+      "transactionHash": "0x6cb490519e12d8dd8ab705b38d7d904d240c5ac6916ac7ced5f3eb71ebc57027",
+      "gasUsed": "99325",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Upgrade Protected Launch Factory implementation",
+      "transactionHash": "0x84d5a0eee25876cbb75d4d031de61ea7ff854fffc81ad3da24c29899bf3377df",
+      "gasUsed": "37639",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Upgrade Protected Graduation Manager implementation",
+      "transactionHash": "0xecb3dcd5263bc76c2f56b2add78e3813526954620e23507d518565f9a5326ae9",
+      "gasUsed": "37427",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Bind stock destination registry to Protected Graduation Manager",
+      "transactionHash": "0x4d72fa61f1540ebe731061afe64d5b36408285a687bb0d5963d1ae2e17d1ea9b",
+      "gasUsed": "54993",
+      "status": "success"
+    },
+    {
+      "kind": "configuration",
+      "name": "Bind MSFT execution guard to Protected Launch Factory",
+      "transactionHash": "0xd8c8908b966528fb05b3d98a078075c64ab51b9ec91c0e3d838a038d36124fdc",
+      "gasUsed": "58728",
+      "status": "success"
+    }
+  ]
+}

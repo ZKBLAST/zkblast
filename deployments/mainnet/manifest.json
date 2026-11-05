@@ -862,7 +862,7 @@
     "launchFactory": "0x98D8546bb60d4d5fF791fB6b904A611691D86beF",
     "launchRouter": "0xdb95b8CEe663baAd9dF839171e353265aF2884AA",
     "tokenDeployer": "0x15A7D031AB2795E7122Ee9b5A88A9d84aD7f5fF6",
-    "virtualPoolDeployer": "0x09c4dD578F0Bc71c88839eD3c9699C814ff0a701",
+    "virtualPoolDeployer": "0x51F965C54c828C7A8c6FfC8487e4BcE096a763Ed",
     "lpEscrow": "0xec2a8A4A20364ffB912aA5bf3eaC817e708B9FD7",
     "graduationManager": "0xE83203279e4e8Db4Aa747213aC28260418Ff2E83",
     "dammGraduationAdapter": "0x4D78A76696b4AdB62aC1843Fb9ddB2E2312E5910",
@@ -1075,5 +1075,29 @@
       }
     ],
     "totalFeeWei": "283569999722000"
+  },
+  "stockQuoteAssets": {
+    "abiVersion": 1,
+    "deploymentBlock": 106734584,
+    "planSha256": "ecf17b16b6badd0eeb54a7d308ada4a565223693e2c92fdf8b3df9d4863316fb",
+    "adapterRegistry": "0x2B1b0238245e29A63C8090fA43e4f33F20EBc5Fc",
+    "adapterRegistryImplementation": "0xFE690F80a48212a38023b11E6E44cCF5C12c991d",
+    "assetRegistry": "0x10fe7DAD356E796A7f89fad38AE983ec03335a8D",
+    "assetRegistryImplementation": "0xa628d6CAAe25B78C037622EB0B5526BA21Fc7788",
+    "oracleGuard": "0x05ee581029C612Ac1E0d9b4Ea33Cbc64Dd1d2181",
+    "oracleGuardImplementation": "0x9433315ce75715B33dC92a5a23FDd6ADfe879c5b",
+    "destinationRegistry": "0xDb6393e17fF8Fc7E5E163B0268f4F0E5d674cd14",
+    "destinationRegistryImplementation": "0x10DdA7ed447F899229d4C735a8C1F17bC19632B3",
+    "protectedLaunchFactoryImplementation": "0x6697a7ff2b1f2073dBB544acf2BBabCA8B17B50e",
+    "protectedGraduationManagerImplementation": "0xaC893588a9E361d22382653ba04F9A91002B6ab4",
+    "canaryAsset": "0xE93237c50d904957cF27e7b1133B510c669c2e74",
+    "releaseState": {
+      "quoteTradingEnabled": false,
+      "graduationEnabled": false,
+      "dammEnabled": false,
+      "dlmmEnabled": false
+    },
+    "transactionCount": 18,
+    "totalFeeWei": "309288914974000"
   }
 }

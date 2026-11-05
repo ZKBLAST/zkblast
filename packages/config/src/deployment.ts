@@ -181,6 +181,32 @@ export const deploymentManifestSchema = z
         protocolToken: addressSchema,
       })
       .optional(),
+    stockQuoteAssets: z
+      .object({
+        abiVersion: z.literal(1),
+        deploymentBlock: z.number().int().nonnegative(),
+        planSha256: z.string().regex(/^[a-f0-9]{64}$/u),
+        adapterRegistry: addressSchema,
+        adapterRegistryImplementation: addressSchema,
+        assetRegistry: addressSchema,
+        assetRegistryImplementation: addressSchema,
+        oracleGuard: addressSchema,
+        oracleGuardImplementation: addressSchema,
+        destinationRegistry: addressSchema,
+        destinationRegistryImplementation: addressSchema,
+        protectedLaunchFactoryImplementation: addressSchema,
+        protectedGraduationManagerImplementation: addressSchema,
+        canaryAsset: addressSchema,
+        releaseState: z.object({
+          quoteTradingEnabled: z.boolean(),
+          graduationEnabled: z.boolean(),
+          dammEnabled: z.boolean(),
+          dlmmEnabled: z.boolean(),
+        }),
+        transactionCount: z.number().int().positive(),
+        totalFeeWei: unsignedIntegerSchema,
+      })
+      .optional(),
     shieldedV2: privateVaultV2ConfigSchema.optional(),
     perps: privatePerpsConfigSchema.optional(),
     shielded: z

@@ -58,6 +58,14 @@ const addresses = [
         manifest.protectedLaunch.identityRegistry,
       ].filter((address): address is string => Boolean(address))
     : []),
+  ...(manifest.stockQuoteAssets
+    ? [
+        manifest.stockQuoteAssets.adapterRegistry,
+        manifest.stockQuoteAssets.assetRegistry,
+        manifest.stockQuoteAssets.oracleGuard,
+        manifest.stockQuoteAssets.destinationRegistry,
+      ]
+    : []),
 ].map(getAddress);
 const client = createPublicClient({
   cacheTime: 0,

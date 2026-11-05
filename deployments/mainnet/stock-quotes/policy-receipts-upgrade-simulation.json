@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "planSha256": "ed4246b29260a30924835a25c821c2461c94f46d1d86daa0dee562fde3487d9e",
+  "simulatedAt": "2026-11-05T13:08:47.151Z",
+  "transactions": 9,
+  "totalGasUsed": "11094722",
+  "assertions": {
+    "poolDeployerInstalled": true,
+    "poolDeployerFactoryBound": true,
+    "policyIdentityAvailable": true,
+    "quoteTradingEnabled": false,
+    "graduationEnabled": false
+  },
+  "receipts": [
+    {
+      "kind": "deployment",
+      "name": "assetRegistryImplementation",
+      "transactionHash": "0x6c208abeedd1d821204a3d609252e612b3561a29603ecca6f0ad162fba5b9a04",
+      "gasUsed": "1361713"
+    },
+    {
+      "kind": "deployment",
+      "name": "oracleGuardImplementation",
+      "transactionHash": "0x27bd6f8bfc1c4e2e1617f64824e4a3f9f68e92c6f10f212d8b0ed03c8e447127",
+      "gasUsed": "1973271"
+    },
+    {
+      "kind": "deployment",
+      "name": "protectedLaunchFactoryImplementation",
+      "transactionHash": "0x6b7262f4a35b8413512e17657d5c3f2daffb3e9090be8fe36a60d1efa3d1bb64",
+      "gasUsed": "3380649"
+    },
+    {
+      "kind": "deployment",
+      "name": "protectedVirtualPoolDeployer",
+      "transactionHash": "0x594c49fccabb7b0948daaf176116813370c2f5692929badbd025360eaa73e4e3",
+      "gasUsed": "4182184"
+    },
+    {
+      "kind": "configuration",
+      "name": "Upgrade Stock Quote Asset Registry with explicit version reads",
+      "transactionHash": "0xea126f12ccadd6491b62c17a919fee7bf28c2759709b108a3dd4fb24759f3323",
+      "gasUsed": "37285"
+    },
+    {
+      "kind": "configuration",
+      "name": "Upgrade Stock Quote Oracle Guard with versioned policy identity",
+      "transactionHash": "0xadc129833d470d25a5f184db7a3f66707457cde6a57d428dd9b5648c18d94e89",
+      "gasUsed": "37197"
+    },
+    {
+      "kind": "configuration",
+      "name": "Upgrade Protected Launch Factory with stock policy binding receipts",
+      "transactionHash": "0x23fceab3ae90a29664ee10c795daa5e0d1f2a40edd73a8f1de1873c13a11e8da",
+      "gasUsed": "37667"
+    },
+    {
+      "kind": "configuration",
+      "name": "Bind replacement Protected pool deployer to canonical factory",
+      "transactionHash": "0xfb088cfade84138b3c1ed16f9709098645fc7eb3bab566fd3468ce500c89d2f9",
+      "gasUsed": "43921"
+    },
+    {
+      "kind": "configuration",
+      "name": "Install receipt-enabled Protected pool deployer",
+      "transactionHash": "0x5d5398b2db17e93aa75efd0d6ec621459f2e001053091da3d34bb25184a519cc",
+      "gasUsed": "40835"
+    }
+  ]
+}

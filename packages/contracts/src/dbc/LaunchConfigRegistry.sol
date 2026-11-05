@@ -31,8 +31,10 @@ contract LaunchConfigRegistry is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
     mapping(address quoteToken => bool allowed) public quoteTokenAllowed;
     mapping(address quoteToken => uint8 decimals) public quoteTokenDecimals;
     mapping(uint256 templateId => TemplateRecord record) private _templates;
+    mapping(address quoteToken => bool protectedOnly) public quoteTokenProtectedOnly;
 
     event QuoteTokenStatusUpdated(address indexed quoteToken, uint8 decimals, bool allowed);
+    event QuoteTokenProtectionUpdated(address indexed quoteToken, bool protectedOnly);
     event LaunchTemplateUsed(uint256 indexed templateId);
 
     constructor() {
@@ -60,6 +62,19 @@ contract LaunchConfigRegistry is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
         quoteTokenAllowed[quoteToken] = allowed;
         quoteTokenDecimals[quoteToken] = decimals;
         emit QuoteTokenStatusUpdated(quoteToken, decimals, allowed);
+    }
+
+    function setQuoteTokenProtectedOnly(address quoteToken, bool protectedOnly)
+        external
+        onlyRole(TEMPLATE_ADMIN_ROLE)
+    {
+        if (!quoteTokenAllowed[quoteToken]) revert QuoteTokenNotAllowed();
+        // A protected-only quote asset must never be downgraded to the standard,
+        // unguarded launch path. Guard implementations remain upgradeable behind
+        // their own governance-controlled proxy.
+        if (quoteTokenProtectedOnly[quoteToken] && !protectedOnly) revert InvalidTemplate();
+        quoteTokenProtectedOnly[quoteToken] = protectedOnly;
+        emit QuoteTokenProtectionUpdated(quoteToken, protectedOnly);
     }
 
     function createTemplate(bytes32 familyId, DbcTypes.TemplateConfig calldata config)
@@ -115,22 +130,10 @@ contract LaunchConfigRegistry is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
     function templateSummary(uint256 templateId)
         external
         view
-        returns (
-            bytes32 familyId,
-            bytes32 configHash,
-            uint32 version,
-            bool enabled,
-            bool used
-        )
+        returns (bytes32 familyId, bytes32 configHash, uint32 version, bool enabled, bool used)
     {
         TemplateRecord storage record = _record(templateId);
-        return (
-            record.familyId,
-            record.configHash,
-            record.version,
-            record.enabled,
-            record.used
-        );
+        return (record.familyId, record.configHash, record.version, record.enabled, record.used);
     }
 
     function templateEconomics(uint256 templateId)
@@ -182,11 +185,10 @@ contract LaunchConfigRegistry is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
             !quoteTokenAllowed[config.quoteToken]
                 || quoteTokenDecimals[config.quoteToken] != config.quoteDecimals
                 || config.baseDecimals != 18 || config.protocolFeeRecipient == address(0)
-                || config.protocolLpRecipient == address(0)
-                || config.destinationFeePips == 0 || config.destinationFeePips >= 1_000_000
-                || config.terminalPriceToleranceBps == 0 || config.terminalPriceToleranceBps > 1_000
-                || config.totalSupplyRaw == 0 || config.baseInventoryRaw == 0
-                || config.baseInventoryRaw > config.totalSupplyRaw
+                || config.protocolLpRecipient == address(0) || config.destinationFeePips == 0
+                || config.destinationFeePips >= 1_000_000 || config.terminalPriceToleranceBps == 0
+                || config.terminalPriceToleranceBps > 1_000 || config.totalSupplyRaw == 0
+                || config.baseInventoryRaw == 0 || config.baseInventoryRaw > config.totalSupplyRaw
                 || config.graduationThresholdRaw == 0 || config.minimumDestinationShares == 0
                 || config.fees.tradeFeeBps > DbcTypes.MAX_TRADE_FEE_BPS
                 || uint256(config.fees.creatorShareBps) + config.fees.partnerShareBps

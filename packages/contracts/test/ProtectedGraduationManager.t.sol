@@ -3,7 +3,10 @@ pragma solidity 0.8.26;
 
 import { DbcTypes } from "../src/dbc/DbcTypes.sol";
 import { IGraduationAdapter } from "../src/dbc/IGraduationAdapter.sol";
-import { ProtectedGraduationManager } from "../src/dbc/ProtectedGraduationManager.sol";
+import {
+    IStockQuoteDestinationCapability,
+    ProtectedGraduationManager
+} from "../src/dbc/ProtectedGraduationManager.sol";
 import { ProtectedVirtualPool } from "../src/dbc/ProtectedVirtualPool.sol";
 import { ProtectedLaunchFactory } from "../src/launchpad/protection/ProtectedLaunchFactory.sol";
 import {
@@ -46,6 +49,7 @@ contract ProtectedGraduationTokenMock {
 
 contract ProtectedGraduationFactoryMock {
     mapping(address pool => bytes32 launchId) public launchByPool;
+    mapping(address quoteToken => address guard) public quoteExecutionGuard;
 
     function bind(address pool, bytes32 launchId) external {
         launchByPool[pool] = launchId;
@@ -132,6 +136,15 @@ contract ReentrantSlippageAdapterMock is IGraduationAdapter {
             );
         if (success) revert("REENTRANCY_ACCEPTED");
         revert("SLIPPAGE_EXCEEDED");
+    }
+}
+
+contract StockDestinationCapabilityMock {
+    bool public enabled;
+    function setEnabled(bool value) external { enabled = value; }
+    function isStockQuoteAsset(address) external pure returns (bool) { return true; }
+    function isEnabled(address, DbcTypes.MigrationMode) external view returns (bool) {
+        return enabled;
     }
 }
 
@@ -232,5 +245,23 @@ contract ProtectedGraduationManagerTest {
                 )
             );
         require(!externalExecute, "self-call boundary bypassed");
+    }
+
+    function testStockQuoteGraduationRequiresExactDestinationCapability() external {
+        StockDestinationCapabilityMock capability = new StockDestinationCapabilityMock();
+        manager.setStockQuoteDestinationRegistry(IStockQuoteDestinationCapability(address(capability)));
+        (bool disabled,) = address(manager).call(
+            abi.encodeCall(
+                ProtectedGraduationManager.graduate,
+                (ProtectedVirtualPool(address(pool)), adapter, block.timestamp)
+            )
+        );
+        require(!disabled, "unaccepted stock destination used");
+        capability.setEnabled(true);
+        manager.graduate(ProtectedVirtualPool(address(pool)), adapter, block.timestamp);
+        (ProtectedGraduationManager.MigrationStatus status,,) = manager.migrationAttemptState(
+            keccak256(abi.encode(address(manager), LAUNCH_ID, address(adapter)))
+        );
+        require(status == ProtectedGraduationManager.MigrationStatus.PENDING_RETRY, "capability blocked");
     }
 }

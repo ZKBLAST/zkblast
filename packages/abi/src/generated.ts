@@ -7689,6 +7689,24 @@ export const protectedLaunchFactoryAbi = [
   },
   {
     type: "function",
+    name: "bindQuoteExecutionGuard",
+    inputs: [
+      {
+        name: "quoteToken",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "guard",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "configurePoolGraduationManager",
     inputs: [
       {
@@ -8125,12 +8143,44 @@ export const protectedLaunchFactoryAbi = [
   },
   {
     type: "function",
+    name: "quoteExecutionGuard",
+    inputs: [
+      {
+        name: "quoteToken",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "guard",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "setGraduationManager",
     inputs: [
       {
         name: "manager",
         type: "address",
         internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setPoolDeployer",
+    inputs: [
+      {
+        name: "deployer",
+        type: "address",
+        internalType: "contract ProtectedVirtualPoolDeployer",
       },
     ],
     outputs: [],
@@ -8321,6 +8371,44 @@ export const protectedLaunchFactoryAbi = [
   },
   {
     type: "event",
+    name: "ProtectedVirtualPoolDeployerUpdated",
+    inputs: [
+      {
+        name: "previousDeployer",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "deployer",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "QuoteExecutionGuardBound",
+    inputs: [
+      {
+        name: "quoteToken",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "guard",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "RoleUpdated",
     inputs: [
       {
@@ -8346,6 +8434,31 @@ export const protectedLaunchFactoryAbi = [
   },
   {
     type: "event",
+    name: "StockQuotePolicyBound",
+    inputs: [
+      {
+        name: "launchId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "quoteToken",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "policyIdentity",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "Upgraded",
     inputs: [
       {
@@ -8360,6 +8473,11 @@ export const protectedLaunchFactoryAbi = [
   {
     type: "error",
     name: "AlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ExecutionGuardAlreadyBound",
     inputs: [],
   },
   {
@@ -10760,6 +10878,43 @@ export const protectedVirtualPoolAbi = [
   },
   {
     type: "event",
+    name: "StockQuotePolicyValidated",
+    inputs: [
+      {
+        name: "launchId",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "quoteAsset",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "policyIdentity",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+      {
+        name: "isBuy",
+        type: "bool",
+        indexed: false,
+        internalType: "bool",
+      },
+      {
+        name: "quoteAmountRaw",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "TokenLaunched",
     inputs: [
       {
@@ -12910,6 +13065,19 @@ export const protectedGraduationManagerAbi = [
   },
   {
     type: "function",
+    name: "setStockQuoteDestinationRegistry",
+    inputs: [
+      {
+        name: "registry",
+        type: "address",
+        internalType: "contract IStockQuoteDestinationCapability",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "statusForPool",
     inputs: [
       {
@@ -12923,6 +13091,19 @@ export const protectedGraduationManagerAbi = [
         name: "",
         type: "uint8",
         internalType: "enum ProtectedGraduationManager.MigrationStatus",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "stockQuoteDestinationRegistry",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IStockQuoteDestinationCapability",
       },
     ],
     stateMutability: "view",
@@ -13251,6 +13432,25 @@ export const protectedGraduationManagerAbi = [
         type: "bool",
         indexed: false,
         internalType: "bool",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "StockQuoteDestinationRegistryUpdated",
+    inputs: [
+      {
+        name: "previousRegistry",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "registry",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
     ],
     anonymous: false,

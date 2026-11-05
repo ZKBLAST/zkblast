@@ -11,3 +11,7 @@ export * from "./persist-perps-event.js";
 export * from "./perps-state-sync.js";
 export * from "./dbc-projection.js";
 export * from "./persist-dbc-event.js";
+export * from "./stock-quote-catalog.js";
+export * from "./persist-stock-quote-catalog.js";
+export * from "./persist-stock-quote-event.js";
+export * from "./reconcile-stock-quote-markets.js";

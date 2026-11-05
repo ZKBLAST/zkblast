@@ -44,6 +44,14 @@ interface IDbcEvents {
         uint256 baseSoldRaw
     );
 
+    event StockQuotePolicyValidated(
+        bytes32 indexed launchId,
+        address indexed quoteAsset,
+        bytes32 indexed policyIdentity,
+        bool isBuy,
+        uint256 quoteAmountRaw
+    );
+
     event FeeAccrued(
         bytes32 indexed launchId,
         uint256 creatorAmountRaw,

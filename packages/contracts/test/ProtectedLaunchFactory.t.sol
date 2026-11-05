@@ -100,6 +100,42 @@ contract ProtectedBuyerActor {
     }
 }
 
+contract MockStockExecutionGuard {
+    bool public createEnabled = true;
+    bool public buyEnabled;
+    bool public sellEnabled = true;
+
+    function setBuyEnabled(bool enabled) external {
+        buyEnabled = enabled;
+    }
+
+    bytes32 public constant POLICY_IDENTITY = keccak256("STOCK_POLICY");
+
+    function validateCreate(address) external view returns (bytes32) {
+        require(createEnabled, "create disabled");
+        return POLICY_IDENTITY;
+    }
+
+    function validateBuy(address, uint256) external view returns (bytes32) {
+        require(buyEnabled, "buy disabled");
+        return POLICY_IDENTITY;
+    }
+
+    function validateSell(address) external view returns (bytes32) {
+        require(sellEnabled, "sell disabled");
+        return POLICY_IDENTITY;
+    }
+
+    function validateGraduate(address, uint256) external view returns (bytes32) {
+        require(sellEnabled, "graduation disabled");
+        return POLICY_IDENTITY;
+    }
+
+    function policyIdentity(address) external pure returns (bytes32) {
+        return POLICY_IDENTITY;
+    }
+}
+
 contract ProtectedLaunchFactoryTest {
     MockProtectedQuoteToken private quote;
     LaunchConfigRegistry private templateRegistry;
@@ -429,6 +465,34 @@ contract ProtectedLaunchFactoryTest {
             );
         require(!success, "fee-on-transfer quote accepted");
         require(token.purchasedDuringProtection(address(this)) == 0, "allocation consumed");
+    }
+
+    function testStockQuoteGuardCannotBeBypassedByCallingPoolDirectly() external {
+        MockStockExecutionGuard guard = new MockStockExecutionGuard();
+        templateRegistry.setQuoteTokenProtectedOnly(address(quote), true);
+        factory.bindQuoteExecutionGuard(address(quote), address(guard));
+        (, address tokenAddress, address poolAddress) =
+            factory.createLaunch(_request(bytes32(uint256(11))));
+        ProtectedLaunchToken token = ProtectedLaunchToken(tokenAddress);
+        ProtectedVirtualPool pool = ProtectedVirtualPool(poolAddress);
+        quote.approve(poolAddress, type(uint256).max);
+
+        uint256 baseAmount = token.maximumBuyPerTransaction();
+        ProtectedVirtualPool.BuyQuote memory quoted = pool.quoteBuyExactOutput(baseAmount);
+        (bool bypassed,) = address(pool)
+            .call(
+                abi.encodeCall(
+                    ProtectedVirtualPool.buyExactOutput,
+                    (baseAmount, quoted.grossQuoteConsumedRaw, 0, address(this), block.timestamp)
+                )
+            );
+        require(!bypassed, "direct pool bypassed guard");
+
+        guard.setBuyEnabled(true);
+        pool.buyExactOutput(
+            baseAmount, quoted.grossQuoteConsumedRaw, 0, address(this), block.timestamp
+        );
+        require(token.balanceOf(address(this)) == 200e18 + baseAmount, "guarded buy failed");
     }
 
     function _router() private returns (ProtectedLaunchRouter router) {

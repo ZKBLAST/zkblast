@@ -17,6 +17,18 @@ export {
 } from "./external-market-validation.js";
 export type { PonsGraduatedMarket } from "./external-market-validation.js";
 export {
+  stockQuoteAvailabilitySchema,
+  stockQuoteCatalogRecordSchema,
+  stockQuoteMarketStateSchema,
+} from "./stock-quote-assets.js";
+export type { StockQuoteCatalogRecord } from "./stock-quote-assets.js";
+export {
+  stockQuoteDestinationCapabilitySchema,
+} from "./stock-quote-assets.js";
+export type {
+  StockQuoteDestinationCapability,
+} from "./stock-quote-assets.js";
+export {
   contrastRatio,
   launchpadBrandingHash,
   launchpadBrandingSchema,

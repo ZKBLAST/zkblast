@@ -61,6 +61,7 @@ import { probeWebhookOwnership } from "./launchpad-developer-security.js";
 import { createHyperEvmMainnetContext } from "./hyperevm-mainnet-context.js";
 import { publicContractDirectory } from "./public-contract-directory.js";
 import { PostgresAssistanceFundService } from "./postgres-assistance-fund-service.js";
+import { PostgresStockQuoteService } from "./postgres-stock-quote-service.js";
 
 const serviceSchema = z.object({
   API_PORT: z.coerce.number().int().min(1).max(65_535).default(3001),
@@ -143,6 +144,12 @@ const manifest = await loadDeploymentManifestFile(
 );
 const assistanceFundService = manifest.assistanceFund
   ? new PostgresAssistanceFundService(
+      directDatabaseUrl,
+      serverConfig.SUPABASE_SCHEMA,
+    )
+  : undefined;
+const stockQuoteService = manifest.stockQuoteAssets
+  ? new PostgresStockQuoteService(
       directDatabaseUrl,
       serverConfig.SUPABASE_SCHEMA,
     )
@@ -686,6 +693,7 @@ const app = createApp(
     ...(launchpadDomainService ? { launchpadDomainService } : {}),
     ...(launchpadDeveloperService ? { launchpadDeveloperService } : {}),
     ...(assistanceFundService ? { assistanceFundService } : {}),
+    ...(stockQuoteService ? { stockQuoteService } : {}),
   },
   additionalChainContexts,
 );

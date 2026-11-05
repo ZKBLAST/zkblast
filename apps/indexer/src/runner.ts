@@ -118,6 +118,14 @@ const configuredAssistanceFundAddresses = manifest.assistanceFund
       manifest.assistanceFund.burnModule,
     ]
   : [];
+const configuredStockQuoteAddresses = manifest.stockQuoteAssets
+  ? [
+      manifest.stockQuoteAssets.adapterRegistry,
+      manifest.stockQuoteAssets.assetRegistry,
+      manifest.stockQuoteAssets.oracleGuard,
+      manifest.stockQuoteAssets.destinationRegistry,
+    ]
+  : [];
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -132,6 +140,7 @@ const addresses = [
   ...configuredLaunchpadAddresses,
   ...configuredProtectedLaunchAddresses,
   ...configuredAssistanceFundAddresses,
+  ...configuredStockQuoteAddresses,
 ]
   .map(getAddress)
   .filter((address, index, all) => all.indexOf(address) === index);

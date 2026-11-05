@@ -6,11 +6,16 @@ import { TokenTransfer } from "../libraries/TokenTransfer.sol";
 import { FullMath } from "../math/FullMath.sol";
 import { ReentrancyGuard } from "../security/ReentrancyGuard.sol";
 import { ProtectedLaunchFeeSchedule } from "../launchpad/protection/ProtectedLaunchFeeSchedule.sol";
+import { IStockQuoteExecutionGuard } from "../stock/IStockQuoteExecutionGuard.sol";
 import { BondingCurveMath } from "./BondingCurveMath.sol";
 import { DbcTypes } from "./DbcTypes.sol";
 import { DbcConfigStorage } from "./DbcConfigStorage.sol";
 import { IDbcEvents } from "./IDbcEvents.sol";
 import { SegmentedBondingCurveMath } from "./SegmentedBondingCurveMath.sol";
+
+interface IProtectedQuoteGuardResolver {
+    function quoteExecutionGuard(address quoteToken) external view returns (address);
+}
 
 /// @notice Isolated DBC pool with deterministic buy-only protection fees.
 contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
@@ -150,12 +155,14 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
         uint256 deadline
     ) external nonReentrant returns (BuyQuote memory quote) {
         _validateExecution(recipient, deadline);
+        bytes32 stockQuotePolicyIdentity = _validateBuyPolicy(grossQuoteInRaw);
         quote = quoteBuyExactInput(grossQuoteInRaw);
         if (
             quote.baseOutRaw == 0 || quote.baseOutRaw < minimumBaseOutRaw
                 || (maximumPriceX18 != 0 && quote.finalPriceX18 > maximumPriceX18)
         ) revert SlippageExceeded();
         _settleBuy(quote, recipient);
+        _emitStockQuotePolicy(stockQuotePolicyIdentity, true, quote.grossQuoteConsumedRaw);
     }
 
     function quoteBuyExactOutput(uint256 baseOutRaw) public view returns (BuyQuote memory quote) {
@@ -190,11 +197,13 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
     ) external nonReentrant returns (BuyQuote memory quote) {
         _validateExecution(recipient, deadline);
         quote = quoteBuyExactOutput(baseOutRaw);
+        bytes32 stockQuotePolicyIdentity = _validateBuyPolicy(quote.grossQuoteConsumedRaw);
         if (
             quote.grossQuoteConsumedRaw > maximumGrossQuoteInRaw
                 || (maximumPriceX18 != 0 && quote.finalPriceX18 > maximumPriceX18)
         ) revert SlippageExceeded();
         _settleBuy(quote, recipient);
+        _emitStockQuotePolicy(stockQuotePolicyIdentity, true, quote.grossQuoteConsumedRaw);
     }
 
     function quoteSellExactInput(uint256 baseInRaw) public view returns (SellQuote memory quote) {
@@ -228,6 +237,7 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
         uint256 deadline
     ) external nonReentrant returns (SellQuote memory quote) {
         _validateExecution(recipient, deadline);
+        bytes32 stockQuotePolicyIdentity = _validateSellPolicy();
         quote = quoteSellExactInput(baseInRaw);
         if (
             quote.netQuoteOutRaw == 0 || quote.netQuoteOutRaw < minimumQuoteOutRaw
@@ -237,6 +247,7 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
             revert InsufficientReserve();
         }
         _settleSell(quote, recipient);
+        _emitStockQuotePolicy(stockQuotePolicyIdentity, false, quote.grossQuoteOutRaw);
     }
 
     function quoteSellExactOutput(uint256 netQuoteOutRaw)
@@ -282,12 +293,14 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
         uint256 deadline
     ) external nonReentrant returns (SellQuote memory quote) {
         _validateExecution(recipient, deadline);
+        bytes32 stockQuotePolicyIdentity = _validateSellPolicy();
         quote = quoteSellExactOutput(netQuoteOutRaw);
         if (
             quote.baseInRaw > maximumBaseInRaw
                 || (minimumPriceX18 != 0 && quote.finalPriceX18 < minimumPriceX18)
         ) revert SlippageExceeded();
         _settleSell(quote, recipient);
+        _emitStockQuotePolicy(stockQuotePolicyIdentity, false, quote.grossQuoteOutRaw);
     }
 
     function claimFees(uint8 allocation) external nonReentrant returns (uint256 amount) {
@@ -499,6 +512,34 @@ contract ProtectedVirtualPool is IDbcEvents, ReentrancyGuard {
         if (recipient == address(0)) revert InvalidRecipient();
         if (block.timestamp > deadline) revert DeadlineExpired();
         if (lifecycle != DbcTypes.Lifecycle.ACTIVE) revert InvalidLifecycle();
+    }
+
+    function _validateBuyPolicy(uint256 quoteAmountRaw) private view returns (bytes32) {
+        address guard = IProtectedQuoteGuardResolver(factory).quoteExecutionGuard(quoteToken);
+        if (guard != address(0)) {
+            return IStockQuoteExecutionGuard(guard).validateBuy(quoteToken, quoteAmountRaw);
+        }
+        return bytes32(0);
+    }
+
+    function _validateSellPolicy() private view returns (bytes32) {
+        address guard = IProtectedQuoteGuardResolver(factory).quoteExecutionGuard(quoteToken);
+        if (guard != address(0)) {
+            return IStockQuoteExecutionGuard(guard).validateSell(quoteToken);
+        }
+        return bytes32(0);
+    }
+
+    function _emitStockQuotePolicy(
+        bytes32 stockQuotePolicyIdentity,
+        bool isBuy,
+        uint256 quoteAmountRaw
+    ) private {
+        if (stockQuotePolicyIdentity != bytes32(0)) {
+            emit StockQuotePolicyValidated(
+                launchId, quoteToken, stockQuotePolicyIdentity, isBuy, quoteAmountRaw
+            );
+        }
     }
 
     function _toUint128(uint256 value) private pure returns (uint128) {

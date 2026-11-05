@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "status": "preflight_only",
+  "enabled": false,
+  "observedAt": "2026-11-05T11:31:42.000Z",
+  "issuerSource": "https://api.robinhood.com/rhj/assets",
+  "sourceHash": "0xb0a0d72f69b626f6c5851cb0a0f1987f281af168268e5ff0d975a0e245faf0e9",
+  "asset": {
+    "issuerAssetId": "0x00000000000000000000000000000000307bb0113ca54f93adf80f4ff2bf681a",
+    "symbol": "MSFT",
+    "name": "Microsoft • Robinhood Token",
+    "address": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+    "decimals": 18,
+    "currentMultiplier": "1.000412952576205964",
+    "pendingMultiplier": "",
+    "issuerStatus": "ASSET_STATUS_ACTIVE",
+    "marketTradingStatus": "TRADING_STATUS_TRADABLE",
+    "extendedTradingStatus": "TRADING_STATUS_TRADABLE",
+    "overnightTradingStatus": "TRADING_STATUS_TRADABLE",
+    "codePresent": true
+  },
+  "oracle": {
+    "address": "0x45C3C877c15e6Ba2EBB19eA114eA508D14C1af2E",
+    "decimals": 8,
+    "answerRaw": "55591646483",
+    "price": "555.91646483",
+    "updatedAt": "2026-11-05T08:15:31.000Z",
+    "ageSecondsAtObservation": 11771,
+    "catalogMaximumAgeSeconds": 259200,
+    "initialSessionState": "closed"
+  },
+  "existingDammPool": {
+    "address": "0x2aAFe4D1fa1b1c75951D5Fd325e82B420558CA48",
+    "liquidityStatus": "awaiting_initial_liquidity",
+    "graduationEnabled": false
+  },
+  "releaseDecision": {
+    "quoteTradingEnabled": false,
+    "graduationEnabled": false,
+    "reason": "Contracts and data are verified for planning; deployment, funded destination acceptance and explicit activation approval remain required."
+  }
+}

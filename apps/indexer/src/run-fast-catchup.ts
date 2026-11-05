@@ -95,6 +95,14 @@ async function main() {
               typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
           )
         : []),
+      ...(manifest.stockQuoteAssets
+        ? [
+            manifest.stockQuoteAssets.adapterRegistry,
+            manifest.stockQuoteAssets.assetRegistry,
+            manifest.stockQuoteAssets.oracleGuard,
+            manifest.stockQuoteAssets.destinationRegistry,
+          ]
+        : []),
       ...(manifest.shielded
         ? [manifest.shielded.vault, manifest.shielded.stateRegistry]
         : []),
@@ -127,6 +135,14 @@ async function main() {
                 typeof value === "string" && /^0x[0-9a-f]{40}$/iu.test(value),
             )
             .map(getAddress)
+        : []),
+      ...(manifest.stockQuoteAssets
+        ? [
+            manifest.stockQuoteAssets.adapterRegistry,
+            manifest.stockQuoteAssets.assetRegistry,
+            manifest.stockQuoteAssets.oracleGuard,
+            manifest.stockQuoteAssets.destinationRegistry,
+          ].map(getAddress)
         : []),
       ...(await repository.dbcLaunchContractAddresses()),
     ]);

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "planSha256": "ecf17b16b6badd0eeb54a7d308ada4a565223693e2c92fdf8b3df9d4863316fb",
+  "simulationBlock": 106721964,
+  "transactions": 18,
+  "deployments": 10,
+  "configurationCalls": 8,
+  "actors": {
+    "deployer": {
+      "address": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "pendingNonce": 666,
+      "plannedNonceRange": [666, 675]
+    },
+    "governance": {
+      "address": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "pendingNonce": 1,
+      "plannedNonceRange": [1, 6]
+    },
+    "upgrader": {
+      "address": "0x5D096a502e72bcD429b9E4A4907095Ee3931BD4d",
+      "pendingNonce": 1,
+      "plannedNonceRange": [1, 2]
+    }
+  },
+  "gas": {
+    "simulatedGasUsed": "14968017",
+    "observedGasPriceWei": "20000000",
+    "estimatedNativeFeeWei": "299360340000000",
+    "estimatedNativeFee": "0.00029936034",
+    "recommendedMaximumNativeFeeWei": "400000000000000",
+    "recommendedMaximumNativeFee": "0.0004"
+  },
+  "releaseState": {
+    "quoteTradingEnabled": false,
+    "graduationEnabled": false,
+    "dammEnabled": false,
+    "dlmmEnabled": false
+  },
+  "assertions": {
+    "allTransactionsSucceededOnFork": true,
+    "managerDestinationRegistryBound": true,
+    "canaryExecutionGuardBound": true,
+    "factoryUpgradeIncluded": true,
+    "dammAndDlmmRegisteredIndependently": true
+  },
+  "broadcastApproved": true,
+  "broadcastCompleted": true,
+  "actualTransactions": 18,
+  "actualNativeFeeWei": "309288914974000",
+  "actualNativeFee": "0.000309288914974",
+  "postDeploymentVerification": "passed"
+}

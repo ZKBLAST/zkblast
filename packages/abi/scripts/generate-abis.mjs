@@ -8,7 +8,10 @@ const packageRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
-const contractRoot = path.resolve(packageRoot, "../contracts/out");
+const contractRoot = path.resolve(
+  packageRoot,
+  `../contracts/${process.env.FOUNDRY_OUT ?? "out"}`,
+);
 const outputPath = path.resolve(packageRoot, "src/generated.ts");
 const contracts = [
   ["poolRegistryAbi", "PoolRegistry"],

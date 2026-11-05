@@ -47,6 +47,8 @@ import { createLaunchpadDeveloperRouter } from "./launchpad-developer-router.js"
 import type { LaunchpadDeveloperService } from "./launchpad-developer-service.js";
 import { createAssistanceFundRouter } from "./assistance-fund-router.js";
 import type { AssistanceFundService } from "./assistance-fund-service.js";
+import { createStockQuoteRouter } from "./stock-quote-router.js";
+import type { StockQuoteService } from "./stock-quote-service.js";
 
 export type ApiPublicConfig = Readonly<{
   shieldedV2?: PrivateVaultV2Config;
@@ -210,6 +212,7 @@ export type ApiDependencies = Readonly<{
   launchpadReadService?: LaunchpadReadService;
   launchpadDeveloperService?: LaunchpadDeveloperService;
   assistanceFundService?: AssistanceFundService;
+  stockQuoteService?: StockQuoteService;
 }>;
 
 export type ApiChainContext = Readonly<{
@@ -399,6 +402,16 @@ export function createApp(
     ({ dependencies: chainDependencies }) =>
       chainDependencies.assistanceFundService
         ? createAssistanceFundRouter(chainDependencies.assistanceFundService)
+        : undefined,
+  );
+  if (dependencies.stockQuoteService) {
+    app.use("/v1/stock-quotes", createStockQuoteRouter(dependencies.stockQuoteService));
+  }
+  mountChainRouters(
+    "/v2/chains/:chainId/stock-quotes",
+    ({ dependencies: chainDependencies }) =>
+      chainDependencies.stockQuoteService
+        ? createStockQuoteRouter(chainDependencies.stockQuoteService)
         : undefined,
   );
   mountChainRouters(

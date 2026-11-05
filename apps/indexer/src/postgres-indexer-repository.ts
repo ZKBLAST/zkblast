@@ -13,6 +13,7 @@ import { persistPerpsEvent } from "./persist-perps-event.js";
 import { persistDbcEvent } from "./persist-dbc-event.js";
 import type { IndexedEvent } from "./domain.js";
 import { persistAssistanceFundEvent } from "./persist-assistance-fund-event.js";
+import { persistStockQuoteEvent } from "./persist-stock-quote-event.js";
 
 const launchpadProjectionEvents = [
   "LaunchpadCreated",
@@ -134,6 +135,20 @@ export class PostgresIndexerRepository implements IndexerRepository {
     return events.length;
   }
 
+  async backfillStockQuoteEvents(
+    events: BlockEnvelope["events"],
+  ): Promise<number> {
+    let persisted = 0;
+    await this.sql.begin(async (transaction) => {
+      for (const event of events) {
+        if (await persistStockQuoteEvent(transaction, this.schema, event)) {
+          persisted++;
+        }
+      }
+    });
+    return persisted;
+  }
+
   async checkpoint(chainId: number): Promise<IndexerCheckpoint | null> {
     const rows = await this.sql.unsafe(
       `select last_processed_block, last_processed_hash, finalized_block from ${this.schema}.ingestion_checkpoints where consumer = $2 and chain_id = $1`,
@@ -221,6 +236,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         await persistPoolSwap(transaction, this.schema, event);
         await persistPerpsEvent(transaction, this.schema, event);
         await persistAssistanceFundEvent(transaction, this.schema, event);
+        await persistStockQuoteEvent(transaction, this.schema, event);
         if (event.eventName === "AllocationRegistered")
           deferredDbcEvents.push(event);
         else
@@ -301,6 +317,18 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `update ${this.schema}.dbc_events set canonical=false where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
+      await transaction.unsafe(
+        `update ${this.schema}.stock_quote_policy_events set canonical=false where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      for (const table of [
+        "stock_quote_launch_policy_bindings",
+        "stock_quote_execution_receipts",
+      ])
+        await transaction.unsafe(
+          `update ${this.schema}.${table} set canonical=false where chain_id=$1 and block_number >= $2`,
+          [chainId, fromBlock.toString()],
+        );
       for (const table of [
         "assistance_fee_sources",
         "assistance_revenue_receipts",

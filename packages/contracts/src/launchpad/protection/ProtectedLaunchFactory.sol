@@ -7,6 +7,7 @@ import { LaunchConfigRegistry } from "../../dbc/LaunchConfigRegistry.sol";
 import { ProtectedVirtualPool } from "../../dbc/ProtectedVirtualPool.sol";
 import { TokenTransfer } from "../../libraries/TokenTransfer.sol";
 import { UUPSUpgradeable } from "../../proxy/UUPSUpgradeable.sol";
+import { IStockQuoteExecutionGuard } from "../../stock/IStockQuoteExecutionGuard.sol";
 import { LaunchProtectionPolicyRegistry } from "./LaunchProtectionPolicyRegistry.sol";
 import { ProtectedLaunchToken } from "./ProtectedLaunchToken.sol";
 import { ProtectedLaunchTokenDeployer } from "./ProtectedLaunchTokenDeployer.sol";
@@ -21,6 +22,7 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
     error LaunchAlreadyExists();
     error PolicyUnavailable();
     error TemplateUnavailable();
+    error ExecutionGuardAlreadyBound();
 
     bytes32 public constant LAUNCHPAD_FACTORY_ROLE =
         keccak256("ZKBLAST_PROTECTED_LAUNCHPAD_FACTORY_ROLE");
@@ -53,10 +55,12 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
     ProtectedVirtualPoolDeployer public poolDeployer;
     address public graduationManager;
     uint256 public launchCount;
-    ProtectedLaunchIdentityRegistry public identityRegistry;
     mapping(bytes32 launchId => LaunchRecord record) public launches;
     mapping(address token => bytes32 launchId) public launchByToken;
     mapping(address pool => bytes32 launchId) public launchByPool;
+    // Upgrade-only fields must remain after every v1 storage slot above.
+    ProtectedLaunchIdentityRegistry public identityRegistry;
+    mapping(address quoteToken => address guard) public quoteExecutionGuard;
 
     event ProtectedTokenLaunched(
         bytes32 indexed launchId,
@@ -75,6 +79,15 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
         string symbol,
         string metadataURI,
         address creatorTokenRecipient
+    );
+    event QuoteExecutionGuardBound(address indexed quoteToken, address indexed guard);
+    event StockQuotePolicyBound(
+        bytes32 indexed launchId,
+        address indexed quoteToken,
+        bytes32 indexed policyIdentity
+    );
+    event ProtectedVirtualPoolDeployerUpdated(
+        address indexed previousDeployer, address indexed deployer
     );
 
     constructor() {
@@ -142,6 +155,14 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
         LaunchConfigRegistry.TemplateRecord memory template =
             templateRegistry.template(request.templateId);
         if (!template.enabled) revert TemplateUnavailable();
+        bytes32 stockQuotePolicyIdentity;
+        if (templateRegistry.quoteTokenProtectedOnly(template.config.quoteToken)) {
+            address guard = quoteExecutionGuard[template.config.quoteToken];
+            if (guard == address(0)) revert TemplateUnavailable();
+            stockQuotePolicyIdentity =
+                IStockQuoteExecutionGuard(guard).validateCreate(template.config.quoteToken);
+            if (stockQuotePolicyIdentity == bytes32(0)) revert TemplateUnavailable();
+        }
         LaunchProtectionPolicyRegistry.Policy memory policy =
             policyRegistry.policy(request.policyId);
         if (
@@ -239,6 +260,11 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
             request.metadataURI,
             request.creatorTokenRecipient
         );
+        if (stockQuotePolicyIdentity != bytes32(0)) {
+            emit StockQuotePolicyBound(
+                launchId, template.config.quoteToken, stockQuotePolicyIdentity
+            );
+        }
     }
 
     function setPoolPaused(ProtectedVirtualPool pool, bool paused)
@@ -252,6 +278,30 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
     function setGraduationManager(address manager) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (manager == address(0)) revert InvalidLaunch();
         graduationManager = manager;
+    }
+
+    function bindQuoteExecutionGuard(address quoteToken, address guard)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (
+            quoteToken.code.length == 0 || guard.code.length == 0
+                || quoteExecutionGuard[quoteToken] != address(0)
+        ) revert ExecutionGuardAlreadyBound();
+        quoteExecutionGuard[quoteToken] = guard;
+        emit QuoteExecutionGuardBound(quoteToken, guard);
+    }
+
+    function setPoolDeployer(ProtectedVirtualPoolDeployer deployer)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (address(deployer).code.length == 0 || deployer.factory() != address(this)) {
+            revert InvalidLaunch();
+        }
+        address previous = address(poolDeployer);
+        poolDeployer = deployer;
+        emit ProtectedVirtualPoolDeployerUpdated(previous, address(deployer));
     }
 
     function configurePoolGraduationManager(ProtectedVirtualPool pool, address manager)

@@ -164,6 +164,18 @@ contract DbcLaunchTest {
         require(!disabledSuccess, "disabled template accepted");
     }
 
+    function testStandardFactoryRejectsProtectedOnlyQuoteToken() external {
+        registry.setQuoteTokenProtectedOnly(address(usdg), true);
+        (bool success,) = address(factory)
+            .call(abi.encodeCall(LaunchFactory.createLaunch, (_request(bytes32(uint256(44))))));
+        require(!success, "standard factory accepted protected-only quote");
+
+        (bool downgradeSuccess,) = address(registry).call(
+            abi.encodeCall(LaunchConfigRegistry.setQuoteTokenProtectedOnly, (address(usdg), false))
+        );
+        require(!downgradeSuccess, "protected-only quote was downgraded");
+    }
+
     function testBuySellFeesAndClaimRemainSolvent() external {
         (, address tokenAddress, address poolAddress) =
             factory.createLaunch(_request(bytes32(uint256(11))));

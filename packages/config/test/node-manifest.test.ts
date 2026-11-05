@@ -25,6 +25,16 @@ test("loads verified mainnet v2 policy with governed PONS enablement", async () 
     true,
   );
   assert.equal(manifest.shielded?.vault, "0xAAC59EBDE79E4e0eA0824BBE2562036b0fd5748A");
+  assert.equal(
+    manifest.stockQuoteAssets?.destinationRegistry,
+    "0xDb6393e17fF8Fc7E5E163B0268f4F0E5d674cd14",
+  );
+  assert.deepEqual(manifest.stockQuoteAssets?.releaseState, {
+    quoteTradingEnabled: false,
+    graduationEnabled: false,
+    dammEnabled: false,
+    dlmmEnabled: false,
+  });
 });
 
 test("v2 vault configuration is optional, network-bound and distinct from v1", async () => {

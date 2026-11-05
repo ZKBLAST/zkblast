@@ -20,6 +20,15 @@ import {
 import { IGraduationAdapter } from "./IGraduationAdapter.sol";
 import { SegmentedBondingCurveMath } from "./SegmentedBondingCurveMath.sol";
 import { ProtectedVirtualPool } from "./ProtectedVirtualPool.sol";
+import { IStockQuoteExecutionGuard } from "../stock/IStockQuoteExecutionGuard.sol";
+
+interface IStockQuoteDestinationCapability {
+    function isStockQuoteAsset(address quoteAsset) external view returns (bool);
+    function isEnabled(address quoteAsset, DbcTypes.MigrationMode mode)
+        external
+        view
+        returns (bool);
+}
 
 interface ILaunchpadGraduationBinding {
     struct Binding {
@@ -76,6 +85,7 @@ contract ProtectedGraduationManager is ProtocolAccess, UUPSUpgradeable {
     address public launchpadBindingResolver;
     mapping(bytes32 migrationId => MigrationAccounting accounting) public migrationAccounting;
     mapping(bytes32 migrationId => AdapterSnapshot snapshot) public adapterSnapshots;
+    IStockQuoteDestinationCapability public stockQuoteDestinationRegistry;
 
     struct MigrationRecord {
         bytes32 launchId;
@@ -126,6 +136,7 @@ contract ProtectedGraduationManager is ProtocolAccess, UUPSUpgradeable {
     }
 
     event AdapterStatusUpdated(address indexed adapter, bool allowed);
+    event StockQuoteDestinationRegistryUpdated(address indexed previousRegistry, address indexed registry);
     event LaunchpadBindingResolverUpdated(
         address indexed previousResolver, address indexed resolver
     );
@@ -197,6 +208,18 @@ contract ProtectedGraduationManager is ProtocolAccess, UUPSUpgradeable {
         address previous = launchpadBindingResolver;
         launchpadBindingResolver = resolver;
         emit LaunchpadBindingResolverUpdated(previous, resolver);
+    }
+
+    function setStockQuoteDestinationRegistry(IStockQuoteDestinationCapability registry)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (address(registry) != address(0) && address(registry).code.length == 0) {
+            revert AdapterUnavailable();
+        }
+        address previous = address(stockQuoteDestinationRegistry);
+        stockQuoteDestinationRegistry = registry;
+        emit StockQuoteDestinationRegistryUpdated(previous, address(registry));
     }
 
     function graduate(ProtectedVirtualPool sourcePool, IGraduationAdapter adapter, uint256 deadline)
@@ -313,6 +336,19 @@ contract ProtectedGraduationManager is ProtocolAccess, UUPSUpgradeable {
         if (sourcePool.lifecycle() != DbcTypes.Lifecycle.GRADUATION_READY) {
             revert InvalidMigrationState();
         }
+        address executionGuard = launchFactory.quoteExecutionGuard(sourcePool.quoteToken());
+        if (executionGuard != address(0)) {
+            (, uint128 quoteReserve,,,,,) = sourcePool.accounting();
+            IStockQuoteExecutionGuard(executionGuard).validateGraduate(
+                sourcePool.quoteToken(), uint256(quoteReserve)
+            );
+        }
+        IStockQuoteDestinationCapability destinationRegistry = stockQuoteDestinationRegistry;
+        if (
+            address(destinationRegistry) != address(0)
+                && destinationRegistry.isStockQuoteAsset(sourcePool.quoteToken())
+                && !destinationRegistry.isEnabled(sourcePool.quoteToken(), config.migrationMode)
+        ) revert AdapterUnavailable();
         MigrationRecord storage record = migrations[migrationId];
         if (record.sourcePool == address(0)) {
             if (retry || migrationByLaunch[launchId] != bytes32(0)) {

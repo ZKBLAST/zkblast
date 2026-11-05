@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "planSha256": "ecf17b16b6badd0eeb54a7d308ada4a565223693e2c92fdf8b3df9d4863316fb",
+  "verifiedAt": "2026-11-05T12:38:19.170Z",
+  "transactions": 18,
+  "totalFeeWei": "309288914974000",
+  "totalFeeEth": "0.000309288914974",
+  "proxyBindings": {
+    "0x2B1b0238245e29A63C8090fA43e4f33F20EBc5Fc": "0xFE690F80a48212a38023b11E6E44cCF5C12c991d",
+    "0x10fe7DAD356E796A7f89fad38AE983ec03335a8D": "0x21eF8666966c9d05A90E66496220E4bE1ffD9E4f",
+    "0x05ee581029C612Ac1E0d9b4Ea33Cbc64Dd1d2181": "0x8333f477d4f24742409FAEec60A4FCCbeb27aD04",
+    "0xDb6393e17fF8Fc7E5E163B0268f4F0E5d674cd14": "0x10DdA7ed447F899229d4C735a8C1F17bC19632B3",
+    "0x98D8546bb60d4d5fF791fB6b904A611691D86beF": "0x72721E2f8AB4621431261747c4D38508a48fFe25",
+    "0xE83203279e4e8Db4Aa747213aC28260418Ff2E83": "0xaC893588a9E361d22382653ba04F9A91002B6ab4"
+  },
+  "assertions": {
+    "allDeploymentCodePresent": true,
+    "allProxyImplementationsMatch": true,
+    "managerDestinationRegistryBound": true,
+    "canaryExecutionGuardBound": true,
+    "dammAdapterRegistered": true,
+    "dlmmAdapterRegistered": true,
+    "quoteTradingEnabled": false,
+    "graduationEnabled": false,
+    "dammEnabled": false,
+    "dlmmEnabled": false
+  }
+}

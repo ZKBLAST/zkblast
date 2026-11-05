@@ -84,11 +84,7 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
         return _createLaunch(request, msg.sender, address(0));
     }
 
-    function createLaunchFor(
-        LaunchRequest calldata request,
-        address creator,
-        address feeCollector
-    )
+    function createLaunchFor(LaunchRequest calldata request, address creator, address feeCollector)
         external
         onlyRole(LAUNCHPAD_FACTORY_ROLE)
         returns (bytes32 launchId, address token, address virtualPool)
@@ -108,11 +104,7 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
         emit VirtualPoolDeployerUpdated(previous, address(deployer));
     }
 
-    function _createLaunch(
-        LaunchRequest calldata request,
-        address creator,
-        address feeCollector
-    )
+    function _createLaunch(LaunchRequest calldata request, address creator, address feeCollector)
         private
         returns (bytes32 launchId, address token, address virtualPool)
     {
@@ -121,7 +113,9 @@ contract LaunchFactory is ProtocolAccess, UUPSUpgradeable, IDbcEvents {
                 || bytes(request.symbol).length == 0 || request.creatorTokenRecipient == address(0)
         ) revert InvalidLaunch();
         LaunchConfigRegistry.TemplateRecord memory template = registry.template(request.templateId);
-        if (!template.enabled) revert TemplateUnavailable();
+        if (!template.enabled || registry.quoteTokenProtectedOnly(template.config.quoteToken)) {
+            revert TemplateUnavailable();
+        }
         launchId = launchIdentifier(creator, request.templateId, request.salt);
         if (launches[launchId].creator != address(0)) revert LaunchAlreadyExists();
 

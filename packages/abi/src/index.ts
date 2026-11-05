@@ -53,6 +53,11 @@ export {
   buybackRouteRegistryAbi,
   treasuryControllerAbi,
 } from "./assistance-fund.js";
+export {
+  stockQuoteAssetRegistryAbi,
+  stockQuoteDestinationRegistryAbi,
+  stockQuoteOracleGuardAbi,
+} from "./stock-quotes.js";
 
 import {
   privateVaultV2Abi,
@@ -85,6 +90,11 @@ import {
   buybackRouteRegistryAbi,
   treasuryControllerAbi,
 } from "./assistance-fund.js";
+import {
+  stockQuoteAssetRegistryAbi,
+  stockQuoteDestinationRegistryAbi,
+  stockQuoteOracleGuardAbi,
+} from "./stock-quotes.js";
 
 export const protocolAbis = {
   PrivateVaultV2: privateVaultV2Abi,
@@ -116,4 +126,7 @@ export const protocolAbis = {
     ...buybackRouteRegistryAbi,
     ...treasuryControllerAbi,
   ],
+  StockQuoteAssetRegistry: stockQuoteAssetRegistryAbi,
+  StockQuoteDestinationRegistry: stockQuoteDestinationRegistryAbi,
+  StockQuoteOracleGuard: stockQuoteOracleGuardAbi,
 } as const;
