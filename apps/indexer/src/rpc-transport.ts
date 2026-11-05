@@ -22,6 +22,19 @@ export function resolveRpcFallbackUrls(
   return configured.length > 0 ? configured : [...chainDefaults];
 }
 
+/** Keep endpoints that support both historical logs and block-tagged calls. */
+export function resolveHistoricalRpcFallbackUrls(
+  chainId: number,
+  urls: readonly string[],
+): string[] {
+  if (chainId !== 4_663) return [...urls];
+  const incompatibleHosts = new Set([
+    "robinhood-rpc.publicnode.com",
+    "robinhood.drpc.org",
+  ]);
+  return urls.filter((value) => !incompatibleHosts.has(new URL(value).hostname));
+}
+
 export function createIndexerTransport(
   primaryUrl: string,
   fallbackUrls = parseRpcFallbackUrls(process.env.RPC_FALLBACK_URLS),

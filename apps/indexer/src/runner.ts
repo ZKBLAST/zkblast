@@ -17,6 +17,7 @@ import {
 } from "./perps-state-sync.js";
 import {
   createIndexerTransport,
+  resolveHistoricalRpcFallbackUrls,
   resolveRpcFallbackUrls,
 } from "./rpc-transport.js";
 
@@ -137,9 +138,12 @@ const client = createPublicClient({
   cacheTime: 0,
   transport: createIndexerTransport(
     config.RPC_URL,
-    resolveRpcFallbackUrls(
-      process.env.RPC_FALLBACK_URLS,
-      descriptor.publicRpcUrls,
+    resolveHistoricalRpcFallbackUrls(
+      config.CHAIN_ID,
+      resolveRpcFallbackUrls(
+        process.env.RPC_FALLBACK_URLS,
+        descriptor.publicRpcUrls,
+      ),
     ),
   ),
 });

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   parseRpcFallbackUrls,
+  resolveHistoricalRpcFallbackUrls,
   resolveRpcFallbackUrls,
 } from "../src/rpc-transport.js";
 
@@ -38,5 +39,20 @@ test("prefers an explicit environment fallback list", () => {
       "https://rpc-default.example",
     ]),
     ["https://rpc-override.example"],
+  );
+});
+
+test("keeps only archive-compatible Robinhood indexer fallbacks", () => {
+  assert.deepEqual(
+    resolveHistoricalRpcFallbackUrls(4663, [
+      "https://robinhood-rpc.publicnode.com",
+      "https://robinhood.drpc.org",
+      "https://robinhood.rpc.pinax.network",
+      "https://rpc.mainnet.chain.robinhood.com",
+    ]),
+    [
+      "https://robinhood.rpc.pinax.network",
+      "https://rpc.mainnet.chain.robinhood.com",
+    ],
   );
 });
