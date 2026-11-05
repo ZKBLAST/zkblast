@@ -9,6 +9,7 @@ import {
 } from "viem";
 
 import { classifyProtocolEvent } from "../src/classifier.js";
+import { isStockQuoteOnlyEvent } from "../src/persist-dbc-event.js";
 import { persistStockQuoteEvent } from "../src/persist-stock-quote-event.js";
 import type { IndexedEvent } from "../src/domain.js";
 
@@ -33,6 +34,9 @@ test("decodes and classifies stock quote policy events", () => {
   });
   assert.equal(decoded.eventName, "QuoteAssetListed");
   assert.equal(classifyProtocolEvent(decoded.eventName), "launch");
+  assert.equal(isStockQuoteOnlyEvent(decoded.eventName), true);
+  assert.equal(isStockQuoteOnlyEvent("DestinationCapabilityAccepted"), true);
+  assert.equal(isStockQuoteOnlyEvent("StockQuotePolicyBound"), false);
   assert.equal(classifyProtocolEvent("StockQuotePolicyBound"), "launch");
   assert.equal(classifyProtocolEvent("StockQuotePolicyValidated"), "swap");
 });

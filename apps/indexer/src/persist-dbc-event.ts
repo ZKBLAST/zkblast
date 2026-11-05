@@ -7,6 +7,20 @@ import {
 } from "./dbc-projection.js";
 import { persistProtectedLaunchEvent } from "./persist-protected-launch-event.js";
 
+const stockQuoteOnlyEventNames = new Set([
+  "QuoteAssetListed",
+  "QuoteAssetConfigUpdated",
+  "QuoteAssetDisabled",
+  "SessionPolicyUpdated",
+  "DestinationCapabilityRegistered",
+  "DestinationCapabilityAccepted",
+  "DestinationCapabilityDisabled",
+]);
+
+export function isStockQuoteOnlyEvent(eventName: string): boolean {
+  return stockQuoteOnlyEventNames.has(eventName);
+}
+
 function value(event: IndexedEvent, key: string): string {
   const result = event.payload[key];
   if (
@@ -44,6 +58,10 @@ export async function persistDbcEvent(
   allowedContracts: ReadonlySet<string>,
 ): Promise<boolean> {
   if (event.kind !== "launch") return false;
+  // Stock-quote registry events share the launch classification so they remain
+  // visible in the unified activity stream, but they are projected by
+  // persistStockQuoteEvent rather than the DBC launch projector.
+  if (isStockQuoteOnlyEvent(event.eventName)) return false;
   validateDbcEvent(event, { chainId: event.chainId, allowedContracts });
   const launchId =
     typeof event.payload.launchId === "string"
