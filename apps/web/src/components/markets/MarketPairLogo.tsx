@@ -63,6 +63,28 @@ const KNOWN_ASSET_LOGOS: Readonly<Record<string, string>> = {
   ZKBLAST: "/asset-logo/ZKBLAST",
 };
 
+type ProtocolLogoMarket = Pick<
+  ExternalMarket,
+  "symbol" | "logoUrl" | "pairCandidates"
+>;
+
+export function protocolAssetLogo(
+  symbol: string,
+  markets: readonly ProtocolLogoMarket[],
+  pairedMarket?: ProtocolLogoMarket,
+) {
+  const normalized = symbol.toUpperCase();
+  return (
+    KNOWN_ASSET_LOGOS[normalized] ??
+    markets.find((candidate) => candidate.symbol.toUpperCase() === normalized)
+      ?.logoUrl ??
+    pairedMarket?.pairCandidates.find(
+      (candidate) => candidate.quoteSymbol.toUpperCase() === normalized,
+    )?.logoUrl ??
+    null
+  );
+}
+
 export function ProtocolPairLogo({
   base,
   quote,
@@ -72,11 +94,8 @@ export function ProtocolPairLogo({
   quote: string;
   markets: readonly ExternalMarket[];
 }>) {
-  const market = markets.find(
+  const baseMarket = markets.find(
     (candidate) => candidate.symbol.toUpperCase() === base.toUpperCase(),
-  );
-  const pair = market?.pairCandidates.find(
-    (candidate) => candidate.quoteSymbol === quote.toUpperCase(),
   );
   return (
     <span
@@ -84,12 +103,12 @@ export function ProtocolPairLogo({
       aria-label={`${base}/${quote}`}
     >
       <AssetLogo
-        url={KNOWN_ASSET_LOGOS[base.toUpperCase()] ?? market?.logoUrl ?? null}
+        url={protocolAssetLogo(base, markets)}
         label={base}
         className="absolute left-0 top-0 z-10"
       />
       <AssetLogo
-        url={KNOWN_ASSET_LOGOS[quote.toUpperCase()] ?? pair?.logoUrl ?? null}
+        url={protocolAssetLogo(quote, markets, baseMarket)}
         label={quote}
         className="absolute left-5 top-0"
       />
