@@ -69,3 +69,50 @@ controlling multiple independent addresses can receive one allocation per
 address. The interface therefore presents the control as an address-level
 concentration bound and never as Sybil prevention. Canonical token, policy,
 runtime-code and LP-lock identities remain independently inspectable onchain.
+
+## Tokenized-stock quote-asset boundary
+
+Tokenized-stock support is authorized by chain ID and contract address, never
+by ticker, name, artwork or frontend catalog state. ZKBLAST does not issue the
+stock token and does not treat it as custody of an underlying share. Issuer
+identity, token mechanics, decimals, multiplier, oracle policy, market session,
+exposure limits and destination capability are independent controls.
+
+The primary threats are a substituted token with a familiar ticker, stale or
+manipulated oracle data, an outdated issuer multiplier, market-session bypass,
+fee-on-transfer or rebasing behavior, reserve/fee accounting drift, an
+unreviewed graduation destination, and a privileged attempt to divert quote
+reserves. The required controls are address-bound registry entries, exact
+balance-delta transfers, bounded notional exposure, fail-closed oracle/session
+validation, immutable event-time policy receipts, separate DAMM and DLMM
+capability receipts, and atomic reserve migration.
+
+Pause, delisting, issuer halt and emergency mode block new exposure without
+turning user exits or legitimate claims into administrator-controlled funds.
+Creator, partner, protocol and LP fees remain separate liabilities in the
+native quote token. An unsupported stock-token Assistance Fund route accrues in
+an isolated ledger and cannot be converted or burned without a separately
+approved bounded route.
+
+An API, indexer or frontend may display stale metadata but cannot authorize an
+asset, market session, trade or graduation. Wallets sign state changes and the
+contracts enforce the current address-bound policy. Public analytics preserve
+raw token units and record validated USD observations separately; a reference
+chart price is never an executable quote or authorization signal.
+
+### Stock-quote privilege graph
+
+- The Safe and timelock may update reviewed registry, oracle and destination
+  policies, but have no transfer path for user quote reserves or fee claims.
+- `StockQuoteAssetRegistry` authorizes an exact chain/address/version tuple; a
+  symbol, logo or API record has no authorization power.
+- `StockQuoteOracleGuard` validates the approved feed, session, heartbeat,
+  multiplier and exposure bounds without holding user assets.
+- Launch and Protected Launch factories bind creation and execution to those
+  policy identities. Routers and pools perform exact-delta transfers and own
+  the reserve accounting boundary.
+- `StockQuoteDestinationRegistry` grants DAMM and DLMM capability independently;
+  neither the API nor governance metadata can manufacture a migration receipt.
+- The indexer, API and web application are read/projection layers. They can be
+  unavailable or stale, but cannot authorize trades, move reserves or rewrite
+  event-time policy receipts.

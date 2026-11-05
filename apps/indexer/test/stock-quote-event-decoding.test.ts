@@ -188,6 +188,9 @@ test("persists launch-bound policy identity and execution receipts", async () =>
   assert.match(calls[1]!.query, /stock_quote_execution_receipts/u);
   assert.match(calls[1]!.query, /quote_token_decimals/u);
   assert.match(calls[1]!.query, /multiplier_x18/u);
+  assert.match(calls[1]!.query, /point\.source='oracle'/u);
+  assert.match(calls[1]!.query, /oracle_price_x18/u);
+  assert.match(calls[1]!.query, /usd_notional_x18/u);
   assert.equal(calls[1]!.parameters[6], true);
   assert.equal(calls[1]!.parameters[7], "1250000");
 });

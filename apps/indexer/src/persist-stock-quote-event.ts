@@ -67,13 +67,34 @@ export async function persistStockQuoteEvent(
     await sql.unsafe(
       `insert into ${schema}.stock_quote_execution_receipts(
          chain_id,transaction_hash,log_index,launch_id,quote_asset_address,policy_identity,is_buy,
-         quote_amount_raw,block_number,block_hash,observed_at,canonical,quote_token_decimals,multiplier_x18)
+         quote_amount_raw,block_number,block_hash,observed_at,canonical,quote_token_decimals,
+         multiplier_x18,oracle_price_x18,usd_notional_x18,oracle_updated_at)
        select $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,true,a.token_decimals,
-         (select p.multiplier_x18 from ${schema}.stock_quote_policy_events p
-          where p.chain_id=$1 and p.contract_address=$5 and p.event_kind='session_updated'
-            and p.canonical=true and p.block_number <= $9 and p.multiplier_x18 is not null
-          order by p.block_number desc,p.log_index desc limit 1)
+         policy.multiplier_x18,
+         case when oracle.price is null then null else floor(oracle.price * 1e18::numeric) end,
+         case when oracle.price is null or policy.multiplier_x18 is null then null
+           else floor(
+             $8::numeric * floor(oracle.price * 1e18::numeric) * policy.multiplier_x18
+             / power(10::numeric,a.token_decimals) / 1e18::numeric
+           )
+         end,
+         oracle.observed_at
        from ${schema}.stock_quote_assets a
+       left join lateral (
+         select p.multiplier_x18
+         from ${schema}.stock_quote_policy_events p
+         where p.chain_id=$1 and p.contract_address=$5 and p.event_kind='session_updated'
+           and p.canonical=true and p.block_number <= $9 and p.multiplier_x18 is not null
+         order by p.block_number desc,p.log_index desc limit 1
+       ) policy on true
+       left join lateral (
+         select point.price,point.observed_at
+         from ${schema}.external_market_price_points point
+         join ${schema}.external_markets market on market.id=point.market_id
+         where market.execution_chain_id=$1 and market.contract_address=$5
+           and point.source='oracle' and point.observed_at <= $11
+         order by point.observed_at desc limit 1
+       ) oracle on true
        where a.chain_id=$1 and a.contract_address=$5
        on conflict(chain_id,transaction_hash,log_index) do update set
          launch_id=excluded.launch_id,quote_asset_address=excluded.quote_asset_address,
@@ -81,7 +102,9 @@ export async function persistStockQuoteEvent(
          quote_amount_raw=excluded.quote_amount_raw,block_number=excluded.block_number,
          block_hash=excluded.block_hash,observed_at=excluded.observed_at,
          quote_token_decimals=excluded.quote_token_decimals,
-         multiplier_x18=excluded.multiplier_x18,canonical=true`,
+         multiplier_x18=excluded.multiplier_x18,oracle_price_x18=excluded.oracle_price_x18,
+         usd_notional_x18=excluded.usd_notional_x18,
+         oracle_updated_at=excluded.oracle_updated_at,canonical=true`,
       [
         event.chainId,
         event.transactionHash.toLowerCase(),

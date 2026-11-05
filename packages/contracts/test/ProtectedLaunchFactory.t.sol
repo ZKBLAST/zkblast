@@ -348,6 +348,35 @@ contract ProtectedLaunchFactoryTest {
             sellQuote.feeRaw == sellQuote.grossQuoteOutRaw * 100 / 10_000,
             "sell fee is not base fee"
         );
+        uint256 quoteBeforeSell = quote.balanceOf(address(this));
+        pool.sellExactInput(
+            sellAmount,
+            sellQuote.netQuoteOutRaw,
+            sellQuote.finalPriceX18,
+            address(this),
+            block.timestamp
+        );
+        require(
+            quote.balanceOf(address(this)) - quoteBeforeSell == sellQuote.netQuoteOutRaw,
+            "sell proceeds"
+        );
+        (
+            uint128 baseSoldAfterSell,
+            uint128 reserveAfterSell,
+            uint128 creatorAfterSell,
+            uint128 partnerAfterSell,
+            uint128 protocolAfterSell,,
+        ) = pool.accounting();
+        require(
+            baseSoldAfterSell == buyQuote.baseOutRaw - sellAmount,
+            "sell base accounting"
+        );
+        require(
+            quote.balanceOf(poolAddress)
+                == uint256(reserveAfterSell) + creatorAfterSell + partnerAfterSell
+                    + protocolAfterSell,
+            "sell reserve and liabilities"
+        );
     }
 
     function testRejectsDuplicateAndDisabledPolicyLaunches() external {
