@@ -7,6 +7,12 @@ const LOGO_SOURCES: Readonly<Record<string, string>> = {
   ETH: "https://metamask.io/_next/image?url=https%3A%2F%2Fpolymarket-upload.s3.us-east-2.amazonaws.com%2FETH%2Bfullsize.jpg&w=640&q=75",
   ZKBLAST:
     "https://dbk-vercel.vercel.app/api/ipfs/content/bafybeiemw22gzvetqepidnxn4orhz6ofawlzf6vzrbbdt6rkofykuj6df4?variant=compact",
+  MSFT: "https://api.eulerpool.com/api/1/logo/ticker/MSFT",
+  AMD: "https://api.eulerpool.com/api/1/logo/ticker/AMD",
+  AMZN: "https://api.eulerpool.com/api/1/logo/ticker/AMZN",
+  META: "https://api.eulerpool.com/api/1/logo/ticker/META",
+  PLTR: "https://api.eulerpool.com/api/1/logo/ticker/PLTR",
+  TSLA: "https://api.eulerpool.com/api/1/logo/ticker/TSLA",
 };
 
 const LOGO_ALIASES: Readonly<Record<string, string>> = {
