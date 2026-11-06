@@ -117,7 +117,7 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
            and s.spot_price_x18>0 and s.block_timestamp>=now()-interval '24 hours'
        ) price_window on true
        left join lateral (
-         select window.label,
+         select win.label,
           coalesce(sum(s.volume_quote_raw),0) volume_quote_raw,count(s.id)::integer trade_count,
           count(*) filter(where s.side='buy')::integer buy_count,
           count(*) filter(where s.side='sell')::integer sell_count,
@@ -125,10 +125,10 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
           coalesce(sum(s.volume_quote_raw) filter(where s.side='sell'),0) sell_volume_raw,
           count(distinct s.trader) filter(where s.trader is not null)::integer trader_count
          from (values ('5m',interval '5 minutes'),('1h',interval '1 hour'),
-                      ('6h',interval '6 hours'),('24h',interval '24 hours')) window(label,duration)
+                      ('6h',interval '6 hours'),('24h',interval '24 hours')) win(label,duration)
          left join ${this.schema}.swaps s on s.pool_id=p.id and s.canonical
-           and s.block_timestamp>=now()-window.duration
-         group by window.label
+           and s.block_timestamp>=now()-win.duration
+         group by win.label
        ) w on true
        where p.address=$1
        group by p.id,x.id,y.id,q.id,state.pool_id,price_window.first_price,price_window.last_price`,
