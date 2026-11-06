@@ -20,17 +20,26 @@ export function RealDataState({
   const network = config?.environment ?? "network";
   if (loading)
     return (
-      <div className="panel p-8 text-sm text-muted">
+      <div
+        className="panel p-8 text-sm text-muted"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
         Reading finalized {network} data from the ZKBLAST API.
       </div>
     );
-  if (error)
+  if (error) {
+    const detail = operationalError(error);
     return (
-      <div className="panel p-8">
+      <div className="panel p-8" role="alert">
         <p className="text-sm text-danger">
-          {network[0]?.toUpperCase()}
-          {network.slice(1)} data is unavailable: {error}
+          {network[0]?.toUpperCase()}{network.slice(1)} data is unavailable.
         </p>
+        <p className="mt-2 text-xs text-muted">{detail.message}</p>
+        <code className="mt-2 block w-fit border border-line px-2 py-1 font-mono text-[10px] text-faint">
+          {detail.code}
+        </code>
         <Button
           className="mt-4"
           variant="secondary"
@@ -40,6 +49,7 @@ export function RealDataState({
         </Button>
       </div>
     );
+  }
   if (empty)
     return (
       <div className="panel flex items-start gap-3 p-8">
@@ -54,4 +64,15 @@ export function RealDataState({
       </div>
     );
   return null;
+}
+
+function operationalError(error: string) {
+  const code = /^[A-Z][A-Z0-9_]*$/u.test(error) ? error : "REQUEST_FAILED";
+  if (code === "HTTP_429")
+    return { code, message: "Request limit reached. Wait briefly, then retry." };
+  if (code === "HTTP_401" || code === "HTTP_403")
+    return { code, message: "Reconnect or sign in again, then retry." };
+  if (code === "HTTP_404")
+    return { code, message: "This network resource is not available in the active deployment." };
+  return { code, message: "Retry the request. If it persists, confirm the selected network and API status." };
 }

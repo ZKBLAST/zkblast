@@ -21,6 +21,18 @@ const poolTradeQuerySchema = querySchema.extend({
     .regex(/^\d+:0x[\da-fA-F]{64}:\d+$/u)
     .optional(),
 });
+const dlmmBinQuerySchema = z
+  .object({
+    lower: z.coerce.number().int().min(-10_000).max(10_000).optional(),
+    upper: z.coerce.number().int().min(-10_000).max(10_000).optional(),
+    skipEmpty: z.enum(["true", "false"]).transform((value) => value === "true").optional(),
+  })
+  .refine(
+    ({ lower, upper }) =>
+      (lower === undefined && upper === undefined) ||
+      (lower !== undefined && upper !== undefined && lower <= upper && upper - lower < 121),
+    { message: "Invalid or overly wide DLMM bin range" },
+  );
 
 const swapSchema = z
   .object({
@@ -210,10 +222,20 @@ export function createProtocolRouter(
       }
     });
   if (liquidityService) {
+    router.get("/pools/:pool/top-lps", async (request, response, next) => {
+      try {
+        const pool = poolAddressSchema.parse(request.params.pool);
+        const limit = z.coerce.number().int().min(1).max(25).default(10).parse(request.query.limit);
+        response.json(await liquidityService.topLiquidityProviders(pool, limit));
+      } catch (error) {
+        next(error);
+      }
+    });
     router.get("/bins/:pool", async (request, response, next) => {
       try {
+        const range = dlmmBinQuerySchema.parse(request.query);
         response.json(
-          await liquidityService.dlmmBins(request.params.pool ?? ""),
+          await liquidityService.dlmmBins(request.params.pool ?? "", range),
         );
       } catch (error) {
         next(error);

@@ -16,6 +16,7 @@ import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import { useDlmmBins } from "@/lib/use-dlmm-bins";
 import type { ProtocolExecutionPool } from "@/types/application";
+import { publishTouchedDlmmBins } from "./dlmm-bin-events";
 import {
   executeTransactions,
   swapErrorMessage,
@@ -233,6 +234,18 @@ export function useProtocolWorkspace(
       setNotice(
         "Transaction confirmed. Positions and pool activity refresh from the network.",
       );
+      if (pool.model === "dlmm") {
+        const touched = mode === "liquidity"
+          ? activeBin
+          : quote?.finalBin;
+        if (touched !== undefined && touched !== null) {
+          publishTouchedDlmmBins({
+            pool: pool.address.toLowerCase(),
+            lower: Math.min(bins.data?.activeBin ?? touched, touched),
+            upper: Math.max(bins.data?.activeBin ?? touched, touched),
+          });
+        }
+      }
       if (mode === "swap") {
         const tokenIn = reversed ? pool.token1Address : pool.token0Address;
         const market = markets.items.find(

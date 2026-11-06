@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { projectPoolSwap, type SwapPool } from "../src/pool-swap-projection.js";
+import { poolSpotPriceX18, projectPoolSwap, type SwapPool } from "../src/pool-swap-projection.js";
 import {
   quoteMidpoint,
   poolStatePrice,
@@ -69,6 +69,16 @@ test("DAMM projection preserves executable history when the liquidity baseline p
   assert.equal(projected?.reserve0After, null);
   assert.equal(projected?.reserve1After, null);
   assert.equal(projected?.state, null);
+});
+test("DAMM spot projection applies net input once and does not turn protocol fees into fake volatility", () => {
+  const projected = projectPoolSwap(
+    { ...event, payload: { ...event.payload, amountIn: "100", amountOut: "50", protocolFee: "10" } },
+    pool,
+    { reserve0: 1_000n, reserve1: 1_000n, activeBin: null },
+  );
+  assert.equal(projected?.reserve0After, "950");
+  assert.equal(projected?.reserve1After, "1090");
+  assert.equal(projected?.spotPriceX18, poolSpotPriceX18(pool, 950n, 1090n, null)?.toString());
 });
 test("DLMM direction follows canonical contract addresses even when display assets are reversed", () => {
   const swap = projectPoolSwap(

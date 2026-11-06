@@ -212,3 +212,7 @@ input[type="number"] { -moz-appearance: textfield; }
     scroll-behavior: auto !important;
   }
 }
+
+@media (min-width: 1280px) and (max-height: 760px) {
+  .pool-stat-secondary { display: none; }
+}

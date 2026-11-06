@@ -6,6 +6,8 @@ export type WorkspaceQuote = {
   amountOut: string;
   approval: PreparedTransaction;
   swap: PreparedTransaction;
+  finalBin?: number;
+  binsCrossed?: number;
 };
 
 export type PreparedLiquidity = {

@@ -595,6 +595,18 @@ const liquidityService = new LiquidityService(
       functionName: "isRegisteredPool",
       args: [pool],
     }),
+  manifest.contracts.DlmmLens
+    ? {
+        lens: getAddress(
+          manifest.contracts.DlmmLens.proxyAddress ??
+            manifest.contracts.DlmmLens.implementationAddress,
+        ),
+        blockNumber: () => chainClient.getBlockNumber(),
+      }
+    : undefined,
+  [manifest.shielded?.vault, manifest.shieldedV2?.vault]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => getAddress(value)),
 );
 const marketPath = resolve(
   projectRoot,

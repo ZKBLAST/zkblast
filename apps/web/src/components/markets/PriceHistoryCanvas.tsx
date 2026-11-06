@@ -20,6 +20,16 @@ import { Info, Maximize2 } from "lucide-react";
 import { ChartTooltip } from "./ChartTooltip";
 import { chartTooltipLeft } from "@/lib/chart-tooltip";
 import type { ChartIndicator } from "@/lib/use-chart-preferences";
+import type { DlmmBins } from "@/lib/use-dlmm-bins";
+import {
+  dlmmRangeEvent,
+  isDlmmRangeEvent,
+  publishDlmmRange,
+} from "@/lib/dlmm-range-events";
+import {
+  DlmmLiquidityOverlay,
+  type PositionedLiquidityBin,
+} from "./DlmmLiquidityOverlay";
 import {
   formatChartPrice,
   type ChartStyle,
@@ -37,6 +47,9 @@ export function PriceHistoryCanvas({
   limited = false,
   positionLines = [],
   indicators = [],
+  liquidityBins = null,
+  liquidityInverted = false,
+  walletLiquidityBins = [],
 }: {
   bars: readonly MarketCandle[];
   style: ChartStyle;
@@ -46,6 +59,9 @@ export function PriceHistoryCanvas({
   limited?: boolean;
   positionLines?: readonly ChartPositionLine[];
   indicators?: readonly ChartIndicator[];
+  liquidityBins?: DlmmBins | null;
+  liquidityInverted?: boolean;
+  walletLiquidityBins?: readonly number[];
 }) {
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -58,6 +74,9 @@ export function PriceHistoryCanvas({
   const indicatorSeriesRefs = useRef<ISeriesApi<"Line">[]>([]);
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const [tooltipLeft, setTooltipLeft] = useState(8);
+  const [positionedBins, setPositionedBins] = useState<readonly PositionedLiquidityBin[]>([]);
+  const [rangeBins, setRangeBins] = useState<Readonly<{ lower: number; upper: number }> | null>(null);
+  const draggingBound = useRef<"lower" | "upper" | null>(null);
   const barsRef = useRef(bars);
   const renderedBarsRef = useRef<readonly MarketCandle[]>([]);
   barsRef.current = bars;
@@ -299,6 +318,107 @@ export function PriceHistoryCanvas({
       indicatorSeriesRefs.current = [];
     };
   }, [bars, indicators, volumes, style]);
+  useEffect(() => {
+    const series = seriesRef.current;
+    const chart = chartRef.current;
+    const element = host.current;
+    if (!series || !chart || !element || !liquidityBins?.bins.length) {
+      setPositionedBins([]);
+      setRangeBins(null);
+      return;
+    }
+    const ordered = [...liquidityBins.bins]
+      .map((bin) => {
+        const direct = Number(BigInt(bin.priceX18)) / 1e18;
+        return { ...bin, price: liquidityInverted && direct > 0 ? 1 / direct : direct };
+      })
+      .filter((bin) => Number.isFinite(bin.price) && bin.price > 0)
+      .sort((left, right) => left.binId - right.binId);
+    setRangeBins((current) => current ?? {
+      lower: ordered.find((bin) => bin.binId === liquidityBins.activeBin - 2)?.binId ?? ordered[0]!.binId,
+      upper: ordered.find((bin) => bin.binId === liquidityBins.activeBin + 2)?.binId ?? ordered.at(-1)!.binId,
+    });
+    const redraw = () => {
+      const owned = new Set(walletLiquidityBins);
+      const magnitudes = ordered.map((bin) => liquidityMagnitude(bin.totalShares));
+      const maximum = Math.max(1, ...magnitudes);
+      setPositionedBins(ordered.flatMap((bin, index) => {
+        const coordinate = series.priceToCoordinate(bin.price);
+        if (coordinate === null || coordinate < 0 || coordinate > element.clientHeight) return [];
+        return [{
+          binId: bin.binId,
+          top: coordinate,
+          width: 4 + (magnitudes[index]! / maximum) * 31,
+          side: bin.binId === liquidityBins.activeBin
+            ? "active" as const
+            : bin.binId > liquidityBins.activeBin
+              ? "base" as const
+              : "quote" as const,
+          totalShares: bin.totalShares,
+          price: bin.price,
+          owned: owned.has(bin.binId),
+        }];
+      }));
+    };
+    redraw();
+    const observer = new ResizeObserver(redraw);
+    observer.observe(element);
+    chart.timeScale().subscribeVisibleLogicalRangeChange(redraw);
+    return () => {
+      observer.disconnect();
+      chart.timeScale().unsubscribeVisibleLogicalRangeChange(redraw);
+    };
+  }, [bars, liquidityBins, liquidityInverted, style, walletLiquidityBins]);
+
+  useEffect(() => {
+    function move(event: PointerEvent) {
+      if (!draggingBound.current || !host.current || !seriesRef.current || !liquidityBins?.bins.length) return;
+      const coordinate = event.clientY - host.current.getBoundingClientRect().top;
+      const price = seriesRef.current.coordinateToPrice(coordinate);
+      if (price === null) return;
+      const nearest = [...liquidityBins.bins].reduce((best, bin) => {
+        const direct = Number(BigInt(bin.priceX18)) / 1e18;
+        const candidate = liquidityInverted && direct > 0 ? 1 / direct : direct;
+        return Math.abs(candidate - price) < best.distance
+          ? { binId: bin.binId, distance: Math.abs(candidate - price) }
+          : best;
+      }, { binId: liquidityBins.activeBin, distance: Number.POSITIVE_INFINITY });
+      setRangeBins((current) => {
+        const previous = current ?? { lower: nearest.binId, upper: nearest.binId };
+        return draggingBound.current === "lower"
+          ? { lower: Math.min(nearest.binId, previous.upper), upper: previous.upper }
+          : { lower: previous.lower, upper: Math.max(nearest.binId, previous.lower) };
+      });
+    }
+    function stop() { draggingBound.current = null; }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+    window.addEventListener("pointercancel", stop);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+    };
+  }, [liquidityBins, liquidityInverted]);
+  useEffect(() => {
+    if (!liquidityBins || !rangeBins) return;
+    publishDlmmRange({
+      pool: liquidityBins.pool.toLowerCase(),
+      lower: rangeBins.lower,
+      upper: rangeBins.upper,
+      source: "chart",
+    });
+  }, [liquidityBins, rangeBins]);
+  useEffect(() => {
+    if (!liquidityBins) return;
+    const pool = liquidityBins.pool.toLowerCase();
+    function receive(event: Event) {
+      if (!isDlmmRangeEvent(event) || event.detail.source !== "form" || event.detail.pool !== pool) return;
+      setRangeBins({ lower: event.detail.lower, upper: event.detail.upper });
+    }
+    window.addEventListener(dlmmRangeEvent, receive);
+    return () => window.removeEventListener(dlmmRangeEvent, receive);
+  }, [liquidityBins]);
   const observation = hover ?? bars.at(-1);
   const observationIndex = observation
     ? bars.findIndex((bar) => bar.time === observation.time)
@@ -336,7 +456,7 @@ export function PriceHistoryCanvas({
     }
   }
   return (
-    <div className="flex min-h-80 flex-1 flex-col">
+    <div className="flex min-h-64 flex-1 flex-col sm:min-h-80">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
         <p
           aria-live="off"
@@ -396,7 +516,7 @@ export function PriceHistoryCanvas({
         </div>
       </div>
       <div
-        className="relative min-h-72 min-w-0 flex-1"
+        className="relative min-h-56 min-w-0 flex-1 sm:min-h-72"
         onPointerLeave={() => setHover(null)}
       >
         <div
@@ -407,6 +527,18 @@ export function PriceHistoryCanvas({
           onKeyDown={handleChartKeyDown}
           className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lime"
         />
+        {liquidityBins && rangeBins ? (
+          <DlmmLiquidityOverlay
+            bins={positionedBins}
+            activeBin={liquidityBins.activeBin}
+            lowerBin={rangeBins.lower}
+            upperBin={rangeBins.upper}
+            onDragStart={(bound, event) => {
+              event.currentTarget.setPointerCapture(event.pointerId);
+              draggingBound.current = bound;
+            }}
+          />
+        ) : null}
         {hover && (
           <ChartTooltip
             bar={hover}
@@ -474,4 +606,9 @@ function bollingerBands(bars: readonly MarketCandle[], period: number, deviation
 function sameCandle(left: MarketCandle, right: MarketCandle | undefined) {
   return Boolean(right) && left.time === right!.time && left.open === right!.open &&
     left.high === right!.high && left.low === right!.low && left.close === right!.close;
+}
+
+function liquidityMagnitude(raw: string) {
+  if (!/^\d+$/u.test(raw) || raw === "0") return 0;
+  return Math.log10(Number(raw.slice(0, 15))) + Math.max(0, raw.length - 15);
 }

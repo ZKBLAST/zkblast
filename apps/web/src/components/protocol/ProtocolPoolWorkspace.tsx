@@ -5,6 +5,8 @@ import { ArrowDownUp, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
 import { TokenAmountField } from "./TokenAmountField";
+import { DlmmShapePreview } from "./DlmmShapePreview";
+import { useState } from "react";
 import {
   useProtocolWorkspace,
   type WorkspaceOptions,
@@ -21,6 +23,7 @@ export function ProtocolPoolWorkspace({
   compact?: boolean;
 }) {
   const state = useProtocolWorkspace(mode, options);
+  const [previewOnly, setPreviewOnly] = useState(false);
   const { pool, bins, amount, busy, quote, amounts, config } = state;
   const disabled =
     busy ||
@@ -28,14 +31,16 @@ export function ProtocolPoolWorkspace({
       state.address &&
       (!state.validAmount ||
         state.insufficientBalance ||
-        (mode === "liquidity" && !amounts)),
+        (mode === "liquidity" && (!amounts || previewOnly))),
     );
   const actionLabel = !state.address
     ? "Connect wallet"
     : busy
       ? "Processing…"
       : mode === "liquidity"
-        ? "Approve & add liquidity"
+        ? previewOnly
+          ? "Select Spot to add liquidity"
+          : "Approve & add liquidity"
         : quote
           ? "Approve & swap"
           : "Get quote";
@@ -156,27 +161,35 @@ export function ProtocolPoolWorkspace({
                 </p>
               )}
               {pool.model === "dlmm" && (
-                <label className="mt-4 block text-xs text-muted">
-                  DLMM position — single bin
-                  <select
-                    className={control}
-                    disabled={busy || !bins.data}
-                    value={state.activeBin ?? ""}
-                    onChange={(e) =>
-                      state.setSelectedBin(Number(e.target.value))
-                    }
-                  >
-                    {bins.data?.bins.map((bin) => (
-                      <option key={bin.binId} value={bin.binId}>
-                        Bin {bin.binId}
-                        {bin.binId === bins.data?.activeBin ? " · active" : ""}
-                        {BigInt(bin.totalShares) === 0n
-                          ? " · initialize"
-                          : " · funded"}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <>
+                  <label className="mt-4 block text-xs text-muted">
+                    DLMM position — single executable bin
+                    <select
+                      className={control}
+                      disabled={busy || !bins.data || previewOnly}
+                      value={state.activeBin ?? ""}
+                      onChange={(e) => state.setSelectedBin(Number(e.target.value))}
+                    >
+                      {bins.data?.bins.map((bin) => (
+                        <option key={bin.binId} value={bin.binId}>
+                          Bin {bin.binId}
+                          {bin.binId === bins.data?.activeBin ? " · active" : ""}
+                          {BigInt(bin.totalShares) === 0n ? " · initialize" : " · funded"}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {bins.data && state.activeBin !== undefined && state.activeBin !== null ? (
+                    <DlmmShapePreview
+                      key={pool.address}
+                      data={bins.data}
+                      selectedBin={state.activeBin}
+                      disabled={busy}
+                      onSelectBin={state.setSelectedBin}
+                      onPreviewOnlyChange={setPreviewOnly}
+                    />
+                  ) : null}
+                </>
               )}
             </>
           )}

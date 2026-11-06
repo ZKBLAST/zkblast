@@ -14,7 +14,7 @@ import {
   resolveLaunchpadAddresses,
   resolveProtocolAddresses,
 } from "@zkblast/sdk";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, getAddress, http } from "viem";
 import type { ApiChainContext } from "./app.js";
 import { DbcService } from "./dbc-service.js";
 import { LaunchpadBrandingService } from "./launchpad-branding-service.js";
@@ -97,6 +97,15 @@ export async function createHyperEvmMainnetContext(input: Readonly<{
     protocolAddresses,
     CHAIN_ID,
     poolRegistered,
+    manifest.contracts.DlmmLens
+      ? {
+          lens: getAddress(
+            manifest.contracts.DlmmLens.proxyAddress ??
+              manifest.contracts.DlmmLens.implementationAddress,
+          ),
+          blockNumber: () => client.getBlockNumber(),
+        }
+      : undefined,
   );
   const poolCreationService = new PoolCreationService(
     client,

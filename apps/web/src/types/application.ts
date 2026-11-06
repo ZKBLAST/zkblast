@@ -159,6 +159,12 @@ export type ProtocolPosition = Readonly<{
   token1Address: string;
   token1Symbol: string;
   token1Decimals: number;
+  currentAmount0Raw?: string;
+  currentAmount1Raw?: string;
+  currentValueToken1Raw?: string;
+  depositBasisToken1Raw?: string | null;
+  earningsToken1Raw?: string | null;
+  valuationCoverage?: "current_onchain_value";
 }>;
 
 export type IndexerMetrics = Readonly<{

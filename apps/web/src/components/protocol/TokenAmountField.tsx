@@ -46,14 +46,19 @@ export function TokenAmountField({
         </span>
       </div>
       {!readOnly && balance !== undefined && onChange && (
-        <button
-          type="button"
-          disabled={disabled}
-          className="mt-2 cursor-pointer font-mono text-[10px] uppercase text-lime disabled:opacity-40"
-          onClick={() => onChange(formatUnits(balance, decimals))}
-        >
-          Max
-        </button>
+        <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label={`${label} balance percentage`}>
+          {[25, 50, 75, 100].map((percent) => (
+            <button
+              key={percent}
+              type="button"
+              disabled={disabled}
+              className="cursor-pointer border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted hover:text-lime disabled:opacity-40"
+              onClick={() => onChange(formatUnits((balance * BigInt(percent)) / 100n, decimals))}
+            >
+              {percent === 100 ? "Max" : `${percent}%`}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );

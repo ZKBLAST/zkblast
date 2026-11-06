@@ -2,6 +2,7 @@
 
 import { ExternalLink, Layers, Minus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { formatUnits } from "viem";
 
 import { AccountPanel } from "@/components/account/AccountPanel";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
@@ -22,6 +23,7 @@ import {
 import { useProtocolData } from "@/lib/use-protocol-data";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import type { ProtocolPosition } from "@/types/application";
+import { TopLiquidityProviders } from "@/components/trade/TopLiquidityProviders";
 
 export function PositionsView({
   compact = false,
@@ -130,6 +132,13 @@ export function PositionsView({
       <div className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}>
         {!compact && <AccountPanel />}
         <ShieldedPositionsPanel />
+        {compact && selectedPoolAddress ? (
+          <TopLiquidityProviders
+            pool={selectedPoolAddress}
+            quoteSymbol={positions.find((position) => position.poolAddress.toLowerCase() === selected)?.token1Symbol ?? "quote"}
+            refreshKey={data.positions.map((position) => `${position.onchainPositionId}:${position.liquidityRaw}`).join("|")}
+          />
+        ) : null}
         {compact && selected && (
           <div className="mb-3 flex gap-2" role="group" aria-label="Position scope">
             {(["selected", "all"] as const).map((value) => (
@@ -344,6 +353,31 @@ function PositionItem({
             <dt className="font-mono text-[9px] uppercase text-faint">Range status</dt>
             <dd className={`mt-1 font-mono ${inRange === true ? "text-emerald-300" : inRange === false ? "text-amber-300" : "text-muted"}`}>
               {inRange === true ? "In range" : inRange === false ? "Out of range" : "Awaiting finalized bin"}
+            </dd>
+          </div>
+        </dl>
+      ) : null}
+      {position.currentValueToken1Raw !== undefined ? (
+        <dl className="mt-3 grid grid-cols-2 gap-px border border-line bg-line text-xs sm:grid-cols-3">
+          <div className="bg-panel px-3 py-2">
+            <dt className="font-mono text-[9px] uppercase text-faint">Current value</dt>
+            <dd className="mt-1 font-mono text-muted">
+              {formatUnits(BigInt(position.currentValueToken1Raw), position.token1Decimals)} {position.token1Symbol}
+            </dd>
+          </div>
+          <div className="bg-panel px-3 py-2">
+            <dt className="font-mono text-[9px] uppercase text-faint">Current assets</dt>
+            <dd className="mt-1 font-mono text-muted">
+              {position.currentAmount0Raw ? formatUnits(BigInt(position.currentAmount0Raw), position.token0Decimals) : "—"} {position.token0Symbol}
+              <span className="block">{position.currentAmount1Raw ? formatUnits(BigInt(position.currentAmount1Raw), position.token1Decimals) : "—"} {position.token1Symbol}</span>
+            </dd>
+          </div>
+          <div className="col-span-2 bg-panel px-3 py-2 sm:col-span-1">
+            <dt className="font-mono text-[9px] uppercase text-faint">Deposit basis / earnings</dt>
+            <dd className="mt-1 text-muted">
+              {position.depositBasisToken1Raw === null
+                ? "Not reconstructed for this legacy position"
+                : `${formatUnits(BigInt(position.depositBasisToken1Raw ?? "0"), position.token1Decimals)} ${position.token1Symbol}`}
             </dd>
           </div>
         </dl>

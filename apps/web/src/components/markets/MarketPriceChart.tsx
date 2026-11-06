@@ -28,6 +28,7 @@ import {
 } from "@/lib/market-chart-data";
 import { useMarketPriceHistory } from "@/lib/use-market-price-history";
 import { useChartPreferences } from "@/lib/use-chart-preferences";
+import { useDlmmBins } from "@/lib/use-dlmm-bins";
 import type { ChartIndicator } from "@/lib/use-chart-preferences";
 import { PriceHistoryCanvas } from "./PriceHistoryCanvas";
 
@@ -38,6 +39,8 @@ export function MarketPriceChart({
   inverted = false,
   perpsMarketId = null,
   positionLines = [],
+  poolModel,
+  walletLiquidityBins = [],
 }: {
   marketId: string | null;
   poolAddress?: string | null;
@@ -45,6 +48,8 @@ export function MarketPriceChart({
   inverted?: boolean;
   perpsMarketId?: string | null;
   positionLines?: readonly ChartPositionLine[];
+  poolModel?: "damm" | "dlmm";
+  walletLiquidityBins?: readonly number[];
 }) {
   const [selection, setSelection] = useState<{
     market: string;
@@ -68,6 +73,9 @@ export function MarketPriceChart({
     range,
     poolAddress,
     perpsMarketId,
+  );
+  const liquidity = useDlmmBins(
+    poolModel === "dlmm" && poolAddress ? poolAddress : undefined,
   );
   const style = styleSelection ?? (source === "swap" && poolAddress ? "candles" : "line");
   const bars = useMemo(
@@ -126,7 +134,7 @@ export function MarketPriceChart({
     <section
       ref={root}
       className={cx(
-        "flex min-h-[30rem] flex-1 flex-col bg-bg p-4",
+        "flex min-h-[24rem] flex-1 flex-col bg-bg p-3 sm:min-h-[30rem] sm:p-4",
         fallbackFullscreen && "fixed inset-0 z-[100] min-h-0 overflow-auto",
       )}
       aria-label="Market chart"
@@ -246,7 +254,7 @@ export function MarketPriceChart({
           </button>
         ))}
       </div>
-      <div className="mt-3 flex min-h-80 flex-1 flex-col">
+      <div className="mt-3 flex min-h-64 flex-1 flex-col sm:min-h-80">
         <RealDataState
           loading={loading}
           error={error}
@@ -275,6 +283,9 @@ export function MarketPriceChart({
             label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
             positionLines={positionLines}
             indicators={selectedIndicators}
+            liquidityBins={liquidity.data}
+            liquidityInverted={inverted}
+            walletLiquidityBins={walletLiquidityBins}
           />
         )}
       </div>

@@ -91,6 +91,12 @@ export class SwapService {
           buildApproval(tokenIn, this.addresses.swapRouter, amountIn),
         ),
         swap: encodeTransaction(swap),
+        ...(input.model === "dlmm"
+          ? {
+              finalBin: "finalBin" in quote ? quote.finalBin : undefined,
+              binsCrossed: "binsCrossed" in quote ? quote.binsCrossed : undefined,
+            }
+          : {}),
       };
     } catch (error) {
       throw normalizeTransactionError(error);

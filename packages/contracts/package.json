@@ -10,6 +10,7 @@
     "test:dlmm-bin": "node --experimental-strip-types --test test/dlmm-bin-math.test.ts",
     "test:dlmm": "node --experimental-strip-types --test test/dlmm-*.test.ts",
     "plan:dlmm-upgrade": "node --import tsx scripts/prepare-dlmm-upgrade.ts",
+    "plan:dlmm-lens": "node --import tsx scripts/prepare-dlmm-lens-deployment.ts",
     "rehearse:dlmm-upgrade": "node --import tsx scripts/prepare-dlmm-upgrade.ts --rehearse",
     "execute:dlmm-upgrade": "node --import tsx scripts/execute-dlmm-upgrade.ts",
     "rehearse:dlmm-executor": "node --import tsx scripts/rehearse-dlmm-executor.ts",

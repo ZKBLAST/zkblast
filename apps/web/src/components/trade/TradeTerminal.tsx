@@ -24,6 +24,10 @@ import { TradeDataProvider } from "./TradeDataProvider";
 import { InstrumentLogo, MarketBrowser } from "./MarketBrowser";
 import { MarketActivity, TradeHistory } from "./TradeHistory";
 import { PoolStatsStrip } from "./PoolStatsStrip";
+import { DlmmDepthBook } from "./DlmmDepthBook";
+import { DammDepthView } from "./DammDepthView";
+
+type PoolView = "chart" | "depth" | "book" | "split";
 
 export function TradeTerminal() {
   return (
@@ -35,12 +39,14 @@ export function TradeTerminal() {
 
 function Terminal() {
   const { config, address, injectedAddress } = useApp();
-  const protocol = useProtocolData();
+  const wallet = injectedAddress ?? address;
+  const protocol = useProtocolData(wallet);
   const markets = useExternalMarkets();
   const search = useSearchParams();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
+  const [poolView, setPoolView] = useState<PoolView>("chart");
   const [perpsMarketId, setPerpsMarketId] = useState<string | null>(null);
   const [perpsPositions, setPerpsPositions] = useState<readonly Readonly<{
     positionId: string;
@@ -51,7 +57,6 @@ function Terminal() {
     status: "open" | "closed" | "liquidated";
   }>[]>([]);
   const [privatePositionLines, setPrivatePositionLines] = useState<readonly (ChartPositionLine & { marketId: string })[]>([]);
-  const wallet = injectedAddress ?? address;
   const instruments = tradeInstruments(
     protocol.pools,
     markets.items,
@@ -63,6 +68,10 @@ function Terminal() {
     instruments[0];
   const mode = tradeMode(search.get("mode"));
   const panel = tradePanel(search.get("panel"));
+
+  useEffect(() => {
+    if (selected?.pool?.model !== "dlmm" && (poolView === "book" || poolView === "split")) setPoolView("chart");
+  }, [poolView, selected?.pool?.address, selected?.pool?.model]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -94,6 +103,22 @@ function Terminal() {
     ],
     [perpsMarketId, privatePositionLines, publicPositionLines],
   );
+  const selectedWalletLiquidityBins = useMemo(() => {
+    const pool = selected?.pool?.address.toLowerCase();
+    if (!pool || selected?.pool?.model !== "dlmm") return [];
+    return [...new Set(protocol.positions.flatMap((position) => {
+      if (
+        position.status !== "open" ||
+        position.model !== "dlmm" ||
+        position.poolAddress.toLowerCase() !== pool ||
+        position.lowerBound === null ||
+        position.upperBound === null
+      ) return [];
+      const start = Math.max(-10_000, position.lowerBound);
+      const end = Math.min(10_000, position.upperBound);
+      return Array.from({ length: Math.min(61, end - start + 1) }, (_, index) => start + index);
+    }))];
+  }, [protocol.positions, selected?.pool?.address, selected?.pool?.model]);
 
   function update(key: string, value: string) {
     if (busy) return;
@@ -262,6 +287,11 @@ function Terminal() {
                   ? `${selected.pool.model.toUpperCase()}${selected.pool.feeBps === null ? " · validated route" : ` · ${selected.pool.feeBps / 100}% pool fee`}`
                   : "Chart browsing · no validated execution pool"}
               </p>
+              {selected?.market?.source === "robinhood_stock_token" && selected.market.marketCapUsd ? (
+                <p className="mt-1 font-mono text-[10px] uppercase text-faint">
+                  On-chain cap · {formatCompactUsd(selected.market.marketCapUsd)}
+                </p>
+              ) : null}
             </div>
             {selected?.pool && (
               <div className="ml-auto flex items-center gap-2 font-mono text-[9px] uppercase">
@@ -283,17 +313,44 @@ function Terminal() {
             )}
           </div>
           {selected?.pool && <PoolStatsStrip pool={selected.pool.address} />}
-          <MarketPriceChart
-            key={`${selected?.market?.id ?? "no-market"}:${revision}`}
-            marketId={selected?.market?.id ?? null}
-            poolAddress={selected?.pool?.address ?? null}
-            pairLabel={
-              selected ? `${selected.base}/${selected.quote}` : undefined
-            }
-            inverted={Boolean(
-              selected?.pool && selected.base !== selected.pool.token0Symbol,
-            )}
-          />
+          {selected?.pool ? (
+            <div className="flex overflow-x-auto border-b border-line" role="tablist" aria-label="DLMM market view">
+              {(selected.pool.model === "dlmm" ? ["chart", "depth", "book", "split"] as const : ["chart", "depth"] as const).map((view) => <button key={view} type="button" role="tab" aria-selected={poolView === view} onClick={() => setPoolView(view)} className={`min-h-10 min-w-20 flex-1 border-b-2 px-3 font-mono text-[10px] uppercase ${poolView === view ? "border-lime bg-lime/10 text-lime" : "border-transparent text-muted hover:text-fg"}`}>{view}</button>)}
+            </div>
+          ) : null}
+          <div className={poolView === "split" ? "grid min-h-0 xl:grid-cols-2" : "min-h-0"}>
+            {(poolView === "chart" || poolView === "split") ? (
+              <MarketPriceChart
+                key={`${selected?.market?.id ?? "no-market"}:${revision}`}
+                marketId={selected?.market?.id ?? null}
+                poolAddress={selected?.pool?.address ?? null}
+                pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
+                inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
+                poolModel={selected?.pool?.model}
+                walletLiquidityBins={selectedWalletLiquidityBins}
+              />
+            ) : null}
+            {selected?.pool?.model === "dlmm" && (poolView === "depth" || poolView === "book" || poolView === "split") ? (
+              <DlmmDepthBook
+                pool={selected.pool.address}
+                base={selected.base}
+                quote={selected.quote}
+                baseDecimals={selected.base === selected.pool.token0Symbol ? selected.pool.token0Decimals : selected.pool.token1Decimals}
+                quoteDecimals={selected.quote === selected.pool.token1Symbol ? selected.pool.token1Decimals : selected.pool.token0Decimals}
+                mode={poolView === "depth" ? "depth" : "book"}
+              />
+            ) : null}
+            {selected?.pool?.model === "damm" && poolView === "depth" ? (
+              <DammDepthView
+                pool={selected.pool.address}
+                base={selected.base}
+                quote={selected.quote}
+                baseDecimals={selected.base === selected.pool.token0Symbol ? selected.pool.token0Decimals : selected.pool.token1Decimals}
+                quoteDecimals={selected.quote === selected.pool.token1Symbol ? selected.pool.token1Decimals : selected.pool.token0Decimals}
+                inverted={selected.base !== selected.pool.token0Symbol}
+              />
+            ) : null}
+          </div>
           <div className="border-t border-line px-4 py-3 text-xs text-muted">
             {protocol.metrics?.ready
               ? "Indexer up to date"
@@ -365,4 +422,15 @@ function Terminal() {
       </section>
     </div>
   );
+}
+
+function formatCompactUsd(value: string) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return `${value} USD`;
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 2,
+  }).format(numeric);
 }

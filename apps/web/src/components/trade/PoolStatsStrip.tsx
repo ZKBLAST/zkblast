@@ -91,8 +91,11 @@ export function PoolStatsStrip({ pool }: { pool: string }) {
   return (
     <div className="border-b border-line" title={stats.asOfBlock ? `Finalized at block ${stats.asOfBlock}` : undefined}>
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7">
-        {values.map(([label, value]) => (
-          <div key={label} className="min-w-0 border-r border-line px-3 py-2 last:border-r-0">
+        {values.map(([label, value], index) => (
+          <div
+            key={label}
+            className={`min-w-0 border-r border-line px-3 py-2 last:border-r-0 ${index > 3 ? "pool-stat-secondary" : ""}`}
+          >
             <p className="font-mono text-[9px] uppercase text-faint">{label}</p>
             <p className="mt-1 truncate font-mono text-[11px] text-fg" title={value}>{value}</p>
           </div>
