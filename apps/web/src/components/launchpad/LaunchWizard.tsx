@@ -116,6 +116,9 @@ export function LaunchWizard({
   const [stockTemplateIds, setStockTemplateIds] = useState<
     Readonly<Record<string, Partial<Record<"damm" | "dlmm", string>>>>
   >({});
+  const [templateEconomicsById, setTemplateEconomicsById] = useState<
+    Readonly<Record<string, TemplateEconomics>>
+  >({});
   const [catalogStockDestinations, setCatalogStockDestinations] = useState<
     readonly StockQuoteDestinationView[]
   >([]);
@@ -167,10 +170,13 @@ export function LaunchWizard({
       ) ?? null,
     [catalogStockAddress, stockQuoteCatalog],
   );
-  const displayedStockAsset = stockQuoteAsset ?? catalogStockAsset;
+  const displayedStockAsset =
+    stockQuoteAsset ?? (!launchpadId ? catalogStockAsset : null);
   const displayedStockDestinations = stockQuoteAsset
     ? stockDestinations
-    : catalogStockDestinations;
+    : !launchpadId
+      ? catalogStockDestinations
+      : [];
   const stockQuoteTemplateSelected = stockQuoteAsset !== null;
   const launchpadTemplateMismatch = Boolean(
     launchpadPreset && selected?.template_id !== launchpadPreset.dbcTemplateId,
@@ -233,6 +239,7 @@ export function LaunchWizard({
   useEffect(() => {
     if (!open || config?.chainId !== 4663) {
       setStockTemplateIds({});
+      setTemplateEconomicsById({});
       return;
     }
     const controller = new AbortController();
@@ -253,15 +260,21 @@ export function LaunchWizard({
           string,
           Partial<Record<"damm" | "dlmm", string>>
         > = {};
+        const byTemplate: Record<string, TemplateEconomics> = {};
         for (const item of items) {
           const asset = item.economics.quoteToken.toLowerCase();
           const mode = item.economics.migrationMode === 1 ? "dlmm" : "damm";
           byAsset[asset] = { ...byAsset[asset], [mode]: item.templateId };
+          byTemplate[item.templateId] = item.economics;
         }
         setStockTemplateIds(byAsset);
+        setTemplateEconomicsById(byTemplate);
       })
       .catch(() => {
-        if (!controller.signal.aborted) setStockTemplateIds({});
+        if (!controller.signal.aborted) {
+          setStockTemplateIds({});
+          setTemplateEconomicsById({});
+        }
       });
     return () => controller.abort();
   }, [config?.chainId, open, templates]);
@@ -291,7 +304,16 @@ export function LaunchWizard({
   }, [catalogStockAddress, config?.chainId]);
   useEffect(() => {
     const quoteToken = economics?.quoteToken;
-    if (!quoteToken || config?.chainId !== 4663) {
+    const verifiedStockQuote = stockQuoteCatalog.some(
+      (asset) =>
+        asset.contractAddress.toLowerCase() === quoteToken?.toLowerCase(),
+    );
+    if (
+      !quoteToken ||
+      config?.chainId !== 4663 ||
+      stockQuoteCatalogLoading ||
+      !verifiedStockQuote
+    ) {
       setStockQuoteAsset(null);
       setStockDestinations([]);
       return;
@@ -320,7 +342,12 @@ export function LaunchWizard({
         }
       });
     return () => controller.abort();
-  }, [config?.chainId, economics?.quoteToken]);
+  }, [
+    config?.chainId,
+    economics?.quoteToken,
+    stockQuoteCatalog,
+    stockQuoteCatalogLoading,
+  ]);
   useEffect(() => {
     if (!open) return;
     const controller = new AbortController();
@@ -846,7 +873,7 @@ export function LaunchWizard({
               <div className="border border-line p-4 text-xs leading-5 text-muted">
                 Launchpad {launchpadId} is bound onchain to Template{" "}
                 {launchpadPreset.dbcTemplateId}. Its quote asset and{" "}
-                {launchpadPreset.graduationDestination === 1 ? "DLMM" : "DAMM"}{" "}
+                {launchpadPreset.graduationDestination === 2 ? "DLMM" : "DAMM"}{" "}
                 destination cannot be changed after deployment.
               </div>
             )}
@@ -946,26 +973,43 @@ export function LaunchWizard({
                 </div>
               )}
             {templates
-              .filter(
-                (item) =>
-                  item.enabled &&
-                  (!launchpadPreset ||
-                    item.template_id === launchpadPreset.dbcTemplateId),
-              )
-              .map((item) => (
-                <button
-                  key={item.template_id}
-                  onClick={() => setTemplateId(item.template_id)}
-                  className={`w-full border p-4 text-left ${templateId === item.template_id ? "border-lime bg-white/[.03]" : "border-line"}`}
-                >
-                  <span className="font-mono text-sm">
-                    Template {item.template_id} · v{item.version}
-                  </span>
-                  <span className="mt-2 block break-all text-[10px] text-muted">
-                    Config {item.config_hash}
-                  </span>
-                </button>
-              ))}
+              .filter((item) => item.enabled)
+              .map((item) => {
+                const itemEconomics = templateEconomicsById[item.template_id];
+                const compatible =
+                  !launchpadPreset ||
+                  item.template_id === launchpadPreset.dbcTemplateId;
+                return (
+                  <button
+                    type="button"
+                    key={item.template_id}
+                    disabled={!compatible}
+                    onClick={() => setTemplateId(item.template_id)}
+                    className={`w-full border p-4 text-left disabled:cursor-not-allowed disabled:opacity-45 ${templateId === item.template_id ? "border-lime bg-white/[.03]" : "border-line"}`}
+                  >
+                    <span className="flex flex-wrap items-center justify-between gap-2 font-mono text-sm">
+                      <span>
+                        Template {item.template_id} · v{item.version}
+                      </span>
+                      {itemEconomics && (
+                        <span className="border border-line px-2 py-1 text-[9px] uppercase text-muted">
+                          {itemEconomics.quoteSymbol} ·{" "}
+                          {itemEconomics.migrationMode === 1 ? "DLMM" : "DAMM"}
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-2 block break-all text-[10px] text-muted">
+                      Config {item.config_hash}
+                    </span>
+                    {!compatible && (
+                      <span className="mt-2 block text-[10px] text-muted">
+                        Unavailable for this launchpad · preset locked to
+                        Template {launchpadPreset?.dbcTemplateId}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             {economicsLoading ? (
               <p className="text-xs text-muted">Loading onchain economics…</p>
             ) : (
