@@ -119,6 +119,7 @@
     "markets:sync:oracles:testnet": "dotenv -e .env.testnet -- pnpm --filter @zkblast/indexer run sync:external-market-oracles",
     "markets:sync:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run sync:external-markets",
     "stock-quotes:catalog:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run sync:stock-quote-catalog",
+    "stock-quotes:catalog:multi-asset:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run sync:stock-quote-multi-asset-catalog",
     "stock-quotes:backfill:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run backfill:stock-quotes",
     "stock-quotes:verify:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/indexer run verify:stock-quotes",
     "stock-quotes:policy-receipts:plan:mainnet": "dotenv -e .env.mainnet -- pnpm --filter @zkblast/contracts run plan:stock-quote-policy-receipts:mainnet",

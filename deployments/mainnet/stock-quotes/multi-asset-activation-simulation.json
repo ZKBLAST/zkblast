@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet-fork",
+  "chainId": 4663,
+  "planSha256": "98449f588d1376713262a91ae8632701084205b0dffe81a88297433362aa6915",
+  "transactionCount": 25,
+  "receipts": [
+    {
+      "name": "list-amd-stock-quote",
+      "hash": "0xfa65f0446cfb06aabb26bd003d750f8e45632f10362efc94f283692aadce78d9",
+      "blockNumber": "107172098",
+      "gasUsed": "142294"
+    },
+    {
+      "name": "open-amd-session",
+      "hash": "0x7b48f09f8c2f8c0b5a94257f5cafc7338a50032a084bebb39742986adca75a0f",
+      "blockNumber": "107172099",
+      "gasUsed": "99316"
+    },
+    {
+      "name": "allow-amd-dbc-quote-token",
+      "hash": "0x961cc5b0463f26f3d5ed95f7e6904b7672eaca25f1dc4bb1bb90cef247a57af3",
+      "blockNumber": "107172100",
+      "gasUsed": "86498"
+    },
+    {
+      "name": "require-protected-amd-launches",
+      "hash": "0xb482ad1ce7ccbd3431a434ecd255cff39eaef06496724dea501d90d6cbb5eca6",
+      "blockNumber": "107172101",
+      "gasUsed": "55175"
+    },
+    {
+      "name": "create-amd-protected-template",
+      "hash": "0x4a5c32095ded09f9b5a837541d188d3ce48cee85719779dc728b7b7346ffb8ad",
+      "blockNumber": "107172102",
+      "gasUsed": "416632"
+    },
+    {
+      "name": "list-amzn-stock-quote",
+      "hash": "0x5a73d67bb00faaf1fc25d7be4b3fbb166758a7fef40707d4364235e895c03f1a",
+      "blockNumber": "107172103",
+      "gasUsed": "142294"
+    },
+    {
+      "name": "open-amzn-session",
+      "hash": "0x8de66cbd78017c7555417dbaa215285dd96024e7aaaf4b72831a609f78a9e9c6",
+      "blockNumber": "107172104",
+      "gasUsed": "99316"
+    },
+    {
+      "name": "allow-amzn-dbc-quote-token",
+      "hash": "0x1e5fd285dc91dc1f12750d0d38fcda3972ea9814cd0f9d90d8b28cfe513827f4",
+      "blockNumber": "107172105",
+      "gasUsed": "86498"
+    },
+    {
+      "name": "require-protected-amzn-launches",
+      "hash": "0x4af1b517355aba8589bad8e38c44feacf6e797ea27063b4c1d610c92bfa1ee63",
+      "blockNumber": "107172106",
+      "gasUsed": "55175"
+    },
+    {
+      "name": "create-amzn-protected-template",
+      "hash": "0x515020c85f2d512749e59707db0fee751ed3dc416c4dddd9d6d20ed0c57a6fe8",
+      "blockNumber": "107172107",
+      "gasUsed": "416632"
+    },
+    {
+      "name": "list-meta-stock-quote",
+      "hash": "0x290778b9b073e61a185e77e9e8ee30d8cb29585fc2989ad26ca05793aa6baeda",
+      "blockNumber": "107172108",
+      "gasUsed": "142294"
+    },
+    {
+      "name": "open-meta-session",
+      "hash": "0x94d055287562db72ef7d975e906a01704043d0869a717d5a05579cb682fdd477",
+      "blockNumber": "107172109",
+      "gasUsed": "99340"
+    },
+    {
+      "name": "allow-meta-dbc-quote-token",
+      "hash": "0x180b9659a870a0506f0654883ff040f96f536a0dd497bbe05a2499b82e421220",
+      "blockNumber": "107172110",
+      "gasUsed": "86498"
+    },
+    {
+      "name": "require-protected-meta-launches",
+      "hash": "0x92b7c89b8dd0ea18fb2ac1b9f1873bef9bfe4e1e1c116150eb037b1bacca2c94",
+      "blockNumber": "107172111",
+      "gasUsed": "55175"
+    },
+    {
+      "name": "create-meta-protected-template",
+      "hash": "0xb1dd6be58ef549ff420637392922bc17b54d532aa1b67de26bc80ccf9f56fa42",
+      "blockNumber": "107172112",
+      "gasUsed": "416608"
+    },
+    {
+      "name": "list-pltr-stock-quote",
+      "hash": "0x0fa2fdb9841ceb90b5b9669cbd7e7bfa317ce207c0f64de7ba209bd21e267004",
+      "blockNumber": "107172113",
+      "gasUsed": "142294"
+    },
+    {
+      "name": "open-pltr-session",
+      "hash": "0x88ba7bb19d6e1d86ee315ad4d838b664ed034fb0f76a656aea891ac12ea5aa7c",
+      "blockNumber": "107172114",
+      "gasUsed": "99316"
+    },
+    {
+      "name": "allow-pltr-dbc-quote-token",
+      "hash": "0x1e7eae2f04dacd00d132bac666b7edf5effcb3575348a02579d89e17c70fc518",
+      "blockNumber": "107172115",
+      "gasUsed": "86498"
+    },
+    {
+      "name": "require-protected-pltr-launches",
+      "hash": "0xfc665af9d9e722179de0a057564f2260faeb9ab968c750604204ef1d270b1639",
+      "blockNumber": "107172116",
+      "gasUsed": "55175"
+    },
+    {
+      "name": "create-pltr-protected-template",
+      "hash": "0x0c0b30abdd9172d040281759db0b9547e03ad2403d244714786e490f2b9e9a41",
+      "blockNumber": "107172117",
+      "gasUsed": "416632"
+    },
+    {
+      "name": "list-tsla-stock-quote",
+      "hash": "0x0db236ace097715be9c1b973eba2035a3031390013ee4c577f840b8aa80236b2",
+      "blockNumber": "107172118",
+      "gasUsed": "142282"
+    },
+    {
+      "name": "open-tsla-session",
+      "hash": "0x578fd4048007812ff13c57bcc2c2af7d6f74ba780ae903b7be41dc0071470c6d",
+      "blockNumber": "107172119",
+      "gasUsed": "99304"
+    },
+    {
+      "name": "allow-tsla-dbc-quote-token",
+      "hash": "0x4633370f1bcd57cfdd2fc9bcee49bf4dfcd4a5709ccaf4460de38f597816f7fb",
+      "blockNumber": "107172120",
+      "gasUsed": "86486"
+    },
+    {
+      "name": "require-protected-tsla-launches",
+      "hash": "0xabd3cffad4bf6cf419c5a74eac2b5ec7fba98a31a8a226b8a63f7ddc7e12cc91",
+      "blockNumber": "107172121",
+      "gasUsed": "55163"
+    },
+    {
+      "name": "create-tsla-protected-template",
+      "hash": "0xff4a00074a34e764bac005759d72febd1d667f79c33f587f9ac58e922b49fdaa",
+      "blockNumber": "107172122",
+      "gasUsed": "416620"
+    }
+  ],
+  "totalGasUsed": "3999515",
+  "gasPriceWei": "1000000000",
+  "estimatedExecutionFeeWei": "3999515000000000",
+  "estimatedExecutionFeeEth": "0.003999515",
+  "assertions": [
+    {
+      "symbol": "AMD",
+      "quoteTradingEnabled": true,
+      "graduationEnabled": false,
+      "quoteTokenAllowed": true,
+      "protectedOnly": true
+    },
+    {
+      "symbol": "AMZN",
+      "quoteTradingEnabled": true,
+      "graduationEnabled": false,
+      "quoteTokenAllowed": true,
+      "protectedOnly": true
+    },
+    {
+      "symbol": "META",
+      "quoteTradingEnabled": true,
+      "graduationEnabled": false,
+      "quoteTokenAllowed": true,
+      "protectedOnly": true
+    },
+    {
+      "symbol": "PLTR",
+      "quoteTradingEnabled": true,
+      "graduationEnabled": false,
+      "quoteTokenAllowed": true,
+      "protectedOnly": true
+    },
+    {
+      "symbol": "TSLA",
+      "quoteTradingEnabled": true,
+      "graduationEnabled": false,
+      "quoteTokenAllowed": true,
+      "protectedOnly": true
+    }
+  ],
+  "blockedAssets": ["NFLX"],
+  "passed": true
+}

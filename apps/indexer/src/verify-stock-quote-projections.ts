@@ -20,10 +20,10 @@ try {
     assets,
     policyEvents,
     destinations,
+    reserveProjectionDivergence,
     externalMarkets,
     oraclePolicyDivergence,
     destinationDivergence,
-    reserveProjectionDivergence,
     receiptSnapshotCoverage,
   ] = await Promise.all([
     sql.unsafe<{ count: string }[]>(
@@ -150,10 +150,8 @@ try {
       [config.CHAIN_ID],
     ),
   ]);
-  const unsafeAsset = assets.find(
-    (asset) => asset.quote_trading_enabled || asset.graduation_enabled,
-  );
-  if (unsafeAsset) throw new Error("UNEXPECTED_STOCK_QUOTE_CAPABILITY_ENABLED");
+  const unsafeAsset = assets.find((asset) => asset.graduation_enabled);
+  if (unsafeAsset) throw new Error("UNEXPECTED_STOCK_QUOTE_GRADUATION_ENABLED");
   if (oraclePolicyDivergence.length > 0) {
     throw new Error("STOCK_QUOTE_ORACLE_POLICY_DIVERGENCE");
   }

@@ -18,6 +18,11 @@ const runtime = z
     STOCK_QUOTE_BACKFILL_TO_BLOCK: z.coerce.bigint().min(0n).optional(),
     INDEXER_RPC_URL: z.string().url().optional(),
     INDEXER_PRIMARY_ONLY: z.coerce.boolean().default(false),
+    STOCK_QUOTE_BACKFILL_CHUNK_SIZE: z.coerce
+      .bigint()
+      .min(1n)
+      .max(2_000n)
+      .default(2_000n),
   })
   .parse(process.env);
 const config = loadServerConfig(process.env);
@@ -26,7 +31,8 @@ const manifest = await loadDeploymentManifestFile(
   resolve(root, config.DEPLOYMENT_MANIFEST_PATH),
   { environment: config.APP_ENV, chainId: config.CHAIN_ID },
 );
-if (!manifest.stockQuoteAssets) throw new Error("STOCK_QUOTE_ASSETS_NOT_DEPLOYED");
+if (!manifest.stockQuoteAssets)
+  throw new Error("STOCK_QUOTE_ASSETS_NOT_DEPLOYED");
 const addresses = [
   manifest.stockQuoteAssets.adapterRegistry,
   manifest.stockQuoteAssets.assetRegistry,
@@ -39,7 +45,7 @@ const client = createPublicClient({
     ? http(runtime.INDEXER_RPC_URL, { timeout: 30_000, retryCount: 2 })
     : runtime.INDEXER_PRIMARY_ONLY
       ? http(config.RPC_URL, { timeout: 30_000, retryCount: 2 })
-    : createIndexerTransport(config.RPC_URL),
+      : createIndexerTransport(config.RPC_URL),
 });
 const confirmedHead =
   (await client.getBlockNumber()) - BigInt(runtime.INDEXER_CONFIRMATIONS);
@@ -58,9 +64,15 @@ const reader = new ViemChainReader(client, config.CHAIN_ID, addresses);
 let eventBlocks = 0;
 let persistedEvents = 0;
 try {
-  for (let from = fromBlock; from <= toBlock; from += 2_000n) {
-    const to = from + 1_999n > toBlock ? toBlock : from + 1_999n;
-    const logs = await client.getLogs({ address: addresses, fromBlock: from, toBlock: to });
+  const chunkSize = runtime.STOCK_QUOTE_BACKFILL_CHUNK_SIZE;
+  for (let from = fromBlock; from <= toBlock; from += chunkSize) {
+    const chunkEnd = from + chunkSize - 1n;
+    const to = chunkEnd > toBlock ? toBlock : chunkEnd;
+    const logs = await client.getLogs({
+      address: addresses,
+      fromBlock: from,
+      toBlock: to,
+    });
     const grouped = new Map<bigint, Log[]>();
     for (const log of logs) {
       if (log.blockNumber === null) continue;
@@ -72,7 +84,9 @@ try {
       a < b ? -1 : 1,
     )) {
       const block = await reader.block(blockNumber, blockLogs);
-      persistedEvents += await repository.backfillStockQuoteEvents(block.events);
+      persistedEvents += await repository.backfillStockQuoteEvents(
+        block.events,
+      );
       eventBlocks++;
     }
   }
