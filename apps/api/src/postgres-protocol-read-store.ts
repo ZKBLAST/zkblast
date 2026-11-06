@@ -3,6 +3,7 @@ import { isSupportedDatabaseSchema } from "@zkblast/config";
 import { z } from "zod";
 import type {
   PageQuery,
+  PoolCandleQuery,
   PoolChartQuery,
   ProtocolReadStore,
 } from "./protocol-service.js";
@@ -24,7 +25,18 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
 
   pools(query: PageQuery) {
     return this.sql.unsafe(
-      `select p.chain_id::integer as "chainId", p.address, p.pool_kind as model, p.fee_bps as "feeBps", p.status, p.created_block as "createdBlock", x.address as "token0Address", x.symbol as "token0Symbol", x.decimals as "token0Decimals", y.address as "token1Address", y.symbol as "token1Symbol", y.decimals as "token1Decimals" from ${this.schema}.pools p join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id where ($1::text is null or p.address > $1) order by p.address asc limit $2`,
+      `select p.chain_id::integer as "chainId", p.address, p.pool_kind as model, p.fee_bps as "feeBps", p.status, p.created_block as "createdBlock", x.address as "token0Address", x.symbol as "token0Symbol", x.decimals as "token0Decimals", y.address as "token1Address", y.symbol as "token1Symbol", y.decimals as "token1Decimals", origin.launch_id as "originLaunchId", origin.launchpad_id as "originLaunchpadId"
+       from ${this.schema}.pools p
+       join ${this.schema}.assets x on x.id=p.token_x_id
+       join ${this.schema}.assets y on y.id=p.token_y_id
+       left join lateral (
+         select g.launch_id,l.launchpad_id
+         from ${this.schema}.dbc_graduations g
+         left join ${this.schema}.dbc_launches l on l.chain_id=g.chain_id and l.launch_id=g.launch_id
+         where g.chain_id=p.chain_id and lower(g.destination_pool)=lower(p.address)
+         order by g.block_number desc limit 1
+       ) origin on true
+       where ($1::text is null or p.address > $1) order by p.address asc limit $2`,
       [query.cursor ?? null, query.limit],
     );
   }
@@ -62,7 +74,7 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
       observedAt: z.coerce.date().parse(row.observedAt).toISOString(),
     }));
   }
-  async poolCandles(pool: string, query: import("./protocol-service.js").PoolCandleQuery) {
+  async poolCandles(pool: string, query: PoolCandleQuery) {
     const rows = await this.sql.unsafe(
       `select c.bucket_start as "observedAt",
         (c.open_x18/power(10::numeric,18))::text open,
@@ -138,12 +150,12 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
     if (!row) return null;
     const windows = row.windows as Record<string, { volumeQuoteRaw: string }>;
     const volume24hRaw = BigInt(windows["24h"]?.volumeQuoteRaw ?? "0");
-    const fee24hRaw = volume24hRaw * BigInt(row.feeBps) / 10_000n;
+    const fee24hRaw = volume24hRaw * BigInt(String(row.feeBps)) / 10_000n;
     const tvlQuoteRaw = row.model === "damm" && row.spotPriceX18
       ? dammTvlQuoteRaw(row as unknown as DammStatsRow)
       : null;
-    const firstPrice = row.firstPrice24hX18 ? BigInt(row.firstPrice24hX18) : null;
-    const lastPrice = row.lastPrice24hX18 ? BigInt(row.lastPrice24hX18) : null;
+    const firstPrice = row.firstPrice24hX18 ? BigInt(String(row.firstPrice24hX18)) : null;
+    const lastPrice = row.lastPrice24hX18 ? BigInt(String(row.lastPrice24hX18)) : null;
     return {
       ...row,
       observedAt: row.observedAt ? z.coerce.date().parse(row.observedAt).toISOString() : null,

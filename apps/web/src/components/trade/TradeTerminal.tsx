@@ -295,6 +295,15 @@ function Terminal() {
             </div>
             {selected?.pool && (
               <div className="ml-auto flex items-center gap-2 font-mono text-[9px] uppercase">
+                {selected.pool.originLaunchId && (
+                  <a
+                    href={`/launch?view=markets&launch=${encodeURIComponent(selected.pool.originLaunchId)}`}
+                    className="inline-flex items-center gap-1 border border-lime/40 px-2 py-1 text-lime hover:bg-lime/10"
+                    aria-label={`Open the launch origin for ${selected.base}/${selected.quote}`}
+                  >
+                    View launch <ExternalLink className="size-3" aria-hidden />
+                  </a>
+                )}
                 <span className="border border-line px-2 py-1 text-emerald-300">
                   {selected.pool.status}
                 </span>

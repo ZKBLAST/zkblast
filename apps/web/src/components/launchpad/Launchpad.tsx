@@ -47,6 +47,7 @@ export function Launchpad() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
+  const requestedLaunchId = searchParams.get("launch");
   const launchpadFilter = searchParams.get("launchpad");
   const returnTo = searchParams.get("returnTo");
   const requestedPresetId = searchParams.get("preset");
@@ -206,6 +207,15 @@ export function Launchpad() {
       });
     return () => controller.abort();
   }, [config, launchExecutionEnabled, revision]);
+
+  useEffect(() => {
+    if (
+      requestedLaunchId &&
+      launches.some((item) => item.launch_id === requestedLaunchId)
+    ) {
+      setSelectedId(requestedLaunchId);
+    }
+  }, [launches, requestedLaunchId]);
 
   const allLaunches = useMemo(
     () => [

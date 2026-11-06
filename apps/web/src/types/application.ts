@@ -102,6 +102,8 @@ export type ProtocolPool = Readonly<{
   token1Address: string;
   token1Symbol: string;
   token1Decimals: number;
+  originLaunchId?: string | null;
+  originLaunchpadId?: string | null;
 }>;
 
 export type ProtocolExecutionPool = Omit<

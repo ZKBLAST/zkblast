@@ -659,14 +659,22 @@ export function LaunchActions({
               </p>
             </div>
             {graduation ? (
-              <a
-                href={`${config?.explorerUrl}/address/${graduation.destination_pool}`}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 flex items-center justify-between border border-line p-3 text-xs"
-              >
-                Destination pool <ExternalLink className="size-4" />
-              </a>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                <a
+                  href={`/trade?pool=${graduation.destination_pool.toLowerCase()}`}
+                  className="flex items-center justify-between border border-lime/50 bg-lime/10 p-3 text-xs text-lime"
+                >
+                  View pool <ExternalLink className="size-4" />
+                </a>
+                <a
+                  href={`${config?.explorerUrl}/address/${graduation.destination_pool}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between border border-line p-3 text-xs"
+                >
+                  Explorer <ExternalLink className="size-4" />
+                </a>
+              </div>
             ) : (
               <button
                 disabled={busy || launch.lifecycle !== 3}
