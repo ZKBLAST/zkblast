@@ -44,6 +44,8 @@ import type {
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
 import { StockQuoteAssetSummary } from "./StockQuoteAssetSummary";
 import { getTemplateEconomics } from "@/lib/template-economics";
+import { AssetLogo } from "@/components/markets/AssetLogo";
+import { assetLogoUrl } from "@/lib/asset-logo-url";
 
 type PendingInitialBuy = Readonly<{
   pool: `0x${string}`;
@@ -984,6 +986,13 @@ export function LaunchWizard({
               .filter((item) => item.enabled)
               .map((item) => {
                 const itemEconomics = templateEconomicsById[item.template_id];
+                const itemStockAsset = itemEconomics
+                  ? stockQuoteCatalog.find(
+                      (asset) =>
+                        asset.contractAddress.toLowerCase() ===
+                        itemEconomics.quoteToken.toLowerCase(),
+                    )
+                  : null;
                 const compatible =
                   !launchpadPreset ||
                   item.template_id === launchpadPreset.dbcTemplateId;
@@ -995,9 +1004,33 @@ export function LaunchWizard({
                     onClick={() => setTemplateId(item.template_id)}
                     className={`w-full border p-4 text-left disabled:cursor-not-allowed disabled:opacity-45 ${templateId === item.template_id ? "border-lime bg-white/[.03]" : "border-line"}`}
                   >
-                    <span className="flex flex-wrap items-center justify-between gap-2 font-mono text-sm">
-                      <span>
-                        Template {item.template_id} · v{item.version}
+                    <span className="flex flex-wrap items-center justify-between gap-3 font-mono text-sm">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <AssetLogo
+                          url={
+                            itemEconomics
+                              ? assetLogoUrl(itemEconomics.quoteSymbol)
+                              : null
+                          }
+                          label={
+                            itemEconomics
+                              ? `${itemEconomics.quoteSymbol} quote asset`
+                              : `Template ${item.template_id} quote asset`
+                          }
+                          className="size-10"
+                        />
+                        <span className="min-w-0">
+                          <span className="block">
+                            Template {item.template_id} · v{item.version}
+                          </span>
+                          {itemEconomics && (
+                            <span className="mt-1 block truncate text-[10px] text-muted">
+                              {itemStockAsset
+                                ? `${itemStockAsset.instrumentName} · ${itemStockAsset.issuerName} token`
+                                : `${itemEconomics.quoteSymbol} quote asset`}
+                            </span>
+                          )}
+                        </span>
                       </span>
                       {itemEconomics && (
                         <span className="border border-line px-2 py-1 text-[9px] uppercase text-muted">
