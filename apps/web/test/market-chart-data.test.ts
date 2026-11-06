@@ -56,6 +56,24 @@ test("invalid prices and dates are excluded without creating a placeholder candl
     [],
   );
 });
+test("executed-trade series can fill sparse intervals with flat closes", () => {
+  assert.deepEqual(
+    marketCandles([point(10, "2"), point(190, "4")], "1m", false, true),
+    [
+      { time: 0, open: 2, high: 2, low: 2, close: 2, observations: 1 },
+      { time: 60, open: 2, high: 2, low: 2, close: 2, observations: 0 },
+      { time: 120, open: 2, high: 2, low: 2, close: 2, observations: 0 },
+      { time: 180, open: 4, high: 4, low: 4, close: 4, observations: 1 },
+    ],
+  );
+});
+test("single and dense series do not invent additional observations", () => {
+  assert.equal(marketCandles([point(10, "2")], "1m", false, true).length, 1);
+  assert.equal(
+    marketCandles([point(10, "2"), point(70, "3")], "1m", false, true).length,
+    2,
+  );
+});
 
 test("minute windows have their actual duration", () => {
   assert.equal(chartRangeHours["5m"] * 60, 5);

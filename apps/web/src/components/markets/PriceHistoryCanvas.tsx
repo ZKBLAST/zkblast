@@ -12,6 +12,7 @@ import {
   type IChartApi,
   type IPriceLine,
   type ISeriesApi,
+  type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
 import { Info, Maximize2 } from "lucide-react";
@@ -53,6 +54,7 @@ export function PriceHistoryCanvas({
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const [tooltipLeft, setTooltipLeft] = useState(8);
   const barsRef = useRef(bars);
+  const renderedBarsRef = useRef<readonly MarketCandle[]>([]);
   barsRef.current = bars;
   const hasVolume = volumes.length > 0;
   useEffect(() => {
@@ -63,6 +65,21 @@ export function PriceHistoryCanvas({
         background: { type: ColorType.Solid, color: "#0a0a12" },
         textColor: "#9a9bab",
         attributionLogo: true,
+      },
+      localization: {
+        timeFormatter: (time: Time) =>
+          new Date(
+            typeof time === "number"
+              ? time * 1_000
+              : typeof time === "string"
+                ? time
+              : Date.UTC(time.year, time.month - 1, time.day),
+          ).toLocaleString(undefined, {
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
       },
       grid: {
         vertLines: { color: "#ffffff08", visible: style === "candles" },
@@ -76,8 +93,8 @@ export function PriceHistoryCanvas({
         visible: style === "candles",
         scaleMargins:
           style === "line"
-            ? { top: 0.05, bottom: 0.05 }
-            : { top: 0.2, bottom: 0.1 },
+            ? { top: 0.05, bottom: hasVolume ? 0.22 : 0.05 }
+            : { top: 0.12, bottom: hasVolume ? 0.24 : 0.1 },
       },
       crosshair: {
         vertLine: { color: "#a3a8c0", style: LineStyle.Solid, width: 1 },
@@ -87,6 +104,9 @@ export function PriceHistoryCanvas({
         borderColor: "#252635",
         timeVisible: true,
         secondsVisible: false,
+        barSpacing: 8,
+        minBarSpacing: 3,
+        rightOffset: 4,
       },
       handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
       handleScale: true,
@@ -104,6 +124,9 @@ export function PriceHistoryCanvas({
             wickUpColor: "#56d9ad",
             wickDownColor: "#f07b87",
             borderVisible: false,
+            priceLineVisible: true,
+            priceLineStyle: LineStyle.Dotted,
+            lastValueVisible: true,
             priceFormat,
           })
         : chart.addSeries(AreaSeries, {
@@ -118,24 +141,24 @@ export function PriceHistoryCanvas({
             crosshairMarkerBorderWidth: 2,
             crosshairMarkerBorderColor: "#0c0c15",
             crosshairMarkerBackgroundColor: "#dfe3ee",
-            priceLineVisible: false,
-            lastValueVisible: false,
+            priceLineVisible: true,
+            priceLineStyle: LineStyle.Dotted,
+            lastValueVisible: true,
             priceFormat,
           });
     chartRef.current = chart;
     seriesRef.current = series;
+    renderedBarsRef.current = [];
     if (hasVolume) {
-      volumeRef.current = chart.addSeries(
-        HistogramSeries,
-        {
-          priceFormat: { type: "volume" },
-          lastValueVisible: false,
-          priceLineVisible: false,
-        },
-        1,
-      );
-      chart.panes()[0]?.setStretchFactor(4);
-      chart.panes()[1]?.setStretchFactor(1);
+      volumeRef.current = chart.addSeries(HistogramSeries, {
+        priceFormat: { type: "volume" },
+        priceScaleId: "",
+        lastValueVisible: false,
+        priceLineVisible: false,
+      });
+      volumeRef.current.priceScale().applyOptions({
+        scaleMargins: { top: 0.78, bottom: 0 },
+      });
     }
     fitted.current = false;
     chart.subscribeCrosshairMove((event) => {
@@ -162,6 +185,7 @@ export function PriceHistoryCanvas({
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
+      renderedBarsRef.current = [];
       volumeRef.current = null;
       positionLineRefs.current = [];
     };
@@ -169,24 +193,52 @@ export function PriceHistoryCanvas({
   useEffect(() => {
     const series = seriesRef.current;
     if (!series) return;
-    volumeRef.current?.setData(
-      volumes.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
-    );
-    if (style === "candles")
-      (series as ISeriesApi<"Candlestick">).setData(
-        bars.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
+    const previous = renderedBarsRef.current;
+    const unchangedPrefix = previous.length > 0 && bars.length >= previous.length &&
+      previous.slice(0, -1).every((bar, index) => sameCandle(bar, bars[index]));
+    if (unchangedPrefix) {
+      for (const bar of bars.slice(previous.length - 1)) {
+        if (style === "candles")
+          (series as ISeriesApi<"Candlestick">).update({
+            ...bar,
+            time: bar.time as UTCTimestamp,
+          });
+        else
+          (series as ISeriesApi<"Area">).update({
+            time: bar.time as UTCTimestamp,
+            value: bar.close,
+          });
+        const volume = volumes.find((item) => item.time === bar.time);
+        if (volume)
+          volumeRef.current?.update({
+            ...volume,
+            time: volume.time as UTCTimestamp,
+          });
+      }
+    } else {
+      volumeRef.current?.setData(
+        volumes.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
       );
-    else {
-      const area = series as ISeriesApi<"Area">;
-      area.setData(
-        bars.map((bar) => ({
-          time: bar.time as UTCTimestamp,
-          value: bar.close,
-        })),
-      );
+      if (style === "candles")
+        (series as ISeriesApi<"Candlestick">).setData(
+          bars.map((bar) => ({ ...bar, time: bar.time as UTCTimestamp })),
+        );
+      else
+        (series as ISeriesApi<"Area">).setData(
+          bars.map((bar) => ({
+            time: bar.time as UTCTimestamp,
+            value: bar.close,
+          })),
+        );
     }
+    renderedBarsRef.current = bars;
     if (!fitted.current && bars.length) {
-      chartRef.current?.timeScale().fitContent();
+      const visible = Math.min(80, bars.length);
+      chartRef.current?.timeScale().setVisibleLogicalRange(
+        bars.length <= 2
+          ? { from: -20, to: 5 }
+          : { from: bars.length - visible - 0.5, to: bars.length + 3 },
+      );
       fitted.current = true;
     }
   }, [bars, volumes, style, hasVolume]);
@@ -206,6 +258,13 @@ export function PriceHistoryCanvas({
       }));
   }, [positionLines, style]);
   const observation = hover ?? bars.at(-1);
+  const observationIndex = observation
+    ? bars.findIndex((bar) => bar.time === observation.time)
+    : -1;
+  const previous = observationIndex > 0 ? bars[observationIndex - 1] : null;
+  const change = observation && previous && previous.close > 0
+    ? ((observation.close - previous.close) / previous.close) * 100
+    : null;
   return (
     <div className="flex min-h-80 flex-1 flex-col">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
@@ -215,8 +274,8 @@ export function PriceHistoryCanvas({
         >
           {observation
             ? style === "line"
-              ? `${formatChartPrice(observation.close)} ${volumeUnit ?? ""}`
-              : `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)}`
+              ? `${formatChartPrice(observation.close)} ${volumeUnit ?? ""}${change === null ? "" : ` · ${change >= 0 ? "+" : ""}${change.toFixed(2)}%`}`
+              : `O ${formatChartPrice(observation.open)} · H ${formatChartPrice(observation.high)} · L ${formatChartPrice(observation.low)} · C ${formatChartPrice(observation.close)}${change === null ? "" : ` · ${change >= 0 ? "+" : ""}${change.toFixed(2)}%`}`
             : "No observations"}
         </p>
         <div className="flex items-center gap-2">
@@ -288,4 +347,9 @@ export function PriceHistoryCanvas({
       </div>
     </div>
   );
+}
+
+function sameCandle(left: MarketCandle, right: MarketCandle | undefined) {
+  return Boolean(right) && left.time === right!.time && left.open === right!.open &&
+    left.high === right!.high && left.low === right!.low && left.close === right!.close;
 }

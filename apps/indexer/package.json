@@ -8,6 +8,9 @@
     "build": "tsup",
     "start": "node dist/runner.js",
     "sync:charts": "node --import tsx src/run-market-chart-sync.ts",
+    "backfill:pools-v2": "node --import tsx src/run-pools-v2-backfill.ts",
+    "verify:pools-v2": "node --import tsx src/verify-pools-v2-projections.ts",
+    "reconcile:pools-v2": "node --import tsx src/run-pool-state-reconciliation.ts",
     "catchup": "node --import tsx src/run-fast-catchup.ts",
     "backfill:dbc": "node --import tsx src/run-dbc-backfill.ts",
     "backfill:stock-quotes": "node --import tsx src/run-stock-quote-backfill.ts",
@@ -36,6 +39,7 @@
     "@zkblast/config": "workspace:*",
     "@zkblast/database": "workspace:*",
     "@zkblast/observability": "workspace:*",
+    "@zkblast/sdk": "workspace:*",
     "postgres": "^3.4.5",
     "viem": "^2.21.0",
     "zod": "^3.23.8"

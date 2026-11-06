@@ -4,12 +4,18 @@ export type PageQuery = Readonly<{
   owner?: string | undefined;
 }>;
 export type PoolChartQuery = Readonly<{ from: Date; to: Date; limit: number }>;
+export type PoolCandleQuery = PoolChartQuery & Readonly<{
+  intervalSeconds: 60 | 300 | 900 | 3600 | 14400 | 86400;
+}>;
 
 export interface ProtocolReadStore {
   priceHistory?(
     pool: string,
     query: PoolChartQuery,
   ): Promise<readonly unknown[]>;
+  poolCandles?(pool: string, query: PoolCandleQuery): Promise<readonly unknown[]>;
+  poolStats?(pool: string): Promise<unknown>;
+  poolTrades?(pool: string, query: PageQuery): Promise<readonly unknown[]>;
   pools(query: PageQuery): Promise<readonly unknown[]>;
   swaps(query: PageQuery): Promise<readonly unknown[]>;
   activity(query: PageQuery): Promise<readonly unknown[]>;
@@ -34,6 +40,18 @@ export class ProtocolService {
   priceHistory(pool: string, query: PoolChartQuery) {
     if (!this.store.priceHistory) throw new Error("POOL_CHART_NOT_AVAILABLE");
     return this.store.priceHistory(pool.toLowerCase(), query);
+  }
+  poolCandles(pool: string, query: PoolCandleQuery) {
+    if (!this.store.poolCandles) throw new Error("POOL_CANDLES_NOT_AVAILABLE");
+    return this.store.poolCandles(pool.toLowerCase(), query);
+  }
+  poolStats(pool: string) {
+    if (!this.store.poolStats) throw new Error("POOL_STATS_NOT_AVAILABLE");
+    return this.store.poolStats(pool.toLowerCase());
+  }
+  poolTrades(pool: string, query: PageQuery) {
+    if (!this.store.poolTrades) throw new Error("POOL_TRADES_NOT_AVAILABLE");
+    return this.store.poolTrades(pool.toLowerCase(), query);
   }
   swaps(query: PageQuery) {
     return this.store.swaps(query);

@@ -44,14 +44,12 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
     const rows = await this.sql.unsafe(
       `select * from (
         select 'swap' as source, s.block_timestamp as "observedAt",
-        ((case when s.token_in_id=p.token_x_id then s.amount_out_raw/s.amount_in_raw
-          else s.amount_in_raw/s.amount_out_raw end) * power(10::numeric,x.decimals-y.decimals))::text as price,
-        ((case when s.token_in_id=p.token_y_id then s.amount_in_raw else s.amount_out_raw end)
-          / power(10::numeric,y.decimals))::text as volume,
-        y.symbol as "priceUnit", s.block_number::text as "blockNumber",s.transaction_hash as "transactionHash"
+        (s.spot_price_x18/power(10::numeric,18))::text as price,
+        (s.volume_quote_raw/power(10::numeric,q.decimals))::text as volume,
+        q.symbol as "priceUnit", s.block_number::text as "blockNumber",s.transaction_hash as "transactionHash"
         from ${this.schema}.swaps s join ${this.schema}.pools p on p.id=s.pool_id
-        join ${this.schema}.assets x on x.id=p.token_x_id join ${this.schema}.assets y on y.id=p.token_y_id
-        where p.address=$1 and s.canonical and s.amount_in_raw>0 and s.amount_out_raw>0
+        join ${this.schema}.assets q on q.id=p.quote_token_id
+        where p.address=$1 and s.canonical and s.spot_price_x18>0 and s.volume_quote_raw>=0
         and ((s.token_in_id=p.token_x_id and s.token_out_id=p.token_y_id)
           or (s.token_in_id=p.token_y_id and s.token_out_id=p.token_x_id))
         and s.block_timestamp >= $2 and s.block_timestamp <= $3
@@ -63,6 +61,130 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
       ...row,
       observedAt: z.coerce.date().parse(row.observedAt).toISOString(),
     }));
+  }
+  async poolCandles(pool: string, query: import("./protocol-service.js").PoolCandleQuery) {
+    const rows = await this.sql.unsafe(
+      `select c.bucket_start as "observedAt",
+        (c.open_x18/power(10::numeric,18))::text open,
+        (c.high_x18/power(10::numeric,18))::text high,
+        (c.low_x18/power(10::numeric,18))::text low,
+        (c.close_x18/power(10::numeric,18))::text close,
+        (c.volume_quote_raw/power(10::numeric,q.decimals))::text volume,
+        c.trade_count as "tradeCount",q.symbol as "priceUnit",
+        c.first_block::text as "firstBlock",c.last_block::text as "lastBlock"
+       from ${this.schema}.pool_candles c
+       join ${this.schema}.pools p on p.id=c.pool_id
+       join ${this.schema}.assets q on q.id=p.quote_token_id
+       where p.address=$1 and c.interval_seconds=$2
+         and c.bucket_start >= $3 and c.bucket_start <= $4
+       order by c.bucket_start desc limit $5`,
+      [pool, query.intervalSeconds, query.from, query.to, query.limit],
+    );
+    return rows.reverse().map((row) => ({
+      ...row,
+      observedAt: z.coerce.date().parse(row.observedAt).toISOString(),
+    }));
+  }
+  async poolStats(pool: string) {
+    const rows = await this.sql.unsafe(
+      `select p.address,p.pool_kind as model,p.fee_bps as "feeBps",
+        q.symbol as "priceUnit",q.decimals::integer as "quoteDecimals",
+        x.address as "tokenXAddress",x.decimals::integer as "tokenXDecimals",
+        y.address as "tokenYAddress",y.decimals::integer as "tokenYDecimals",
+        q.address as "quoteAddress",state.spot_price_x18::text as "spotPriceX18",
+        state.reserve0_raw::text as "reserve0Raw",state.reserve1_raw::text as "reserve1Raw",
+        state.active_bin as "activeBin",state.observed_block::text as "asOfBlock",
+        state.observed_at as "observedAt",
+        greatest(0,extract(epoch from (now()-p.created_at)))::bigint::text as "poolAgeSeconds",
+        price_window.first_price::text as "firstPrice24hX18",
+        price_window.last_price::text as "lastPrice24hX18",
+        coalesce(jsonb_object_agg(w.label,jsonb_build_object(
+          'volumeQuoteRaw',w.volume_quote_raw::text,'tradeCount',w.trade_count,
+          'buyCount',w.buy_count,'sellCount',w.sell_count,
+          'buyVolumeRaw',w.buy_volume_raw::text,'sellVolumeRaw',w.sell_volume_raw::text,
+          'traderCount',w.trader_count,'netBuyRaw',(w.buy_volume_raw-w.sell_volume_raw)::text
+        )) filter(where w.label is not null),'{}'::jsonb) windows
+       from ${this.schema}.pools p
+       join ${this.schema}.assets x on x.id=p.token_x_id
+       join ${this.schema}.assets y on y.id=p.token_y_id
+       join ${this.schema}.assets q on q.id=p.quote_token_id
+       left join ${this.schema}.pool_state state on state.pool_id=p.id
+       left join lateral (
+         select
+           (array_agg(s.spot_price_x18 order by s.block_number,s.log_index))[1] first_price,
+           (array_agg(s.spot_price_x18 order by s.block_number desc,s.log_index desc))[1] last_price
+         from ${this.schema}.swaps s where s.pool_id=p.id and s.canonical
+           and s.spot_price_x18>0 and s.block_timestamp>=now()-interval '24 hours'
+       ) price_window on true
+       left join lateral (
+         select window.label,
+          coalesce(sum(s.volume_quote_raw),0) volume_quote_raw,count(s.id)::integer trade_count,
+          count(*) filter(where s.side='buy')::integer buy_count,
+          count(*) filter(where s.side='sell')::integer sell_count,
+          coalesce(sum(s.volume_quote_raw) filter(where s.side='buy'),0) buy_volume_raw,
+          coalesce(sum(s.volume_quote_raw) filter(where s.side='sell'),0) sell_volume_raw,
+          count(distinct s.trader) filter(where s.trader is not null)::integer trader_count
+         from (values ('5m',interval '5 minutes'),('1h',interval '1 hour'),
+                      ('6h',interval '6 hours'),('24h',interval '24 hours')) window(label,duration)
+         left join ${this.schema}.swaps s on s.pool_id=p.id and s.canonical
+           and s.block_timestamp>=now()-window.duration
+         group by window.label
+       ) w on true
+       where p.address=$1
+       group by p.id,x.id,y.id,q.id,state.pool_id,price_window.first_price,price_window.last_price`,
+      [pool],
+    );
+    const row = rows[0];
+    if (!row) return null;
+    const windows = row.windows as Record<string, { volumeQuoteRaw: string }>;
+    const volume24hRaw = BigInt(windows["24h"]?.volumeQuoteRaw ?? "0");
+    const fee24hRaw = volume24hRaw * BigInt(row.feeBps) / 10_000n;
+    const tvlQuoteRaw = row.model === "damm" && row.spotPriceX18
+      ? dammTvlQuoteRaw(row as unknown as DammStatsRow)
+      : null;
+    const firstPrice = row.firstPrice24hX18 ? BigInt(row.firstPrice24hX18) : null;
+    const lastPrice = row.lastPrice24hX18 ? BigInt(row.lastPrice24hX18) : null;
+    return {
+      ...row,
+      observedAt: row.observedAt ? z.coerce.date().parse(row.observedAt).toISOString() : null,
+      priceKind: "pool",
+      tvlQuoteRaw: tvlQuoteRaw?.toString() ?? null,
+      tvlCoverage: row.model === "damm" ? "full_pool" : "requires_dlmm_lens",
+      fee24hRaw: fee24hRaw.toString(),
+      feesToTvlBps: tvlQuoteRaw && tvlQuoteRaw > 0n
+        ? (fee24hRaw * 10_000n / tvlQuoteRaw).toString()
+        : null,
+      priceChange24hBps: firstPrice && lastPrice
+        ? ((lastPrice - firstPrice) * 10_000n / firstPrice).toString()
+        : null,
+    };
+  }
+  async poolTrades(pool: string, query: PageQuery) {
+    return this.sql.unsafe(
+      `select s.transaction_hash as "transactionHash",s.log_index as "logIndex",
+        s.block_number::text as "blockNumber",s.block_timestamp as "observedAt",
+        s.side,s.trader,s.recipient,
+        case
+          when coalesce((e.payload::jsonb->>'privateExecution')::boolean,false) then 'shielded'
+          when s.trader is null then 'unattributed'
+          else 'public'
+        end as privacy,
+        s.amount_in_raw::text as "amountInRaw",
+        s.amount_out_raw::text as "amountOutRaw",s.volume_quote_raw::text as "volumeQuoteRaw",
+        (s.spot_price_x18/power(10::numeric,18))::text price,
+        ti.symbol as "tokenInSymbol",tout.symbol as "tokenOutSymbol",q.symbol as "priceUnit"
+       from ${this.schema}.swaps s join ${this.schema}.pools p on p.id=s.pool_id
+       left join ${this.schema}.protocol_events e on e.chain_id=s.chain_id
+         and e.transaction_hash=s.transaction_hash and e.log_index=s.log_index and e.canonical
+       join ${this.schema}.assets ti on ti.id=s.token_in_id
+       join ${this.schema}.assets tout on tout.id=s.token_out_id
+       join ${this.schema}.assets q on q.id=p.quote_token_id
+       where p.address=$1 and s.canonical and
+         ($2::text is null or (s.block_number,s.transaction_hash,s.log_index)<
+          (split_part($2,':',1)::bigint,split_part($2,':',2),split_part($2,':',3)::integer))
+       order by s.block_number desc,s.transaction_hash desc,s.log_index desc limit $3`,
+      [pool, query.cursor ?? null, query.limit],
+    );
   }
   positions(query: PageQuery) {
     return this.sql.unsafe(
@@ -97,4 +219,32 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
     );
     return Number((rows[0] as { count?: number } | undefined)?.count ?? 0);
   }
+}
+
+type DammStatsRow = Readonly<{
+  tokenXAddress: string;
+  tokenYAddress: string;
+  quoteAddress: string;
+  tokenXDecimals: number;
+  tokenYDecimals: number;
+  quoteDecimals: number;
+  reserve0Raw: string | null;
+  reserve1Raw: string | null;
+  spotPriceX18: string;
+}>;
+
+export function dammTvlQuoteRaw(row: DammStatsRow) {
+  if (!row.reserve0Raw || !row.reserve1Raw) return null;
+  const token0IsX = row.tokenXAddress.toLowerCase() < row.tokenYAddress.toLowerCase();
+  const quoteIsX = row.quoteAddress.toLowerCase() === row.tokenXAddress.toLowerCase();
+  const quoteIsToken0 = quoteIsX === token0IsX;
+  const reserve0 = BigInt(row.reserve0Raw);
+  const reserve1 = BigInt(row.reserve1Raw);
+  const quoteReserve = quoteIsToken0 ? reserve0 : reserve1;
+  const baseReserve = quoteIsToken0 ? reserve1 : reserve0;
+  const baseDecimals = quoteIsX ? row.tokenYDecimals : row.tokenXDecimals;
+  const baseValueQuoteRaw =
+    baseReserve * BigInt(row.spotPriceX18) * 10n ** BigInt(row.quoteDecimals) /
+    (10n ** 18n * 10n ** BigInt(baseDecimals));
+  return quoteReserve + baseValueQuoteRaw;
 }

@@ -117,6 +117,9 @@ importers:
       '@zkblast/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@zkblast/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       postgres:
         specifier: ^3.4.5
         version: 3.4.9

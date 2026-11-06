@@ -24,6 +24,7 @@ export * from "./deterministic.js";
 export * from "./errors.js";
 export * from "./quotes.js";
 export * from "./pool-creation.js";
+export * from "./pool-math.js";
 export * from "./dbc.js";
 export * from "./dbc-math.js";
 export * from "./shielded-batch-poc.js";

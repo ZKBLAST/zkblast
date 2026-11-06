@@ -148,7 +148,11 @@ export async function syncPoolChartSwaps(input: {
         },
         chainId,
       );
-      if (await persistPoolSwap(sql, schema, event)) swaps++;
+      if (
+        await sql.begin((transaction) =>
+          persistPoolSwap(transaction, schema, event),
+        )
+      ) swaps++;
     }
     const block = await client.getBlock({ blockNumber: to });
     if (!block.hash) throw new Error("CHART_SCAN_BLOCK_UNAVAILABLE");

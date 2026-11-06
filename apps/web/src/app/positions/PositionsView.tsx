@@ -26,13 +26,23 @@ import type { ProtocolPosition } from "@/types/application";
 export function PositionsView({
   compact = false,
   onSelectPool,
+  selectedPoolAddress,
 }: {
   compact?: boolean;
   onSelectPool?: (address: string) => void;
+  selectedPoolAddress?: string;
 } = {}) {
   const { address, connect, config, toast } = useApp();
   const data = useProtocolData(address);
   const { items: externalMarkets } = useExternalMarkets();
+  const [scope, setScope] = useState<"selected" | "all">("selected");
+  const selected = selectedPoolAddress?.toLowerCase();
+  const positions =
+    compact && selected && scope === "selected"
+      ? data.positions.filter(
+          (position) => position.poolAddress.toLowerCase() === selected,
+        )
+      : data.positions;
 
   if (!address)
     return (
@@ -89,21 +99,35 @@ export function PositionsView({
       <div className={compact ? "p-4" : "mx-auto max-w-[1360px] px-4 sm:px-6"}>
         {!compact && <AccountPanel />}
         <ShieldedPositionsPanel />
+        {compact && selected && (
+          <div className="mb-3 flex gap-2" role="group" aria-label="Position scope">
+            {(["selected", "all"] as const).map((value) => (
+              <Button
+                key={value}
+                variant={scope === value ? "primary" : "secondary"}
+                onClick={() => setScope(value)}
+              >
+                {value === "selected" ? "Selected pool" : "All positions"}
+              </Button>
+            ))}
+          </div>
+        )}
         <RealDataState
           loading={data.loading}
           error={data.error}
-          empty={!data.positions.length}
+          empty={!positions.length}
           onRetry={data.refresh}
         />
-        {!data.loading && !data.error && !data.positions.length ? (
+        {!data.loading && !data.error && !positions.length ? (
           <p className="mt-4 border border-line p-4 text-sm text-muted">
-            This wallet has no indexed public liquidity position. Completed
-            market swaps remain available in the trade history above.
+            {scope === "selected"
+              ? "This wallet has no indexed public liquidity position in the selected pool."
+              : "This wallet has no indexed public liquidity position. Completed market swaps remain available in trade history."}
           </p>
         ) : null}
-        {data.positions.length ? (
+        {positions.length ? (
           <ul className="space-y-3">
-            {data.positions.map((position) => (
+            {positions.map((position) => (
               <PositionItem
                 key={`${position.poolAddress}:${position.onchainPositionId}`}
                 position={position}

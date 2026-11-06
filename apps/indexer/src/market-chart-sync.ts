@@ -3,6 +3,7 @@ import { getChainDescriptor } from "@zkblast/config";
 import { createPublicClient, http, type Address } from "viem";
 import { z } from "zod";
 import { syncPoolChartSwaps } from "./sync-pool-chart-swaps.js";
+import { reconcilePoolState } from "./reconcile-pool-state.js";
 import { syncReferenceChartPrices } from "./sync-reference-chart-prices.js";
 
 const settingsSchema = z.object({
@@ -74,6 +75,12 @@ export function marketChartSynchronizer(network: Network, registry: Address) {
         registry,
         maximumBlocks: settings.CHART_SYNC_MAX_BLOCKS,
       }).catch(() => ({ unavailable: true }));
+      const poolState = await reconcilePoolState({
+        client: execution,
+        sql,
+        schema: network.SUPABASE_SCHEMA,
+        chainId: network.CHAIN_ID,
+      }).catch(() => ({ unavailable: true }));
       const markets = reference
         ? await syncReferenceChartPrices({
             client: reference,
@@ -87,6 +94,7 @@ export function marketChartSynchronizer(network: Network, registry: Address) {
         service: "chart-sync",
         environment: network.APP_ENV,
         pools,
+        poolState,
         markets,
       };
       console.log(JSON.stringify(result));

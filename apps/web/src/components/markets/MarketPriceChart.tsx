@@ -5,10 +5,13 @@ import {
   ChartCandlestick,
   ChartLine,
   Database,
+  Clock3,
+  Maximize2,
+  Minimize2,
   Radio,
   RefreshCw,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { RealDataState } from "@/components/protocol/real-data-state";
 import { SelectMenu } from "@/components/ui/SelectMenu";
 import { cx } from "@/lib/format";
@@ -24,6 +27,7 @@ import {
   type PriceSource,
 } from "@/lib/market-chart-data";
 import { useMarketPriceHistory } from "@/lib/use-market-price-history";
+import { useChartPreferences } from "@/lib/use-chart-preferences";
 import { PriceHistoryCanvas } from "./PriceHistoryCanvas";
 
 export function MarketPriceChart({
@@ -48,9 +52,13 @@ export function MarketPriceChart({
   const marketKey = `${marketId}:${poolAddress}`;
   const requestedSource =
     selection?.market === marketKey ? selection.source : "auto";
-  const [interval, setInterval] = useState<ChartInterval>("1h");
+  const { preferences, update: updatePreferences } = useChartPreferences();
+  const interval = preferences.interval;
   const range = chartRangeForInterval[interval];
-  const [style, setStyle] = useState<ChartStyle>("line");
+  const styleSelection = preferences.style;
+  const root = useRef<HTMLElement>(null);
+  const [fallbackFullscreen, setFallbackFullscreen] = useState(false);
+  const [nativeFullscreen, setNativeFullscreen] = useState(false);
   const { items, loading, error, refresh, source } = useMarketPriceHistory(
     marketId,
     requestedSource,
@@ -58,12 +66,14 @@ export function MarketPriceChart({
     poolAddress,
     perpsMarketId,
   );
+  const style = styleSelection ?? (source === "swap" && poolAddress ? "candles" : "line");
   const bars = useMemo(
     () =>
       marketCandles(
         items,
         interval,
         source === "swap" && Boolean(poolAddress) && inverted,
+        source === "swap" && Boolean(poolAddress),
       ),
     [items, interval, source, poolAddress, inverted],
   );
@@ -89,9 +99,26 @@ export function MarketPriceChart({
   const available =
     source === "swap" ? Boolean(poolAddress) : Boolean(marketId);
   const chartKey = `${marketId}:${poolAddress}:${source}:${range}:${interval}`;
+  async function toggleFullscreen() {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      setNativeFullscreen(false);
+      return;
+    }
+    if (root.current?.requestFullscreen) {
+      await root.current.requestFullscreen();
+      setNativeFullscreen(true);
+      return;
+    }
+    setFallbackFullscreen((value) => !value);
+  }
   return (
     <section
-      className="flex min-h-[30rem] flex-1 flex-col p-4"
+      ref={root}
+      className={cx(
+        "flex min-h-[30rem] flex-1 flex-col bg-bg p-4",
+        fallbackFullscreen && "fixed inset-0 z-[100] min-h-0 overflow-auto",
+      )}
       aria-label="Market chart"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -144,33 +171,34 @@ export function MarketPriceChart({
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-y border-line py-2">
-        <div
-          role="group"
-          aria-label="Chart timeframe"
-          className="flex flex-wrap gap-1"
-        >
-          {(Object.keys(chartIntervals) as ChartInterval[]).map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={interval === value}
-              onClick={() => setInterval(value)}
-              className={`border px-2 py-2 font-mono text-xs ${interval === value ? "border-lime bg-lime text-lime-ink font-bold" : "border-transparent text-muted hover:border-line"}`}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
+        <SelectMenu<ChartInterval>
+          label="Chart interval"
+          value={interval}
+          onChange={(value) => updatePreferences({ interval: value })}
+          options={(Object.keys(chartIntervals) as ChartInterval[]).map((value) => ({
+            value,
+            label: value,
+            icon: Clock3,
+          }))}
+        />
         <div className="flex items-center gap-2">
           <SelectMenu<ChartStyle>
             label="Chart style"
             value={style}
-            onChange={setStyle}
+            onChange={(value) => updatePreferences({ style: value })}
             options={[
               { value: "line", label: "Line", icon: ChartLine },
               { value: "candles", label: "Candles", icon: ChartCandlestick },
             ]}
           />
+          <button
+            type="button"
+            aria-label={fallbackFullscreen || nativeFullscreen ? "Exit fullscreen" : "Open fullscreen"}
+            onClick={() => void toggleFullscreen()}
+            className="p-2"
+          >
+            {fallbackFullscreen || nativeFullscreen ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
+          </button>
           <button
             type="button"
             aria-label="Refresh chart"

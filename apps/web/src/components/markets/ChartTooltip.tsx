@@ -26,8 +26,10 @@ export function ChartTooltip({
       style={{ left }}
     >
       <p className="mb-2 font-mono text-[10px] text-muted">
-        {new Date(bar.time * 1000).toISOString().replace("T", " ").slice(0, 16)}{" "}
-        UTC
+        {new Date(bar.time * 1000).toLocaleString()}
+        <span className="mt-1 block text-faint">
+          {new Date(bar.time * 1000).toISOString().replace("T", " ").slice(0, 16)} UTC
+        </span>
       </p>
       <dl className="space-y-1.5">
         {values.map(([name, value]) => (

@@ -31,6 +31,22 @@ const swapSchema = z
   .strict();
 
 const integerString = z.string().regex(/^\d+$/u);
+const poolAddressSchema = z.string().regex(/^0x[\da-f]{40}$/iu);
+const chartRangeFields = {
+  from: z.coerce.date(),
+  to: z.coerce.date(),
+  limit: z.coerce.number().int().min(1).max(2000).default(1000),
+} as const;
+const validChartRange = (q: { from: Date; to: Date }) =>
+  q.to > q.from && q.to.getTime() - q.from.getTime() <= 31 * 86400000;
+const chartRangeSchema = z.object(chartRangeFields).refine(validChartRange);
+const candleQuerySchema = z.object({
+  ...chartRangeFields,
+  intervalSeconds: z.coerce.number().pipe(z.union([
+    z.literal(60),z.literal(300),z.literal(900),z.literal(3600),
+    z.literal(14400),z.literal(86400),
+  ])),
+}).refine(validChartRange);
 const createLiquiditySchema = z
   .object({
     model: z.enum(["damm", "dlmm"]),
@@ -86,21 +102,8 @@ export function createProtocolRouter(
   const router = Router();
   router.get("/pools/:pool/chart", async (request, response, next) => {
     try {
-      const pool = z
-        .string()
-        .regex(/^0x[\da-f]{40}$/iu)
-        .parse(request.params.pool);
-      const query = z
-        .object({
-          from: z.coerce.date(),
-          to: z.coerce.date(),
-          limit: z.coerce.number().int().min(1).max(2000).default(1000),
-        })
-        .refine(
-          (q) =>
-            q.to > q.from && q.to.getTime() - q.from.getTime() <= 31 * 86400000,
-        )
-        .parse(request.query);
+      const pool = poolAddressSchema.parse(request.params.pool);
+      const query = chartRangeSchema.parse(request.query);
       response.json({
         pool,
         source: "swap",
@@ -109,6 +112,25 @@ export function createProtocolRouter(
     } catch (error) {
       next(error);
     }
+  });
+  router.get("/pools/:pool/candles", async (request, response, next) => {
+    try {
+      const pool = poolAddressSchema.parse(request.params.pool);
+      const query = candleQuerySchema.parse(request.query);
+      response.json({ pool, source: "swap", items: await service.poolCandles(pool, query) });
+    } catch (error) { next(error); }
+  });
+  router.get("/pools/:pool/stats", async (request, response, next) => {
+    try {
+      const pool = poolAddressSchema.parse(request.params.pool);
+      response.json({ pool, stats: await service.poolStats(pool) });
+    } catch (error) { next(error); }
+  });
+  router.get("/pools/:pool/trades", async (request, response, next) => {
+    try {
+      const pool = poolAddressSchema.parse(request.params.pool);
+      response.json({ pool, items: await service.poolTrades(pool, querySchema.parse(request.query)) });
+    } catch (error) { next(error); }
   });
   router.get("/pools", async (request, response, next) => {
     try {

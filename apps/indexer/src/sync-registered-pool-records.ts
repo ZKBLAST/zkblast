@@ -168,14 +168,20 @@ export async function syncRegisteredPoolRecords(input: {
           ? token1.toLowerCase()
           : token0.toLowerCase();
       await tx.unsafe(
-        `insert into ${schema}.pools (chain_id,address,pool_kind,token_x_id,token_y_id,fee_bps,created_block,created_at)
-        values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (chain_id,address) do nothing`,
+        `insert into ${schema}.pools
+         (chain_id,address,pool_kind,token_x_id,token_y_id,quote_token_id,bin_step_bps,
+          fee_bps,created_block,created_at)
+        values ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9)
+        on conflict (chain_id,address) do update set
+         quote_token_id=coalesce(${schema}.pools.quote_token_id,excluded.quote_token_id),
+         bin_step_bps=coalesce(${schema}.pools.bin_step_bps,excluded.bin_step_bps)`,
         [
           chainId,
           address.toLowerCase(),
           kind,
           ids.get(base)!,
           ids.get(quote)!,
+          step === null ? null : Number(step),
           fee / 100,
           creation.block_number,
           new Date(Number(block.timestamp) * 1000),

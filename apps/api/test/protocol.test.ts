@@ -11,6 +11,10 @@ import {
 import type { OperationsService } from "../src/operations-service.js";
 
 const store: ProtocolReadStore = {
+  priceHistory: async () => [{ price: "1.25", priceUnit: "USDG" }],
+  poolCandles: async () => [{ open: "1", close: "2", priceUnit: "USDG" }],
+  poolStats: async () => ({ priceKind: "pool", asOfBlock: "95" }),
+  poolTrades: async () => [{ side: "buy", trader: null }],
   pools: async () => [{ address: "0xpool", kind: "damm" }],
   swaps: async () => [{ transactionHash: "0xtx" }],
   activity: async () => [{ eventName: "LiquidityAdded" }],
@@ -45,6 +49,34 @@ test("read API exposes validated activity beyond swaps", async () => {
   const response = await request(app).get("/v1/protocol/activity?limit=10");
   assert.equal(response.status, 200);
   assert.equal(response.body.items[0].eventName, "LiquidityAdded");
+});
+test("pool chart compatibility and Pools v2 reads preserve explicit units", async () => {
+  const pool = "0x0000000000000000000000000000000000000001";
+  const range = "from=2026-10-16T00:00:00.000Z&to=2026-10-17T00:00:00.000Z";
+  const [legacy, candles, stats, trades] = await Promise.all([
+    request(app).get(`/v1/protocol/pools/${pool}/chart?${range}`),
+    request(app).get(`/v1/protocol/pools/${pool}/candles?${range}&intervalSeconds=300`),
+    request(app).get(`/v1/protocol/pools/${pool}/stats`),
+    request(app).get(`/v1/protocol/pools/${pool}/trades?limit=10`),
+  ]);
+  assert.equal(legacy.status, 200);
+  assert.equal(legacy.body.items[0].priceUnit, "USDG");
+  assert.equal(candles.status, 200);
+  assert.equal(candles.body.items[0].priceUnit, "USDG");
+  assert.equal(stats.body.stats.priceKind, "pool");
+  assert.equal(trades.body.items[0].trader, null);
+});
+
+test("pool candles reject unsupported intervals and excessive ranges", async () => {
+  const pool = "0x0000000000000000000000000000000000000001";
+  const invalidInterval = await request(app).get(
+    `/v1/protocol/pools/${pool}/candles?from=2026-10-16T00:00:00Z&to=2026-10-17T00:00:00Z&intervalSeconds=120`,
+  );
+  const excessive = await request(app).get(
+    `/v1/protocol/pools/${pool}/candles?from=2026-01-01T00:00:00Z&to=2026-10-17T00:00:00Z&intervalSeconds=300`,
+  );
+  assert.equal(invalidInterval.status, 400);
+  assert.equal(excessive.status, 400);
 });
 
 test("readiness and metrics report RPC lag without secrets", async () => {

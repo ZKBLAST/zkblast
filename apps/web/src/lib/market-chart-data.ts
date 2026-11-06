@@ -92,6 +92,7 @@ export function marketCandles(
   items: readonly MarketPricePoint[],
   interval: ChartInterval,
   inverted = false,
+  continuous = false,
 ): MarketCandle[] {
   const samples = items
     .map((item, index) => ({
@@ -128,7 +129,29 @@ export function marketCandles(
         observations: 1,
       });
   }
-  return [...candles.values()];
+  const recorded = [...candles.values()];
+  if (!continuous || recorded.length < 2) return recorded;
+  const result: MarketCandle[] = [];
+  const step = chartIntervals[interval];
+  for (const candle of recorded) {
+    const previous = result.at(-1);
+    if (previous) {
+      for (
+        let time = previous.time + step;
+        time < candle.time && result.length < 2_000;
+        time += step
+      ) result.push({
+        time,
+        open: previous.close,
+        high: previous.close,
+        low: previous.close,
+        close: previous.close,
+        observations: 0,
+      });
+    }
+    result.push(candle);
+  }
+  return result;
 }
 
 export function formatChartPrice(value: number) {

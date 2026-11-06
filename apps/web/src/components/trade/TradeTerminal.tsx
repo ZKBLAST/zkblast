@@ -22,6 +22,7 @@ import { TerminalTabs } from "./TerminalTabs";
 import { TradeDataProvider } from "./TradeDataProvider";
 import { InstrumentLogo, MarketBrowser } from "./MarketBrowser";
 import { MarketActivity, TradeHistory } from "./TradeHistory";
+import { PoolStatsStrip } from "./PoolStatsStrip";
 
 export function TradeTerminal() {
   return (
@@ -258,6 +259,7 @@ function Terminal() {
               </p>
             </div>
           </div>
+          {selected?.pool && <PoolStatsStrip pool={selected.pool.address} />}
           <MarketPriceChart
             key={`${selected?.market?.id ?? "no-market"}:${revision}`}
             marketId={selected?.market?.id ?? null}
@@ -314,6 +316,7 @@ function Terminal() {
           <PositionsView
             key={revision}
             compact
+            selectedPoolAddress={selected?.pool?.address}
             onSelectPool={(address) => update("pool", address.toLowerCase())}
           />
         </div>

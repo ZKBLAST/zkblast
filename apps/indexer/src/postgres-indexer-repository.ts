@@ -5,7 +5,10 @@ import type { BlockEnvelope, IndexerCheckpoint } from "./domain.js";
 import type { IndexerRepository } from "./repository.js";
 import { validateBlockForPersistence } from "./validation.js";
 import { transactionObservation } from "./transaction-reconciliation.js";
-import { persistPoolSwap } from "./persist-pool-swap.js";
+import {
+  persistPoolSwap,
+  rebuildPoolProjections,
+} from "./persist-pool-swap.js";
 import { installCheckpointGuard } from "./checkpoint-guard.js";
 import { reconcileUserActivity } from "./reconcile-user-activity.js";
 import { syncRegisteredPoolRecords } from "./sync-registered-pool-records.js";
@@ -479,6 +482,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         `delete from ${this.schema}.protocol_events where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
+      await rebuildPoolProjections(transaction, this.schema, chainId);
       await transaction.unsafe(
         `delete from ${this.schema}.indexed_blocks where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],

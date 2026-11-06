@@ -114,10 +114,15 @@ export function useMarketPriceHistory(
     void refresh();
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") void refresh(true);
-    }, 60_000);
+    }, 5_000);
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void refresh(true);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       requestId.current += 1;
       window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [refresh]);
   const visible =
