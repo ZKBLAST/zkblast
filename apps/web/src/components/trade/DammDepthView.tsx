@@ -53,7 +53,15 @@ export function DammDepthView({
         <div><p className="label">Theoretical DAMM depth</p><p className="mt-1 text-xs text-muted">Constant-product reserve impact · not resting orders</p></div>
         <span className={`border px-2 py-1 font-mono text-[9px] uppercase ${data?.reconciled ? "border-emerald-400/40 text-emerald-300" : "border-amber-400/40 text-amber-300"}`}>{data?.reconciled ? "Reserves reconciled" : "Awaiting reconciliation"}</span>
       </div>
-      <RealDataState loading={!data && !error} error={error} empty={Boolean(data && !rows.length)} onRetry={() => setRetry((value) => value + 1)} />
+      <RealDataState
+        loading={!data && !error}
+        error={error}
+        empty={Boolean(data && !rows.length)}
+        onRetry={() => {
+          setRetry((value) => value + 1);
+          return Promise.resolve();
+        }}
+      />
       {rows.length ? <div className="overflow-x-auto border border-line"><table className="w-full min-w-[34rem] font-mono text-[10px]"><thead className="text-faint"><tr><th className="p-2 text-left">Side</th><th className="p-2 text-right">Trade size {base}</th><th className="p-2 text-right">Average price {quote}</th><th className="p-2 text-right">Price impact</th></tr></thead><tbody>{rows.map((row) => <tr key={`${row.side}:${row.fraction}`} className="border-t border-line"><td className={`p-2 ${row.side === "buy" ? "text-emerald-300" : "text-rose-300"}`}>{row.side.toUpperCase()}</td><td className="p-2 text-right">{row.baseAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })}</td><td className="p-2 text-right">{row.averagePrice.toLocaleString(undefined, { maximumSignificantDigits: 8 })}</td><td className="p-2 text-right">{row.impact.toFixed(2)}%</td></tr>)}</tbody></table></div> : null}
     </section>
   );

@@ -58,7 +58,15 @@ export function TopLiquidityProviders({
         <h3 id="top-lps-heading" className="font-mono text-[10px] uppercase text-muted">Top liquidity providers</h3>
         <span className="font-mono text-[9px] uppercase text-faint">Current onchain value</span>
       </div>
-      <RealDataState loading={loading} error={error} empty={!data?.items.length} onRetry={() => setRetry((value) => value + 1)} />
+      <RealDataState
+        loading={loading}
+        error={error}
+        empty={!data?.items.length}
+        onRetry={() => {
+          setRetry((value) => value + 1);
+          return Promise.resolve();
+        }}
+      />
       {!loading && !error && data?.items.length ? (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[42rem] text-left text-xs">
