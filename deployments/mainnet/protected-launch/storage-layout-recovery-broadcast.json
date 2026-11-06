@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "planSha256": "79152d2146e63cb4066def711009644a2d7cc5333ea334f7ee8fce7eee48a5a2",
+  "implementation": "0x9b9135e721f065a8537B0d4bfb5C7fFCe558b5Ec",
+  "operationId": "0x7df2965414facaa715d33237927069f243fb7202f3ecda22f8b122b1538e39af",
+  "totalFeeWei": "74774534028000",
+  "totalFeeEth": "0.000074774534028",
+  "capEth": "0.00015",
+  "transactions": [
+    "0x08840d5c43cfd4048833efeaf758ac108b87ca4c5f479d8b3a25689c7f043c33",
+    "0x6306af884fe6ecd1ba764d2f14a53b687dc6b7a0e9a1a32df69d5c51d07e4784",
+    "0xc3a43b68338c14d51aa1f0c49ebbd73b3c40def6b9a182a2fd55e9c42a32d074"
+  ],
+  "assertions": {
+    "implementationRecovered": true,
+    "identityRegistryRecovered": true
+  }
+}

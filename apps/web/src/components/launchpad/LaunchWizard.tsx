@@ -55,6 +55,16 @@ type PendingInitialBuy = Readonly<{
   phase: "approve" | "buy";
 }>;
 
+type LaunchpadRecord = Readonly<{
+  configPresetId: string;
+}>;
+
+type LaunchpadPreset = Readonly<{
+  presetId: string;
+  dbcTemplateId: string;
+  graduationDestination: number;
+}>;
+
 export function LaunchWizard({
   open,
   onClose,
@@ -125,6 +135,8 @@ export function LaunchWizard({
     useState<PendingInitialBuy | null>(null);
   const [launchpadConfiguration, setLaunchpadConfiguration] =
     useState<LaunchpadAddresses | null>(null);
+  const [launchpadPreset, setLaunchpadPreset] =
+    useState<LaunchpadPreset | null>(null);
   const [initialBuyBusy, setInitialBuyBusy] = useState(false);
   const [initialBuyStatus, setInitialBuyStatus] = useState("");
   const selected = useMemo(
@@ -159,6 +171,10 @@ export function LaunchWizard({
   const displayedStockDestinations = stockQuoteAsset
     ? stockDestinations
     : catalogStockDestinations;
+  const stockQuoteTemplateSelected = stockQuoteAsset !== null;
+  const launchpadTemplateMismatch = Boolean(
+    launchpadPreset && selected?.template_id !== launchpadPreset.dbcTemplateId,
+  );
   const stockTemplateAvailable =
     !stockQuoteAsset || stockQuoteAsset.quoteTradingEnabled;
   useEffect(() => {
@@ -209,6 +225,11 @@ export function LaunchWizard({
       });
     return () => controller.abort();
   }, [config?.chainId, open]);
+  useEffect(() => {
+    if (!stockQuoteTemplateSelected) return;
+    setLaunchProtection("protected");
+    setInitialBuy("");
+  }, [stockQuoteTemplateSelected]);
   useEffect(() => {
     if (!open || config?.chainId !== 4663) {
       setStockTemplateIds({});
@@ -359,16 +380,40 @@ export function LaunchWizard({
   useEffect(() => {
     if (!open || !launchpadId) {
       setLaunchpadConfiguration(null);
+      setLaunchpadPreset(null);
       return;
     }
     const controller = new AbortController();
-    void apiRequest<LaunchpadAddresses>(
-      webPublicConfig.apiUrl,
-      "/v1/launchpads/configuration",
-      { signal: controller.signal, cache: "no-store" },
-    )
-      .then(setLaunchpadConfiguration)
-      .catch(() => setLaunchpadConfiguration(null));
+    void Promise.all([
+      apiRequest<LaunchpadAddresses>(
+        webPublicConfig.apiUrl,
+        "/v1/launchpads/configuration",
+        { signal: controller.signal, cache: "no-store" },
+      ),
+      apiRequest<LaunchpadRecord>(
+        webPublicConfig.apiUrl,
+        `/v1/launchpads/records/${launchpadId}`,
+        { signal: controller.signal, cache: "no-store" },
+      ),
+      apiRequest<{ items: readonly LaunchpadPreset[] }>(
+        webPublicConfig.apiUrl,
+        "/v1/launchpads/presets",
+        { signal: controller.signal, cache: "no-store" },
+      ),
+    ])
+      .then(([configuration, record, presets]) => {
+        const preset =
+          presets.items.find(
+            (item) => item.presetId === record.configPresetId,
+          ) ?? null;
+        setLaunchpadConfiguration(configuration);
+        setLaunchpadPreset(preset);
+        if (preset) setTemplateId(preset.dbcTemplateId);
+      })
+      .catch(() => {
+        setLaunchpadConfiguration(null);
+        setLaunchpadPreset(null);
+      });
     return () => controller.abort();
   }, [config?.chainId, launchpadId, open]);
   const validWebsite = !websiteUrl || /^https:\/\/.+/u.test(websiteUrl);
@@ -390,7 +435,9 @@ export function LaunchWizard({
             initialBuyRaw <= BigInt(economics.graduationThresholdRaw)));
   const canContinue =
     step === 0
-      ? Boolean(selected) && stockTemplateAvailable
+      ? Boolean(selected) &&
+        stockTemplateAvailable &&
+        !launchpadTemplateMismatch
       : step === 1
         ? name.trim().length > 0 &&
           symbol.trim().length > 0 &&
@@ -402,9 +449,20 @@ export function LaunchWizard({
         : true;
   async function submit() {
     if (!address) return connect();
+    if (launchpadTemplateMismatch)
+      return setStatus("LAUNCHPAD_PRESET_TEMPLATE_MISMATCH");
     if (!window.ethereum || !config || !selected) return;
     if (launchProtection === "protected" && !deployment.protectedLaunch)
       return setStatus("PROTECTED_DEPLOYMENT_NOT_CONFIGURED");
+    if (stockQuoteTemplateSelected && launchProtection !== "protected")
+      return setStatus("STOCK_QUOTE_REQUIRES_PROTECTED_LAUNCH");
+    if (
+      stockQuoteTemplateSelected &&
+      !stockDestinations.some(
+        (item) => item.migrationMode === selectedMigrationMode && item.enabled,
+      )
+    )
+      return setStatus("STOCK_QUOTE_DESTINATION_NOT_ENABLED");
     setSubmitting(true);
     setStatus("preparing");
     let launchCreated = false;
@@ -715,13 +773,19 @@ export function LaunchWizard({
                 type="button"
                 role="radio"
                 aria-checked={launchProtection === "standard"}
+                disabled={stockQuoteTemplateSelected}
                 onClick={() => setLaunchProtection("standard")}
-                className={`border p-4 text-left ${launchProtection === "standard" ? "border-lime bg-white/[.03]" : "border-line"}`}
+                className={`border p-4 text-left disabled:cursor-not-allowed disabled:opacity-40 ${launchProtection === "standard" ? "border-lime bg-white/[.03]" : "border-line"}`}
               >
                 <span className="font-mono text-xs uppercase">Standard</span>
                 <span className="mt-2 block text-[11px] leading-5 text-muted">
                   Governed curve and graduation rules.
                 </span>
+                {stockQuoteTemplateSelected && (
+                  <span className="mt-2 block text-[10px] text-muted">
+                    Tokenized stock quotes use protected execution.
+                  </span>
+                )}
               </button>
               <button
                 type="button"
@@ -778,100 +842,116 @@ export function LaunchWizard({
                 DAMM or DLMM migration policy before launch.
               </p>
             </div>
-            {(stockQuoteCatalogLoading || stockQuoteCatalog.length > 0) && (
-              <div className="panel-inset space-y-3 p-4">
-                <div>
-                  <p className="label">Tokenized stock quote catalog</p>
-                  <p className="mt-2 text-[11px] leading-5 text-muted">
-                    Address-verified issuer assets appear here before governance
-                    enables a corresponding launch template.
-                  </p>
-                </div>
-                {stockQuoteCatalogLoading ? (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <span className="content-shimmer h-16" aria-hidden />
-                    <span className="content-shimmer h-16" aria-hidden />
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60">
-                      <Search className="size-4 text-muted" aria-hidden />
-                      <input
-                        value={stockCatalogQuery}
-                        onChange={(event) =>
-                          setStockCatalogQuery(event.target.value)
-                        }
-                        placeholder="Search symbol, issuer or contract"
-                        className="min-w-0 flex-1 bg-transparent text-xs outline-none"
-                        aria-label="Search tokenized stock quote assets"
-                      />
-                    </label>
-                    <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
-                      {filteredStockQuoteCatalog.map((asset) => (
-                        <button
-                          type="button"
-                          key={asset.contractAddress}
-                          aria-pressed={
-                            catalogStockAddress === asset.contractAddress
-                          }
-                          onClick={() => {
-                            setCatalogStockAddress(asset.contractAddress);
-                            const matchingTemplates =
-                              stockTemplateIds[
-                                asset.contractAddress.toLowerCase()
-                              ];
-                            const matchingTemplate =
-                              matchingTemplates?.[selectedMigrationMode] ??
-                              matchingTemplates?.damm ??
-                              matchingTemplates?.dlmm;
-                            if (matchingTemplate)
-                              setTemplateId(matchingTemplate);
-                          }}
-                          className={`border bg-bg p-3 text-left ${catalogStockAddress === asset.contractAddress ? "border-lime/70" : "border-line"}`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="truncate text-xs text-fg">
-                                {asset.instrumentName}
-                              </p>
-                              <p className="mt-1 font-mono text-[10px] text-muted">
-                                {asset.symbol} ·{" "}
-                                {asset.marketState.replaceAll("_", " ")}
-                              </p>
-                            </div>
-                            <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted">
-                              {asset.availability}
-                            </span>
-                          </div>
-                          <p className="mt-3 break-all font-mono text-[9px] text-muted">
-                            {asset.contractAddress}
-                          </p>
-                          <p className="mt-2 text-[10px] text-muted">
-                            {Object.keys(
-                              stockTemplateIds[
-                                asset.contractAddress.toLowerCase()
-                              ] ?? {},
-                            ).length > 0
-                              ? asset.quoteTradingEnabled
-                                ? "Protected launch template active"
-                                : "Template ready · trading disabled"
-                              : "Cataloged · launch template unavailable"}
-                          </p>
-                        </button>
-                      ))}
-                    </div>
-                    {filteredStockQuoteCatalog.length === 0 && (
-                      <p className="border border-line p-3 text-[11px] text-muted">
-                        No address-verified stock quote asset matches this
-                        search.
-                      </p>
-                    )}
-                  </div>
-                )}
+            {launchpadId && launchpadPreset && (
+              <div className="border border-line p-4 text-xs leading-5 text-muted">
+                Launchpad {launchpadId} is bound onchain to Template{" "}
+                {launchpadPreset.dbcTemplateId}. Its quote asset and{" "}
+                {launchpadPreset.graduationDestination === 1 ? "DLMM" : "DAMM"}{" "}
+                destination cannot be changed after deployment.
               </div>
             )}
+            {!launchpadId &&
+              (stockQuoteCatalogLoading || stockQuoteCatalog.length > 0) && (
+                <div className="panel-inset space-y-3 p-4">
+                  <div>
+                    <p className="label">Tokenized stock quote catalog</p>
+                    <p className="mt-2 text-[11px] leading-5 text-muted">
+                      Address-verified issuer assets appear here before
+                      governance enables a corresponding launch template.
+                    </p>
+                  </div>
+                  {stockQuoteCatalogLoading ? (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <span className="content-shimmer h-16" aria-hidden />
+                      <span className="content-shimmer h-16" aria-hidden />
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <label className="flex h-11 items-center gap-2 border border-line bg-bg px-3 focus-within:border-lime/60">
+                        <Search className="size-4 text-muted" aria-hidden />
+                        <input
+                          value={stockCatalogQuery}
+                          onChange={(event) =>
+                            setStockCatalogQuery(event.target.value)
+                          }
+                          placeholder="Search symbol, issuer or contract"
+                          className="min-w-0 flex-1 bg-transparent text-xs outline-none"
+                          aria-label="Search tokenized stock quote assets"
+                        />
+                      </label>
+                      <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+                        {filteredStockQuoteCatalog.map((asset) => (
+                          <button
+                            type="button"
+                            key={asset.contractAddress}
+                            aria-pressed={
+                              catalogStockAddress === asset.contractAddress
+                            }
+                            onClick={() => {
+                              setCatalogStockAddress(asset.contractAddress);
+                              setLaunchProtection("protected");
+                              setInitialBuy("");
+                              setStatus("");
+                              const matchingTemplates =
+                                stockTemplateIds[
+                                  asset.contractAddress.toLowerCase()
+                                ];
+                              const matchingTemplate =
+                                matchingTemplates?.dlmm ??
+                                matchingTemplates?.damm;
+                              if (matchingTemplate)
+                                setTemplateId(matchingTemplate);
+                            }}
+                            className={`border bg-bg p-3 text-left ${catalogStockAddress === asset.contractAddress ? "border-lime/70" : "border-line"}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-xs text-fg">
+                                  {asset.instrumentName}
+                                </p>
+                                <p className="mt-1 font-mono text-[10px] text-muted">
+                                  {asset.symbol} ·{" "}
+                                  {asset.marketState.replaceAll("_", " ")}
+                                </p>
+                              </div>
+                              <span className="border border-line px-2 py-1 font-mono text-[9px] uppercase text-muted">
+                                {asset.availability}
+                              </span>
+                            </div>
+                            <p className="mt-3 break-all font-mono text-[9px] text-muted">
+                              {asset.contractAddress}
+                            </p>
+                            <p className="mt-2 text-[10px] text-muted">
+                              {Object.keys(
+                                stockTemplateIds[
+                                  asset.contractAddress.toLowerCase()
+                                ] ?? {},
+                              ).length > 0
+                                ? asset.quoteTradingEnabled
+                                  ? "Protected launch template active"
+                                  : "Template ready · trading disabled"
+                                : "Cataloged · launch template unavailable"}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                      {filteredStockQuoteCatalog.length === 0 && (
+                        <p className="border border-line p-3 text-[11px] text-muted">
+                          No address-verified stock quote asset matches this
+                          search.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             {templates
-              .filter((t) => t.enabled)
+              .filter(
+                (item) =>
+                  item.enabled &&
+                  (!launchpadPreset ||
+                    item.template_id === launchpadPreset.dbcTemplateId),
+              )
               .map((item) => (
                 <button
                   key={item.template_id}
@@ -1087,7 +1167,7 @@ export function LaunchWizard({
               />
               <Review
                 label="Template"
-                value={`#${templateId} · v${selected?.version ?? "—"}`}
+                value={`#${templateId} · v${selected?.version ?? "—"} · ${selectedMigrationMode.toUpperCase()}`}
               />
               <Review
                 label="Launch protection"
@@ -1115,7 +1195,7 @@ export function LaunchWizard({
                 label="Fees"
                 value={
                   economics
-                    ? `Trade ${economics.tradeFeeBps / 100}% · DAMM ${economics.destinationFeePips / 10_000}%`
+                    ? `Trade ${economics.tradeFeeBps / 100}% · ${selectedMigrationMode.toUpperCase()} ${economics.destinationFeePips / 10_000}%`
                     : "Unavailable"
                 }
               />
@@ -1154,6 +1234,8 @@ export function LaunchWizard({
             <button
               disabled={
                 !economics ||
+                (stockQuoteTemplateSelected &&
+                  launchProtection !== "protected") ||
                 (launchProtection === "protected" &&
                   (!deployment.protectedLaunch || !protectionPreview)) ||
                 submitting

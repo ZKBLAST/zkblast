@@ -55,11 +55,13 @@ contract ProtectedLaunchFactory is ProtocolAccess, UUPSUpgradeable {
     ProtectedVirtualPoolDeployer public poolDeployer;
     address public graduationManager;
     uint256 public launchCount;
+    // Slot order is part of the deployed proxy layout. Identity registry was
+    // initialized before the launch indexes in v1 and must remain before them.
+    ProtectedLaunchIdentityRegistry public identityRegistry;
     mapping(bytes32 launchId => LaunchRecord record) public launches;
     mapping(address token => bytes32 launchId) public launchByToken;
     mapping(address pool => bytes32 launchId) public launchByPool;
     // Upgrade-only fields must remain after every v1 storage slot above.
-    ProtectedLaunchIdentityRegistry public identityRegistry;
     mapping(address quoteToken => address guard) public quoteExecutionGuard;
 
     event ProtectedTokenLaunched(

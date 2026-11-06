@@ -2,7 +2,7 @@
   "LaunchProtectionPolicyRegistry": {
     "storage": [
       {
-        "astId": 48596,
+        "astId": 12350,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "_initialized",
         "offset": 0,
@@ -10,7 +10,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 48598,
+        "astId": 12352,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "_initializing",
         "offset": 8,
@@ -18,7 +18,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 6083,
+        "astId": 3506,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "_roles",
         "offset": 0,
@@ -26,7 +26,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 27440,
+        "astId": 8809,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "policyCount",
         "offset": 0,
@@ -34,7 +34,7 @@
         "type": "t_uint256"
       },
       {
-        "astId": 27444,
+        "astId": 8813,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "latestVersion",
         "offset": 0,
@@ -42,12 +42,12 @@
         "type": "t_mapping(t_bytes32,t_uint32)"
       },
       {
-        "astId": 27449,
+        "astId": 8818,
         "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
         "label": "_policies",
         "offset": 0,
         "slot": "4",
-        "type": "t_mapping(t_uint256,t_struct(Policy)27438_storage)"
+        "type": "t_mapping(t_uint256,t_struct(Policy)8807_storage)"
       }
     ],
     "types": {
@@ -87,20 +87,20 @@
         "numberOfBytes": "32",
         "value": "t_uint32"
       },
-      "t_mapping(t_uint256,t_struct(Policy)27438_storage)": {
+      "t_mapping(t_uint256,t_struct(Policy)8807_storage)": {
         "encoding": "mapping",
         "key": "t_uint256",
         "label": "mapping(uint256 => struct LaunchProtectionPolicyRegistry.Policy)",
         "numberOfBytes": "32",
-        "value": "t_struct(Policy)27438_storage"
+        "value": "t_struct(Policy)8807_storage"
       },
-      "t_struct(Policy)27438_storage": {
+      "t_struct(Policy)8807_storage": {
         "encoding": "inplace",
         "label": "struct LaunchProtectionPolicyRegistry.Policy",
         "numberOfBytes": "96",
         "members": [
           {
-            "astId": 27415,
+            "astId": 8784,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "familyId",
             "offset": 0,
@@ -108,7 +108,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 27417,
+            "astId": 8786,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "policyHash",
             "offset": 0,
@@ -116,7 +116,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 27419,
+            "astId": 8788,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "protectionBlocks",
             "offset": 0,
@@ -124,7 +124,7 @@
             "type": "t_uint32"
           },
           {
-            "astId": 27421,
+            "astId": 8790,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "maxBuyBpsPerTransaction",
             "offset": 4,
@@ -132,7 +132,7 @@
             "type": "t_uint16"
           },
           {
-            "astId": 27423,
+            "astId": 8792,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "maxBuyBpsPerAddress",
             "offset": 6,
@@ -140,7 +140,7 @@
             "type": "t_uint16"
           },
           {
-            "astId": 27425,
+            "astId": 8794,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "initialFeeBps",
             "offset": 8,
@@ -148,7 +148,7 @@
             "type": "t_uint16"
           },
           {
-            "astId": 27427,
+            "astId": 8796,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "baseFeeBps",
             "offset": 10,
@@ -156,7 +156,7 @@
             "type": "t_uint16"
           },
           {
-            "astId": 27429,
+            "astId": 8798,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "lpLockSeconds",
             "offset": 12,
@@ -164,7 +164,7 @@
             "type": "t_uint64"
           },
           {
-            "astId": 27431,
+            "astId": 8800,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "version",
             "offset": 20,
@@ -172,7 +172,7 @@
             "type": "t_uint32"
           },
           {
-            "astId": 27433,
+            "astId": 8802,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "batchMode",
             "offset": 24,
@@ -180,7 +180,7 @@
             "type": "t_bool"
           },
           {
-            "astId": 27435,
+            "astId": 8804,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "enabled",
             "offset": 25,
@@ -188,7 +188,7 @@
             "type": "t_bool"
           },
           {
-            "astId": 27437,
+            "astId": 8806,
             "contract": "src/launchpad/protection/LaunchProtectionPolicyRegistry.sol:LaunchProtectionPolicyRegistry",
             "label": "used",
             "offset": 26,
@@ -222,7 +222,7 @@
   "ProtectedLaunchFactory": {
     "storage": [
       {
-        "astId": 48596,
+        "astId": 12350,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "_initialized",
         "offset": 0,
@@ -230,7 +230,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 48598,
+        "astId": 12352,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "_initializing",
         "offset": 8,
@@ -238,7 +238,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 6083,
+        "astId": 3506,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "_roles",
         "offset": 0,
@@ -246,39 +246,39 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 28525,
+        "astId": 9237,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "templateRegistry",
         "offset": 0,
         "slot": "2",
-        "type": "t_contract(LaunchConfigRegistry)15843"
+        "type": "t_contract(LaunchConfigRegistry)5657"
       },
       {
-        "astId": 28528,
+        "astId": 9240,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "policyRegistry",
         "offset": 0,
         "slot": "3",
-        "type": "t_contract(LaunchProtectionPolicyRegistry)27781"
+        "type": "t_contract(LaunchProtectionPolicyRegistry)9150"
       },
       {
-        "astId": 28531,
+        "astId": 9243,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "tokenDeployer",
         "offset": 0,
         "slot": "4",
-        "type": "t_contract(ProtectedLaunchTokenDeployer)31123"
+        "type": "t_contract(ProtectedLaunchTokenDeployer)11747"
       },
       {
-        "astId": 28534,
+        "astId": 9246,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "poolDeployer",
         "offset": 0,
         "slot": "5",
-        "type": "t_contract(ProtectedVirtualPoolDeployer)31256"
+        "type": "t_contract(ProtectedVirtualPoolDeployer)11880"
       },
       {
-        "astId": 28536,
+        "astId": 9248,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "graduationManager",
         "offset": 0,
@@ -286,7 +286,7 @@
         "type": "t_address"
       },
       {
-        "astId": 28538,
+        "astId": 9250,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "launchCount",
         "offset": 0,
@@ -294,28 +294,44 @@
         "type": "t_uint256"
       },
       {
-        "astId": 28543,
+        "astId": 9253,
+        "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
+        "label": "identityRegistry",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_contract(ProtectedLaunchIdentityRegistry)10947"
+      },
+      {
+        "astId": 9258,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "launches",
         "offset": 0,
-        "slot": "8",
-        "type": "t_mapping(t_bytes32,t_struct(LaunchRecord)28522_storage)"
+        "slot": "9",
+        "type": "t_mapping(t_bytes32,t_struct(LaunchRecord)9234_storage)"
       },
       {
-        "astId": 28547,
+        "astId": 9262,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "launchByToken",
         "offset": 0,
-        "slot": "9",
+        "slot": "10",
         "type": "t_mapping(t_address,t_bytes32)"
       },
       {
-        "astId": 28551,
+        "astId": 9266,
         "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
         "label": "launchByPool",
         "offset": 0,
-        "slot": "10",
+        "slot": "11",
         "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 9270,
+        "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
+        "label": "quoteExecutionGuard",
+        "offset": 0,
+        "slot": "12",
+        "type": "t_mapping(t_address,t_address)"
       }
     ],
     "types": {
@@ -334,25 +350,37 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(LaunchConfigRegistry)15843": {
+      "t_contract(LaunchConfigRegistry)5657": {
         "encoding": "inplace",
         "label": "contract LaunchConfigRegistry",
         "numberOfBytes": "20"
       },
-      "t_contract(LaunchProtectionPolicyRegistry)27781": {
+      "t_contract(LaunchProtectionPolicyRegistry)9150": {
         "encoding": "inplace",
         "label": "contract LaunchProtectionPolicyRegistry",
         "numberOfBytes": "20"
       },
-      "t_contract(ProtectedLaunchTokenDeployer)31123": {
+      "t_contract(ProtectedLaunchIdentityRegistry)10947": {
+        "encoding": "inplace",
+        "label": "contract ProtectedLaunchIdentityRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_contract(ProtectedLaunchTokenDeployer)11747": {
         "encoding": "inplace",
         "label": "contract ProtectedLaunchTokenDeployer",
         "numberOfBytes": "20"
       },
-      "t_contract(ProtectedVirtualPoolDeployer)31256": {
+      "t_contract(ProtectedVirtualPoolDeployer)11880": {
         "encoding": "inplace",
         "label": "contract ProtectedVirtualPoolDeployer",
         "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_address)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
       },
       "t_mapping(t_address,t_bool)": {
         "encoding": "mapping",
@@ -375,20 +403,20 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_mapping(t_bytes32,t_struct(LaunchRecord)28522_storage)": {
+      "t_mapping(t_bytes32,t_struct(LaunchRecord)9234_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedLaunchFactory.LaunchRecord)",
         "numberOfBytes": "32",
-        "value": "t_struct(LaunchRecord)28522_storage"
+        "value": "t_struct(LaunchRecord)9234_storage"
       },
-      "t_struct(LaunchRecord)28522_storage": {
+      "t_struct(LaunchRecord)9234_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedLaunchFactory.LaunchRecord",
         "numberOfBytes": "224",
         "members": [
           {
-            "astId": 28509,
+            "astId": 9221,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "creator",
             "offset": 0,
@@ -396,7 +424,7 @@
             "type": "t_address"
           },
           {
-            "astId": 28511,
+            "astId": 9223,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "token",
             "offset": 0,
@@ -404,7 +432,7 @@
             "type": "t_address"
           },
           {
-            "astId": 28513,
+            "astId": 9225,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "virtualPool",
             "offset": 0,
@@ -412,7 +440,7 @@
             "type": "t_address"
           },
           {
-            "astId": 28515,
+            "astId": 9227,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "templateId",
             "offset": 0,
@@ -420,7 +448,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 28517,
+            "astId": 9229,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "policyId",
             "offset": 0,
@@ -428,7 +456,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 28519,
+            "astId": 9231,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "policyHash",
             "offset": 0,
@@ -436,7 +464,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 28521,
+            "astId": 9233,
             "contract": "src/launchpad/protection/ProtectedLaunchFactory.sol:ProtectedLaunchFactory",
             "label": "protectionStartBlock",
             "offset": 0,
@@ -460,7 +488,7 @@
   "ProtectedLPAllocationEscrow": {
     "storage": [
       {
-        "astId": 48596,
+        "astId": 57363,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "_initialized",
         "offset": 0,
@@ -468,7 +496,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 48598,
+        "astId": 57365,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "_initializing",
         "offset": 8,
@@ -476,7 +504,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 6083,
+        "astId": 7220,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "_roles",
         "offset": 0,
@@ -484,7 +512,7 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 49402,
+        "astId": 62718,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "_status",
         "offset": 0,
@@ -492,15 +520,15 @@
         "type": "t_uint256"
       },
       {
-        "astId": 27845,
+        "astId": 34421,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "allocations",
         "offset": 0,
         "slot": "3",
-        "type": "t_mapping(t_bytes32,t_struct(Allocation)27840_storage)"
+        "type": "t_mapping(t_bytes32,t_struct(Allocation)34416_storage)"
       },
       {
-        "astId": 27849,
+        "astId": 34425,
         "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
         "label": "accountedShares",
         "offset": 0,
@@ -543,12 +571,12 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_mapping(t_bytes32,t_struct(Allocation)27840_storage)": {
+      "t_mapping(t_bytes32,t_struct(Allocation)34416_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedLPAllocationEscrow.Allocation)",
         "numberOfBytes": "32",
-        "value": "t_struct(Allocation)27840_storage"
+        "value": "t_struct(Allocation)34416_storage"
       },
       "t_mapping(t_bytes32,t_uint256)": {
         "encoding": "mapping",
@@ -557,13 +585,13 @@
         "numberOfBytes": "32",
         "value": "t_uint256"
       },
-      "t_struct(Allocation)27840_storage": {
+      "t_struct(Allocation)34416_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedLPAllocationEscrow.Allocation",
         "numberOfBytes": "224",
         "members": [
           {
-            "astId": 27817,
+            "astId": 34393,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "pool",
             "offset": 0,
@@ -571,7 +599,7 @@
             "type": "t_address"
           },
           {
-            "astId": 27819,
+            "astId": 34395,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "creator",
             "offset": 0,
@@ -579,7 +607,7 @@
             "type": "t_address"
           },
           {
-            "astId": 27821,
+            "astId": 34397,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "protocolRecipient",
             "offset": 0,
@@ -587,7 +615,7 @@
             "type": "t_address"
           },
           {
-            "astId": 27823,
+            "astId": 34399,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "policyHash",
             "offset": 0,
@@ -595,7 +623,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 27825,
+            "astId": 34401,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "policyId",
             "offset": 0,
@@ -603,7 +631,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 27827,
+            "astId": 34403,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "creatorShares",
             "offset": 0,
@@ -611,7 +639,7 @@
             "type": "t_uint128"
           },
           {
-            "astId": 27829,
+            "astId": 34405,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "protocolShares",
             "offset": 16,
@@ -619,7 +647,7 @@
             "type": "t_uint128"
           },
           {
-            "astId": 27831,
+            "astId": 34407,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "creatorUnlockAt",
             "offset": 0,
@@ -627,7 +655,7 @@
             "type": "t_uint64"
           },
           {
-            "astId": 27833,
+            "astId": 34409,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "binId",
             "offset": 8,
@@ -635,7 +663,7 @@
             "type": "t_int24"
           },
           {
-            "astId": 27835,
+            "astId": 34411,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "isDlmm",
             "offset": 11,
@@ -643,7 +671,7 @@
             "type": "t_bool"
           },
           {
-            "astId": 27837,
+            "astId": 34413,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "creatorClaimed",
             "offset": 12,
@@ -651,7 +679,7 @@
             "type": "t_bool"
           },
           {
-            "astId": 27839,
+            "astId": 34415,
             "contract": "src/launchpad/protection/ProtectedLPAllocationEscrow.sol:ProtectedLPAllocationEscrow",
             "label": "protocolClaimed",
             "offset": 13,
@@ -680,7 +708,7 @@
   "ProtectedGraduationManager": {
     "storage": [
       {
-        "astId": 50371,
+        "astId": 25463,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "_initialized",
         "offset": 0,
@@ -688,7 +716,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 50373,
+        "astId": 25465,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "_initializing",
         "offset": 8,
@@ -696,7 +724,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 6083,
+        "astId": 3506,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "_roles",
         "offset": 0,
@@ -704,23 +732,23 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 17534,
+        "astId": 9585,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "launchFactory",
         "offset": 0,
         "slot": "2",
-        "type": "t_contract(ProtectedLaunchFactory)31531"
+        "type": "t_contract(ProtectedLaunchFactory)22285"
       },
       {
-        "astId": 17537,
+        "astId": 9588,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "lpEscrow",
         "offset": 0,
         "slot": "3",
-        "type": "t_contract(ProtectedLPAllocationEscrow)30749"
+        "type": "t_contract(ProtectedLPAllocationEscrow)21296"
       },
       {
-        "astId": 17541,
+        "astId": 9592,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "adapterAllowed",
         "offset": 0,
@@ -728,7 +756,7 @@
         "type": "t_mapping(t_address,t_bool)"
       },
       {
-        "astId": 17545,
+        "astId": 9596,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "migrationCompleted",
         "offset": 0,
@@ -736,15 +764,15 @@
         "type": "t_mapping(t_bytes32,t_bool)"
       },
       {
-        "astId": 17550,
+        "astId": 9601,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "migrations",
         "offset": 0,
         "slot": "6",
-        "type": "t_mapping(t_bytes32,t_struct(MigrationRecord)17590_storage)"
+        "type": "t_mapping(t_bytes32,t_struct(MigrationRecord)9641_storage)"
       },
       {
-        "astId": 17554,
+        "astId": 9605,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "migrationByLaunch",
         "offset": 0,
@@ -752,7 +780,7 @@
         "type": "t_mapping(t_bytes32,t_bytes32)"
       },
       {
-        "astId": 17556,
+        "astId": 9607,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "launchpadBindingResolver",
         "offset": 0,
@@ -760,20 +788,20 @@
         "type": "t_address"
       },
       {
-        "astId": 17561,
+        "astId": 9612,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "migrationAccounting",
         "offset": 0,
         "slot": "9",
-        "type": "t_mapping(t_bytes32,t_struct(MigrationAccounting)17619_storage)"
+        "type": "t_mapping(t_bytes32,t_struct(MigrationAccounting)9670_storage)"
       },
       {
-        "astId": 17566,
+        "astId": 9617,
         "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
         "label": "adapterSnapshots",
         "offset": 0,
         "slot": "10",
-        "type": "t_mapping(t_bytes32,t_struct(AdapterSnapshot)17629_storage)"
+        "type": "t_mapping(t_bytes32,t_struct(AdapterSnapshot)9680_storage)"
       }
     ],
     "types": {
@@ -792,22 +820,22 @@
         "label": "bytes32",
         "numberOfBytes": "32"
       },
-      "t_contract(ProtectedLPAllocationEscrow)30749": {
+      "t_contract(ProtectedLPAllocationEscrow)21296": {
         "encoding": "inplace",
         "label": "contract ProtectedLPAllocationEscrow",
         "numberOfBytes": "20"
       },
-      "t_contract(ProtectedLaunchFactory)31531": {
+      "t_contract(ProtectedLaunchFactory)22285": {
         "encoding": "inplace",
         "label": "contract ProtectedLaunchFactory",
         "numberOfBytes": "20"
       },
-      "t_enum(MigrationMode)10974": {
+      "t_enum(MigrationMode)7279": {
         "encoding": "inplace",
         "label": "enum DbcTypes.MigrationMode",
         "numberOfBytes": "1"
       },
-      "t_enum(MigrationStatus)17531": {
+      "t_enum(MigrationStatus)9582": {
         "encoding": "inplace",
         "label": "enum ProtectedGraduationManager.MigrationStatus",
         "numberOfBytes": "1"
@@ -840,34 +868,34 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_mapping(t_bytes32,t_struct(AdapterSnapshot)17629_storage)": {
+      "t_mapping(t_bytes32,t_struct(AdapterSnapshot)9680_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedGraduationManager.AdapterSnapshot)",
         "numberOfBytes": "32",
-        "value": "t_struct(AdapterSnapshot)17629_storage"
+        "value": "t_struct(AdapterSnapshot)9680_storage"
       },
-      "t_mapping(t_bytes32,t_struct(MigrationAccounting)17619_storage)": {
+      "t_mapping(t_bytes32,t_struct(MigrationAccounting)9670_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedGraduationManager.MigrationAccounting)",
         "numberOfBytes": "32",
-        "value": "t_struct(MigrationAccounting)17619_storage"
+        "value": "t_struct(MigrationAccounting)9670_storage"
       },
-      "t_mapping(t_bytes32,t_struct(MigrationRecord)17590_storage)": {
+      "t_mapping(t_bytes32,t_struct(MigrationRecord)9641_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedGraduationManager.MigrationRecord)",
         "numberOfBytes": "32",
-        "value": "t_struct(MigrationRecord)17590_storage"
+        "value": "t_struct(MigrationRecord)9641_storage"
       },
-      "t_struct(AdapterSnapshot)17629_storage": {
+      "t_struct(AdapterSnapshot)9680_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedGraduationManager.AdapterSnapshot",
         "numberOfBytes": "96",
         "members": [
           {
-            "astId": 17621,
+            "astId": 9672,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "factory",
             "offset": 0,
@@ -875,7 +903,7 @@
             "type": "t_address"
           },
           {
-            "astId": 17623,
+            "astId": 9674,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "configurationHash",
             "offset": 0,
@@ -883,7 +911,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 17625,
+            "astId": 9676,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "version",
             "offset": 0,
@@ -891,22 +919,22 @@
             "type": "t_uint32"
           },
           {
-            "astId": 17628,
+            "astId": 9679,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "mode",
             "offset": 4,
             "slot": "2",
-            "type": "t_enum(MigrationMode)10974"
+            "type": "t_enum(MigrationMode)7279"
           }
         ]
       },
-      "t_struct(MigrationAccounting)17619_storage": {
+      "t_struct(MigrationAccounting)9670_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedGraduationManager.MigrationAccounting",
         "numberOfBytes": "448",
         "members": [
           {
-            "astId": 17592,
+            "astId": 9643,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "totalSupply",
             "offset": 0,
@@ -914,7 +942,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17594,
+            "astId": 9645,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "availableBase",
             "offset": 0,
@@ -922,7 +950,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17596,
+            "astId": 9647,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "availableQuote",
             "offset": 0,
@@ -930,7 +958,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17598,
+            "astId": 9649,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "baseMigrated",
             "offset": 0,
@@ -938,7 +966,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17600,
+            "astId": 9651,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "quoteMigrated",
             "offset": 0,
@@ -946,7 +974,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17602,
+            "astId": 9653,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "baseSurplus",
             "offset": 0,
@@ -954,7 +982,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17604,
+            "astId": 9655,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "quoteSurplus",
             "offset": 0,
@@ -962,7 +990,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17606,
+            "astId": 9657,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "creatorFeeLiability",
             "offset": 0,
@@ -970,7 +998,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17608,
+            "astId": 9659,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "partnerFeeLiability",
             "offset": 0,
@@ -978,7 +1006,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17610,
+            "astId": 9661,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "protocolFeeLiability",
             "offset": 0,
@@ -986,7 +1014,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17612,
+            "astId": 9663,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "baseRoundingDust",
             "offset": 0,
@@ -994,7 +1022,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17614,
+            "astId": 9665,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "quoteRoundingDust",
             "offset": 0,
@@ -1002,7 +1030,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17616,
+            "astId": 9667,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "sourceBaseAfter",
             "offset": 0,
@@ -1010,7 +1038,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17618,
+            "astId": 9669,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "sourceQuoteAfter",
             "offset": 0,
@@ -1019,13 +1047,13 @@
           }
         ]
       },
-      "t_struct(MigrationRecord)17590_storage": {
+      "t_struct(MigrationRecord)9641_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedGraduationManager.MigrationRecord",
         "numberOfBytes": "256",
         "members": [
           {
-            "astId": 17568,
+            "astId": 9619,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "launchId",
             "offset": 0,
@@ -1033,7 +1061,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 17570,
+            "astId": 9621,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "sourcePool",
             "offset": 0,
@@ -1041,7 +1069,7 @@
             "type": "t_address"
           },
           {
-            "astId": 17572,
+            "astId": 9623,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "adapter",
             "offset": 0,
@@ -1049,15 +1077,15 @@
             "type": "t_address"
           },
           {
-            "astId": 17575,
+            "astId": 9626,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "status",
             "offset": 20,
             "slot": "2",
-            "type": "t_enum(MigrationStatus)17531"
+            "type": "t_enum(MigrationStatus)9582"
           },
           {
-            "astId": 17577,
+            "astId": 9628,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "attempts",
             "offset": 21,
@@ -1065,7 +1093,7 @@
             "type": "t_uint8"
           },
           {
-            "astId": 17579,
+            "astId": 9630,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "updatedAt",
             "offset": 22,
@@ -1073,7 +1101,7 @@
             "type": "t_uint64"
           },
           {
-            "astId": 17581,
+            "astId": 9632,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "lastFailureHash",
             "offset": 0,
@@ -1081,7 +1109,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 17583,
+            "astId": 9634,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "launchpadId",
             "offset": 0,
@@ -1089,7 +1117,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 17585,
+            "astId": 9636,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "configHash",
             "offset": 0,
@@ -1097,7 +1125,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 17587,
+            "astId": 9638,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "feeSnapshotId",
             "offset": 0,
@@ -1105,7 +1133,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 17589,
+            "astId": 9640,
             "contract": "src/dbc/ProtectedGraduationManager.sol:ProtectedGraduationManager",
             "label": "graduationDestination",
             "offset": 0,
@@ -1139,7 +1167,7 @@
   "ProtectedLaunchIdentityRegistry": {
     "storage": [
       {
-        "astId": 48596,
+        "astId": 12350,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "_initialized",
         "offset": 0,
@@ -1147,7 +1175,7 @@
         "type": "t_uint64"
       },
       {
-        "astId": 48598,
+        "astId": 12352,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "_initializing",
         "offset": 8,
@@ -1155,7 +1183,7 @@
         "type": "t_bool"
       },
       {
-        "astId": 6083,
+        "astId": 3506,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "_roles",
         "offset": 0,
@@ -1163,15 +1191,15 @@
         "type": "t_mapping(t_bytes32,t_mapping(t_address,t_bool))"
       },
       {
-        "astId": 29423,
+        "astId": 10380,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "_identities",
         "offset": 0,
         "slot": "2",
-        "type": "t_mapping(t_bytes32,t_struct(Identity)29418_storage)"
+        "type": "t_mapping(t_bytes32,t_struct(Identity)10375_storage)"
       },
       {
-        "astId": 29427,
+        "astId": 10384,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "firstLaunchByName",
         "offset": 0,
@@ -1179,7 +1207,7 @@
         "type": "t_mapping(t_bytes32,t_bytes32)"
       },
       {
-        "astId": 29431,
+        "astId": 10388,
         "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
         "label": "firstLaunchBySymbol",
         "offset": 0,
@@ -1224,20 +1252,20 @@
         "numberOfBytes": "32",
         "value": "t_mapping(t_address,t_bool)"
       },
-      "t_mapping(t_bytes32,t_struct(Identity)29418_storage)": {
+      "t_mapping(t_bytes32,t_struct(Identity)10375_storage)": {
         "encoding": "mapping",
         "key": "t_bytes32",
         "label": "mapping(bytes32 => struct ProtectedLaunchIdentityRegistry.Identity)",
         "numberOfBytes": "32",
-        "value": "t_struct(Identity)29418_storage"
+        "value": "t_struct(Identity)10375_storage"
       },
-      "t_struct(Identity)29418_storage": {
+      "t_struct(Identity)10375_storage": {
         "encoding": "inplace",
         "label": "struct ProtectedLaunchIdentityRegistry.Identity",
         "numberOfBytes": "352",
         "members": [
           {
-            "astId": 29393,
+            "astId": 10350,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "canonicalHash",
             "offset": 0,
@@ -1245,7 +1273,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29395,
+            "astId": 10352,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "nameCommitment",
             "offset": 0,
@@ -1253,7 +1281,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29397,
+            "astId": 10354,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "symbolCommitment",
             "offset": 0,
@@ -1261,7 +1289,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29399,
+            "astId": 10356,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "metadataHash",
             "offset": 0,
@@ -1269,7 +1297,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29401,
+            "astId": 10358,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "socialHash",
             "offset": 0,
@@ -1277,7 +1305,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29403,
+            "astId": 10360,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "tokenRuntimeCodeHash",
             "offset": 0,
@@ -1285,7 +1313,7 @@
             "type": "t_bytes32"
           },
           {
-            "astId": 29405,
+            "astId": 10362,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "factory",
             "offset": 0,
@@ -1293,7 +1321,7 @@
             "type": "t_address"
           },
           {
-            "astId": 29407,
+            "astId": 10364,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "token",
             "offset": 0,
@@ -1301,7 +1329,7 @@
             "type": "t_address"
           },
           {
-            "astId": 29409,
+            "astId": 10366,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "pool",
             "offset": 0,
@@ -1309,7 +1337,7 @@
             "type": "t_address"
           },
           {
-            "astId": 29411,
+            "astId": 10368,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "launchpadId",
             "offset": 0,
@@ -1317,7 +1345,7 @@
             "type": "t_uint256"
           },
           {
-            "astId": 29413,
+            "astId": 10370,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "tokenTemplateVersion",
             "offset": 0,
@@ -1325,7 +1353,7 @@
             "type": "t_uint32"
           },
           {
-            "astId": 29415,
+            "astId": 10372,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "duplicateName",
             "offset": 4,
@@ -1333,7 +1361,7 @@
             "type": "t_bool"
           },
           {
-            "astId": 29417,
+            "astId": 10374,
             "contract": "src/launchpad/protection/ProtectedLaunchIdentityRegistry.sol:ProtectedLaunchIdentityRegistry",
             "label": "duplicateSymbol",
             "offset": 5,

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet",
+  "chainId": 4663,
+  "referenceBlock": "107301662",
+  "governanceSafe": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+  "configManager": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+  "quoteAsset": {
+    "symbol": "MSFT",
+    "address": "0xe93237C50D904957Cf27E7B1133b510C669c2e74"
+  },
+  "templateId": "8",
+  "proposedPresetId": "2",
+  "preset": {
+    "familyId": "0xe2836528afdf0a214a4d45433935264ffae6b4be01afde3972f89490c78ef985",
+    "dbcTemplateId": "8",
+    "quoteToken": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+    "maximumTotalTradeFeeBps": 300,
+    "graduationDestination": 2,
+    "creatorAccess": 0,
+    "maximumLaunches": 1000
+  },
+  "actions": [
+    {
+      "name": "allow-msft-quote-token",
+      "target": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "data": "0x19d72a35000000000000000000000000e93237c50d904957cf27e7b1133b510c669c2e740000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "name": "enable-dlmm-launchpad-destination",
+      "target": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "data": "0x4abd52f400000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "name": "create-msft-dlmm-launchpad-preset",
+      "target": "0x8f6c1a55bCcfAb96F14ACF4bC0Ea36FD78eAAfB0",
+      "data": "0x57aa8363e2836528afdf0a214a4d45433935264ffae6b4be01afde3972f89490c78ef9850000000000000000000000000000000000000000000000000000000000000008000000000000000000000000e93237c50d904957cf27e7b1133b510c669c2e74000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e8"
+    }
+  ],
+  "estimate": {
+    "directActionGas": [
+      "56265",
+      "53415",
+      "200000"
+    ],
+    "conservativeSafeGas": "1059680",
+    "gasPriceWei": "20830000",
+    "conservativeFeeWei": "22073134400000"
+  },
+  "broadcastAllowed": false,
+  "planSha256": "446ef053d4e02a204d43099240a97ea9fb74833bb4244a9c137bfade1bc2b7a4"
+}

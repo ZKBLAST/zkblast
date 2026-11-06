@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "planSha256": "446ef053d4e02a204d43099240a97ea9fb74833bb4244a9c137bfade1bc2b7a4",
+  "presetId": "2",
+  "templateId": "8",
+  "quoteAsset": {
+    "symbol": "MSFT",
+    "address": "0xe93237C50D904957Cf27E7B1133b510C669c2e74"
+  },
+  "destination": "DLMM",
+  "totalFeeWei": "8437159938000",
+  "totalFeeEth": "0.000008437159938",
+  "capEth": "0.00006",
+  "transactions": [
+    "0xfdb8f24d0c0c9c1bfcb1994479388696e8059f59146ba0d4541b6c0ecfd339f2",
+    "0xb417ed6b70a25c610d22257999cc0e506be86db56da31b98bc8cd0208eb9953b",
+    "0x1a81ac7481cc50bc7af98b1b805f5fe1e8b21ea546ae2536c0cf76ae346d212f"
+  ],
+  "assertions": {
+    "msftQuoteAllowed": true,
+    "dlmmDestinationEnabled": true,
+    "presetEnabled": true
+  }
+}
