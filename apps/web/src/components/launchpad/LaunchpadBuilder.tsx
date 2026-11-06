@@ -70,10 +70,12 @@ const steps = ["Identity", "Ownership", "Economics", "Preview"] as const;
 const builderError = launchpadWalletError;
 
 export function LaunchpadBuilder({
+  initialPresetId,
   onOpenMarkets,
   onOpenManage,
   onCreated,
 }: Readonly<{
+  initialPresetId?: string | undefined;
   onOpenMarkets: () => void;
   onOpenManage: () => void;
   onCreated: (item: PendingLaunchpad) => void;
@@ -267,11 +269,12 @@ export function LaunchpadBuilder({
         setConfiguration(configurationResult);
         setPresets(presetResult.items);
         setGraduationCapabilities(presetResult.capabilities);
-        setPresetId((current) =>
-          presetResult.items.some((item) => item.presetId === current)
-            ? current
-            : (presetResult.items[0]?.presetId ?? ""),
-        );
+        setPresetId((current) => {
+          const preferred = initialPresetId ?? current;
+          return presetResult.items.some((item) => item.presetId === preferred)
+            ? preferred
+            : (presetResult.items[0]?.presetId ?? "");
+        });
       })
       .catch((reason: unknown) => {
         if (!controller.signal.aborted)
@@ -286,7 +289,7 @@ export function LaunchpadBuilder({
         if (!controller.signal.aborted) setCatalogLoading(false);
       });
     return () => controller.abort();
-  }, [config?.chainId]);
+  }, [config?.chainId, initialPresetId]);
   useEffect(() => {
     if (!selectedPreset) {
       setTemplateEconomics(null);

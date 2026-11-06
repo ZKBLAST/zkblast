@@ -21,6 +21,7 @@ import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import type { DbcLaunch } from "./types";
 import { LaunchpadDeveloperSettings } from "./LaunchpadDeveloperSettings";
+import { getTemplateEconomics } from "@/lib/template-economics";
 
 export type PendingLaunchpad = Readonly<{
   launchpadId: string;
@@ -42,6 +43,12 @@ type OwnedLaunchpadRecord = Readonly<{
   status: number;
   updatedAt: string;
 }>;
+type AvailablePreset = Readonly<{
+  presetId: string;
+  dbcTemplateId: string;
+  graduationDestination: number;
+  quoteSymbol: string;
+}>;
 
 export function LaunchpadOwnerDashboard({
   launches,
@@ -57,7 +64,7 @@ export function LaunchpadOwnerDashboard({
   launches: readonly DbcLaunch[];
   pendingLaunchpads: readonly PendingLaunchpad[];
   loading: boolean;
-  onBuild: () => void;
+  onBuild: (presetId?: string) => void;
   onCreateToken: (launchpadId: string) => void;
   onRefresh: () => void;
   onRetryPending: (item: PendingLaunchpad) => void;
@@ -79,6 +86,51 @@ export function LaunchpadOwnerDashboard({
   >([]);
   const [ownerDiscoveryFailed, setOwnerDiscoveryFailed] = useState(false);
   const [ownerDiscoveryLoading, setOwnerDiscoveryLoading] = useState(false);
+  const [availablePresets, setAvailablePresets] = useState<
+    readonly AvailablePreset[]
+  >([]);
+  const [presetsLoading, setPresetsLoading] = useState(false);
+  useEffect(() => {
+    if (!config?.capabilities.launchpad) {
+      setAvailablePresets([]);
+      return;
+    }
+    let cancelled = false;
+    setPresetsLoading(true);
+    void apiRequest<{
+      items: readonly Readonly<{
+        presetId: string;
+        dbcTemplateId: string;
+        graduationDestination: number;
+      }>[];
+    }>(webPublicConfig.apiUrl, "/v1/launchpads/presets")
+      .then(async ({ items }) =>
+        Promise.allSettled(
+          items.map(async (preset) => ({
+            ...preset,
+            quoteSymbol: (await getTemplateEconomics(preset.dbcTemplateId))
+              .quoteSymbol,
+          })),
+        ),
+      )
+      .then((results) => {
+        if (cancelled) return;
+        setAvailablePresets(
+          results.flatMap((result) =>
+            result.status === "fulfilled" ? [result.value] : [],
+          ),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setAvailablePresets([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPresetsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [config?.capabilities.launchpad, config?.chainId]);
   useEffect(() => {
     if (!address) {
       setOwnedRecords([]);
@@ -213,7 +265,7 @@ export function LaunchpadOwnerDashboard({
           <p className="mt-2 font-mono text-sm">{shortHex(address!)}</p>
         </div>
         <button
-          onClick={onBuild}
+              onClick={() => onBuild()}
           className="flex items-center gap-2 bg-lime px-5 py-3 font-mono text-xs uppercase text-lime-ink"
         >
           <Plus className="size-4" />
@@ -261,6 +313,53 @@ export function LaunchpadOwnerDashboard({
               .length.toString()}
           />
         </div>
+        {(presetsLoading || availablePresets.length > 0) && (
+          <section className="mb-5 border border-line p-4 sm:p-5">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="label">Available launchpad presets</p>
+                <p className="mt-1 text-xs text-muted">
+                  Choose the quote asset and graduation destination before the
+                  launchpad is created. This binding is immutable onchain.
+                </p>
+              </div>
+            </div>
+            {presetsLoading ? (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Skeleton className="h-24" />
+                <Skeleton className="h-24" />
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {availablePresets.map((preset) => (
+                  <article
+                    key={preset.presetId}
+                    className="border border-line bg-bg p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-mono text-sm">
+                          {preset.quoteSymbol} ·{" "}
+                          {preset.graduationDestination === 2 ? "DLMM" : "DAMM"}
+                        </p>
+                        <p className="mt-1 font-mono text-[10px] text-muted">
+                          Preset {preset.presetId} · Template {preset.dbcTemplateId}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onBuild(preset.presetId)}
+                      className="mt-4 flex items-center gap-2 border border-line px-3 py-2 font-mono text-[10px] uppercase hover:border-lime/70"
+                    >
+                      <Plus className="size-3" /> Build with this preset
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
         {pending.length > 0 && (
           <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {pending.map((item) => (

@@ -48,6 +48,7 @@ export function Launchpad() {
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
   const launchpadFilter = searchParams.get("launchpad");
+  const requestedPresetId = searchParams.get("preset");
   const createTokenRequested =
     searchParams.get("action") === "create-token" && Boolean(launchpadFilter);
   const view =
@@ -375,6 +376,7 @@ export function Launchpad() {
         </section>
       ) : view === "build" ? (
         <LaunchpadBuilder
+          initialPresetId={requestedPresetId ?? undefined}
           onOpenMarkets={() => selectView("markets")}
           onOpenManage={() => selectView("manage")}
           onCreated={(item) =>
@@ -391,7 +393,13 @@ export function Launchpad() {
           launches={allLaunches}
           pendingLaunchpads={pendingLaunchpads}
           loading={loading}
-          onBuild={() => selectView("build")}
+          onBuild={(presetId) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("view", "build");
+            if (presetId) params.set("preset", presetId);
+            else params.delete("preset");
+            router.replace(`/launch?${params.toString()}`, { scroll: false });
+          }}
           onCreateToken={(launchpadId) => {
             setWizardLaunchpadId(launchpadId);
             setWizard(true);
