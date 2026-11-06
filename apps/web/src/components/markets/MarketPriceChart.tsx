@@ -56,7 +56,7 @@ export function MarketPriceChart({
     source: PriceSource;
   } | null>(null);
   const marketKey = `${marketId}:${poolAddress}`;
-  const defaultSource: PriceSource | "auto" = poolAddress ? "swap" : "auto";
+  const defaultSource: PriceSource | "auto" = "auto";
   const requestedSource =
     selection?.market === marketKey ? selection.source : defaultSource;
   const { preferences, update: updatePreferences } = useChartPreferences();

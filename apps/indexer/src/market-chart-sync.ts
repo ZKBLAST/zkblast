@@ -1,14 +1,19 @@
 import postgres from "postgres";
 import { getChainDescriptor } from "@zkblast/config";
-import { createPublicClient, http, type Address } from "viem";
+import { createPublicClient, type Address } from "viem";
 import { z } from "zod";
 import { syncPoolChartSwaps } from "./sync-pool-chart-swaps.js";
 import { reconcilePoolState } from "./reconcile-pool-state.js";
 import { syncReferenceChartPrices } from "./sync-reference-chart-prices.js";
+import {
+  createIndexerTransport,
+  resolveHistoricalRpcFallbackUrls,
+  resolveRpcFallbackUrls,
+} from "./rpc-transport.js";
 
 const settingsSchema = z.object({
   SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
-  CHART_SYNC_INTERVAL_MS: z.coerce.number().int().min(60000).default(300000),
+  CHART_SYNC_INTERVAL_MS: z.coerce.number().int().min(60000).default(60000),
   CHART_SYNC_MAX_BLOCKS: z.coerce
     .bigint()
     .min(1n)
@@ -48,19 +53,29 @@ export function marketChartSynchronizer(network: Network, registry: Address) {
     prepare: false,
     idle_timeout: 10,
   });
+  const executionFallbacks = resolveHistoricalRpcFallbackUrls(
+    network.CHAIN_ID,
+    resolveRpcFallbackUrls(
+      process.env.RPC_FALLBACK_URLS,
+      descriptor.publicRpcUrls,
+    ),
+  );
   const execution = createPublicClient({
-    transport: http(network.RPC_URL, { timeout: 20000, retryCount: 1 }),
+    transport: createIndexerTransport(network.RPC_URL, executionFallbacks),
   });
   const reference =
     descriptor.family === "robinhood"
-      ? createPublicClient({
-          transport: http(
-            network.APP_ENV === "mainnet"
-              ? network.RPC_URL
-              : settings.PONS_RPC_URL,
-            { timeout: 20000, retryCount: 1 },
-          ),
-        })
+      ? network.APP_ENV === "mainnet"
+        ? execution
+        : createPublicClient({
+            transport: createIndexerTransport(
+              settings.PONS_RPC_URL,
+              resolveHistoricalRpcFallbackUrls(
+                4_663,
+                getChainDescriptor(4_663).publicRpcUrls,
+              ),
+            ),
+          })
       : null;
   let running = false;
   const synchronize = async () => {
