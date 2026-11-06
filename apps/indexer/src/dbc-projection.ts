@@ -49,6 +49,10 @@ export const dbcEventNames = new Set([
   "ProtectedLaunchIdentityBoundToLaunchpad",
 ]);
 
+export function isDbcEventName(eventName: string): boolean {
+  return dbcEventNames.has(eventName);
+}
+
 export type DbcLaunchBinding = Readonly<{
   launchId: Hex;
   launchpadId: bigint;

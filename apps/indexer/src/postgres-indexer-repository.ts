@@ -237,7 +237,10 @@ export class PostgresIndexerRepository implements IndexerRepository {
         await persistPerpsEvent(transaction, this.schema, event);
         await persistAssistanceFundEvent(transaction, this.schema, event);
         await persistStockQuoteEvent(transaction, this.schema, event);
-        if (event.eventName === "AllocationRegistered")
+        if (
+          event.eventName === "AllocationRegistered" ||
+          event.eventName === "ProtectedLaunchIdentityRegistered"
+        )
           deferredDbcEvents.push(event);
         else
           await persistDbcEvent(

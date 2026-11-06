@@ -3,6 +3,7 @@ import type { IndexedEvent } from "./domain.js";
 import {
   dbcLaunchBindingFromEvent,
   dbcSwapFromEvent,
+  isDbcEventName,
   validateDbcEvent,
 } from "./dbc-projection.js";
 import { persistProtectedLaunchEvent } from "./persist-protected-launch-event.js";
@@ -62,6 +63,9 @@ export async function persistDbcEvent(
   // visible in the unified activity stream, but they are projected by
   // persistStockQuoteEvent rather than the DBC launch projector.
   if (isStockQuoteOnlyEvent(event.eventName)) return false;
+  // Other launch-domain projections (for example registry/policy receipts)
+  // share the same event kind but are persisted by their own projector.
+  if (!isDbcEventName(event.eventName)) return false;
   validateDbcEvent(event, { chainId: event.chainId, allowedContracts });
   const launchId =
     typeof event.payload.launchId === "string"
@@ -318,7 +322,10 @@ export async function persistDbcEvent(
         [event.chainId, event.contractAddress.toLowerCase()],
       );
       if (protectedLaunches.length > 0) return true;
-      throw new Error("DBC_TRANSFER_TOKEN_NOT_REGISTERED");
+      // The unified decoder can observe ERC-20 transfers from quote assets and
+      // other watched contracts that are not DBC launch tokens. They do not
+      // affect DBC holder projections and must not stop the chain checkpoint.
+      return false;
     }
     const from = value(event, "from");
     const to = value(event, "to");

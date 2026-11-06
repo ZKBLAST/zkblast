@@ -97,3 +97,47 @@ test("proof receipts are replay-safe and keyed by chain and log identity", async
   assert.match(receipt, /launchpad_proof_receipts/u);
   assert.match(receipt, /on conflict\(chain_id,transaction_hash,log_index\)/u);
 });
+
+test("unregistered ERC-20 transfers do not stop DBC reconciliation", async () => {
+  const queries: string[] = [];
+  const sql = {
+    unsafe: async (query: string) => {
+      queries.push(query);
+      return [];
+    },
+  } as unknown as postgres.Sql;
+
+  const handled = await persistDbcEvent(
+    sql,
+    "zkblast_mainnet",
+    event("Transfer", {
+      from: address("2"),
+      to: address("3"),
+      value: "10",
+    }),
+    new Set([address("1")]),
+  );
+
+  assert.equal(handled, false);
+  assert.equal(queries.some((query) => query.includes("dbc_holder_balances")), false);
+});
+
+test("launch-domain events owned by another projector are ignored", async () => {
+  const queries: string[] = [];
+  const sql = {
+    unsafe: async (query: string) => {
+      queries.push(query);
+      return [];
+    },
+  } as unknown as postgres.Sql;
+
+  const handled = await persistDbcEvent(
+    sql,
+    "zkblast_mainnet",
+    event("PolicyReceiptRecorded", { receiptId: hash("9") }),
+    new Set([address("1")]),
+  );
+
+  assert.equal(handled, false);
+  assert.equal(queries.length, 0);
+});
