@@ -43,6 +43,7 @@ import type {
 } from "./types";
 import { prepareLaunchLogo } from "@/lib/launch-metadata";
 import { StockQuoteAssetSummary } from "./StockQuoteAssetSummary";
+import { getTemplateEconomics } from "@/lib/template-economics";
 
 type PendingInitialBuy = Readonly<{
   pool: `0x${string}`;
@@ -183,24 +184,35 @@ export function LaunchWizard({
   );
   const stockTemplateAvailable =
     !stockQuoteAsset || stockQuoteAsset.quoteTradingEnabled;
+  const enabledTemplateSignature = useMemo(
+    () =>
+      templates
+        .filter((item) => item.enabled)
+        .map((item) => item.template_id)
+        .sort()
+        .join(","),
+    [templates],
+  );
   useEffect(() => {
     if (!templateId) {
       setEconomics(null);
       return;
     }
-    const controller = new AbortController();
+    let cancelled = false;
     setEconomicsLoading(true);
-    void apiRequest<TemplateEconomics>(
-      webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${templateId}/economics`,
-      { signal: controller.signal },
-    )
-      .then(setEconomics)
-      .catch(() => setEconomics(null))
+    void getTemplateEconomics(templateId)
+      .then((value) => {
+        if (!cancelled) setEconomics(value);
+      })
+      .catch(() => {
+        if (!cancelled) setEconomics(null);
+      })
       .finally(() => {
-        if (!controller.signal.aborted) setEconomicsLoading(false);
+        if (!cancelled) setEconomicsLoading(false);
       });
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+    };
   }, [config?.chainId, templateId]);
   useEffect(() => {
     if (!open || config?.chainId !== 4663) {
@@ -242,26 +254,26 @@ export function LaunchWizard({
       setTemplateEconomicsById({});
       return;
     }
-    const controller = new AbortController();
-    void Promise.all(
-      templates
-        .filter((item) => item.enabled)
-        .map(async (item) => ({
-          templateId: item.template_id,
-          economics: await apiRequest<TemplateEconomics>(
-            webPublicConfig.apiUrl,
-            `/v1/dbc/templates/${item.template_id}/economics`,
-            { signal: controller.signal, cache: "no-store" },
-          ),
-        })),
+    let cancelled = false;
+    const enabledTemplateIds = enabledTemplateSignature
+      .split(",")
+      .filter(Boolean);
+    void Promise.allSettled(
+      enabledTemplateIds.map(async (enabledTemplateId) => ({
+        templateId: enabledTemplateId,
+        economics: await getTemplateEconomics(enabledTemplateId),
+      })),
     )
       .then((items) => {
+        if (cancelled) return;
         const byAsset: Record<
           string,
           Partial<Record<"damm" | "dlmm", string>>
         > = {};
         const byTemplate: Record<string, TemplateEconomics> = {};
-        for (const item of items) {
+        for (const result of items) {
+          if (result.status !== "fulfilled") continue;
+          const item = result.value;
           const asset = item.economics.quoteToken.toLowerCase();
           const mode = item.economics.migrationMode === 1 ? "dlmm" : "damm";
           byAsset[asset] = { ...byAsset[asset], [mode]: item.templateId };
@@ -269,15 +281,11 @@ export function LaunchWizard({
         }
         setStockTemplateIds(byAsset);
         setTemplateEconomicsById(byTemplate);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) {
-          setStockTemplateIds({});
-          setTemplateEconomicsById({});
-        }
       });
-    return () => controller.abort();
-  }, [config?.chainId, open, templates]);
+    return () => {
+      cancelled = true;
+    };
+  }, [config?.chainId, enabledTemplateSignature, open]);
   useEffect(() => {
     if (!catalogStockAddress || config?.chainId !== 4663) {
       setCatalogStockDestinations([]);

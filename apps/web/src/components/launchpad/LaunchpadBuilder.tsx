@@ -32,6 +32,7 @@ import type { PendingLaunchpad } from "./LaunchpadOwnerDashboard";
 import type { TemplateEconomics } from "./types";
 import { launchpadWalletError } from "@/lib/launchpad-wallet-errors";
 import { fmtPrice } from "@/lib/format";
+import { getTemplateEconomics } from "@/lib/template-economics";
 
 type LaunchpadConfiguration = Readonly<{
   environment: "testnet" | "mainnet";
@@ -291,17 +292,17 @@ export function LaunchpadBuilder({
       setTemplateEconomics(null);
       return;
     }
-    const controller = new AbortController();
-    void apiRequest<TemplateEconomics>(
-      webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${selectedPreset.dbcTemplateId}/economics`,
-      { signal: controller.signal, cache: "no-store" },
-    )
-      .then(setTemplateEconomics)
+    let cancelled = false;
+    void getTemplateEconomics(selectedPreset.dbcTemplateId)
+      .then((value) => {
+        if (!cancelled) setTemplateEconomics(value);
+      })
       .catch(() => {
-        if (!controller.signal.aborted) setTemplateEconomics(null);
+        if (!cancelled) setTemplateEconomics(null);
       });
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedPreset]);
   useEffect(() => {
     setPrepared(null);

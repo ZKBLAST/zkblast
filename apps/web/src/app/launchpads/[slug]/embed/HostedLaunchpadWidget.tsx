@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { webPublicConfig } from "@/config/public-env";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { assetLogoUrl } from "@/lib/asset-logo-url";
+import { getTemplateEconomics } from "@/lib/template-economics";
 
 type WidgetBranding = Readonly<{
   launchpadId: string;
@@ -44,11 +45,7 @@ export function HostedLaunchpadWidget({ slug }: Readonly<{ slug: string }>) {
         );
         const templateId = result.items[0]?.template_id;
         const economicsResult = templateId
-          ? await apiRequest<TemplateEconomics>(
-              webPublicConfig.apiUrl,
-              `/v1/dbc/templates/${templateId}/economics`,
-              { signal, cache: "no-store" },
-            )
+          ? await getTemplateEconomics(templateId)
           : null;
         setBranding(brand);
         setLaunches(result.items);

@@ -22,6 +22,7 @@ import {
 import { shortHex } from "@/lib/format";
 import { assetLogoUrl } from "@/lib/asset-logo-url";
 import { useLaunchpadEventRefresh } from "@/lib/use-launchpad-event-refresh";
+import { getTemplateEconomics } from "@/lib/template-economics";
 
 type Branding = Readonly<{
   launchpadId: string;
@@ -127,15 +128,17 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
       setEconomics(null);
       return;
     }
-    const controller = new AbortController();
-    void apiRequest<TemplateEconomics>(
-      webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${selected.template_id}/economics`,
-      { signal: controller.signal },
-    )
-      .then(setEconomics)
-      .catch(() => setEconomics(null));
-    return () => controller.abort();
+    let cancelled = false;
+    void getTemplateEconomics(selected.template_id)
+      .then((value) => {
+        if (!cancelled) setEconomics(value);
+      })
+      .catch(() => {
+        if (!cancelled) setEconomics(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [selected?.template_id]);
   const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
   const quoteDecimals = economics?.quoteDecimals ?? 18;

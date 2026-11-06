@@ -33,6 +33,7 @@ import type {
   ProtectedLaunchSecurity,
   TemplateEconomics,
 } from "./types";
+import { getTemplateEconomics } from "@/lib/template-economics";
 import { useApp } from "@/components/shell/AppProvider";
 
 const lifecycle = ["Draft", "Active", "Paused", "Ready", "Graduated"] as const;
@@ -242,15 +243,17 @@ export function Launchpad() {
       setSelectedEconomics(null);
       return;
     }
-    const controller = new AbortController();
-    void apiRequest<TemplateEconomics>(
-      webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${economicsTemplateId}/economics`,
-      { signal: controller.signal },
-    )
-      .then(setSelectedEconomics)
-      .catch(() => setSelectedEconomics(null));
-    return () => controller.abort();
+    let cancelled = false;
+    void getTemplateEconomics(economicsTemplateId)
+      .then((value) => {
+        if (!cancelled) setSelectedEconomics(value);
+      })
+      .catch(() => {
+        if (!cancelled) setSelectedEconomics(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [config?.chainId, economicsTemplateId]);
   useEffect(() => {
     if (!selected?.launch_id) {

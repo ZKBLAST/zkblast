@@ -22,6 +22,7 @@ import { useApp } from "@/components/shell/AppProvider";
 import { apiProxyAssetPath, apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
 import { assetLogoUrl } from "@/lib/asset-logo-url";
+import { getTemplateEconomics } from "@/lib/template-economics";
 import {
   parseTokenAmount,
   formatTokenAmount,
@@ -101,15 +102,17 @@ export function LaunchActions({
       .catch(() => setGraduation(null));
   }, [launch.launch_id, launch.lifecycle]);
   useEffect(() => {
-    const controller = new AbortController();
-    void apiRequest<TemplateEconomics>(
-      webPublicConfig.apiUrl,
-      `/v1/dbc/templates/${launch.template_id}/economics`,
-      { signal: controller.signal },
-    )
-      .then(setEconomics)
-      .catch(() => setEconomics(null));
-    return () => controller.abort();
+    let cancelled = false;
+    void getTemplateEconomics(launch.template_id)
+      .then((value) => {
+        if (!cancelled) setEconomics(value);
+      })
+      .catch(() => {
+        if (!cancelled) setEconomics(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [launch.template_id]);
   useEffect(() => {
     if (!security || !address || !window.ethereum) {
@@ -514,7 +517,7 @@ export function LaunchActions({
               <div className="flex -space-x-2">
                 <AssetLogo url={tokenLogoUrl} label={symbol} />
                 <AssetLogo
-                  url={assetLogoUrl(quoteSymbol)}
+                  url={economics ? assetLogoUrl(quoteSymbol) : null}
                   label={quoteSymbol}
                 />
               </div>
