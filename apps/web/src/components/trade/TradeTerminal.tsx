@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ExternalLink } from "lucide-react";
 import { PositionsView } from "@/app/positions/PositionsView";
 import { MarketPriceChart } from "@/components/markets/MarketPriceChart";
 import { PerpsPanel } from "@/components/perps/PerpsPanel";
@@ -103,6 +104,10 @@ function Terminal() {
   }
   async function refresh() {
     await Promise.all([protocol.refresh(), markets.refresh()]);
+  }
+  function handleConfirmed() {
+    setRevision((value) => value + 1);
+    void refresh();
   }
 
   if (mode === "perps" && !config) {
@@ -258,6 +263,24 @@ function Terminal() {
                   : "Chart browsing · no validated execution pool"}
               </p>
             </div>
+            {selected?.pool && (
+              <div className="ml-auto flex items-center gap-2 font-mono text-[9px] uppercase">
+                <span className="border border-line px-2 py-1 text-emerald-300">
+                  {selected.pool.status}
+                </span>
+                {config && (
+                  <a
+                    href={`${config.explorerUrl.replace(/\/$/u, "")}/address/${selected.pool.address}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 border border-line px-2 py-1 text-muted hover:text-fg"
+                    aria-label={`Open ${selected.base}/${selected.quote} pool in explorer`}
+                  >
+                    Explorer <ExternalLink className="size-3" aria-hidden />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
           {selected?.pool && <PoolStatsStrip pool={selected.pool.address} />}
           <MarketPriceChart
@@ -288,7 +311,7 @@ function Terminal() {
           busy={busy}
           onModeChange={(value) => update("mode", value)}
           onBusyChange={setBusy}
-          onConfirmed={() => setRevision((value) => value + 1)}
+          onConfirmed={handleConfirmed}
         />
       </div>
       <section
@@ -326,7 +349,10 @@ function Terminal() {
           aria-labelledby="account-tab-history"
           hidden={panel !== "history"}
         >
-          <TradeHistory />
+          <TradeHistory
+            selectedPoolAddress={selected?.pool?.address}
+            revision={revision}
+          />
         </div>
         <div
           role="tabpanel"

@@ -14,7 +14,14 @@ const store: ProtocolReadStore = {
   priceHistory: async () => [{ price: "1.25", priceUnit: "USDG" }],
   poolCandles: async () => [{ open: "1", close: "2", priceUnit: "USDG" }],
   poolStats: async () => ({ priceKind: "pool", asOfBlock: "95" }),
-  poolTrades: async () => [{ side: "buy", trader: null }],
+  poolTrades: async () => [{
+    side: "buy",
+    trader: null,
+    privacy: "shielded",
+    blockNumber: "95",
+    transactionHash: `0x${"ab".repeat(32)}`,
+    logIndex: 7,
+  }],
   pools: async () => [{ address: "0xpool", kind: "damm" }],
   swaps: async () => [{ transactionHash: "0xtx" }],
   activity: async () => [{ eventName: "LiquidityAdded" }],
@@ -65,6 +72,27 @@ test("pool chart compatibility and Pools v2 reads preserve explicit units", asyn
   assert.equal(candles.body.items[0].priceUnit, "USDG");
   assert.equal(stats.body.stats.priceKind, "pool");
   assert.equal(trades.body.items[0].trader, null);
+  assert.equal(trades.body.items[0].privacy, "shielded");
+  assert.equal(trades.body.nextCursor, null);
+});
+
+test("pool trade tape validates and emits an opaque pagination cursor", async () => {
+  const pool = "0x0000000000000000000000000000000000000001";
+  const page = await request(app).get(`/v1/protocol/pools/${pool}/trades?limit=1`);
+  assert.equal(page.status, 200);
+  assert.equal(
+    page.body.nextCursor,
+    `95:0x${"ab".repeat(32)}:7`,
+  );
+
+  const next = await request(app).get(
+    `/v1/protocol/pools/${pool}/trades?limit=1&cursor=${encodeURIComponent(page.body.nextCursor)}`,
+  );
+  const malformed = await request(app).get(
+    `/v1/protocol/pools/${pool}/trades?cursor=not-a-cursor`,
+  );
+  assert.equal(next.status, 200);
+  assert.equal(malformed.status, 400);
 });
 
 test("pool candles reject unsupported intervals and excessive ranges", async () => {

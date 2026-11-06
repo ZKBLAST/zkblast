@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { RefreshCw } from "lucide-react";
 
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
@@ -62,7 +63,14 @@ export function PoolStatsStrip({ pool }: { pool: string }) {
   if (state.loading)
     return <div className="h-[4.25rem] animate-pulse border-b border-line bg-white/[0.025]" aria-label="Loading pool statistics" />;
   if (state.error || !stats)
-    return <p className="border-b border-line px-4 py-3 text-xs text-muted">Pool statistics are temporarily unavailable.</p>;
+    return (
+      <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 text-xs text-muted">
+        <p>Pool statistics are temporarily unavailable.</p>
+        <button type="button" onClick={() => void refresh()} className="inline-flex items-center gap-2 hover:text-fg">
+          <RefreshCw className="size-3" aria-hidden /> Retry
+        </button>
+      </div>
+    );
   const activity = stats.windows[windowLabel] ?? {
     volumeQuoteRaw: "0", buyCount: 0, sellCount: 0,
     buyVolumeRaw: "0", sellVolumeRaw: "0", netBuyRaw: "0",
@@ -76,6 +84,10 @@ export function PoolStatsStrip({ pool }: { pool: string }) {
     ["Fees / TVL", stats.feesToTvlBps === null ? "—" : `${fmtAmount(Number(stats.feesToTvlBps) / 100, 4)}%`],
     ["Pool age", formatAge(stats.poolAgeSeconds)],
   ] as const;
+  const observedAgeMs = stats.observedAt
+    ? Date.now() - Date.parse(stats.observedAt)
+    : Number.POSITIVE_INFINITY;
+  const stale = !Number.isFinite(observedAgeMs) || observedAgeMs > 5 * 60_000;
   return (
     <div className="border-b border-line" title={stats.asOfBlock ? `Finalized at block ${stats.asOfBlock}` : undefined}>
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7">
@@ -101,6 +113,10 @@ export function PoolStatsStrip({ pool }: { pool: string }) {
           {" / "}
           <span className="text-rose-300">{activity.sellCount} sells · {formatFixed(activity.sellVolumeRaw, stats.quoteDecimals)}</span>
           {" · Net "}{formatFixed(activity.netBuyRaw, stats.quoteDecimals)} {stats.priceUnit}
+        </p>
+        <p className={stale ? "text-amber-300" : "text-emerald-300"}>
+          {stale ? "Last finalized state" : "Live finalized state"}
+          {stats.asOfBlock ? ` · block ${stats.asOfBlock}` : ""}
         </p>
       </div>
     </div>

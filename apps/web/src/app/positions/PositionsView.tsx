@@ -43,6 +43,8 @@ export function PositionsView({
           (position) => position.poolAddress.toLowerCase() === selected,
         )
       : data.positions;
+  const openPositions = positions.filter((position) => position.status === "open");
+  const closedPositions = positions.filter((position) => position.status !== "open");
 
   if (!address)
     return (
@@ -125,9 +127,13 @@ export function PositionsView({
               : "This wallet has no indexed public liquidity position. Completed market swaps remain available in trade history."}
           </p>
         ) : null}
-        {positions.length ? (
-          <ul className="space-y-3">
-            {positions.map((position) => (
+        {openPositions.length ? (
+          <section aria-labelledby="open-positions-heading">
+            <h3 id="open-positions-heading" className="mb-3 font-mono text-[10px] uppercase text-muted">
+              Open positions · {openPositions.length}
+            </h3>
+            <ul className="space-y-3">
+            {openPositions.map((position) => (
               <PositionItem
                 key={`${position.poolAddress}:${position.onchainPositionId}`}
                 position={position}
@@ -139,7 +145,29 @@ export function PositionsView({
                 onSelectPool={onSelectPool}
               />
             ))}
-          </ul>
+            </ul>
+          </section>
+        ) : null}
+        {closedPositions.length ? (
+          <section className={openPositions.length ? "mt-6 border-t border-line pt-5" : ""} aria-labelledby="closed-positions-heading">
+            <h3 id="closed-positions-heading" className="mb-3 font-mono text-[10px] uppercase text-muted">
+              Closed positions · {closedPositions.length}
+            </h3>
+            <ul className="space-y-3">
+              {closedPositions.map((position) => (
+                <PositionItem
+                  key={`${position.poolAddress}:${position.onchainPositionId}`}
+                  position={position}
+                  markets={externalMarkets}
+                  owner={address}
+                  explorerUrl={config?.explorerUrl}
+                  onConfirmed={data.refresh}
+                  onToast={toast}
+                  onSelectPool={onSelectPool}
+                />
+              ))}
+            </ul>
+          </section>
         ) : null}
       </div>
     </>
@@ -263,6 +291,7 @@ function PositionItem({
           </dd>
         </dl>
       </div>
+      {position.status === "open" ? (
       <div className="mt-5 border-t border-line pt-4">
         <div className="flex flex-wrap items-center gap-2">
           {[25, 50, 75, 100].map((value) => (
@@ -300,6 +329,16 @@ function PositionItem({
           </a>
         ) : null}
       </div>
+      ) : (
+        <div className="mt-4 border-t border-line pt-4 text-xs text-muted">
+          <p>This position is closed. Its canonical record remains visible for account history.</p>
+          {position.closedAt ? (
+            <p className="mt-1 font-mono text-faint">
+              Closed {new Date(position.closedAt).toLocaleString()}
+            </p>
+          ) : null}
+        </div>
+      )}
     </li>
   );
 }

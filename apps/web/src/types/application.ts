@@ -149,6 +149,7 @@ export type ProtocolPosition = Readonly<{
   upperBound: number | null;
   status: string;
   openedAt?: string;
+  closedAt?: string | null;
   updatedAt?: string;
   poolAddress: string;
   model: "damm" | "dlmm";

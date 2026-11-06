@@ -163,7 +163,11 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
     return this.sql.unsafe(
       `select s.transaction_hash as "transactionHash",s.log_index as "logIndex",
         s.block_number::text as "blockNumber",s.block_timestamp as "observedAt",
-        s.side,s.trader,s.recipient,
+        s.side,
+        case when coalesce((e.payload::jsonb->>'privateExecution')::boolean,false)
+          then null else s.trader end as trader,
+        case when coalesce((e.payload::jsonb->>'privateExecution')::boolean,false)
+          then null else s.recipient end as recipient,
         case
           when coalesce((e.payload::jsonb->>'privateExecution')::boolean,false) then 'shielded'
           when s.trader is null then 'unattributed'
@@ -188,7 +192,7 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
   }
   positions(query: PageQuery) {
     return this.sql.unsafe(
-      `select p.onchain_position_id as "onchainPositionId", p.liquidity_raw::text as "liquidityRaw", p.lower_bound as "lowerBound", p.upper_bound as "upperBound", p.status, p.opened_at as "openedAt", p.updated_at as "updatedAt", pools.address as "poolAddress", pools.pool_kind as model, x.symbol as "token0Symbol", y.symbol as "token1Symbol" from ${this.schema}.positions p join ${this.schema}.user_wallets w on w.id=p.wallet_id join ${this.schema}.pools pools on pools.id=p.pool_id join ${this.schema}.assets x on x.id=pools.token_x_id join ${this.schema}.assets y on y.id=pools.token_y_id where ($1::text is null or p.onchain_position_id > $1) and ($2::text is null or w.wallet_address=$2) order by p.onchain_position_id asc limit $3`,
+      `select p.onchain_position_id as "onchainPositionId", p.liquidity_raw::text as "liquidityRaw", p.lower_bound as "lowerBound", p.upper_bound as "upperBound", p.status, p.opened_at as "openedAt", p.closed_at as "closedAt", p.updated_at as "updatedAt", pools.address as "poolAddress", pools.pool_kind as model, x.symbol as "token0Symbol", y.symbol as "token1Symbol" from ${this.schema}.positions p join ${this.schema}.user_wallets w on w.id=p.wallet_id join ${this.schema}.pools pools on pools.id=p.pool_id join ${this.schema}.assets x on x.id=pools.token_x_id join ${this.schema}.assets y on y.id=pools.token_y_id where ($1::text is null or p.onchain_position_id > $1) and ($2::text is null or w.wallet_address=$2) order by p.onchain_position_id asc limit $3`,
       [query.cursor ?? null, query.owner ?? null, query.limit],
     );
   }

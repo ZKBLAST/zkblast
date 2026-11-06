@@ -15,6 +15,12 @@ const querySchema = z.object({
     .transform((value) => value.toLowerCase())
     .optional(),
 });
+const poolTradeQuerySchema = querySchema.extend({
+  cursor: z
+    .string()
+    .regex(/^\d+:0x[\da-fA-F]{64}:\d+$/u)
+    .optional(),
+});
 
 const swapSchema = z
   .object({
@@ -47,6 +53,11 @@ const candleQuerySchema = z.object({
     z.literal(14400),z.literal(86400),
   ])),
 }).refine(validChartRange);
+const poolTradeCursorRowSchema = z.object({
+  blockNumber: z.string().regex(/^\d+$/u),
+  transactionHash: z.string().regex(/^0x[\da-f]{64}$/iu),
+  logIndex: z.coerce.number().int().nonnegative(),
+});
 const createLiquiditySchema = z
   .object({
     model: z.enum(["damm", "dlmm"]),
@@ -129,7 +140,18 @@ export function createProtocolRouter(
   router.get("/pools/:pool/trades", async (request, response, next) => {
     try {
       const pool = poolAddressSchema.parse(request.params.pool);
-      response.json({ pool, items: await service.poolTrades(pool, querySchema.parse(request.query)) });
+      const query = poolTradeQuerySchema.parse(request.query);
+      const items = await service.poolTrades(pool, query);
+      const last = items.length === query.limit
+        ? poolTradeCursorRowSchema.safeParse(items.at(-1))
+        : null;
+      response.json({
+        pool,
+        items,
+        nextCursor: last?.success
+          ? `${last.data.blockNumber}:${last.data.transactionHash.toLowerCase()}:${last.data.logIndex}`
+          : null,
+      });
     } catch (error) { next(error); }
   });
   router.get("/pools", async (request, response, next) => {
