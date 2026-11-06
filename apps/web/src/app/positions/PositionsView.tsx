@@ -373,11 +373,14 @@ function PositionItem({
             </dd>
           </div>
           <div className="col-span-2 bg-panel px-3 py-2 sm:col-span-1">
-            <dt className="font-mono text-[9px] uppercase text-faint">Deposit basis / earnings</dt>
+            <dt className="font-mono text-[9px] uppercase text-faint">Net contributed assets</dt>
             <dd className="mt-1 text-muted">
-              {position.depositBasisToken1Raw === null
-                ? "Not reconstructed for this legacy position"
-                : `${formatUnits(BigInt(position.depositBasisToken1Raw ?? "0"), position.token1Decimals)} ${position.token1Symbol}`}
+              {position.netContributed0Raw !== undefined && position.netContributed1Raw !== undefined ? (
+                <>
+                  {formatUnits(BigInt(position.netContributed0Raw), position.token0Decimals)} {position.token0Symbol}
+                  <span className="block">{formatUnits(BigInt(position.netContributed1Raw), position.token1Decimals)} {position.token1Symbol}</span>
+                </>
+              ) : "Available after indexed accounting begins"}
             </dd>
           </div>
         </dl>

@@ -164,6 +164,12 @@ export type ProtocolPosition = Readonly<{
   currentValueToken1Raw?: string;
   depositBasisToken1Raw?: string | null;
   earningsToken1Raw?: string | null;
+  netContributed0Raw?: string;
+  netContributed1Raw?: string;
+  lifetimeDeposited0Raw?: string;
+  lifetimeDeposited1Raw?: string;
+  lifetimeWithdrawn0Raw?: string;
+  lifetimeWithdrawn1Raw?: string;
   valuationCoverage?: "current_onchain_value";
 }>;
 

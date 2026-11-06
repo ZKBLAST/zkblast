@@ -13,9 +13,12 @@ import {
   buildDlmmFeeClaim,
   buildIncreasePosition,
   buildTransferPosition,
+  buildCreateRangePosition,
+  buildDecreaseRangePosition,
   normalizeTransactionError,
   type ContractReader,
   type ProtocolAddresses,
+  type RangeLiquidityBin,
 } from "@zkblast/sdk";
 import { getAddress, type Address } from "viem";
 import { encodeTransaction } from "./transaction-encoder.js";
@@ -47,6 +50,14 @@ const dlmmLensAbi = [
     ],
   },
 ] as const;
+
+const rangeCapabilityAbi = [{
+  type: "function",
+  name: "rangeVersion",
+  stateMutability: "pure",
+  inputs: [],
+  outputs: [{ name: "", type: "uint8" }],
+}] as const;
 
 type Position = readonly [Address, Address, number, number, bigint];
 type BasePositionInput = Readonly<{
@@ -283,6 +294,78 @@ export class LiquidityService {
         this.binCache.set(cacheKey, result);
       }
       return result;
+    });
+  }
+
+  async prepareRangeCreate(input: Readonly<{
+    pool: string;
+    token0: string;
+    token1: string;
+    expectedActiveBin: number;
+    deadline: string;
+    bins: readonly Readonly<{
+      binId: number;
+      amount0: string;
+      amount1: string;
+      minimumShares: string;
+    }>[];
+  }>) {
+    return this.normalize(async () => {
+      await this.assertRangeCapability();
+      const pool = getAddress(input.pool);
+      if (!(await this.isRegisteredPool(pool))) throw new Error("UNREGISTERED_POOL");
+      const token0 = getAddress(input.token0);
+      const token1 = getAddress(input.token1);
+      await this.assertPoolTokens(pool, "dlmm", token0, token1);
+      const bins: RangeLiquidityBin[] = input.bins.map((bin) => ({
+        binId: bin.binId,
+        amount0: this.unsigned(bin.amount0),
+        amount1: this.unsigned(bin.amount1),
+        minimumShares: this.unsigned(bin.minimumShares),
+      }));
+      const amount0 = bins.reduce((sum, bin) => sum + bin.amount0, 0n);
+      const amount1 = bins.reduce((sum, bin) => sum + bin.amount1, 0n);
+      return {
+        chainId: this.chainId,
+        capability: "dlmm_v2_range",
+        approvals: [
+          ...(amount0 ? [encodeTransaction(buildApproval(token0, this.addresses.positionManager, amount0))] : []),
+          ...(amount1 ? [encodeTransaction(buildApproval(token1, this.addresses.positionManager, amount1))] : []),
+        ],
+        position: encodeTransaction(buildCreateRangePosition({
+          manager: this.addresses.positionManager,
+          pool,
+          bins,
+          expectedActiveBin: input.expectedActiveBin,
+          deadline: this.positive(input.deadline),
+        })),
+      };
+    });
+  }
+
+  async prepareRangeDecrease(input: Readonly<{
+    rangePositionId: string;
+    shareBps: number;
+    minimumAmount0: string;
+    minimumAmount1: string;
+    recipient: string;
+    deadline: string;
+  }>) {
+    return this.normalize(async () => {
+      await this.assertRangeCapability();
+      return {
+        chainId: this.chainId,
+        capability: "dlmm_v2_range",
+        position: encodeTransaction(buildDecreaseRangePosition({
+          manager: this.addresses.positionManager,
+          rangePositionId: this.positive(input.rangePositionId),
+          shareBps: input.shareBps,
+          minimumAmount0: this.unsigned(input.minimumAmount0),
+          minimumAmount1: this.unsigned(input.minimumAmount1),
+          recipient: getAddress(input.recipient),
+          deadline: this.positive(input.deadline),
+        })),
+      };
     });
   }
 
@@ -836,6 +919,20 @@ export class LiquidityService {
     const actual = await this.poolTokens(pool, model === "damm" ? 0 : 1);
     if (getAddress(actual[0]) !== token0 || getAddress(actual[1]) !== token1)
       throw new Error("POOL_TOKEN_MISMATCH");
+  }
+
+  private async assertRangeCapability() {
+    let version: unknown;
+    try {
+      version = await this.client.readContract({
+        address: this.addresses.positionManager,
+        abi: rangeCapabilityAbi,
+        functionName: "rangeVersion",
+      });
+    } catch {
+      throw new Error("DLMM_V2_RANGE_NOT_ACTIVE");
+    }
+    if (version !== 2) throw new Error("DLMM_V2_RANGE_NOT_ACTIVE");
   }
 
   private async normalize<T>(operation: () => Promise<T>) {

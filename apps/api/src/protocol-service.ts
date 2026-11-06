@@ -20,6 +20,7 @@ export interface ProtocolReadStore {
   swaps(query: PageQuery): Promise<readonly unknown[]>;
   activity(query: PageQuery): Promise<readonly unknown[]>;
   positions(query: PageQuery): Promise<readonly unknown[]>;
+  positionAccounting?(owner: string): Promise<readonly unknown[]>;
   indexerStatus(): Promise<Readonly<{
     indexedBlock: bigint;
     finalizedBlock: bigint;
@@ -61,6 +62,10 @@ export class ProtocolService {
   }
   positions(query: PageQuery) {
     return this.store.positions(query);
+  }
+  positionAccounting(owner: string) {
+    if (!this.store.positionAccounting) return Promise.resolve([]);
+    return this.store.positionAccounting(owner.toLowerCase());
   }
 
   async readiness() {

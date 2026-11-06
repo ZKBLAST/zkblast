@@ -196,6 +196,25 @@ export class PostgresProtocolReadStore implements ProtocolReadStore {
       [query.cursor ?? null, query.owner ?? null, query.limit],
     );
   }
+  positionAccounting(owner: string) {
+    return this.sql.unsafe(
+      `select p.onchain_position_id as "onchainPositionId", pools.address as "poolAddress",
+        coalesce(sum(case when e.action='deposit' then e.amount0_raw else -e.amount0_raw end),0)::text as "netContributed0Raw",
+        coalesce(sum(case when e.action='deposit' then e.amount1_raw else -e.amount1_raw end),0)::text as "netContributed1Raw",
+        coalesce(sum(e.amount0_raw) filter(where e.action='deposit'),0)::text as "lifetimeDeposited0Raw",
+        coalesce(sum(e.amount1_raw) filter(where e.action='deposit'),0)::text as "lifetimeDeposited1Raw",
+        coalesce(sum(e.amount0_raw) filter(where e.action='withdrawal'),0)::text as "lifetimeWithdrawn0Raw",
+        coalesce(sum(e.amount1_raw) filter(where e.action='withdrawal'),0)::text as "lifetimeWithdrawn1Raw"
+       from ${this.schema}.positions p
+       join ${this.schema}.user_wallets w on w.id=p.wallet_id
+       join ${this.schema}.pools pools on pools.id=p.pool_id
+       join ${this.schema}.position_accounting_events e on e.pool_id=p.pool_id
+         and e.onchain_position_id=p.onchain_position_id::numeric and e.canonical
+       where w.wallet_address=$1
+       group by p.id,pools.address order by p.onchain_position_id`,
+      [owner],
+    );
+  }
 
   async indexerStatus() {
     const rows = await this.sql.unsafe(

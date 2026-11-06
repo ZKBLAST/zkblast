@@ -58,6 +58,7 @@ export {
   stockQuoteDestinationRegistryAbi,
   stockQuoteOracleGuardAbi,
 } from "./stock-quotes.js";
+export { rangeLiquidityEventsAbi } from "./range-liquidity.js";
 
 import {
   privateVaultV2Abi,
@@ -95,6 +96,7 @@ import {
   stockQuoteDestinationRegistryAbi,
   stockQuoteOracleGuardAbi,
 } from "./stock-quotes.js";
+import { rangeLiquidityEventsAbi } from "./range-liquidity.js";
 
 export const protocolAbis = {
   PrivateVaultV2: privateVaultV2Abi,
@@ -129,4 +131,5 @@ export const protocolAbis = {
   StockQuoteAssetRegistry: stockQuoteAssetRegistryAbi,
   StockQuoteDestinationRegistry: stockQuoteDestinationRegistryAbi,
   StockQuoteOracleGuard: stockQuoteOracleGuardAbi,
+  RangeLiquidity: rangeLiquidityEventsAbi,
 } as const;

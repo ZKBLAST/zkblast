@@ -114,6 +114,27 @@ const feeClaimSchema = z
     wallet: z.string(),
   })
   .strict();
+const rangeCreateSchema = z.object({
+  pool: poolAddressSchema,
+  token0: poolAddressSchema,
+  token1: poolAddressSchema,
+  expectedActiveBin: z.number().int().min(-10_000).max(10_000),
+  deadline: integerString,
+  bins: z.array(z.object({
+    binId: z.number().int().min(-10_000).max(10_000),
+    amount0: integerString,
+    amount1: integerString,
+    minimumShares: integerString,
+  }).strict()).min(1).max(61),
+}).strict();
+const rangeDecreaseSchema = z.object({
+  rangePositionId: integerString,
+  shareBps: z.number().int().min(1).max(10_000),
+  minimumAmount0: integerString,
+  minimumAmount1: integerString,
+  recipient: poolAddressSchema,
+  deadline: integerString,
+}).strict();
 
 export function createProtocolRouter(
   service: ProtocolService,
@@ -196,11 +217,27 @@ export function createProtocolRouter(
   router.get("/positions", async (request, response, next) => {
     try {
       const query = querySchema.parse(request.query);
+      if (query.owner && liquidityService) {
+        const [positions, accounting] = await Promise.all([
+          liquidityService.positionsForOwner(query.owner),
+          service.positionAccounting(query.owner),
+        ]);
+        const byPosition = new Map(
+          (accounting as Array<{ onchainPositionId: string }>).map((item) => [
+            item.onchainPositionId,
+            item,
+          ]),
+        );
+        response.json({
+          items: positions.map((position) => ({
+            ...position,
+            ...(byPosition.get(position.onchainPositionId) ?? {}),
+          })),
+        });
+        return;
+      }
       response.json({
-        items:
-          query.owner && liquidityService
-            ? await liquidityService.positionsForOwner(query.owner)
-            : await service.positions(query),
+        items: await service.positions(query),
       });
     } catch (error) {
       next(error);
@@ -222,6 +259,20 @@ export function createProtocolRouter(
       }
     });
   if (liquidityService) {
+    router.post("/liquidity/range/prepare", async (request, response, next) => {
+      try {
+        response.json(await liquidityService.prepareRangeCreate(rangeCreateSchema.parse(request.body)));
+      } catch (error) {
+        next(error);
+      }
+    });
+    router.post("/liquidity/range/decrease/prepare", async (request, response, next) => {
+      try {
+        response.json(await liquidityService.prepareRangeDecrease(rangeDecreaseSchema.parse(request.body)));
+      } catch (error) {
+        next(error);
+      }
+    });
     router.get("/pools/:pool/top-lps", async (request, response, next) => {
       try {
         const pool = poolAddressSchema.parse(request.params.pool);

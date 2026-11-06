@@ -1,0 +1,53 @@
+export const rangeLiquidityEventsAbi = [
+  { type: "event", name: "RangePositionCreated", inputs: [
+    { indexed: true, name: "rangePositionId", type: "uint256" },
+    { indexed: true, name: "owner", type: "address" },
+    { indexed: true, name: "pool", type: "address" },
+    { indexed: false, name: "lowerBin", type: "int24" },
+    { indexed: false, name: "upperBin", type: "int24" },
+    { indexed: false, name: "activeBin", type: "int24" },
+  ]},
+  { type: "event", name: "RangePositionIncreased", inputs: [
+    { indexed: true, name: "rangePositionId", type: "uint256" },
+    { indexed: true, name: "operationId", type: "bytes32" },
+    { indexed: false, name: "amount0", type: "uint256" },
+    { indexed: false, name: "amount1", type: "uint256" },
+    { indexed: false, name: "activeBin", type: "int24" },
+  ]},
+  { type: "event", name: "RangePositionDecreased", inputs: [
+    { indexed: true, name: "rangePositionId", type: "uint256" },
+    { indexed: true, name: "operationId", type: "bytes32" },
+    { indexed: true, name: "recipient", type: "address" },
+    { indexed: false, name: "shareBps", type: "uint16" },
+    { indexed: false, name: "amount0", type: "uint256" },
+    { indexed: false, name: "amount1", type: "uint256" },
+    { indexed: false, name: "activeBin", type: "int24" },
+  ]},
+  { type: "event", name: "RangePositionClosed", inputs: [
+    { indexed: true, name: "rangePositionId", type: "uint256" },
+    { indexed: true, name: "recipient", type: "address" },
+  ]},
+  { type: "event", name: "RangePositionTransferred", inputs: [
+    { indexed: true, name: "rangePositionId", type: "uint256" },
+    { indexed: true, name: "previousOwner", type: "address" },
+    { indexed: true, name: "nextOwner", type: "address" },
+  ]},
+  { type: "event", name: "BinLiquidityAddedV2", inputs: [
+    { indexed: true, name: "operationId", type: "bytes32" },
+    { indexed: true, name: "binId", type: "int24" },
+    { indexed: true, name: "recipient", type: "address" },
+    { indexed: false, name: "amount0", type: "uint256" },
+    { indexed: false, name: "amount1", type: "uint256" },
+    { indexed: false, name: "shares", type: "uint256" },
+    { indexed: false, name: "activeBin", type: "int24" },
+  ]},
+  { type: "event", name: "BinLiquidityRemovedV2", inputs: [
+    { indexed: true, name: "operationId", type: "bytes32" },
+    { indexed: true, name: "binId", type: "int24" },
+    { indexed: true, name: "recipient", type: "address" },
+    { indexed: false, name: "amount0", type: "uint256" },
+    { indexed: false, name: "amount1", type: "uint256" },
+    { indexed: false, name: "shares", type: "uint256" },
+    { indexed: false, name: "activeBin", type: "int24" },
+  ]},
+] as const;

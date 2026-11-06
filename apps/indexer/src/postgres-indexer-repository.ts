@@ -17,6 +17,7 @@ import { persistDbcEvent } from "./persist-dbc-event.js";
 import type { IndexedEvent } from "./domain.js";
 import { persistAssistanceFundEvent } from "./persist-assistance-fund-event.js";
 import { persistStockQuoteEvent } from "./persist-stock-quote-event.js";
+import { persistPositionAccounting } from "./persist-position-accounting.js";
 
 const launchpadProjectionEvents = [
   "LaunchpadCreated",
@@ -240,6 +241,7 @@ export class PostgresIndexerRepository implements IndexerRepository {
         await persistPerpsEvent(transaction, this.schema, event);
         await persistAssistanceFundEvent(transaction, this.schema, event);
         await persistStockQuoteEvent(transaction, this.schema, event);
+        await persistPositionAccounting(transaction, this.schema, event);
         if (
           event.eventName === "AllocationRegistered" ||
           event.eventName === "ProtectedLaunchIdentityRegistered"
@@ -476,6 +478,10 @@ export class PostgresIndexerRepository implements IndexerRepository {
          set status='submitted',block_number=null,gas_used=null,
              effective_gas_price_wei=null,updated_at=now()
          where chain_id=$1 and block_number >= $2`,
+        [chainId, fromBlock.toString()],
+      );
+      await transaction.unsafe(
+        `delete from ${this.schema}.position_accounting_events where chain_id=$1 and block_number >= $2`,
         [chainId, fromBlock.toString()],
       );
       await transaction.unsafe(
