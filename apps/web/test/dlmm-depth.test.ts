@@ -36,3 +36,11 @@ test("DLMM depth supports inverted display units and rejects extreme invalid pri
   assert.equal(inverted[0]?.base, 3);
   assert.deepEqual(dlmmDepthRows([bin(0, "1", "1", "0")], 0, 18, 18), []);
 });
+
+test("DLMM depth normalizes mixed token decimals without rounding funded bins to zero", () => {
+  const rows = dlmmDepthRows([bin(-5804, "271107211", "1", "268026")], -5804, 18, 6);
+  assert.equal(rows[0]?.price, 0.268026);
+  assert.equal(rows[0]?.quote, 0.000001);
+  assert.ok((rows[0]?.base ?? 0) > 0);
+  assert.equal(rows[0]?.funded, true);
+});

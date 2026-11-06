@@ -6,6 +6,7 @@ import { ProtocolPoolWorkspace } from "@/components/protocol/ProtocolPoolWorkspa
 import type { TradeInstrument, TradeMode } from "@/lib/trade-instruments";
 import { TerminalTabs } from "./TerminalTabs";
 import { CreatePoolPanel } from "@/components/protocol/CreatePoolPanel";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 const actions = [
   { value: "swap", label: "Swap", icon: ArrowLeftRight },
@@ -14,6 +15,7 @@ const actions = [
 
 export function TradeActions({
   selected,
+  loading,
   mode,
   busy,
   onModeChange,
@@ -21,6 +23,7 @@ export function TradeActions({
   onConfirmed,
 }: {
   selected: TradeInstrument | undefined;
+  loading: boolean;
   mode: TradeMode;
   busy: boolean;
   onModeChange: (mode: string) => void;
@@ -114,7 +117,14 @@ export function TradeActions({
                 }
               >
                 {publicMode === value &&
-                  (selected?.pool ? (
+                  (loading && !selected ? (
+                    <div className="space-y-4 p-5" role="status" aria-label="Loading execution panel">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-28 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                    </div>
+                  ) : selected?.pool ? (
                     <ProtocolPoolWorkspace
                       key={selected.pool.address}
                       compact

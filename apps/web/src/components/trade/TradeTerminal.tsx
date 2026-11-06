@@ -27,6 +27,7 @@ import { MarketActivity, TradeHistory } from "./TradeHistory";
 import { PoolStatsStrip } from "./PoolStatsStrip";
 import { DlmmDepthBook } from "./DlmmDepthBook";
 import { DammDepthView } from "./DammDepthView";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 type PoolView = "chart" | "depth" | "book" | "split";
 
@@ -42,17 +43,20 @@ function PoolMarketVisualization({
   chart: ReactNode;
 }) {
   const pool = instrument?.pool;
-  if (!pool) return chart;
+  if (!pool)
+    return <div className="min-h-0 flex-1 overflow-y-auto">{chart}</div>;
   const views = pool.model === "dlmm"
     ? (["chart", "depth", "book", "split"] as const)
     : (["chart", "depth"] as const);
   const baseIsToken0 = instrument.base === pool.token0Symbol;
 
   return (
-    <>
-      <PoolStatsStrip pool={pool.address} />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0">
+        <PoolStatsStrip pool={pool.address} />
+      </div>
       <div
-        className="flex overflow-x-auto border-b border-line"
+        className="flex shrink-0 overflow-x-auto border-b border-line"
         role="tablist"
         aria-label={`${pool.model.toUpperCase()} market view`}
       >
@@ -69,15 +73,16 @@ function PoolMarketVisualization({
           </button>
         ))}
       </div>
-      <div className={view === "split" ? "grid min-h-0 xl:grid-cols-2" : "min-h-0"}>
+      <div className={`min-h-0 flex-1 overflow-y-auto ${view === "split" ? "grid xl:grid-cols-2" : ""}`}>
         {view === "chart" || view === "split" ? chart : null}
         {pool.model === "dlmm" && ["depth", "book", "split"].includes(view) ? (
           <DlmmDepthBook
             pool={pool.address}
             base={instrument.base}
             quote={instrument.quote}
-            baseDecimals={baseIsToken0 ? pool.token0Decimals : pool.token1Decimals}
-            quoteDecimals={baseIsToken0 ? pool.token1Decimals : pool.token0Decimals}
+            baseDecimals={pool.token0Decimals}
+            quoteDecimals={pool.token1Decimals}
+            inverted={!baseIsToken0}
             mode={view === "depth" ? "depth" : "book"}
           />
         ) : null}
@@ -92,8 +97,15 @@ function PoolMarketVisualization({
           />
         ) : null}
       </div>
-    </>
+    </div>
   );
+}
+
+function indexerStatus(metrics: ReturnType<typeof useProtocolData>["metrics"]) {
+  if (!metrics) return "Indexer status unavailable";
+  if (metrics.ready) return "Indexer up to date";
+  if (metrics.lag !== null) return `Indexing · ${metrics.lag} blocks remaining`;
+  return "Indexer is waiting for RPC synchronization";
 }
 
 export function TradeTerminal() {
@@ -135,6 +147,7 @@ function Terminal() {
     instruments[0];
   const mode = tradeMode(search.get("mode"));
   const panel = tradePanel(search.get("panel"));
+  const initialLoading = (protocol.loading || markets.loading) && !selected;
 
   useEffect(() => {
     if (selected?.pool?.model !== "dlmm" && (poolView === "book" || poolView === "split")) setPoolView("chart");
@@ -248,16 +261,25 @@ function Terminal() {
             onRetry={() => void refresh()}
             onCreate={() => update("mode", "create")}
           />
-          <section className="flex min-h-0 min-w-0 flex-col bg-[#0a0a12]/60 xl:overflow-y-auto" aria-label="Selected Perps market chart">
-            <div className="flex min-h-20 flex-wrap items-center gap-3 border-b border-line px-4 py-3">
-              {selected && <InstrumentLogo instrument={selected} />}
+          <section className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-[#0a0a12]/60" aria-label="Selected Perps market chart">
+            <div className="flex min-h-20 shrink-0 flex-wrap items-center gap-3 border-b border-line bg-[#0a0a12] px-4 py-3">
+              {initialLoading ? <Skeleton className="size-11 shrink-0 rounded-full" /> : selected && <InstrumentLogo instrument={selected} />}
               <div className="min-w-0 flex-1">
+                {initialLoading ? (
+                  <div className="space-y-2" role="status" aria-label="Loading selected Perps market">
+                    <Skeleton className="h-5 w-44" />
+                    <Skeleton className="h-3 w-64 max-w-full" />
+                  </div>
+                ) : (
+                  <>
                 <h2 className="break-words font-mono text-lg [overflow-wrap:anywhere]">
                   {selected ? `${selected.base}-PERP` : "Select a Perps market"}
                 </h2>
                 <p className="mt-1 text-xs text-muted">
                   {selected?.pool ? `${selected.pool.model.toUpperCase()} reference pool · ${selected.base}/${selected.quote}` : "Oracle market reference"}
                 </p>
+                  </>
+                )}
               </div>
             </div>
             <PoolMarketVisualization
@@ -276,7 +298,7 @@ function Terminal() {
                 />
               )}
             />
-            <div className="border-t border-line px-4 py-3 text-xs text-muted">
+            <div className="shrink-0 border-t border-line bg-[#0a0a12] px-4 py-3 text-xs text-muted">
               Oracle and reference observations are shown for market context. Position execution uses the Perps oracle and current risk limits.
             </div>
           </section>
@@ -345,12 +367,19 @@ function Terminal() {
           onCreate={() => update("mode", "create")}
         />
         <section
-          className="flex min-h-0 min-w-0 flex-col bg-[#0a0a12]/60 xl:overflow-y-auto"
+          className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-[#0a0a12]/60"
           aria-label="Selected market chart"
         >
-          <div className="flex min-h-20 flex-wrap items-center gap-3 border-b border-line px-4 py-3">
-            {selected && <InstrumentLogo instrument={selected} />}
+          <div className="flex min-h-20 shrink-0 flex-wrap items-center gap-3 border-b border-line bg-[#0a0a12] px-4 py-3">
+            {initialLoading ? <Skeleton className="size-11 shrink-0 rounded-full" /> : selected && <InstrumentLogo instrument={selected} />}
             <div className="min-w-0 flex-1">
+              {initialLoading ? (
+                <div className="space-y-2" role="status" aria-label="Loading selected pool">
+                  <Skeleton className="h-5 w-44" />
+                  <Skeleton className="h-3 w-56 max-w-full" />
+                </div>
+              ) : (
+                <>
               <h2 className="break-words font-mono text-lg [overflow-wrap:anywhere]">
                 {selected
                   ? `${selected.base}/${selected.quote}`
@@ -366,6 +395,8 @@ function Terminal() {
                   On-chain cap · {formatCompactUsd(selected.market.marketCapUsd)}
                 </p>
               ) : null}
+                </>
+              )}
             </div>
             {selected?.pool && (
               <div className="ml-auto flex items-center gap-2 font-mono text-[9px] uppercase">
@@ -411,10 +442,8 @@ function Terminal() {
               />
             )}
           />
-          <div className="border-t border-line px-4 py-3 text-xs text-muted">
-            {protocol.metrics?.ready
-              ? "Indexer up to date"
-              : "Historical indexing in progress"}
+          <div className="shrink-0 border-t border-line bg-[#0a0a12] px-4 py-3 text-xs text-muted">
+            {indexerStatus(protocol.metrics)}
             {selected?.pool && (
               <p className="mt-2 break-all font-mono text-[10px]">
                 Pool {selected.pool.address}
@@ -424,6 +453,7 @@ function Terminal() {
         </section>
         <TradeActions
           selected={selected}
+          loading={initialLoading}
           mode={mode}
           busy={busy}
           onModeChange={(value) => update("mode", value)}

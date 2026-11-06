@@ -8,19 +8,23 @@ export type DlmmDepthRow = Readonly<{
   quote: number;
   value: number;
   cumulative: number;
+  funded: boolean;
 }>;
 
 export function dlmmDepthRows(
   bins: readonly Readonly<{ binId: number; reserve0: string; reserve1: string; priceX18: string }>[],
   activeBin: number,
-  baseDecimals: number,
-  quoteDecimals: number,
+  token0Decimals: number,
+  token1Decimals: number,
   inverted = false,
 ): DlmmDepthRow[] {
   const normalized = [...bins].sort((a, b) => a.binId - b.binId).flatMap((bin) => {
-    const canonicalPrice = Number(formatUnits(BigInt(bin.priceX18), 18));
-    const reserve0 = Number(formatUnits(BigInt(bin.reserve0), baseDecimals));
-    const reserve1 = Number(formatUnits(BigInt(bin.reserve1), quoteDecimals));
+    const rawPrice = Number(formatUnits(BigInt(bin.priceX18), 18));
+    // priceX18 is expressed in raw token units. Convert it to human token1/token0
+    // units before optionally reversing the displayed market orientation.
+    const canonicalPrice = rawPrice * (10 ** (token0Decimals - token1Decimals));
+    const reserve0 = Number(formatUnits(BigInt(bin.reserve0), token0Decimals));
+    const reserve1 = Number(formatUnits(BigInt(bin.reserve1), token1Decimals));
     const price = inverted ? 1 / canonicalPrice : canonicalPrice;
     const base = inverted ? reserve1 : reserve0;
     const quote = inverted ? reserve0 : reserve1;
@@ -32,6 +36,7 @@ export function dlmmDepthRows(
       base,
       quote,
       value: base * price + quote,
+      funded: reserve0 > 0 || reserve1 > 0,
     }];
   });
   const totals = new Map<number, number>();

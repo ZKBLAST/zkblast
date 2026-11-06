@@ -6,6 +6,7 @@ import { RefreshCw } from "lucide-react";
 import { webPublicConfig } from "@/config/public-env";
 import { apiRequest } from "@/lib/api-client";
 import { fmtAmount } from "@/lib/format";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 type PoolStats = Readonly<{
   model: "damm" | "dlmm";
@@ -61,7 +62,22 @@ export function PoolStatsStrip({ pool }: { pool: string }) {
   }, [refresh]);
   const stats = state.pool === pool ? state.stats : null;
   if (state.loading)
-    return <div className="h-[4.25rem] animate-pulse border-b border-line bg-white/[0.025]" aria-label="Loading pool statistics" />;
+    return (
+      <div className="border-b border-line" role="status" aria-label="Loading pool statistics">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7">
+          {Array.from({ length: 7 }, (_, index) => (
+            <div key={index} className="space-y-2 border-r border-line px-3 py-2 last:border-r-0">
+              <Skeleton className="h-2 w-12" />
+              <Skeleton className="h-3 w-20 max-w-full" />
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between border-t border-line px-3 py-2">
+          <Skeleton className="h-5 w-28" />
+          <Skeleton className="h-3 w-44" />
+        </div>
+      </div>
+    );
   if (state.error || !stats)
     return (
       <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 text-xs text-muted">

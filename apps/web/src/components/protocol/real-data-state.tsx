@@ -4,6 +4,7 @@ import { Database, RefreshCw } from "lucide-react";
 
 import { useApp } from "@/components/shell/AppProvider";
 import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export function RealDataState({
   loading,
@@ -21,12 +22,19 @@ export function RealDataState({
   if (loading)
     return (
       <div
-        className="panel p-8 text-sm text-muted"
+        className="space-y-3 p-4"
         role="status"
         aria-live="polite"
         aria-busy="true"
+        aria-label={`Loading finalized ${network} data`}
       >
-        Reading finalized {network} data from the ZKBLAST API.
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-24 w-full" />
+        <div className="grid grid-cols-3 gap-3">
+          <Skeleton className="h-10" />
+          <Skeleton className="h-10" />
+          <Skeleton className="h-10" />
+        </div>
       </div>
     );
   if (error) {

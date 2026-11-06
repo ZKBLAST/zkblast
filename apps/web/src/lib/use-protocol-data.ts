@@ -127,7 +127,6 @@ export function useProtocolData(owner?: string | null): ProtocolData {
         (result): result is PromiseRejectedResult => result.status === "rejected",
       );
       if (failures.length === results.length) throw failures[0]?.reason;
-      if (failures.length > 0) setError("PARTIAL_PROTOCOL_DATA_UNAVAILABLE");
     } catch (reason) {
       if (currentRequest !== requestId.current) return;
       setError(

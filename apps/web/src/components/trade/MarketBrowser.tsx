@@ -8,6 +8,7 @@ import {
 } from "@/components/markets/MarketPairLogo";
 import { useExternalMarkets } from "@/lib/use-external-markets";
 import type { TradeInstrument } from "@/lib/trade-instruments";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export function InstrumentLogo({
   instrument,
@@ -101,9 +102,17 @@ export function MarketBrowser({
           aria-label="Scrollable market list"
         >
           {loading && !items.length ? (
-            <p className="p-3 text-sm text-muted" role="status">
-              Loading markets…
-            </p>
+            <div className="space-y-2 p-1" role="status" aria-label="Loading markets">
+              {Array.from({ length: 7 }, (_, index) => (
+                <div key={index} className="flex items-center gap-3 border border-line/50 p-2.5">
+                  <Skeleton className="size-9 shrink-0 rounded-full" />
+                  <span className="min-w-0 flex-1 space-y-2">
+                    <Skeleton className="h-3 w-3/4" />
+                    <Skeleton className="h-2 w-1/2" />
+                  </span>
+                </div>
+              ))}
+            </div>
           ) : null}
           {error ? (
             <div className="p-3 text-xs text-warn">
