@@ -9,6 +9,7 @@ import {
   type ProtocolReadStore,
 } from "../src/protocol-service.js";
 import type { OperationsService } from "../src/operations-service.js";
+import type { LiquidityService } from "../src/liquidity-service.js";
 
 const store: ProtocolReadStore = {
   priceHistory: async () => [{ price: "1.25", priceUnit: "USDG" }],
@@ -57,6 +58,88 @@ test("read API exposes validated activity beyond swaps", async () => {
   assert.equal(response.status, 200);
   assert.equal(response.body.items[0].eventName, "LiquidityAdded");
 });
+
+test("owner positions fall back to indexed data when live RPC enrichment fails", async () => {
+  const owner = "0xb5c0ed0252d1906fca50664eb2198aea0679920b";
+  const fallbackStore: ProtocolReadStore = {
+    ...store,
+    positions: async () => [{
+      onchainPositionId: "7",
+      poolAddress: "0x0000000000000000000000000000000000000001",
+      model: "dlmm",
+      token0Symbol: "ZKBLAST",
+      token1Symbol: "MSFT",
+    }],
+  };
+  const fallbackApp = createApp(
+    {
+      environment: "mainnet",
+      chainId: 4663,
+      chainName: "Robinhood Chain",
+      explorerUrl: "https://explorer.example",
+      webOrigin: "https://app.example",
+    },
+    {
+      protocolService: new ProtocolService(fallbackStore, async () => 100n),
+      liquidityService: {
+        positionsForOwner: async () => {
+          throw new Error("RPC_TIMEOUT");
+        },
+      } as unknown as LiquidityService,
+    },
+  );
+
+  const response = await request(fallbackApp).get(
+    `/v1/protocol/positions?limit=100&owner=${owner}`,
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(response.body.live, false);
+  assert.equal(response.body.items[0].onchainPositionId, "7");
+});
+
+test("owner positions remain available when accounting enrichment fails", async () => {
+  const owner = "0xb5c0ed0252d1906fca50664eb2198aea0679920b";
+  const fallbackStore: ProtocolReadStore = {
+    ...store,
+    positions: async () => [{
+      onchainPositionId: "8",
+      poolAddress: "0x0000000000000000000000000000000000000002",
+      model: "damm",
+      token0Symbol: "ZKBLAST",
+      token1Symbol: "USDG",
+    }],
+    positionAccounting: async () => {
+      throw new Error("ACCOUNTING_SCHEMA_UNAVAILABLE");
+    },
+  };
+  const fallbackApp = createApp(
+    {
+      environment: "mainnet",
+      chainId: 4663,
+      chainName: "Robinhood Chain",
+      explorerUrl: "https://explorer.example",
+      webOrigin: "https://app.example",
+    },
+    {
+      protocolService: new ProtocolService(fallbackStore, async () => 100n),
+      liquidityService: {
+        positionsForOwner: async () => {
+          throw new Error("RPC_TIMEOUT");
+        },
+      } as unknown as LiquidityService,
+    },
+  );
+
+  const response = await request(fallbackApp).get(
+    `/v1/protocol/positions?limit=100&owner=${owner}`,
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(response.body.live, false);
+  assert.equal(response.body.items[0].onchainPositionId, "8");
+});
+
 test("pool chart compatibility and Pools v2 reads preserve explicit units", async () => {
   const pool = "0x0000000000000000000000000000000000000001";
   const range = "from=2026-10-16T00:00:00.000Z&to=2026-10-17T00:00:00.000Z";

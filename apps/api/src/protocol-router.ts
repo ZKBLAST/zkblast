@@ -57,6 +57,15 @@ const chartRangeFields = {
 } as const;
 const validChartRange = (q: { from: Date; to: Date }) =>
   q.to > q.from && q.to.getTime() - q.from.getTime() <= 31 * 86400000;
+const safeErrorCode = (error: unknown) => {
+  if (error && typeof error === "object" && "code" in error) {
+    const code = String(error.code);
+    if (/^[A-Z0-9_]{1,64}$/u.test(code)) return code;
+  }
+  return error instanceof Error && /^[A-Za-z]+Error$/u.test(error.name)
+    ? error.name
+    : "UNKNOWN";
+};
 const chartRangeSchema = z.object(chartRangeFields).refine(validChartRange);
 const candleQuerySchema = z.object({
   ...chartRangeFields,
@@ -218,21 +227,48 @@ export function createProtocolRouter(
     try {
       const query = querySchema.parse(request.query);
       if (query.owner && liquidityService) {
-        const [positions, accounting] = await Promise.all([
-          liquidityService.positionsForOwner(query.owner),
-          service.positionAccounting(query.owner),
-        ]);
+        const indexedPositions = await service.positions(query);
+        let accounting: readonly unknown[] = [];
+        try {
+          accounting = await service.positionAccounting(query.owner);
+        } catch (error) {
+          console.warn(
+            JSON.stringify({
+              event: "position_accounting_unavailable",
+              code: safeErrorCode(error),
+            }),
+          );
+        }
         const byPosition = new Map(
           (accounting as Array<{ onchainPositionId: string }>).map((item) => [
             item.onchainPositionId,
             item,
           ]),
         );
+        let positions: readonly unknown[] = indexedPositions;
+        let live = false;
+        try {
+          positions = await liquidityService.positionsForOwner(query.owner);
+          live = true;
+        } catch (error) {
+          console.warn(
+            JSON.stringify({
+              event: "position_live_enrichment_unavailable",
+              code: safeErrorCode(error),
+            }),
+          );
+        }
         response.json({
-          items: positions.map((position) => ({
-            ...position,
-            ...(byPosition.get(position.onchainPositionId) ?? {}),
-          })),
+          items: positions.map((position) => {
+            const item = position as { onchainPositionId?: string };
+            return {
+              ...item,
+              ...(item.onchainPositionId
+                ? (byPosition.get(item.onchainPositionId) ?? {})
+                : {}),
+            };
+          }),
+          live,
         });
         return;
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { PositionsView } from "@/app/positions/PositionsView";
@@ -17,6 +17,7 @@ import {
   tradeInstruments,
   tradeMode,
   tradePanel,
+  type TradeInstrument,
 } from "@/lib/trade-instruments";
 import { TradeActions } from "./TradeActions";
 import { TerminalTabs } from "./TerminalTabs";
@@ -28,6 +29,72 @@ import { DlmmDepthBook } from "./DlmmDepthBook";
 import { DammDepthView } from "./DammDepthView";
 
 type PoolView = "chart" | "depth" | "book" | "split";
+
+function PoolMarketVisualization({
+  instrument,
+  view,
+  onViewChange,
+  chart,
+}: {
+  instrument: TradeInstrument | undefined;
+  view: PoolView;
+  onViewChange: (view: PoolView) => void;
+  chart: ReactNode;
+}) {
+  const pool = instrument?.pool;
+  if (!pool) return chart;
+  const views = pool.model === "dlmm"
+    ? (["chart", "depth", "book", "split"] as const)
+    : (["chart", "depth"] as const);
+  const baseIsToken0 = instrument.base === pool.token0Symbol;
+
+  return (
+    <>
+      <PoolStatsStrip pool={pool.address} />
+      <div
+        className="flex overflow-x-auto border-b border-line"
+        role="tablist"
+        aria-label={`${pool.model.toUpperCase()} market view`}
+      >
+        {views.map((item) => (
+          <button
+            key={item}
+            type="button"
+            role="tab"
+            aria-selected={view === item}
+            onClick={() => onViewChange(item)}
+            className={`min-h-10 min-w-20 flex-1 border-b-2 px-3 font-mono text-[10px] uppercase ${view === item ? "border-lime bg-lime/10 text-lime" : "border-transparent text-muted hover:text-fg"}`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+      <div className={view === "split" ? "grid min-h-0 xl:grid-cols-2" : "min-h-0"}>
+        {view === "chart" || view === "split" ? chart : null}
+        {pool.model === "dlmm" && ["depth", "book", "split"].includes(view) ? (
+          <DlmmDepthBook
+            pool={pool.address}
+            base={instrument.base}
+            quote={instrument.quote}
+            baseDecimals={baseIsToken0 ? pool.token0Decimals : pool.token1Decimals}
+            quoteDecimals={baseIsToken0 ? pool.token1Decimals : pool.token0Decimals}
+            mode={view === "depth" ? "depth" : "book"}
+          />
+        ) : null}
+        {pool.model === "damm" && view === "depth" ? (
+          <DammDepthView
+            pool={pool.address}
+            base={instrument.base}
+            quote={instrument.quote}
+            baseDecimals={baseIsToken0 ? pool.token0Decimals : pool.token1Decimals}
+            quoteDecimals={baseIsToken0 ? pool.token1Decimals : pool.token0Decimals}
+            inverted={!baseIsToken0}
+          />
+        ) : null}
+      </div>
+    </>
+  );
+}
 
 export function TradeTerminal() {
   return (
@@ -193,14 +260,21 @@ function Terminal() {
                 </p>
               </div>
             </div>
-            <MarketPriceChart
-              key={`perps:${selected?.market?.id ?? "no-market"}:${revision}`}
-              marketId={selected?.market?.id ?? null}
-              poolAddress={selected?.pool?.address ?? null}
-              pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
-              inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
-              perpsMarketId={perpsMarketId}
-              positionLines={positionLines}
+            <PoolMarketVisualization
+              instrument={selected}
+              view={poolView}
+              onViewChange={setPoolView}
+              chart={(
+                <MarketPriceChart
+                  key={`perps:${selected?.market?.id ?? "no-market"}:${revision}`}
+                  marketId={selected?.market?.id ?? null}
+                  poolAddress={selected?.pool?.address ?? null}
+                  pairLabel={selected ? `${selected.base}/${selected.quote}` : undefined}
+                  inverted={Boolean(selected?.pool && selected.base !== selected.pool.token0Symbol)}
+                  perpsMarketId={perpsMarketId}
+                  positionLines={positionLines}
+                />
+              )}
             />
             <div className="border-t border-line px-4 py-3 text-xs text-muted">
               Oracle and reference observations are shown for market context. Position execution uses the Perps oracle and current risk limits.
@@ -321,14 +395,11 @@ function Terminal() {
               </div>
             )}
           </div>
-          {selected?.pool && <PoolStatsStrip pool={selected.pool.address} />}
-          {selected?.pool ? (
-            <div className="flex overflow-x-auto border-b border-line" role="tablist" aria-label="DLMM market view">
-              {(selected.pool.model === "dlmm" ? ["chart", "depth", "book", "split"] as const : ["chart", "depth"] as const).map((view) => <button key={view} type="button" role="tab" aria-selected={poolView === view} onClick={() => setPoolView(view)} className={`min-h-10 min-w-20 flex-1 border-b-2 px-3 font-mono text-[10px] uppercase ${poolView === view ? "border-lime bg-lime/10 text-lime" : "border-transparent text-muted hover:text-fg"}`}>{view}</button>)}
-            </div>
-          ) : null}
-          <div className={poolView === "split" ? "grid min-h-0 xl:grid-cols-2" : "min-h-0"}>
-            {(poolView === "chart" || poolView === "split") ? (
+          <PoolMarketVisualization
+            instrument={selected}
+            view={poolView}
+            onViewChange={setPoolView}
+            chart={(
               <MarketPriceChart
                 key={`${selected?.market?.id ?? "no-market"}:${revision}`}
                 marketId={selected?.market?.id ?? null}
@@ -338,28 +409,8 @@ function Terminal() {
                 poolModel={selected?.pool?.model}
                 walletLiquidityBins={selectedWalletLiquidityBins}
               />
-            ) : null}
-            {selected?.pool?.model === "dlmm" && (poolView === "depth" || poolView === "book" || poolView === "split") ? (
-              <DlmmDepthBook
-                pool={selected.pool.address}
-                base={selected.base}
-                quote={selected.quote}
-                baseDecimals={selected.base === selected.pool.token0Symbol ? selected.pool.token0Decimals : selected.pool.token1Decimals}
-                quoteDecimals={selected.quote === selected.pool.token1Symbol ? selected.pool.token1Decimals : selected.pool.token0Decimals}
-                mode={poolView === "depth" ? "depth" : "book"}
-              />
-            ) : null}
-            {selected?.pool?.model === "damm" && poolView === "depth" ? (
-              <DammDepthView
-                pool={selected.pool.address}
-                base={selected.base}
-                quote={selected.quote}
-                baseDecimals={selected.base === selected.pool.token0Symbol ? selected.pool.token0Decimals : selected.pool.token1Decimals}
-                quoteDecimals={selected.quote === selected.pool.token1Symbol ? selected.pool.token1Decimals : selected.pool.token0Decimals}
-                inverted={selected.base !== selected.pool.token0Symbol}
-              />
-            ) : null}
-          </div>
+            )}
+          />
           <div className="border-t border-line px-4 py-3 text-xs text-muted">
             {protocol.metrics?.ready
               ? "Indexer up to date"

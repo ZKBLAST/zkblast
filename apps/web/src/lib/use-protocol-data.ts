@@ -36,6 +36,9 @@ export const ProtocolDataContext = createContext<{
   data: ProtocolData;
 } | null>(null);
 
+const settledValue = <T,>(result: PromiseSettledResult<T>): T | null =>
+  result.status === "fulfilled" ? result.value : null;
+
 const hiddenSymbols = new Set(internalTestAssets.symbols);
 const isPublicPair = (token0: string, token1: string) =>
   !hiddenSymbols.has(token0) && !hiddenSymbols.has(token1);
@@ -64,46 +67,43 @@ export function useProtocolData(owner?: string | null): ProtocolData {
     setError(null);
     try {
       const ownerQuery = owner ? `&owner=${encodeURIComponent(owner)}` : "";
-      const [
-        poolPage,
-        swapPage,
-        activityPage,
-        accountActivityPage,
-        positionPage,
-        nextMetrics,
-      ] = await Promise.all(
-        [
-          apiRequest<{ items: ProtocolPool[] }>(
-            webPublicConfig.apiUrl,
-            "/v1/protocol/pools?limit=100",
-          ),
-          apiRequest<{ items: ProtocolSwap[] }>(
-            webPublicConfig.apiUrl,
-            "/v1/protocol/swaps?limit=100",
-          ),
-          apiRequest<{ items: ProtocolActivity[] }>(
-            webPublicConfig.apiUrl,
-            "/v1/protocol/activity?limit=100",
-          ),
-          owner
-            ? apiRequest<{ items: ProtocolActivity[] }>(
-                webPublicConfig.apiUrl,
-                `/v1/protocol/activity?limit=100${ownerQuery}`,
-              )
-            : Promise.resolve({ items: [] as ProtocolActivity[] }),
-          apiRequest<{ items: ProtocolPosition[] }>(
-            webPublicConfig.apiUrl,
-            `/v1/protocol/positions?limit=100${ownerQuery}`,
-          ),
-          apiRequest<IndexerMetrics>(
-            webPublicConfig.apiUrl,
-            "/v1/protocol/metrics",
-          ),
-        ],
-      );
+      const results = await Promise.allSettled([
+        apiRequest<{ items: ProtocolPool[] }>(
+          webPublicConfig.apiUrl,
+          "/v1/protocol/pools?limit=100",
+        ),
+        apiRequest<{ items: ProtocolSwap[] }>(
+          webPublicConfig.apiUrl,
+          "/v1/protocol/swaps?limit=100",
+        ),
+        apiRequest<{ items: ProtocolActivity[] }>(
+          webPublicConfig.apiUrl,
+          "/v1/protocol/activity?limit=100",
+        ),
+        owner
+          ? apiRequest<{ items: ProtocolActivity[] }>(
+              webPublicConfig.apiUrl,
+              `/v1/protocol/activity?limit=100${ownerQuery}`,
+            )
+          : Promise.resolve({ items: [] as ProtocolActivity[] }),
+        apiRequest<{ items: ProtocolPosition[] }>(
+          webPublicConfig.apiUrl,
+          `/v1/protocol/positions?limit=100${ownerQuery}`,
+        ),
+        apiRequest<IndexerMetrics>(
+          webPublicConfig.apiUrl,
+          "/v1/protocol/metrics",
+        ),
+      ] as const);
+      const poolPage = settledValue(results[0]);
+      const swapPage = settledValue(results[1]);
+      const activityPage = settledValue(results[2]);
+      const accountActivityPage = settledValue(results[3]);
+      const positionPage = settledValue(results[4]);
+      const nextMetrics = settledValue(results[5]);
       if (currentRequest !== requestId.current) return;
       setPositionsOwner(owner);
-      setPools(
+      if (poolPage) setPools(
         poolPage.items
           .filter((pool) =>
             isPublicPair(pool.token0Symbol, pool.token1Symbol),
@@ -114,15 +114,20 @@ export function useProtocolData(owner?: string | null): ProtocolData {
               Number(left.createdBlock || "0"),
           ),
       );
-      setSwaps(swapPage.items);
-      setActivity(activityPage.items);
-      setAccountActivity(accountActivityPage.items);
-      setPositions(
+      if (swapPage) setSwaps(swapPage.items);
+      if (activityPage) setActivity(activityPage.items);
+      if (accountActivityPage) setAccountActivity(accountActivityPage.items);
+      if (positionPage) setPositions(
         positionPage.items.filter((position) =>
           isPublicPair(position.token0Symbol, position.token1Symbol),
         ),
       );
-      setMetrics(nextMetrics);
+      if (nextMetrics) setMetrics(nextMetrics);
+      const failures = results.filter(
+        (result): result is PromiseRejectedResult => result.status === "rejected",
+      );
+      if (failures.length === results.length) throw failures[0]?.reason;
+      if (failures.length > 0) setError("PARTIAL_PROTOCOL_DATA_UNAVAILABLE");
     } catch (reason) {
       if (currentRequest !== requestId.current) return;
       setError(
