@@ -48,6 +48,7 @@ export function Launchpad() {
   const searchParams = useSearchParams();
   const requestedView = searchParams.get("view");
   const launchpadFilter = searchParams.get("launchpad");
+  const returnTo = searchParams.get("returnTo");
   const requestedPresetId = searchParams.get("preset");
   const createTokenRequested =
     searchParams.get("action") === "create-token" && Boolean(launchpadFilter);
@@ -126,10 +127,19 @@ export function Launchpad() {
           ...current.filter((item) => item.launch_id !== launch.launch_id),
         ]);
         setSelectedId(launch.launch_id);
+        if (launch.launchpad_id) {
+          window.sessionStorage.setItem(
+            `zkblast.pendingLaunch:${launch.launchpad_id}`,
+            JSON.stringify(launch),
+          );
+        }
       }
       refresh();
+      if (launch && returnTo?.startsWith("/launchpads/")) {
+        router.replace(returnTo);
+      }
     },
-    [refresh],
+    [refresh, returnTo, router],
   );
 
   useEffect(() => {
@@ -231,31 +241,52 @@ export function Launchpad() {
   );
   const selected =
     visible.find((item) => item.launch_id === selectedId) ?? visible[0] ?? null;
-  const [selectedEconomics, setSelectedEconomics] =
-    useState<TemplateEconomics | null>(null);
+  const [economicsByTemplateId, setEconomicsByTemplateId] = useState<
+    Readonly<Record<string, TemplateEconomics>>
+  >({});
   const [selectedSecurity, setSelectedSecurity] =
     useState<ProtectedLaunchSecurity | null>(null);
   const [selectedIdentity, setSelectedIdentity] =
     useState<ProtectedLaunchIdentity | null>(null);
   const economicsTemplateId =
     selected?.template_id ?? templates[0]?.template_id ?? null;
+  const templateEconomicsSignature = useMemo(
+    () =>
+      [...new Set(allLaunches.map((launch) => launch.template_id))]
+        .sort()
+        .join(","),
+    [allLaunches],
+  );
   useEffect(() => {
-    if (!economicsTemplateId) {
-      setSelectedEconomics(null);
+    if (!templateEconomicsSignature) {
+      setEconomicsByTemplateId({});
       return;
     }
     let cancelled = false;
-    void getTemplateEconomics(economicsTemplateId)
-      .then((value) => {
-        if (!cancelled) setSelectedEconomics(value);
-      })
-      .catch(() => {
-        if (!cancelled) setSelectedEconomics(null);
-      });
+    void Promise.allSettled(
+      templateEconomicsSignature.split(",").map(async (templateId) => ({
+        templateId,
+        economics: await getTemplateEconomics(templateId),
+      })),
+    ).then((results) => {
+      if (cancelled) return;
+      setEconomicsByTemplateId(
+        Object.fromEntries(
+          results.flatMap((result) =>
+            result.status === "fulfilled"
+              ? [[result.value.templateId, result.value.economics]]
+              : [],
+          ),
+        ),
+      );
+    });
     return () => {
       cancelled = true;
     };
-  }, [config?.chainId, economicsTemplateId]);
+  }, [config?.chainId, templateEconomicsSignature]);
+  const selectedEconomics = economicsTemplateId
+    ? (economicsByTemplateId[economicsTemplateId] ?? null)
+    : null;
   useEffect(() => {
     if (!selected?.launch_id) {
       setSelectedSecurity(null);
@@ -407,7 +438,7 @@ export function Launchpad() {
           onRefresh={refresh}
           onRetryPending={(item) => void retryPendingLaunchpad(item)}
           quoteSymbol={selectedQuoteSymbol}
-          quoteDecimals={selectedQuoteDecimals}
+          economicsByTemplateId={economicsByTemplateId}
         />
       ) : error && !loading ? (
         <div className="panel ticks p-6">
@@ -500,7 +531,8 @@ export function Launchpad() {
                       />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-mono text-xs">
-                          {item.symbol ?? shortHex(item.token_address)}/{selectedQuoteSymbol}
+                          {item.symbol ?? shortHex(item.token_address)}/
+                          {economicsByTemplateId[item.template_id]?.quoteSymbol ?? "Quote"}
                         </span>
                         <span className="mt-1 block text-[10px] text-muted">
                           {lifecycle[item.lifecycle]} ·{" "}

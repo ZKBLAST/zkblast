@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { shortHex } from "@/lib/format";
 import { apiRequest } from "@/lib/api-client";
 import { webPublicConfig } from "@/config/public-env";
-import type { DbcLaunch } from "./types";
+import type { DbcLaunch, TemplateEconomics } from "./types";
 import { LaunchpadDeveloperSettings } from "./LaunchpadDeveloperSettings";
 import { getTemplateEconomics } from "@/lib/template-economics";
 
@@ -59,7 +59,7 @@ export function LaunchpadOwnerDashboard({
   onRefresh,
   onRetryPending,
   quoteSymbol,
-  quoteDecimals,
+  economicsByTemplateId,
 }: Readonly<{
   launches: readonly DbcLaunch[];
   pendingLaunchpads: readonly PendingLaunchpad[];
@@ -69,7 +69,7 @@ export function LaunchpadOwnerDashboard({
   onRefresh: () => void;
   onRetryPending: (item: PendingLaunchpad) => void;
   quoteSymbol: string;
-  quoteDecimals: number;
+  economicsByTemplateId: Readonly<Record<string, TemplateEconomics>>;
 }>) {
   const {
     address,
@@ -173,15 +173,40 @@ export function LaunchpadOwnerDashboard({
         (item) => item.owner.toLowerCase() === address.toLowerCase(),
       )
     : [];
-  const totals = owned.reduce(
-    (result, launch) => ({
-      trades: result.trades + (launch.trade_count ?? 0),
-      volumeRaw: result.volumeRaw + BigInt(launch.volume_raw ?? "0"),
-      claimableRaw:
-        result.claimableRaw + BigInt(launch.creator_claimable_raw ?? "0"),
-    }),
-    { trades: 0, volumeRaw: 0n, claimableRaw: 0n },
+  const totalTrades = owned.reduce(
+    (total, launch) => total + (launch.trade_count ?? 0),
+    0,
   );
+  const totalsByQuote = owned.reduce<
+    Record<
+      string,
+      { decimals: number; volumeRaw: bigint; claimableRaw: bigint }
+    >
+  >((result, launch) => {
+    const launchEconomics = economicsByTemplateId[launch.template_id];
+    const symbol = launchEconomics?.quoteSymbol ?? "Quote";
+    const current = result[symbol] ?? {
+      decimals: launchEconomics?.quoteDecimals ?? 18,
+      volumeRaw: 0n,
+      claimableRaw: 0n,
+    };
+    result[symbol] = {
+      ...current,
+      volumeRaw: current.volumeRaw + BigInt(launch.volume_raw ?? "0"),
+      claimableRaw:
+        current.claimableRaw + BigInt(launch.creator_claimable_raw ?? "0"),
+    };
+    return result;
+  }, {});
+  const formattedQuoteTotal = (
+    field: "volumeRaw" | "claimableRaw",
+  ) =>
+    Object.entries(totalsByQuote)
+      .map(
+        ([symbol, total]) =>
+          `${formatTokenAmount(total[field], total.decimals)} ${symbol}`,
+      )
+      .join(" · ") || `0 ${quoteSymbol}`;
   const latestIndexedBlock = owned.reduce((latest, launch) => {
     const block = BigInt(launch.updated_block);
     return block > latest ? block : latest;
@@ -293,17 +318,17 @@ export function LaunchpadOwnerDashboard({
           <Metric
             icon={Activity}
             label="Trades"
-            value={totals.trades.toLocaleString()}
+            value={totalTrades.toLocaleString()}
           />
           <Metric
             icon={CircleDollarSign}
             label="Recorded volume"
-            value={`${formatTokenAmount(totals.volumeRaw, quoteDecimals)} ${quoteSymbol}`}
+            value={formattedQuoteTotal("volumeRaw")}
           />
           <Metric
             icon={CircleDollarSign}
             label="Creator claimable"
-            value={`${formatTokenAmount(totals.claimableRaw, quoteDecimals)} ${quoteSymbol}`}
+            value={formattedQuoteTotal("claimableRaw")}
           />
           <Metric
             icon={AlertTriangle}
@@ -501,6 +526,14 @@ export function LaunchpadOwnerDashboard({
         ) : (
           <div className="grid gap-3 lg:grid-cols-2">
             {owned.map((launch) => (
+              (() => {
+                const launchEconomics =
+                  economicsByTemplateId[launch.template_id];
+                const launchQuoteSymbol =
+                  launchEconomics?.quoteSymbol ?? "Quote";
+                const launchQuoteDecimals =
+                  launchEconomics?.quoteDecimals ?? 18;
+                return (
               <article
                 key={launch.launch_id}
                 className="border border-line p-5"
@@ -529,17 +562,17 @@ export function LaunchpadOwnerDashboard({
                   <dd className="text-right font-mono">
                     {formatTokenAmount(
                       BigInt(launch.volume_raw ?? "0"),
-                      quoteDecimals,
+                      launchQuoteDecimals,
                     )}{" "}
-                    {quoteSymbol}
+                    {launchQuoteSymbol}
                   </dd>
                   <dt className="text-muted">Creator claimable</dt>
                   <dd className="text-right font-mono">
                     {formatTokenAmount(
                       BigInt(launch.creator_claimable_raw ?? "0"),
-                      quoteDecimals,
+                      launchQuoteDecimals,
                     )}{" "}
-                    {quoteSymbol}
+                    {launchQuoteSymbol}
                   </dd>
                   <dt className="text-muted">Fee snapshot</dt>
                   <dd className="text-right font-mono">
@@ -612,6 +645,8 @@ export function LaunchpadOwnerDashboard({
                   </div>
                 )}
               </article>
+                );
+              })()
             ))}
           </div>
         )}

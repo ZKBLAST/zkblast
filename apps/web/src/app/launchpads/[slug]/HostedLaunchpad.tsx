@@ -90,14 +90,35 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
           `/v1/dbc/launches?launchpadId=${encodeURIComponent(brand.launchpadId)}&limit=100`,
           { signal: controller.signal, cache: "no-store" },
         );
+        const pendingKey = `zkblast.pendingLaunch:${brand.launchpadId}`;
+        let pendingLaunch: DbcLaunch | null = null;
+        try {
+          pendingLaunch = JSON.parse(
+            window.sessionStorage.getItem(pendingKey) ?? "null",
+          ) as DbcLaunch | null;
+        } catch {
+          window.sessionStorage.removeItem(pendingKey);
+        }
+        const indexedPending = pendingLaunch
+          ? result.items.some(
+              (item) => item.launch_id === pendingLaunch?.launch_id,
+            )
+          : false;
+        if (indexedPending) window.sessionStorage.removeItem(pendingKey);
+        const mergedLaunches =
+          pendingLaunch &&
+          pendingLaunch.launchpad_id === brand.launchpadId &&
+          !indexedPending
+            ? [pendingLaunch, ...result.items]
+            : result.items;
         setBranding(brand);
         setNetwork(networkResult);
         setDeployment(deploymentResult);
-        setLaunches(result.items);
+        setLaunches(mergedLaunches);
         setSelectedId((current) =>
-          result.items.some((item) => item.launch_id === current)
+          mergedLaunches.some((item) => item.launch_id === current)
             ? current
-            : (result.items[0]?.launch_id ?? ""),
+            : (mergedLaunches[0]?.launch_id ?? ""),
         );
       })
       .catch((reason: unknown) => {
@@ -142,7 +163,7 @@ export function HostedLaunchpad({ slug }: Readonly<{ slug: string }>) {
   }, [selected?.template_id]);
   const quoteSymbol = economics?.quoteSymbol ?? "QUOTE";
   const quoteDecimals = economics?.quoteDecimals ?? 18;
-  const createTokenHref = `/launch?launchpad=${encodeURIComponent(branding?.launchpadId ?? "")}&action=create-token`;
+  const createTokenHref = `/launch?launchpad=${encodeURIComponent(branding?.launchpadId ?? "")}&action=create-token&returnTo=${encodeURIComponent(`/launchpads/${slug}`)}`;
   if (loading && !branding) return <HostedSkeleton />;
   if (error && !branding)
     return (
