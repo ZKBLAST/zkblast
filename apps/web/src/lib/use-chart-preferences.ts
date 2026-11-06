@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 
 import type { ChartInterval, ChartStyle } from "./market-chart-data";
 
+export type ChartIndicator = "ma20" | "ema50" | "vwap" | "bb20";
+
 type ChartPreferences = Readonly<{
   interval: ChartInterval;
   style: ChartStyle | null;
+  indicators: readonly ChartIndicator[];
 }>;
-const defaults: ChartPreferences = { interval: "1h", style: null };
+const defaults: ChartPreferences = { interval: "1h", style: null, indicators: [] };
 const intervals = new Set<ChartInterval>(["1m", "5m", "15m", "30m", "1h", "4h", "1d"]);
+const indicators = new Set<ChartIndicator>(["ma20", "ema50", "vwap", "bb20"]);
 
 export function useChartPreferences() {
   const [preferences, setPreferences] = useState<ChartPreferences>(defaults);
@@ -21,6 +25,9 @@ export function useChartPreferences() {
       setPreferences({
         interval: parsed.interval && intervals.has(parsed.interval) ? parsed.interval : defaults.interval,
         style: parsed.style === "line" || parsed.style === "candles" ? parsed.style : null,
+        indicators: Array.isArray(parsed.indicators)
+          ? parsed.indicators.filter((value): value is ChartIndicator => indicators.has(value as ChartIndicator))
+          : [],
       });
     } catch {
       /* Storage can be unavailable in privacy-restricted browser contexts. */

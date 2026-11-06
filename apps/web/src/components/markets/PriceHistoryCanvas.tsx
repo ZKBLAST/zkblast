@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import {
   CandlestickSeries,
   ColorType,
   createChart,
   AreaSeries,
+  LineSeries,
   LineStyle,
   LineType,
   HistogramSeries,
@@ -18,6 +19,7 @@ import {
 import { Info, Maximize2 } from "lucide-react";
 import { ChartTooltip } from "./ChartTooltip";
 import { chartTooltipLeft } from "@/lib/chart-tooltip";
+import type { ChartIndicator } from "@/lib/use-chart-preferences";
 import {
   formatChartPrice,
   type ChartStyle,
@@ -34,6 +36,7 @@ export function PriceHistoryCanvas({
   volumeUnit,
   limited = false,
   positionLines = [],
+  indicators = [],
 }: {
   bars: readonly MarketCandle[];
   style: ChartStyle;
@@ -42,6 +45,7 @@ export function PriceHistoryCanvas({
   volumeUnit: string | null;
   limited?: boolean;
   positionLines?: readonly ChartPositionLine[];
+  indicators?: readonly ChartIndicator[];
 }) {
   const host = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -51,6 +55,7 @@ export function PriceHistoryCanvas({
   const fitted = useRef(false);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const positionLineRefs = useRef<IPriceLine[]>([]);
+  const indicatorSeriesRefs = useRef<ISeriesApi<"Line">[]>([]);
   const [hover, setHover] = useState<MarketCandle | null>(null);
   const [tooltipLeft, setTooltipLeft] = useState(8);
   const barsRef = useRef(bars);
@@ -188,6 +193,7 @@ export function PriceHistoryCanvas({
       renderedBarsRef.current = [];
       volumeRef.current = null;
       positionLineRefs.current = [];
+      indicatorSeriesRefs.current = [];
     };
   }, [style, hasVolume]);
   useEffect(() => {
@@ -257,6 +263,42 @@ export function PriceHistoryCanvas({
         title: line.label,
       }));
   }, [positionLines, style]);
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    for (const indicatorSeries of indicatorSeriesRefs.current)
+      chart.removeSeries(indicatorSeries);
+    indicatorSeriesRefs.current = [];
+    const addIndicator = (data: readonly IndicatorPoint[], color: string, title: string) => {
+      if (!data.length) return;
+      const indicatorSeries = chart.addSeries(LineSeries, {
+        color,
+        lineWidth: 1,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        title,
+      });
+      indicatorSeries.setData(data.map((point) => ({
+        time: point.time as UTCTimestamp,
+        value: point.value,
+      })));
+      indicatorSeriesRefs.current.push(indicatorSeries);
+    };
+    if (indicators.includes("ma20")) addIndicator(movingAverage(bars, 20), "#8ab4f8", "MA 20");
+    if (indicators.includes("ema50")) addIndicator(exponentialAverage(bars, 50), "#f6c177", "EMA 50");
+    if (indicators.includes("vwap")) addIndicator(sessionVwap(bars, volumes), "#56d9ad", "VWAP");
+    if (indicators.includes("bb20")) {
+      const bands = bollingerBands(bars, 20, 2);
+      addIndicator(bands.upper, "#c4a7e7", "BB upper");
+      addIndicator(bands.lower, "#c4a7e7", "BB lower");
+    }
+    return () => {
+      for (const indicatorSeries of indicatorSeriesRefs.current) {
+        try { chart.removeSeries(indicatorSeries); } catch { /* chart can already be disposed */ }
+      }
+      indicatorSeriesRefs.current = [];
+    };
+  }, [bars, indicators, volumes, style]);
   const observation = hover ?? bars.at(-1);
   const observationIndex = observation
     ? bars.findIndex((bar) => bar.time === observation.time)
@@ -265,6 +307,34 @@ export function PriceHistoryCanvas({
   const change = observation && previous && previous.close > 0
     ? ((observation.close - previous.close) / previous.close) * 100
     : null;
+  function handleChartKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const timeScale = chartRef.current?.timeScale();
+    if (!timeScale) return;
+    if (event.key === "Home") {
+      event.preventDefault();
+      timeScale.fitContent();
+      return;
+    }
+    const range = timeScale.getVisibleLogicalRange();
+    if (!range) return;
+    const width = range.to - range.from;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      const offset = width * 0.1 * (event.key === "ArrowLeft" ? -1 : 1);
+      timeScale.setVisibleLogicalRange({
+        from: range.from + offset,
+        to: range.to + offset,
+      });
+      return;
+    }
+    if (["+", "=", "-", "_"].includes(event.key)) {
+      event.preventDefault();
+      const center = (range.from + range.to) / 2;
+      const zoom = event.key === "+" || event.key === "=" ? 0.8 : 1.25;
+      const half = (width * zoom) / 2;
+      timeScale.setVisibleLogicalRange({ from: center - half, to: center + half });
+    }
+  }
   return (
     <div className="flex min-h-80 flex-1 flex-col">
       <div className="flex min-h-10 flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
@@ -332,8 +402,10 @@ export function PriceHistoryCanvas({
         <div
           ref={host}
           role="img"
-          aria-label={label}
-          className="absolute inset-0"
+          tabIndex={0}
+          aria-label={`${label}. Use left and right arrows to pan, plus and minus to zoom, and Home to fit all data.`}
+          onKeyDown={handleChartKeyDown}
+          className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lime"
         />
         {hover && (
           <ChartTooltip
@@ -347,6 +419,56 @@ export function PriceHistoryCanvas({
       </div>
     </div>
   );
+}
+
+type IndicatorPoint = Readonly<{ time: number; value: number }>;
+
+function movingAverage(bars: readonly MarketCandle[], period: number): IndicatorPoint[] {
+  return bars.flatMap((bar, index) => {
+    if (index + 1 < period) return [];
+    const window = bars.slice(index + 1 - period, index + 1);
+    return [{ time: bar.time, value: window.reduce((sum, item) => sum + item.close, 0) / period }];
+  });
+}
+
+function exponentialAverage(bars: readonly MarketCandle[], period: number): IndicatorPoint[] {
+  if (!bars.length) return [];
+  const multiplier = 2 / (period + 1);
+  let value = bars[0].close;
+  return bars.map((bar) => {
+    value = bar.close * multiplier + value * (1 - multiplier);
+    return { time: bar.time, value };
+  });
+}
+
+function sessionVwap(
+  bars: readonly MarketCandle[],
+  volumes: readonly MarketVolumeBar[],
+): IndicatorPoint[] {
+  const volumeByTime = new Map(volumes.map((item) => [item.time, item.value]));
+  let totalValue = 0;
+  let totalVolume = 0;
+  return bars.flatMap((bar) => {
+    const volume = volumeByTime.get(bar.time) ?? 0;
+    if (volume <= 0) return [];
+    totalValue += ((bar.high + bar.low + bar.close) / 3) * volume;
+    totalVolume += volume;
+    return [{ time: bar.time, value: totalValue / totalVolume }];
+  });
+}
+
+function bollingerBands(bars: readonly MarketCandle[], period: number, deviations: number) {
+  const upper: IndicatorPoint[] = [];
+  const lower: IndicatorPoint[] = [];
+  for (let index = period - 1; index < bars.length; index += 1) {
+    const window = bars.slice(index + 1 - period, index + 1);
+    const average = window.reduce((sum, item) => sum + item.close, 0) / period;
+    const variance = window.reduce((sum, item) => sum + (item.close - average) ** 2, 0) / period;
+    const distance = Math.sqrt(variance) * deviations;
+    upper.push({ time: bars[index].time, value: average + distance });
+    lower.push({ time: bars[index].time, value: average - distance });
+  }
+  return { upper, lower };
 }
 
 function sameCandle(left: MarketCandle, right: MarketCandle | undefined) {

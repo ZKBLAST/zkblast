@@ -28,6 +28,7 @@ import {
 } from "@/lib/market-chart-data";
 import { useMarketPriceHistory } from "@/lib/use-market-price-history";
 import { useChartPreferences } from "@/lib/use-chart-preferences";
+import type { ChartIndicator } from "@/lib/use-chart-preferences";
 import { PriceHistoryCanvas } from "./PriceHistoryCanvas";
 
 export function MarketPriceChart({
@@ -57,6 +58,7 @@ export function MarketPriceChart({
   const interval = preferences.interval;
   const range = chartRangeForInterval[interval];
   const styleSelection = preferences.style;
+  const selectedIndicators = preferences.indicators;
   const root = useRef<HTMLElement>(null);
   const [fallbackFullscreen, setFallbackFullscreen] = useState(false);
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
@@ -112,6 +114,13 @@ export function MarketPriceChart({
       return;
     }
     setFallbackFullscreen((value) => !value);
+  }
+  function toggleIndicator(indicator: ChartIndicator) {
+    updatePreferences({
+      indicators: selectedIndicators.includes(indicator)
+        ? selectedIndicators.filter((value) => value !== indicator)
+        : [...selectedIndicators, indicator],
+    });
   }
   return (
     <section
@@ -214,6 +223,29 @@ export function MarketPriceChart({
           </button>
         </div>
       </div>
+      <div className="flex flex-wrap gap-1 border-b border-line py-2" role="group" aria-label="Chart indicators">
+        {([
+          ["ma20", "MA 20"],
+          ["ema50", "EMA 50"],
+          ["vwap", "VWAP"],
+          ["bb20", "Bollinger"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={selectedIndicators.includes(value)}
+            onClick={() => toggleIndicator(value)}
+            className={cx(
+              "border px-2.5 py-1 font-mono text-[9px] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime",
+              selectedIndicators.includes(value)
+                ? "border-lime bg-lime/10 text-lime"
+                : "border-line text-muted hover:text-fg",
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div className="mt-3 flex min-h-80 flex-1 flex-col">
         <RealDataState
           loading={loading}
@@ -242,6 +274,7 @@ export function MarketPriceChart({
             style={style}
             label={`${source} ${style} chart · ${unit ?? "provider denomination"}`}
             positionLines={positionLines}
+            indicators={selectedIndicators}
           />
         )}
       </div>

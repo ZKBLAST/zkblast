@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink, Layers, Minus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AccountPanel } from "@/components/account/AccountPanel";
 import { ProtocolPairLogo } from "@/components/markets/MarketPairLogo";
@@ -45,6 +45,35 @@ export function PositionsView({
       : data.positions;
   const openPositions = positions.filter((position) => position.status === "open");
   const closedPositions = positions.filter((position) => position.status !== "open");
+  const dlmmPools = useMemo(
+    () => [...new Set(positions
+      .filter((position) => position.model === "dlmm")
+      .map((position) => position.poolAddress.toLowerCase()))].sort(),
+    [positions],
+  );
+  const dlmmPoolKey = dlmmPools.join(",");
+  const [activeBins, setActiveBins] = useState<Readonly<Record<string, number | null>>>({});
+
+  useEffect(() => {
+    const controller = new AbortController();
+    if (!dlmmPoolKey) {
+      setActiveBins({});
+      return () => controller.abort();
+    }
+    void Promise.all(dlmmPools.map(async (pool) => {
+      const response = await apiRequest<{ stats: { activeBin: number | null } | null }>(
+        webPublicConfig.apiUrl,
+        `/v1/protocol/pools/${encodeURIComponent(pool)}/stats`,
+        { signal: controller.signal },
+      );
+      return [pool, response.stats?.activeBin ?? null] as const;
+    })).then((entries) => {
+      if (!controller.signal.aborted) setActiveBins(Object.fromEntries(entries));
+    }).catch(() => {
+      if (!controller.signal.aborted) setActiveBins({});
+    });
+    return () => controller.abort();
+  }, [dlmmPoolKey]);
 
   if (!address)
     return (
@@ -137,6 +166,7 @@ export function PositionsView({
               <PositionItem
                 key={`${position.poolAddress}:${position.onchainPositionId}`}
                 position={position}
+                activeBin={activeBins[position.poolAddress.toLowerCase()]}
                 markets={externalMarkets}
                 owner={address}
                 explorerUrl={config?.explorerUrl}
@@ -158,6 +188,7 @@ export function PositionsView({
                 <PositionItem
                   key={`${position.poolAddress}:${position.onchainPositionId}`}
                   position={position}
+                  activeBin={activeBins[position.poolAddress.toLowerCase()]}
                   markets={externalMarkets}
                   owner={address}
                   explorerUrl={config?.explorerUrl}
@@ -181,6 +212,7 @@ type PreparedAction = Readonly<{
 
 function PositionItem({
   position,
+  activeBin,
   markets,
   owner,
   explorerUrl,
@@ -189,6 +221,7 @@ function PositionItem({
   onSelectPool,
 }: Readonly<{
   position: ProtocolPosition;
+  activeBin?: number | null;
   markets: ReturnType<typeof useExternalMarkets>["items"];
   owner: string;
   explorerUrl?: string;
@@ -208,6 +241,10 @@ function PositionItem({
   const [transactionHash, setTransactionHash] = useState("");
   const shares = (BigInt(position.liquidityRaw) * BigInt(percent)) / 100n;
   const busy = !["idle", "failed", "confirmed"].includes(state);
+  const hasRange = position.lowerBound !== null && position.upperBound !== null;
+  const inRange = hasRange && activeBin !== null && activeBin !== undefined
+    ? activeBin >= position.lowerBound! && activeBin <= position.upperBound!
+    : null;
 
   async function removeLiquidity() {
     if (!window.ethereum || shares <= 0n) return;
@@ -291,6 +328,26 @@ function PositionItem({
           </dd>
         </dl>
       </div>
+      {position.model === "dlmm" ? (
+        <dl className="mt-4 grid grid-cols-2 gap-px border border-line bg-line text-xs sm:grid-cols-3">
+          <div className="bg-panel px-3 py-2">
+            <dt className="font-mono text-[9px] uppercase text-faint">Bin range</dt>
+            <dd className="mt-1 font-mono text-muted">
+              {hasRange ? `${position.lowerBound} – ${position.upperBound}` : "Full range"}
+            </dd>
+          </div>
+          <div className="bg-panel px-3 py-2">
+            <dt className="font-mono text-[9px] uppercase text-faint">Active bin</dt>
+            <dd className="mt-1 font-mono text-muted">{activeBin ?? "—"}</dd>
+          </div>
+          <div className="col-span-2 bg-panel px-3 py-2 sm:col-span-1">
+            <dt className="font-mono text-[9px] uppercase text-faint">Range status</dt>
+            <dd className={`mt-1 font-mono ${inRange === true ? "text-emerald-300" : inRange === false ? "text-amber-300" : "text-muted"}`}>
+              {inRange === true ? "In range" : inRange === false ? "Out of range" : "Awaiting finalized bin"}
+            </dd>
+          </div>
+        </dl>
+      ) : null}
       {position.status === "open" ? (
       <div className="mt-5 border-t border-line pt-4">
         <div className="flex flex-wrap items-center gap-2">
