@@ -104,7 +104,7 @@ export function LaunchWizard({
   const [stockCatalogQuery, setStockCatalogQuery] = useState("");
   const [catalogStockAddress, setCatalogStockAddress] = useState("");
   const [stockTemplateIds, setStockTemplateIds] = useState<
-    Readonly<Record<string, string>>
+    Readonly<Record<string, Partial<Record<"damm" | "dlmm", string>>>>
   >({});
   const [catalogStockDestinations, setCatalogStockDestinations] = useState<
     readonly StockQuoteDestinationView[]
@@ -227,16 +227,18 @@ export function LaunchWizard({
           ),
         })),
     )
-      .then((items) =>
-        setStockTemplateIds(
-          Object.fromEntries(
-            items.map((item) => [
-              item.economics.quoteToken.toLowerCase(),
-              item.templateId,
-            ]),
-          ),
-        ),
-      )
+      .then((items) => {
+        const byAsset: Record<
+          string,
+          Partial<Record<"damm" | "dlmm", string>>
+        > = {};
+        for (const item of items) {
+          const asset = item.economics.quoteToken.toLowerCase();
+          const mode = item.economics.migrationMode === 1 ? "dlmm" : "damm";
+          byAsset[asset] = { ...byAsset[asset], [mode]: item.templateId };
+        }
+        setStockTemplateIds(byAsset);
+      })
       .catch(() => {
         if (!controller.signal.aborted) setStockTemplateIds({});
       });
@@ -814,10 +816,14 @@ export function LaunchWizard({
                           }
                           onClick={() => {
                             setCatalogStockAddress(asset.contractAddress);
-                            const matchingTemplate =
+                            const matchingTemplates =
                               stockTemplateIds[
                                 asset.contractAddress.toLowerCase()
                               ];
+                            const matchingTemplate =
+                              matchingTemplates?.[selectedMigrationMode] ??
+                              matchingTemplates?.damm ??
+                              matchingTemplates?.dlmm;
                             if (matchingTemplate)
                               setTemplateId(matchingTemplate);
                           }}
@@ -841,9 +847,11 @@ export function LaunchWizard({
                             {asset.contractAddress}
                           </p>
                           <p className="mt-2 text-[10px] text-muted">
-                            {stockTemplateIds[
-                              asset.contractAddress.toLowerCase()
-                            ]
+                            {Object.keys(
+                              stockTemplateIds[
+                                asset.contractAddress.toLowerCase()
+                              ] ?? {},
+                            ).length > 0
                               ? asset.quoteTradingEnabled
                                 ? "Protected launch template active"
                                 : "Template ready · trading disabled"
@@ -930,10 +938,26 @@ export function LaunchWizard({
             {displayedStockAsset &&
               (!catalogStockDestinationsLoading || stockQuoteAsset) && (
                 <StockQuoteAssetSummary
-                  key={displayedStockAsset.contractAddress}
+                  key={`${displayedStockAsset.contractAddress}-${selectedMigrationMode}`}
                   asset={displayedStockAsset}
                   destinations={displayedStockDestinations}
                   selectedMigrationMode={selectedMigrationMode}
+                  availableMigrationModes={
+                    new Set(
+                      Object.keys(
+                        stockTemplateIds[
+                          displayedStockAsset.contractAddress.toLowerCase()
+                        ] ?? {},
+                      ) as ("damm" | "dlmm")[],
+                    )
+                  }
+                  onSelectMigrationMode={(mode) => {
+                    const matchingTemplate =
+                      stockTemplateIds[
+                        displayedStockAsset.contractAddress.toLowerCase()
+                      ]?.[mode];
+                    if (matchingTemplate) setTemplateId(matchingTemplate);
+                  }}
                 />
               )}
           </div>

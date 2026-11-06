@@ -52,10 +52,14 @@ export function StockQuoteAssetSummary({
   asset,
   destinations,
   selectedMigrationMode,
+  availableMigrationModes,
+  onSelectMigrationMode,
 }: Readonly<{
   asset: StockQuoteAssetView;
   destinations: readonly StockQuoteDestinationView[];
   selectedMigrationMode: "damm" | "dlmm";
+  availableMigrationModes: ReadonlySet<"damm" | "dlmm">;
+  onSelectMigrationMode: (mode: "damm" | "dlmm") => void;
 }>) {
   const [amount, setAmount] = useState("1");
   const [preview, setPreview] = useState<StockQuotePreviewView | null>(null);
@@ -159,10 +163,16 @@ export function StockQuoteAssetSummary({
           const active =
             destinations.find((item) => item.migrationMode === mode)
               ?.enabled === true;
+          const templateAvailable = availableMigrationModes.has(mode);
+          const selectable = active && templateAvailable;
           return (
-            <div
+            <button
+              type="button"
               key={mode}
-              className={`border p-3 text-[11px] ${mode === selectedMigrationMode ? "border-lime/70" : "border-line"}`}
+              disabled={!selectable}
+              aria-pressed={mode === selectedMigrationMode}
+              onClick={() => onSelectMigrationMode(mode)}
+              className={`border p-3 text-left text-[11px] transition-colors ${mode === selectedMigrationMode ? "border-lime bg-white/[.03]" : "border-line"} ${selectable ? "cursor-pointer hover:border-lime/70" : "cursor-not-allowed opacity-60"}`}
             >
               <span className="flex items-center gap-2 font-mono uppercase text-muted">
                 {active ? (
@@ -173,11 +183,13 @@ export function StockQuoteAssetSummary({
                 {mode}
               </span>
               <span className="mt-2 block text-fg">
-                {active
-                  ? "Verified destination"
-                  : "No active capability receipt"}
+                {!active
+                  ? "No active capability receipt"
+                  : templateAvailable
+                    ? "Verified destination"
+                    : "Template activation required"}
               </span>
-            </div>
+            </button>
           );
         })}
       </div>

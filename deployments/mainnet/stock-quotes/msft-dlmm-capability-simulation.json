@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "environment": "mainnet-fork",
+  "chainId": 4663,
+  "planSha256": "d0778942fa4a87339af650f8f78c9ffe9bd922fb138bd088a81a9a64b5ed9959",
+  "transactionCount": 6,
+  "receipts": [
+    {
+      "name": "approve-zkblast-dlmm-acceptance",
+      "actor": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "hash": "0x9048b665e6d888cade8480ac9452c98d141d19c68d4bc6581cf7c6abfa1d6e61",
+      "blockNumber": "107245573",
+      "gasUsed": "45937"
+    },
+    {
+      "name": "approve-msft-dlmm-acceptance",
+      "actor": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "hash": "0x918f844702078fe4b821e535bff03e182bcc44b8b58820e5bbb4a129a2cd3f4b",
+      "blockNumber": "107245574",
+      "gasUsed": "63613"
+    },
+    {
+      "name": "fund-msft-dlmm-acceptance",
+      "actor": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+      "hash": "0xb2bcecbd3ccc9ec466a08df7bc51418a9c52058b1f7d1a40ac1806bbf8d5f7d3",
+      "blockNumber": "107245575",
+      "gasUsed": "255655"
+    },
+    {
+      "name": "enable-msft-graduation-policy",
+      "actor": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "hash": "0x5bdf3d481387330dc999ea33b78195c4b3b10f81ef3680338bce31eabea171a1",
+      "blockNumber": "107245576",
+      "gasUsed": "67508"
+    },
+    {
+      "name": "register-msft-dlmm-capability",
+      "actor": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "hash": "0x8fea5320a2f243138cf57c0167e0b16f5387a5b067d166a34fa6497eee1853fc",
+      "blockNumber": "107245577",
+      "gasUsed": "240048"
+    },
+    {
+      "name": "accept-msft-dlmm-capability",
+      "actor": "0xc082aC032Cb5d950fe533C2D33e81A24fFb538e8",
+      "hash": "0xfc1b4ab57e79f69ff20f707a3e0cd6310fc0970271ac313fd0a2c3f6a449f875",
+      "blockNumber": "107245578",
+      "gasUsed": "108932"
+    }
+  ],
+  "totalGasUsed": "781693",
+  "gasPriceWei": "1000000000",
+  "estimatedExecutionFeeWei": "781693000000000",
+  "estimatedExecutionFeeEth": "0.000781693",
+  "assertions": {
+    "reserve0Raw": "1000000000000000000",
+    "reserve1Raw": "99994480413477",
+    "totalShares": "9999724016865515",
+    "deployerShares": "9999724016864515",
+    "graduationEnabled": true,
+    "dlmmCapabilityEnabled": true,
+    "fundedAcceptanceHash": "0x461476668cc154c7ff62e3c734e5dfa6fb9577a96cddc6d244e0c6b3d0f6a984"
+  },
+  "passed": true
+}

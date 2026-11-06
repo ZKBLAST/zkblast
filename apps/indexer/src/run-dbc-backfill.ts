@@ -21,6 +21,7 @@ const runtime = z
     SUPABASE_DIRECT_DATABASE_URL: z.string().url(),
     INDEXER_CONFIRMATIONS: z.coerce.number().int().min(1).default(5),
     DBC_BACKFILL_FROM_BLOCK: z.coerce.bigint().min(0n).optional(),
+    DBC_BACKFILL_TO_BLOCK: z.coerce.bigint().min(0n).optional(),
     INDEXER_RPC_URL: z.string().url().optional(),
     INDEXER_PRIMARY_ONLY: z.coerce.boolean().default(false),
   })
@@ -76,7 +77,7 @@ const client = createPublicClient({
     ? http(runtime.INDEXER_RPC_URL, { timeout: 30_000, retryCount: 2 })
     : runtime.INDEXER_PRIMARY_ONLY
       ? http(config.RPC_URL, { timeout: 30_000, retryCount: 2 })
-    : createIndexerTransport(config.RPC_URL),
+      : createIndexerTransport(config.RPC_URL),
 });
 const repository = new PostgresIndexerRepository(
   runtime.SUPABASE_DIRECT_DATABASE_URL,
@@ -91,14 +92,17 @@ const reader = new ViemChainReader(client, config.CHAIN_ID, [
   ...addresses,
   ...existing,
 ]);
-const head =
+const confirmedHead =
   (await client.getBlockNumber()) - BigInt(runtime.INDEXER_CONFIRMATIONS);
+const head = runtime.DBC_BACKFILL_TO_BLOCK ?? confirmedHead;
+if (head > confirmedHead) throw new Error("DBC_BACKFILL_TO_BLOCK_UNCONFIRMED");
 let events = 0,
   blocks = 0;
 const protectedDeploymentBlock = manifest.protectedLaunch?.deploymentBlock;
-const defaultBackfillFrom = protectedDeploymentBlock === undefined
-  ? BigInt(manifest.dbc.deploymentBlock)
-  : BigInt(Math.min(manifest.dbc.deploymentBlock, protectedDeploymentBlock));
+const defaultBackfillFrom =
+  protectedDeploymentBlock === undefined
+    ? BigInt(manifest.dbc.deploymentBlock)
+    : BigInt(Math.min(manifest.dbc.deploymentBlock, protectedDeploymentBlock));
 const backfillFrom = runtime.DBC_BACKFILL_FROM_BLOCK ?? defaultBackfillFrom;
 for (let from = backfillFrom; from <= head; from += 2_000n) {
   const to = from + 1_999n > head ? head : from + 1_999n;
@@ -118,7 +122,8 @@ for (let from = backfillFrom; from <= head; from += 2_000n) {
       if (
         decoded.eventName !== "TokenLaunched" &&
         decoded.eventName !== "ProtectedTokenLaunched"
-      ) continue;
+      )
+        continue;
       const args = decoded.args as { token: Address; virtualPool: Address };
       for (const candidate of [
         getAddress(args.token),
