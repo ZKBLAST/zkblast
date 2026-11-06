@@ -334,9 +334,16 @@ export function PriceHistoryCanvas({
       })
       .filter((bin) => Number.isFinite(bin.price) && bin.price > 0)
       .sort((left, right) => left.binId - right.binId);
+    const firstBin = ordered[0];
+    const lastBin = ordered.at(-1);
+    if (!firstBin || !lastBin) {
+      setPositionedBins([]);
+      setRangeBins(null);
+      return;
+    }
     setRangeBins((current) => current ?? {
-      lower: ordered.find((bin) => bin.binId === liquidityBins.activeBin - 2)?.binId ?? ordered[0]!.binId,
-      upper: ordered.find((bin) => bin.binId === liquidityBins.activeBin + 2)?.binId ?? ordered.at(-1)!.binId,
+      lower: ordered.find((bin) => bin.binId === liquidityBins.activeBin - 2)?.binId ?? firstBin.binId,
+      upper: ordered.find((bin) => bin.binId === liquidityBins.activeBin + 2)?.binId ?? lastBin.binId,
     });
     const redraw = () => {
       const owned = new Set(walletLiquidityBins);
@@ -348,7 +355,7 @@ export function PriceHistoryCanvas({
         return [{
           binId: bin.binId,
           top: coordinate,
-          width: 4 + (magnitudes[index]! / maximum) * 31,
+          width: 4 + ((magnitudes[index] ?? 0) / maximum) * 31,
           side: bin.binId === liquidityBins.activeBin
             ? "active" as const
             : bin.binId > liquidityBins.activeBin

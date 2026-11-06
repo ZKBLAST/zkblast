@@ -250,9 +250,10 @@ function PositionItem({
   const [transactionHash, setTransactionHash] = useState("");
   const shares = (BigInt(position.liquidityRaw) * BigInt(percent)) / 100n;
   const busy = !["idle", "failed", "confirmed"].includes(state);
-  const hasRange = position.lowerBound !== null && position.upperBound !== null;
-  const inRange = hasRange && activeBin !== null && activeBin !== undefined
-    ? activeBin >= position.lowerBound! && activeBin <= position.upperBound!
+  const { lowerBound, upperBound } = position;
+  const hasRange = lowerBound !== null && upperBound !== null;
+  const inRange = lowerBound !== null && upperBound !== null && activeBin !== null && activeBin !== undefined
+    ? activeBin >= lowerBound && activeBin <= upperBound
     : null;
 
   async function removeLiquidity() {
