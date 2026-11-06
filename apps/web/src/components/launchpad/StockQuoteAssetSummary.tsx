@@ -184,7 +184,9 @@ export function StockQuoteAssetSummary({
 
       <form
         className="space-y-3 border-t border-line pt-4"
-        onSubmit={loadPreview}
+        onSubmit={(event) => {
+          void loadPreview(event);
+        }}
       >
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <label className="block">
