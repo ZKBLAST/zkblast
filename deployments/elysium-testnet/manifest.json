@@ -1,0 +1,952 @@
+{
+  "schemaVersion": 2,
+  "protocol": "ZKBLAST",
+  "kind": "elysium-testnet-deployment",
+  "generatedAt": "2026-11-07T10:43:20.336Z",
+  "environment": "testnet",
+  "chainId": 99801,
+  "chainName": "Elysium Testnet",
+  "deploymentBlock": 25574414,
+  "deploymentBlockHash": "0xe8ce867afa01a8639697437ba4420283e9207c4757c9ee90230c308c05e99b89",
+  "deployerAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governanceAddress": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "upgraderAddress": "0x54Ad8502759C61596c428054660674E0ec919F10",
+  "contracts": {},
+  "roles": {
+    "defaultAdmin": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+    "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "factory": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c"
+  },
+  "totals": {
+    "transactionCount": 63,
+    "gasUsed": "53800985",
+    "totalFeeWei": "5637026097382000"
+  },
+  "integration": {
+    "poolRegistry": "0x0000000000000000000000000000000000000000",
+    "poolFactory": "0x0000000000000000000000000000000000000000",
+    "swapRouter": "0x0000000000000000000000000000000000000000",
+    "positionManager": "0x0000000000000000000000000000000000000000",
+    "poolQuoter": "0x0000000000000000000000000000000000000000"
+  },
+  "dbc": {
+    "abiVersion": 1,
+    "deploymentBlock": 25574421,
+    "configRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+    "launchTokenDeployer": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+    "virtualPoolDeployer": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+    "launchFactory": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+    "curveQuoter": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD",
+    "launchpadRouter": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+    "graduationManager": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+    "dammGraduationAdapter": "0x0000000000000000000000000000000000000000",
+    "lpAllocationEscrow": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50"
+  },
+  "launchpad": {
+    "abiVersion": 1,
+    "deploymentBlock": 25576199,
+    "registry": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+    "configManager": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+    "factory": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+    "lens": "0x3C87569210706b413101ad6a30E9E623e38d8051",
+    "feeController": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+    "revenueSplitter": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+    "feeCollector": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+    "tokenFactory": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57"
+  },
+  "protectedLaunch": {
+    "abiVersion": 1,
+    "deploymentBlock": 25576430,
+    "policyRegistry": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+    "launchFactory": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+    "launchRouter": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+    "tokenDeployer": "0x8A0f7231aDf54B555513bCE315bd1aad38c5Df51",
+    "virtualPoolDeployer": "0x39c834CC8Fd725a409dDDEB758b49Fc45e79d14E",
+    "lpEscrow": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+    "graduationManager": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868",
+    "dammGraduationAdapter": "0x0000000000000000000000000000000000000000",
+    "identityRegistry": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21"
+  },
+  "chain": {
+    "chainId": 99801,
+    "name": "Elysium Testnet",
+    "environment": "testnet",
+    "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer"
+  },
+  "candidateSha256": "246b7a701c946e40d01521a7f095082926ffc015aa5fc22b1ea82af8ee98fc46",
+  "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "governance": {
+    "timelock": "0x54Ad8502759C61596c428054660674E0ec919F10",
+    "minimumDelaySeconds": "300"
+  },
+  "plans": {
+    "dbc": {
+      "sha256": "443c1903519214afdf3015b5955295fe8d3cf97ddb7137854aa68ce740d8cc1e",
+      "transactionCount": 21,
+      "addresses": {
+        "configRegistryImplementation": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB",
+        "configRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+        "launchTokenDeployer": "0x36D5A7F4fD8D9607206d0B1AaacE10E617CD2584",
+        "virtualPoolDeployer": "0x4f967Beb4929CCF6F4D323669ce83074b8238439",
+        "launchFactoryImplementation": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3",
+        "launchFactory": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+        "launchpadRouterImplementation": "0x07C76c1597D47981350Af10E3E74D831d595756d",
+        "launchpadRouter": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+        "lpAllocationEscrowImplementation": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13",
+        "lpAllocationEscrow": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+        "graduationManagerImplementation": "0xCB331f29163CEB7afECc5cB82083B988483992C7",
+        "graduationManager": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+        "curveQuoter": "0x6d89D199D2a2A253CaeB322BA5b2Cd8A558408cD"
+      }
+    },
+    "launchpad": {
+      "sha256": "aade64b81fefddd9872a9f83e73d7ef33e58f7ff15564eebfda84545f99fbf1a",
+      "transactionCount": 21,
+      "addresses": {
+        "registryImplementation": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1",
+        "registry": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+        "configManagerImplementation": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888",
+        "configManager": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+        "factoryImplementation": "0xeB371680b19363872F9e364f306F8E024d996cfe",
+        "factory": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+        "feeControllerImplementation": "0xB8b04B3583A92dd66950086F8e3bd34455E62039",
+        "feeController": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+        "revenueSplitterImplementation": "0x2a4D288A6c92E55A631CB987d7Af79099933b596",
+        "revenueSplitter": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+        "feeCollectorImplementation": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B",
+        "feeCollector": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+        "tokenFactoryImplementation": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389",
+        "tokenFactory": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+        "lens": "0x3C87569210706b413101ad6a30E9E623e38d8051"
+      }
+    },
+    "protectedLaunch": {
+      "sha256": "956624e59db25a39730bb5997c2857fe89c90a16658c452f43a2494ffb407fe5",
+      "transactionCount": 20,
+      "addresses": {
+        "policyRegistryImplementation": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA",
+        "policyRegistry": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+        "lpEscrowImplementation": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175",
+        "lpEscrow": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+        "identityRegistryImplementation": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93",
+        "identityRegistry": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+        "tokenDeployer": "0x8A0f7231aDf54B555513bCE315bd1aad38c5Df51",
+        "virtualPoolDeployer": "0x39c834CC8Fd725a409dDDEB758b49Fc45e79d14E",
+        "factoryImplementation": "0x0417D16c327807A671bC246E75b9BF5b53ea7659",
+        "factory": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+        "routerImplementation": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2",
+        "router": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+        "graduationManagerImplementation": "0x2ECE215E0672d1D8c460409d631b506CE0D84c65",
+        "graduationManager": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868"
+      }
+    }
+  },
+  "proxyChecks": [
+    {
+      "name": "dbc.configRegistry",
+      "proxy": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+      "implementation": "0x1A8C1E85382EF7fB5ECA49A289b8cCEfDa46A9cB"
+    },
+    {
+      "name": "dbc.launchFactory",
+      "proxy": "0x6ba114EbBC04A0b774B366CeDD4BE90506122e5c",
+      "implementation": "0x347C1b5Ea6963C68911aCF91DbE1593835Dc21b3"
+    },
+    {
+      "name": "dbc.launchpadRouter",
+      "proxy": "0xB7905AE5Cd4bC93D826eC9a809673C7391571015",
+      "implementation": "0x07C76c1597D47981350Af10E3E74D831d595756d"
+    },
+    {
+      "name": "dbc.lpAllocationEscrow",
+      "proxy": "0xD3E491a0B9c9cfED288EA4d7a0827c0B248EfF50",
+      "implementation": "0x5568BA402fDeFD33b8bA02dc816eBCa5b736cF13"
+    },
+    {
+      "name": "dbc.graduationManager",
+      "proxy": "0x4FC2dA2feb00a905DFAF39a7e402943250e0221E",
+      "implementation": "0xCB331f29163CEB7afECc5cB82083B988483992C7"
+    },
+    {
+      "name": "launchpad.registry",
+      "proxy": "0xceE36b69A287Ccaaf64d0297DcfeA9b9f472300f",
+      "implementation": "0x64c302ea4A8F8ba4c6C9D8910Df2657840e0a2D1"
+    },
+    {
+      "name": "launchpad.configManager",
+      "proxy": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+      "implementation": "0x28Cc16A2dd4E6656Ee5181990502202d90AF0888"
+    },
+    {
+      "name": "launchpad.factory",
+      "proxy": "0x4dd064e7D7392c6B86fDf31CeA33E472d2D8DA97",
+      "implementation": "0xeB371680b19363872F9e364f306F8E024d996cfe"
+    },
+    {
+      "name": "launchpad.feeController",
+      "proxy": "0x28d9555119Ad5CF5d12E5D9edDFda4c7087B1acB",
+      "implementation": "0xB8b04B3583A92dd66950086F8e3bd34455E62039"
+    },
+    {
+      "name": "launchpad.revenueSplitter",
+      "proxy": "0x51045Acc7EC5cE4abe5ECba0a1D56722E130f198",
+      "implementation": "0x2a4D288A6c92E55A631CB987d7Af79099933b596"
+    },
+    {
+      "name": "launchpad.feeCollector",
+      "proxy": "0x0a3ac2D9F7cf78Fa0cA6067E344C18c368BB72B4",
+      "implementation": "0x04085EB4c1f597aA3fBD1C809784Baed80Fb6c2B"
+    },
+    {
+      "name": "launchpad.tokenFactory",
+      "proxy": "0x4395182AA91E5Afb8Aacb6987c63e77e4Aa9Dd57",
+      "implementation": "0xe1E89984A58cFfCb9584c47aD04be37026A8D389"
+    },
+    {
+      "name": "protected.policyRegistry",
+      "proxy": "0xE49b9c6B8aAe69B017550C688310783168D2b48A",
+      "implementation": "0xb6be5a7198a9459d393CCEdF7594441C9117D6BA"
+    },
+    {
+      "name": "protected.lpEscrow",
+      "proxy": "0x1C939310385cf0F0d3BCedDDa543f7d81d96D59d",
+      "implementation": "0x9c5932A8f990E601AD88236F3A3d5CdfBb1A6175"
+    },
+    {
+      "name": "protected.identityRegistry",
+      "proxy": "0xAc418a27ECc0e1fAC5B86EC3d0A30951dcEf8D21",
+      "implementation": "0xeE5eC100f295B00D6146b134Accd3Da1BD831F93"
+    },
+    {
+      "name": "protected.factory",
+      "proxy": "0xCD1e92764c996a562B6E8E87255CAb6CC8a2e986",
+      "implementation": "0x0417D16c327807A671bC246E75b9BF5b53ea7659"
+    },
+    {
+      "name": "protected.router",
+      "proxy": "0x1cbfD48f61b22995Af9d2d94987FdD55499b8385",
+      "implementation": "0xa71a7cb4d6946FA6e3DDC2cEE5732AB1A81066c2"
+    },
+    {
+      "name": "protected.graduationManager",
+      "proxy": "0x3E4d135E3865E4664ce894da9D46AaDD4Be25868",
+      "implementation": "0x2ECE215E0672d1D8c460409d631b506CE0D84c65"
+    }
+  ],
+  "transactions": [
+    {
+      "nonce": 0,
+      "name": "governanceTimelock",
+      "hash": "0x3decbdb1403129ed24c4e5a35fa2c5b759f3392082f79be346e84961871a04a9",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x3decbdb1403129ed24c4e5a35fa2c5b759f3392082f79be346e84961871a04a9",
+      "blockNumber": "25574414",
+      "blockHash": "0xe8ce867afa01a8639697437ba4420283e9207c4757c9ee90230c308c05e99b89",
+      "gasUsed": "1356998",
+      "effectiveGasPrice": "100090000",
+      "contractAddress": "0x54ad8502759c61596c428054660674e0ec919f10"
+    },
+    {
+      "nonce": 1,
+      "name": "configRegistryImplementation",
+      "hash": "0x5ca16298c88701e7e926db8b88893a537f1c38af034ce1af2cc641bfc4e810d1",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x5ca16298c88701e7e926db8b88893a537f1c38af034ce1af2cc641bfc4e810d1",
+      "blockNumber": "25574421",
+      "blockHash": "0xeab2e8ae7e69adfad14874fc36e590552e7511adaf2b6c0f0512eba8cf70f463",
+      "gasUsed": "2052473",
+      "effectiveGasPrice": "100090000",
+      "contractAddress": "0x1a8c1e85382ef7fb5eca49a289b8ccefda46a9cb"
+    },
+    {
+      "nonce": 2,
+      "name": "configRegistry",
+      "hash": "0x74c729c378c018cde385f1babe713cc3eabb82258d9eb6d981912144f93c601a",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x74c729c378c018cde385f1babe713cc3eabb82258d9eb6d981912144f93c601a",
+      "blockNumber": "25576004",
+      "blockHash": "0x2819be19834dea5ed87c3b9772ef3cf178af5b02e82258ce625b4802cb10777d",
+      "gasUsed": "211501",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": "0xb07add5366e4689898dd55f3043b845283dfd3fe"
+    },
+    {
+      "nonce": 3,
+      "name": "launchTokenDeployer",
+      "hash": "0x136ea802d818b458a7501a9fefbd2f2e3e1dec127d7b984092e8bfbe8e0ad364",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x136ea802d818b458a7501a9fefbd2f2e3e1dec127d7b984092e8bfbe8e0ad364",
+      "blockNumber": "25576012",
+      "blockHash": "0xf4c6ee0f2a8877ee432a039b54fbfb5cfe7808187acb9a6c02ef6d36385e732a",
+      "gasUsed": "917337",
+      "effectiveGasPrice": "105073500",
+      "contractAddress": "0x36d5a7f4fd8d9607206d0b1aaace10e617cd2584"
+    },
+    {
+      "nonce": 4,
+      "name": "virtualPoolDeployer",
+      "hash": "0xedfa02b85d09f9c39022ba4b95291cf6b19b3fc6ea8935ad62f16ac290de8df7",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xedfa02b85d09f9c39022ba4b95291cf6b19b3fc6ea8935ad62f16ac290de8df7",
+      "blockNumber": "25576022",
+      "blockHash": "0x22db6eddb510775b3db67e68a8d3e9f292cafd9b63b34f2cb44db1abe43a7056",
+      "gasUsed": "3932377",
+      "effectiveGasPrice": "105178500",
+      "contractAddress": "0x4f967beb4929ccf6f4d323669ce83074b8238439"
+    },
+    {
+      "nonce": 5,
+      "name": "launchFactoryImplementation",
+      "hash": "0x7da15e654783e8c95e87f4682a16b93d56281d6527865c99d4cb49ff2d956b44",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x7da15e654783e8c95e87f4682a16b93d56281d6527865c99d4cb49ff2d956b44",
+      "blockNumber": "25576033",
+      "blockHash": "0xae2dcf05ff135b1b2a99036fb6f4d56ac3d99edb3a894e303eb8c0ca4444c395",
+      "gasUsed": "2334103",
+      "effectiveGasPrice": "105000000",
+      "contractAddress": "0x347c1b5ea6963c68911acf91dbe1593835dc21b3"
+    },
+    {
+      "nonce": 6,
+      "name": "launchFactory",
+      "hash": "0xa1247b279a6fd207bcc82503d61f2a8b94688b3bbfa8fc6beaa03a93c5237e3c",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xa1247b279a6fd207bcc82503d61f2a8b94688b3bbfa8fc6beaa03a93c5237e3c",
+      "blockNumber": "25576041",
+      "blockHash": "0x48cc7615674bcfa5552b0eb77b9c0273a31c85fa1b4dce2b7f4b25c93ec938ab",
+      "gasUsed": "259671",
+      "effectiveGasPrice": "105147000",
+      "contractAddress": "0x6ba114ebbc04a0b774b366cedd4be90506122e5c"
+    },
+    {
+      "nonce": 7,
+      "name": "launchpadRouterImplementation",
+      "hash": "0xfb65aad0e9a9426d3211a946e0834dbdae97c00e86ee15bd4d8d9efce11f5056",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xfb65aad0e9a9426d3211a946e0834dbdae97c00e86ee15bd4d8d9efce11f5056",
+      "blockNumber": "25576050",
+      "blockHash": "0x0d437b29c52f6599c325d6784bbceabd3c60e02fd3c829cb6688fa719ea7fa68",
+      "gasUsed": "1061130",
+      "effectiveGasPrice": "105105000",
+      "contractAddress": "0x07c76c1597d47981350af10e3e74d831d595756d"
+    },
+    {
+      "nonce": 8,
+      "name": "launchpadRouter",
+      "hash": "0xbc26b9323bfbf6da248423661ee9c18e0c6891d3fd21e20742cc3c8285602df4",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xbc26b9323bfbf6da248423661ee9c18e0c6891d3fd21e20742cc3c8285602df4",
+      "blockNumber": "25576058",
+      "blockHash": "0x6838cf1b28e7343a8cef20c3ebd7f9f8567580559b56066904f3ab41635e2d27",
+      "gasUsed": "209320",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": "0xb7905ae5cd4bc93d826ec9a809673c7391571015"
+    },
+    {
+      "nonce": 9,
+      "name": "lpAllocationEscrowImplementation",
+      "hash": "0x8a65f2163118dc0fc1a8022ecb2697607de835be2830d51b5bef023f03c44da5",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x8a65f2163118dc0fc1a8022ecb2697607de835be2830d51b5bef023f03c44da5",
+      "blockNumber": "25576069",
+      "blockHash": "0xc240d10f245282d41a161326debfbbfe55506031708d6043cccbe74df8fe2b47",
+      "gasUsed": "1199881",
+      "effectiveGasPrice": "105042000",
+      "contractAddress": "0x5568ba402fdefd33b8ba02dc816ebca5b736cf13"
+    },
+    {
+      "nonce": 10,
+      "name": "lpAllocationEscrow",
+      "hash": "0xaab83bac3149863277a811ad6413685f731e3dd6c995ee936f7b74a483936c0b",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xaab83bac3149863277a811ad6413685f731e3dd6c995ee936f7b74a483936c0b",
+      "blockNumber": "25576087",
+      "blockHash": "0x6e403b5c2a1b2e747c05eac4ca8fb1420ef9aaea33c46fbec30714eec76ac8b2",
+      "gasUsed": "186614",
+      "effectiveGasPrice": "105157500",
+      "contractAddress": "0xd3e491a0b9c9cfed288ea4d7a0827c0b248eff50"
+    },
+    {
+      "nonce": 11,
+      "name": "graduationManagerImplementation",
+      "hash": "0x675780405780d6ed32019bf3d3cfae26214199b5c1326c385a4e30a1b2c97255",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x675780405780d6ed32019bf3d3cfae26214199b5c1326c385a4e30a1b2c97255",
+      "blockNumber": "25576097",
+      "blockHash": "0x9120f522b63bf514dfe4ec1fa5ef8a5e2f5efeea12f4e7a13c192d6f0c2db164",
+      "gasUsed": "3733929",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": "0xcb331f29163ceb7afecc5cb82083b988483992c7"
+    },
+    {
+      "nonce": 12,
+      "name": "graduationManager",
+      "hash": "0x252b38f323eba3953bde0e52f71b1c36dca49b88d973e4089d6d2fea45ac576b",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x252b38f323eba3953bde0e52f71b1c36dca49b88d973e4089d6d2fea45ac576b",
+      "blockNumber": "25576106",
+      "blockHash": "0x4aff11fbda6b28b8fdedea9224557028db8040eba093c8f20e899d4fbdfad17c",
+      "gasUsed": "232356",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": "0x4fc2da2feb00a905dfaf39a7e402943250e0221e"
+    },
+    {
+      "nonce": 13,
+      "name": "curveQuoter",
+      "hash": "0x02ccc768f4a4b066240b0924a3a7645ab4819168e94ee3363bc1099e69941c28",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x02ccc768f4a4b066240b0924a3a7645ab4819168e94ee3363bc1099e69941c28",
+      "blockNumber": "25576114",
+      "blockHash": "0x9472b656b9ae8ecee72a25414b37b03aedcfa5f3436a5af5abd4dee0c2f115bd",
+      "gasUsed": "702467",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": "0x6d89d199d2a2a253caeb322ba5b2cd8a558408cd"
+    },
+    {
+      "nonce": 14,
+      "name": "bindLaunchTokenDeployer",
+      "hash": "0xedfe507eda02bfd337f49a25f9f87aaa257e72f2b175cb5c8eaf058d41e2308a",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xedfe507eda02bfd337f49a25f9f87aaa257e72f2b175cb5c8eaf058d41e2308a",
+      "blockNumber": "25576123",
+      "blockHash": "0x03d4966f840716df98bc55493d30811786bff4be9fa235585ca271a935243647",
+      "gasUsed": "43926",
+      "effectiveGasPrice": "105031500",
+      "contractAddress": null
+    },
+    {
+      "nonce": 15,
+      "name": "bindVirtualPoolDeployer",
+      "hash": "0x276810765b1ea702d0edcd223174c94054b2189deec9e3fbedb6767e8735cc52",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x276810765b1ea702d0edcd223174c94054b2189deec9e3fbedb6767e8735cc52",
+      "blockNumber": "25576134",
+      "blockHash": "0xc382d7b4cfa64bd04d7b100b388699166cd52f0409ecc2a78e6d31999f71fb0d",
+      "gasUsed": "43929",
+      "effectiveGasPrice": "105094500",
+      "contractAddress": null
+    },
+    {
+      "nonce": 16,
+      "name": "allowWhypeQuoteToken",
+      "hash": "0x0856d100e885c5f65e9c6030e7b885ffeaef69347b0026986c9475e407d47d37",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x0856d100e885c5f65e9c6030e7b885ffeaef69347b0026986c9475e407d47d37",
+      "blockNumber": "25576143",
+      "blockHash": "0x5af7a400b8fcc72927269ee96baebc805ec273e065a7087ad1f2e36a9ad58028",
+      "gasUsed": "87613",
+      "effectiveGasPrice": "105042000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 17,
+      "name": "authorizeLaunchFactory",
+      "hash": "0x01c4fca8d0ede0c3c111b6d3ed6f36184901254e5a5f10784cce855f7de5165c",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x01c4fca8d0ede0c3c111b6d3ed6f36184901254e5a5f10784cce855f7de5165c",
+      "blockNumber": "25576153",
+      "blockHash": "0x3e26a54a4c16c65f23d22beb16535fd4327fe7d9f31a87fdca092dfc15f10260",
+      "gasUsed": "53766",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 18,
+      "name": "bindGraduationManager",
+      "hash": "0x67406a3c70d9a90cb97f2066413f7de3f960ab87f102550144dabf4583228b69",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x67406a3c70d9a90cb97f2066413f7de3f960ab87f102550144dabf4583228b69",
+      "blockNumber": "25576161",
+      "blockHash": "0x3bc6b25dad580aacab7d63eb0a5c665e91d20210805442c12f20ad157303df75",
+      "gasUsed": "51351",
+      "effectiveGasPrice": "105115500",
+      "contractAddress": null
+    },
+    {
+      "nonce": 19,
+      "name": "authorizeGraduationManager",
+      "hash": "0x920290588978e8a3a53f075ae1b8a786eff8f8a752263cd191c10aa5ae0dff2b",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x920290588978e8a3a53f075ae1b8a786eff8f8a752263cd191c10aa5ae0dff2b",
+      "blockNumber": "25576171",
+      "blockHash": "0xfc128e7af85a3a2ca93afb026f76b4ed72d5703c48cb0675dd67fb3fb5d1f171",
+      "gasUsed": "53639",
+      "effectiveGasPrice": "105147000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 20,
+      "name": "createWhypeCanaryTemplate",
+      "hash": "0x031fe42b0cabf8c6f530e36315084bac73a29e9c47ddd0ed9e12a0c99e76e88e",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x031fe42b0cabf8c6f530e36315084bac73a29e9c47ddd0ed9e12a0c99e76e88e",
+      "blockNumber": "25576180",
+      "blockHash": "0x3ec6a2ffb671cbb845b2ad751064aa96693e03fe545755a5b79c07a102356548",
+      "gasUsed": "435159",
+      "effectiveGasPrice": "105000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 21,
+      "name": "createWhypeCanaryLaunch",
+      "hash": "0x7c5ae18b2872d083d963af737b059b7556c4cda0e36a4ff7e4031980244b251e",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x7c5ae18b2872d083d963af737b059b7556c4cda0e36a4ff7e4031980244b251e",
+      "blockNumber": "25576191",
+      "blockHash": "0x748c665b5b1afbe65d583f9aca393912f0986fb95fc9c67106070e32d898f1e6",
+      "gasUsed": "4029274",
+      "effectiveGasPrice": "105000000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 22,
+      "name": "registryImplementation",
+      "hash": "0x8022498827ca1eda8a9e7ba735bf3d1480f500654830c919dd3027591ab8cecf",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x8022498827ca1eda8a9e7ba735bf3d1480f500654830c919dd3027591ab8cecf",
+      "blockNumber": "25576199",
+      "blockHash": "0x9465d5a6294c1463a1cfc38a85fb29e76262477ed4b575a8ed5b9dbd7879c0e9",
+      "gasUsed": "1384876",
+      "effectiveGasPrice": "105220500",
+      "contractAddress": "0x64c302ea4a8f8ba4c6c9d8910df2657840e0a2d1"
+    },
+    {
+      "nonce": 23,
+      "name": "registry",
+      "hash": "0x471f722e0d3caa55457b0f2aace2551783d9a2178b49b0cfb3fc842e2d6b1548",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x471f722e0d3caa55457b0f2aace2551783d9a2178b49b0cfb3fc842e2d6b1548",
+      "blockNumber": "25576220",
+      "blockHash": "0xed22f1a9a5187f44457a480c1e336c04fa4506f10888a6a902802b5841e603ba",
+      "gasUsed": "211446",
+      "effectiveGasPrice": "105252000",
+      "contractAddress": "0xcee36b69a287ccaaf64d0297dcfea9b9f472300f"
+    },
+    {
+      "nonce": 24,
+      "name": "configManagerImplementation",
+      "hash": "0x7ee0fe5b70b4123ee40e316e01e1da1f6ddf9f5692bc2b8b2fc3443f6e8bde47",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x7ee0fe5b70b4123ee40e316e01e1da1f6ddf9f5692bc2b8b2fc3443f6e8bde47",
+      "blockNumber": "25576241",
+      "blockHash": "0xf5c5481fc52d114d3415f11606ae21a86ee9f4753f21ed9b7cef39098f36adcc",
+      "gasUsed": "1301179",
+      "effectiveGasPrice": "105105000",
+      "contractAddress": "0x28cc16a2dd4e6656ee5181990502202d90af0888"
+    },
+    {
+      "nonce": 25,
+      "name": "configManager",
+      "hash": "0x2f878b175da0a9c5b88604b39caf91542f6e7848bc564d1793025de34ce042fd",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x2f878b175da0a9c5b88604b39caf91542f6e7848bc564d1793025de34ce042fd",
+      "blockNumber": "25576251",
+      "blockHash": "0xaa27ec5c01b383dd5beaa36e5647d57679dc52effecd1bb0251d986e274ff7de",
+      "gasUsed": "258598",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": "0xb8617d056139546286c80f257fb15f1f0c4dbd33"
+    },
+    {
+      "nonce": 26,
+      "name": "factoryImplementation",
+      "hash": "0x1ea9f85121c8b72f568ca3a617216a4476296cbcc50cc0f2fb8ba70ca74ba062",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x1ea9f85121c8b72f568ca3a617216a4476296cbcc50cc0f2fb8ba70ca74ba062",
+      "blockNumber": "25576263",
+      "blockHash": "0x4dd0a57cbc2678491eb58d47c1b4094cdfad445c4cb3d0b836f7792677c2964f",
+      "gasUsed": "628251",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": "0xeb371680b19363872f9e364f306f8e024d996cfe"
+    },
+    {
+      "nonce": 27,
+      "name": "factory",
+      "hash": "0x1524c1a43b13ed786b07f8ec5f4141a35925610098156bd783b99daf6e6b4366",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x1524c1a43b13ed786b07f8ec5f4141a35925610098156bd783b99daf6e6b4366",
+      "blockNumber": "25576270",
+      "blockHash": "0x4e164c21b586edfaee182169919fbf89ec16a293a3721b8448dfe77b300c36b4",
+      "gasUsed": "232015",
+      "effectiveGasPrice": "105084000",
+      "contractAddress": "0x4dd064e7d7392c6b86fdf31cea33e472d2d8da97"
+    },
+    {
+      "nonce": 28,
+      "name": "feeControllerImplementation",
+      "hash": "0x67d39475102fe5029ea2321d0d2ccdd34b4ca4ed6c466de9211548ddf30d7a76",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x67d39475102fe5029ea2321d0d2ccdd34b4ca4ed6c466de9211548ddf30d7a76",
+      "blockNumber": "25576279",
+      "blockHash": "0xe7791b8892d59feff17c82b99df52a856f4a474a25e77d63b768d12dcef7bf74",
+      "gasUsed": "1276113",
+      "effectiveGasPrice": "105031500",
+      "contractAddress": "0xb8b04b3583a92dd66950086f8e3bd34455e62039"
+    },
+    {
+      "nonce": 29,
+      "name": "feeController",
+      "hash": "0x22cf3b6658a94e42c421bda2be7f6e180f6b10bd4fcc884e6db8b2bc087279c6",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x22cf3b6658a94e42c421bda2be7f6e180f6b10bd4fcc884e6db8b2bc087279c6",
+      "blockNumber": "25576290",
+      "blockHash": "0xbdf0d2b8aa661338ce8bb3ed5459a721fb5c040e5dfc88ed8b2ffefbf35f6580",
+      "gasUsed": "235135",
+      "effectiveGasPrice": "105241500",
+      "contractAddress": "0x28d9555119ad5cf5d12e5d9eddfda4c7087b1acb"
+    },
+    {
+      "nonce": 30,
+      "name": "revenueSplitterImplementation",
+      "hash": "0xeba82e610ade305c423ec77169656af3b6ff4279cdb85565f780835a17eb3341",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xeba82e610ade305c423ec77169656af3b6ff4279cdb85565f780835a17eb3341",
+      "blockNumber": "25576299",
+      "blockHash": "0x8536f87b364a15a38d3ba102ade6ab8bc879e05a8717ff236264ad6f5faf8ede",
+      "gasUsed": "1579837",
+      "effectiveGasPrice": "105000000",
+      "contractAddress": "0x2a4d288a6c92e55a631cb987d7af79099933b596"
+    },
+    {
+      "nonce": 31,
+      "name": "revenueSplitter",
+      "hash": "0x74141d69d22db72c21953004dd934f29f6b532a0541eaaa7117236e8afc9dc2e",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x74141d69d22db72c21953004dd934f29f6b532a0541eaaa7117236e8afc9dc2e",
+      "blockNumber": "25576306",
+      "blockHash": "0xf35d35c07de953f453b68a5ba18c6842ca737d3968b85f51796c25b479774785",
+      "gasUsed": "186702",
+      "effectiveGasPrice": "105042000",
+      "contractAddress": "0x51045acc7ec5ce4abe5ecba0a1d56722e130f198"
+    },
+    {
+      "nonce": 32,
+      "name": "feeCollectorImplementation",
+      "hash": "0x13a2f0126b9b40878da9d961b4a8f50aa195dabc4c957506c049c1a1c64dd862",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x13a2f0126b9b40878da9d961b4a8f50aa195dabc4c957506c049c1a1c64dd862",
+      "blockNumber": "25576317",
+      "blockHash": "0xb0ba18c7c2069bdef27c0c727382ec7e9712c61eef5a223dfc640bf1b20551f5",
+      "gasUsed": "870225",
+      "effectiveGasPrice": "105105000",
+      "contractAddress": "0x04085eb4c1f597aa3fbd1c809784baed80fb6c2b"
+    },
+    {
+      "nonce": 33,
+      "name": "feeCollector",
+      "hash": "0x2de8c2d1820a7abce8f98ed73965ac7e2bcd662c1a475cd6bf58f0fb23649c85",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x2de8c2d1820a7abce8f98ed73965ac7e2bcd662c1a475cd6bf58f0fb23649c85",
+      "blockNumber": "25576323",
+      "blockHash": "0x091a0845f51f36cef466c52b53e78cf23be70d351161cd9815adf553fbd79085",
+      "gasUsed": "209325",
+      "effectiveGasPrice": "105084000",
+      "contractAddress": "0x0a3ac2d9f7cf78fa0ca6067e344c18c368bb72b4"
+    },
+    {
+      "nonce": 34,
+      "name": "tokenFactoryImplementation",
+      "hash": "0x664a844c3aa8d09109bb6eb82d4eb72117c5087b05a9b3ff8a93ed52a3ca9b0c",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x664a844c3aa8d09109bb6eb82d4eb72117c5087b05a9b3ff8a93ed52a3ca9b0c",
+      "blockNumber": "25576335",
+      "blockHash": "0x12741fa4d51dc3274d6a649d7aa94ac80883dc57c1527189685a064b83521be4",
+      "gasUsed": "2070239",
+      "effectiveGasPrice": "105199500",
+      "contractAddress": "0xe1e89984a58cffcb9584c47ad04be37026a8d389"
+    },
+    {
+      "nonce": 35,
+      "name": "tokenFactory",
+      "hash": "0x27b05c7aa562305a1f4041a5af191e71f50dd89e7ab293e4b4a1353f82ca9bb5",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x27b05c7aa562305a1f4041a5af191e71f50dd89e7ab293e4b4a1353f82ca9bb5",
+      "blockNumber": "25576350",
+      "blockHash": "0x80f7bdf0c39f72b87cf16a6ae12380befbc72365c085a53a64ecd20a64f0eecf",
+      "gasUsed": "322394",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": "0x4395182aa91e5afb8aacb6987c63e77e4aa9dd57"
+    },
+    {
+      "nonce": 36,
+      "name": "lens",
+      "hash": "0xee4cb006ddf1c18452361f3f96a074acc55c7f5809eeabd2f15b61e05dcf5ebd",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xee4cb006ddf1c18452361f3f96a074acc55c7f5809eeabd2f15b61e05dcf5ebd",
+      "blockNumber": "25576364",
+      "blockHash": "0xf407030f5cbea4992153fbbf52242cee278876962a4d66197dba6c038b5acbd2",
+      "gasUsed": "675366",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": "0x3c87569210706b413101ad6a30e9e623e38d8051"
+    },
+    {
+      "nonce": 37,
+      "name": "Authorize LaunchpadFactory on LaunchpadConfigManager",
+      "hash": "0xf40ba6446d7418318763137744d90efd8a080b25fd8eaab0fdc84bff89c6d25d",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xf40ba6446d7418318763137744d90efd8a080b25fd8eaab0fdc84bff89c6d25d",
+      "blockNumber": "25576378",
+      "blockHash": "0xf9b1842ca30c47f07f4c59c70327d739c9b9992a0fb12d004a7e378e68fb4016",
+      "gasUsed": "53800",
+      "effectiveGasPrice": "105147000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 38,
+      "name": "Authorize LaunchpadTokenFactory on DBC LaunchFactory",
+      "hash": "0x7aefc82bb5f18523f840ec19838184de23d566d4a7902a966790598f02052e54",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x7aefc82bb5f18523f840ec19838184de23d566d4a7902a966790598f02052e54",
+      "blockNumber": "25576388",
+      "blockHash": "0x478ad2f8f826ed6656fecd37c526a2d51b377afecb66a81cad6536d0ea23bd03",
+      "gasUsed": "53810",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 39,
+      "name": "Authorize LaunchpadTokenFactory on LaunchpadFeeController",
+      "hash": "0xe54c068c6f77c6bf8102cd087424c8690117647f2ccff3f4601b324275d1cb00",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xe54c068c6f77c6bf8102cd087424c8690117647f2ccff3f4601b324275d1cb00",
+      "blockNumber": "25576397",
+      "blockHash": "0x0d5b757bf1459cec5abfd2cce11a2b74ba3b913df6285bc4756111dcca576066",
+      "gasUsed": "53695",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 40,
+      "name": "Authorize LaunchpadTokenFactory on RevenueSplitter",
+      "hash": "0xc5ea7c4d2f15bf01f91d2679292bc45ee95d0a79c3cc013ea00f9b6174a3f395",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xc5ea7c4d2f15bf01f91d2679292bc45ee95d0a79c3cc013ea00f9b6174a3f395",
+      "blockNumber": "25576405",
+      "blockHash": "0xe49f0c877c60b6eea3e6803c408f66490250b16b467d40d3ff10445fe7fcdce0",
+      "gasUsed": "53766",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 41,
+      "name": "Authorize LaunchpadTokenFactory on LaunchpadFeeCollector",
+      "hash": "0xc3289fc624e155dff880090b5c7c93a2c0db833269c16e6347244f4624c99fb7",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xc3289fc624e155dff880090b5c7c93a2c0db833269c16e6347244f4624c99fb7",
+      "blockNumber": "25576414",
+      "blockHash": "0xc5552def9eda597a85d234d58ee16682428590f30f03ac4b02a1e7063d3830eb",
+      "gasUsed": "53590",
+      "effectiveGasPrice": "105105000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 42,
+      "name": "Authorize LaunchpadFeeCollector to accrue revenue",
+      "hash": "0x075296882489b05703d3577a58dd62bd2be346ad24a0a1bae4149cd499f11c0b",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x075296882489b05703d3577a58dd62bd2be346ad24a0a1bae4149cd499f11c0b",
+      "blockNumber": "25576421",
+      "blockHash": "0x7c1a29053adc0546368d7c4e5a96e0e72b7c6031947be0733075d5efcfc33e43",
+      "gasUsed": "53766",
+      "effectiveGasPrice": "105021000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 43,
+      "name": "policyRegistryImplementation",
+      "hash": "0x9a0d629fd74e6401a317f22a63746f577ce5369f607fcb8e51f22edc7792cf24",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x9a0d629fd74e6401a317f22a63746f577ce5369f607fcb8e51f22edc7792cf24",
+      "blockNumber": "25576430",
+      "blockHash": "0x673173e3b8f1f77dc2104bb4d9b588fcc006b3159dbbb69f72eb3baa81fa0a63",
+      "gasUsed": "1088807",
+      "effectiveGasPrice": "105010500",
+      "contractAddress": "0xb6be5a7198a9459d393ccedf7594441c9117d6ba"
+    },
+    {
+      "nonce": 44,
+      "name": "policyRegistry",
+      "hash": "0xb8211defe17058870bf5c010f091240ef9f95245b59bdb03a9ac7584959cd8ef",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xb8211defe17058870bf5c010f091240ef9f95245b59bdb03a9ac7584959cd8ef",
+      "blockNumber": "25576438",
+      "blockHash": "0x73e6b5232a7ed1e1074b87b2fe057df307abded37909e8dbe10162f7e1cf5bb4",
+      "gasUsed": "211475",
+      "effectiveGasPrice": "105115500",
+      "contractAddress": "0xe49b9c6b8aae69b017550c688310783168d2b48a"
+    },
+    {
+      "nonce": 45,
+      "name": "lpEscrowImplementation",
+      "hash": "0x6325e279eed9922c1561cc6dc6fc3351b470ef7ed46d29de6025264f62cbb8fd",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x6325e279eed9922c1561cc6dc6fc3351b470ef7ed46d29de6025264f62cbb8fd",
+      "blockNumber": "25576447",
+      "blockHash": "0x2f284065e592009a0497c33f42e728be005b3123eef56d3ec9faefe3b8870fb1",
+      "gasUsed": "1363121",
+      "effectiveGasPrice": "105010500",
+      "contractAddress": "0x9c5932a8f990e601ad88236f3a3d5cdfbb1a6175"
+    },
+    {
+      "nonce": 46,
+      "name": "lpEscrow",
+      "hash": "0x70ffaba7e41df22ac3a4afc83a7030eb332d3d27100d909ff5ee43df61d3bc0d",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x70ffaba7e41df22ac3a4afc83a7030eb332d3d27100d909ff5ee43df61d3bc0d",
+      "blockNumber": "25576455",
+      "blockHash": "0x9de95c088a56efeaae40e60369f3f5dcf838bfe413ddb90ca81c65f93f20ede0",
+      "gasUsed": "186614",
+      "effectiveGasPrice": "105052500",
+      "contractAddress": "0x1c939310385cf0f0d3bceddda543f7d81d96d59d"
+    },
+    {
+      "nonce": 47,
+      "name": "identityRegistryImplementation",
+      "hash": "0xab367a55bc158e79d2e91d7ff06b46c592b961ce2dcefdfd731c5b235d3756cb",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xab367a55bc158e79d2e91d7ff06b46c592b961ce2dcefdfd731c5b235d3756cb",
+      "blockNumber": "25576465",
+      "blockHash": "0x2bbda485d6f338848a32a92356f6fbfb299dba1ed3ef9f5bd5b3eb770776549d",
+      "gasUsed": "1187543",
+      "effectiveGasPrice": "105031500",
+      "contractAddress": "0xee5ec100f295b00d6146b134accd3da1bd831f93"
+    },
+    {
+      "nonce": 48,
+      "name": "identityRegistry",
+      "hash": "0x6fd12dc6647527febd1f84df8abd595b7c8e07551d2243d26f704229aa2864d3",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x6fd12dc6647527febd1f84df8abd595b7c8e07551d2243d26f704229aa2864d3",
+      "blockNumber": "25576480",
+      "blockHash": "0x4f39b731086f16ba1526738929c8f6ad7f3a61ba02f507873e9fe8873e7b9b56",
+      "gasUsed": "211375",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": "0xac418a27ecc0e1fac5b86ec3d0a30951dcef8d21"
+    },
+    {
+      "nonce": 49,
+      "name": "tokenDeployer",
+      "hash": "0xc69aad3eb4a1e0b9cc83f6887aae49c6f635127bf782cd2cddc26e085b0f66bf",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xc69aad3eb4a1e0b9cc83f6887aae49c6f635127bf782cd2cddc26e085b0f66bf",
+      "blockNumber": "25576490",
+      "blockHash": "0x4321cd488945500a0bb5e5e874b5b36eeb661a03a48322ed066b27b46652e9e4",
+      "gasUsed": "1476407",
+      "effectiveGasPrice": "105042000",
+      "contractAddress": "0x8a0f7231adf54b555513bce315bd1aad38c5df51"
+    },
+    {
+      "nonce": 50,
+      "name": "virtualPoolDeployer",
+      "hash": "0xef37af31c8576219b318780897326a09de7eee066a5e5dd2200bdb59165b8f36",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xef37af31c8576219b318780897326a09de7eee066a5e5dd2200bdb59165b8f36",
+      "blockNumber": "25576501",
+      "blockHash": "0xebb96f229d7b9a4901340466b4ccfea38920dc1021f0322a4397d86cd14bfb19",
+      "gasUsed": "3993077",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": "0x39c834cc8fd725a409dddeb758b49fc45e79d14e"
+    },
+    {
+      "nonce": 51,
+      "name": "factoryImplementation",
+      "hash": "0x2e1a5153785a838012b89b4e5018ff43a15df657bb535833af1058513efb75e4",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x2e1a5153785a838012b89b4e5018ff43a15df657bb535833af1058513efb75e4",
+      "blockNumber": "25576511",
+      "blockHash": "0x49721f798b5ab6d636e9ccb46d2cf4b347703525ed93b0a080545f56e17bb268",
+      "gasUsed": "3087126",
+      "effectiveGasPrice": "105168000",
+      "contractAddress": "0x0417d16c327807a671bc246e75b9bf5b53ea7659"
+    },
+    {
+      "nonce": 52,
+      "name": "factory",
+      "hash": "0x8c96c656f5c5327866393c5d86bb12c477e89d2d879f7efc8bcd411b94adc7de",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x8c96c656f5c5327866393c5d86bb12c477e89d2d879f7efc8bcd411b94adc7de",
+      "blockNumber": "25576518",
+      "blockHash": "0x9b961bc424577dc47ea7a3a076d8f432e0835743c6809f9beae999e8b190c8de",
+      "gasUsed": "312836",
+      "effectiveGasPrice": "105231000",
+      "contractAddress": "0xcd1e92764c996a562b6e8e87255cab6cc8a2e986"
+    },
+    {
+      "nonce": 53,
+      "name": "routerImplementation",
+      "hash": "0xb20a0c119ff72b35d06acc99f0b6fb66dc1a0d110a50b291c573b577f8061369",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xb20a0c119ff72b35d06acc99f0b6fb66dc1a0d110a50b291c573b577f8061369",
+      "blockNumber": "25576528",
+      "blockHash": "0x314b3adf6ca12af8cc817088abc5f240853b53b1f6151d1052c62f0b3ceb3e58",
+      "gasUsed": "1061341",
+      "effectiveGasPrice": "105063000",
+      "contractAddress": "0xa71a7cb4d6946fa6e3ddc2cee5732ab1a81066c2"
+    },
+    {
+      "nonce": 54,
+      "name": "router",
+      "hash": "0xefcc4af230f5c11dbcc930bbd9e44fd3a042993b380fa9e502b51ff8a311c214",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xefcc4af230f5c11dbcc930bbd9e44fd3a042993b380fa9e502b51ff8a311c214",
+      "blockNumber": "25576535",
+      "blockHash": "0xded85a2d4b6f3e57954dccd486395685d2b54edf395b7c1e1926c2f7fb5776a7",
+      "gasUsed": "211919",
+      "effectiveGasPrice": "105252000",
+      "contractAddress": "0x1cbfd48f61b22995af9d2d94987fdd55499b8385"
+    },
+    {
+      "nonce": 55,
+      "name": "graduationManagerImplementation",
+      "hash": "0xfe9b650bc6e2f51bbe10fd081e95cb6340b6ff0da841daa88bfbb96ccf6361a2",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xfe9b650bc6e2f51bbe10fd081e95cb6340b6ff0da841daa88bfbb96ccf6361a2",
+      "blockNumber": "25576542",
+      "blockHash": "0x78694b8b5d8bbd7a365df138876a4c1888c203603b6593480c39c0648c68724a",
+      "gasUsed": "3923660",
+      "effectiveGasPrice": "105073500",
+      "contractAddress": "0x2ece215e0672d1d8c460409d631b506ce0d84c65"
+    },
+    {
+      "nonce": 56,
+      "name": "graduationManager",
+      "hash": "0x1432e8b2b86a68d63ef304db758f36bf4695726e6197b8b6f0f9e898bee3f6c0",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x1432e8b2b86a68d63ef304db758f36bf4695726e6197b8b6f0f9e898bee3f6c0",
+      "blockNumber": "25576550",
+      "blockHash": "0x355a07ae6a30350fdb153572eed69faddcb0cd157f9d34a6bf97e2803e54ebc8",
+      "gasUsed": "232352",
+      "effectiveGasPrice": "105315000",
+      "contractAddress": "0x3e4d135e3865e4664ce894da9d46aadd4be25868"
+    },
+    {
+      "nonce": 57,
+      "name": "Bind Protected token deployer",
+      "hash": "0xad32ffeedd9c41e59b916cf936869bc00d77d8630d01fd0f4cc01b37e2c2481a",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xad32ffeedd9c41e59b916cf936869bc00d77d8630d01fd0f4cc01b37e2c2481a",
+      "blockNumber": "25576556",
+      "blockHash": "0x628ab708e94732ee4d4a0b3d7c14870a8b19f1da6c0e11dfc1aa21a515d79c5c",
+      "gasUsed": "43925",
+      "effectiveGasPrice": "105042000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 58,
+      "name": "Bind Protected pool deployer",
+      "hash": "0xa3a698b83469c57cee63b48ee4861ab8d03708a85b57ab38481dbe013f5b1a03",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xa3a698b83469c57cee63b48ee4861ab8d03708a85b57ab38481dbe013f5b1a03",
+      "blockNumber": "25576565",
+      "blockHash": "0xdc6cbae7f649c746664d44eb3789f03564cebd55e4072347b4a68db533c2bf63",
+      "gasUsed": "43925",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 59,
+      "name": "Authorize Protected factory on DBC template registry",
+      "hash": "0x3900761da7f349e7a131ea430298729f5e2f1f8d389afb7333794b8e3a3da7bf",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x3900761da7f349e7a131ea430298729f5e2f1f8d389afb7333794b8e3a3da7bf",
+      "blockNumber": "25576572",
+      "blockHash": "0x94413f0cb6b38aab16cdf4f32696d6f327fbe8871d3303e29557aec1ee9f95fc",
+      "gasUsed": "53766",
+      "effectiveGasPrice": "105063000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 60,
+      "name": "Authorize Protected factory on policy registry",
+      "hash": "0xa853aa5dcbdbef54f8c5d20c828d6bdbcad25ed925ae989f558a2a72175d98cb",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xa853aa5dcbdbef54f8c5d20c828d6bdbcad25ed925ae989f558a2a72175d98cb",
+      "blockNumber": "25576580",
+      "blockHash": "0x2b1ab8c8aea76106c95ccd1a7f8d0220bb65e1e33e7dee56858605a1491b1178",
+      "gasUsed": "53695",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": null
+    },
+    {
+      "nonce": 61,
+      "name": "Authorize Protected graduation manager on LP escrow",
+      "hash": "0xf90dd6ea7ad1613c44fe53d4264ebb7d8a774a3b03fe4666555dae929fcb9d42",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0xf90dd6ea7ad1613c44fe53d4264ebb7d8a774a3b03fe4666555dae929fcb9d42",
+      "blockNumber": "25576587",
+      "blockHash": "0x8b7532a300af391699bb83ae9b447ab84b8cb4282a5ea25622fc526aa598bb2f",
+      "gasUsed": "53651",
+      "effectiveGasPrice": "105073500",
+      "contractAddress": null
+    },
+    {
+      "nonce": 62,
+      "name": "Bind Protected graduation manager to factory",
+      "hash": "0x6756003779f3e2ce661482adf646eee124f39713d550ba91b3ca20fa3d3d61c2",
+      "explorerUrl": "https://elysium.kinetiq.xyz/testnet-explorer/tx/0x6756003779f3e2ce661482adf646eee124f39713d550ba91b3ca20fa3d3d61c2",
+      "blockNumber": "25576595",
+      "blockHash": "0x1365fc3b4e5cb7e3b99c20e6934c3f999b68496bc16aa2624586487e3e24eb9f",
+      "gasUsed": "51428",
+      "effectiveGasPrice": "105126000",
+      "contractAddress": null
+    }
+  ],
+  "gas": {
+    "transactionCount": 63,
+    "totalGasUsed": "53800985",
+    "totalFeeWei": "5637026097382000",
+    "totalFeeHype": "0.005637026097382",
+    "approvedCapHype": "0.00674"
+  },
+  "capabilities": {
+    "dbc": true,
+    "launchpad": true,
+    "protectedLaunch": true,
+    "graduation": false,
+    "graduationStatus": "pending-adapter",
+    "publicDeployment": true
+  },
+  "verification": {
+    "passed": true,
+    "codeChecks": 42,
+    "proxyChecks": 18,
+    "nextNonce": 63
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "elysium-protected-launch-deployment-plan",
-  "generatedAt": "2026-11-04T12:51:36.583Z",
+  "generatedAt": "2026-11-07T10:09:10.600Z",
   "chainId": 99801,
   "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
@@ -207,5 +207,5 @@
     "broadcastAllowed": false,
     "sequentialSimulationPassed": false
   },
-  "planSha256": "3e33de9df7c1dc883083586009f3c6c766db2a5c08b2ac8d9580d71dd744be29"
+  "planSha256": "956624e59db25a39730bb5997c2857fe89c90a16658c452f43a2494ffb407fe5"
 }

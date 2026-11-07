@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "chainId": 99801,
+  "generatedAt": "2026-11-07T10:11:20.989Z",
+  "transactionCount": 1,
+  "nonce": 0,
+  "hash": "0x23c5eead1d7eca9f7819d969d3a890b15ccfc281825ac7471311e557bad447af",
+  "predictedTimelock": "0x54Ad8502759C61596c428054660674E0ec919F10",
+  "estimatedGas": "1356855",
+  "gasLimit": "1456855",
+  "gasUsed": "1356855",
+  "effectiveGasPrice": "1087596251",
+  "blockNumber": "25564804",
+  "passed": true,
+  "broadcastAllowed": false
+}

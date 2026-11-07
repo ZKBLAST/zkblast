@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { getChainDescriptor, loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import postgres from "postgres";
-import { createPublicClient, getAddress } from "viem";
+import { createPublicClient, getAddress, zeroAddress } from "viem";
 import { z } from "zod";
 import { installCheckpointGuard } from "./checkpoint-guard.js";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
@@ -70,6 +70,10 @@ async function main() {
     if ((await client.getChainId()) !== config.CHAIN_ID)
       throw new Error("CATCHUP_CHAIN_MISMATCH");
     await installCheckpointGuard(sql, config.SUPABASE_SCHEMA);
+    const protocolIntegrationEnabled =
+      getAddress(manifest.integration.poolRegistry) !== zeroAddress &&
+      getAddress(manifest.integration.poolFactory) !== zeroAddress &&
+      getAddress(manifest.integration.positionManager) !== zeroAddress;
     const addresses = [
       ...Object.values(manifest.integration),
       ...(manifest.launchpad
@@ -153,7 +157,9 @@ async function main() {
           client,
           repository,
           chainId: config.CHAIN_ID,
-          registry: getAddress(manifest.integration.poolRegistry),
+          ...(protocolIntegrationEnabled
+            ? { registry: getAddress(manifest.integration.poolRegistry) }
+            : {}),
           addresses: [...new Set(addresses)],
           fromBlock: BigInt(
             Math.min(
@@ -187,18 +193,22 @@ async function main() {
         service: "fast-catchup",
         environment: config.APP_ENV,
         ...result,
-        pools: await repository.reconcilePools(
-          client,
-          config.CHAIN_ID,
-          getAddress(manifest.integration.poolFactory),
-          getAddress(manifest.integration.poolRegistry),
-        ),
-        activity: await repository.reconcileActivity(
-          client,
-          config.CHAIN_ID,
-          getAddress(manifest.integration.positionManager),
-          confirmations,
-        ),
+        pools: protocolIntegrationEnabled
+          ? await repository.reconcilePools(
+              client,
+              config.CHAIN_ID,
+              getAddress(manifest.integration.poolFactory),
+              getAddress(manifest.integration.poolRegistry),
+            )
+          : { skipped: true, reason: "PROTOCOL_INTEGRATION_NOT_DEPLOYED" },
+        activity: protocolIntegrationEnabled
+          ? await repository.reconcileActivity(
+              client,
+              config.CHAIN_ID,
+              getAddress(manifest.integration.positionManager),
+              confirmations,
+            )
+          : { skipped: true, reason: "PROTOCOL_INTEGRATION_NOT_DEPLOYED" },
       }),
     );
   } finally {

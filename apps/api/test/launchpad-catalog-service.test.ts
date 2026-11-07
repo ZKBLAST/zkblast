@@ -95,3 +95,40 @@ test("exposes public addresses and only enabled onchain presets", async () => {
   assert.equal((await service.ownedLaunchpads(address("1"))).items.length, 1);
   assert.equal((await service.ownedLaunchpads(address("2"))).items.length, 0);
 });
+
+test("keeps launch presets visible when public graduation is pending", async () => {
+  const service = new LaunchpadCatalogService(
+    "testnet",
+    99_801,
+    addresses,
+    {
+      launchpadCount: async () => 0n,
+      presetCount: async () => 1n,
+      globalMaximumTotalTradeFeeBps: async () => 300,
+      destinationSupported: async (destination) => destination === 1,
+      launchpad: async () => { throw new Error("UNUSED"); },
+      launchpads: async () => [],
+      presets: async () => [{
+        familyId: `0x${"a".repeat(64)}`,
+        configHash: `0x${"b".repeat(64)}`,
+        dbcTemplateId: 1n,
+        quoteToken: address("9"),
+        maximumTotalTradeFeeBps: 100,
+        graduationDestination: 1,
+        creatorAccess: 0,
+        maximumLaunches: 100,
+        version: 1,
+        enabled: true,
+        used: false,
+      }],
+    },
+    { dammGraduation: false, dlmmGraduation: false },
+  );
+
+  const result = await service.approvedPresets();
+  assert.deepEqual(result.capabilities, {
+    dammGraduation: false,
+    dlmmGraduation: false,
+  });
+  assert.equal(result.items.length, 1);
+});

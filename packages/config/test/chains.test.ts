@@ -32,7 +32,12 @@ test("exposes isolated Robinhood, HyperEVM, and Elysium chain descriptors", () =
   assert.equal(elysium.deploymentManifestPath, "deployments/elysium-testnet/manifest.json");
   assert.equal(elysium.indexer.maximumLogRange, 2_000);
   assert.deepEqual(elysium.publicRpcUrls, ["https://testnet-rpc.elysium.kinetiq.xyz"]);
-  assert.equal(Object.values(elysium.capabilities).every((enabled) => !enabled), true);
+  assert.equal(elysium.capabilities.dbc, true);
+  assert.equal(elysium.capabilities.launchpad, true);
+  assert.equal(elysium.capabilities.protectedLaunch, true);
+  assert.equal(elysium.capabilities.metadataUpload, true);
+  assert.equal(elysium.capabilities.dammGraduation, false);
+  assert.equal(elysium.capabilities.dlmmGraduation, false);
 });
 
 test("recognizes only canonical isolated database schemas", () => {

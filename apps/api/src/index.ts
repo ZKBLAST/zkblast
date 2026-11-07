@@ -696,7 +696,15 @@ const additionalChainContexts = [
       ]
     : []),
   ...(serviceConfig.ENABLE_ELYSIUM_TESTNET
-    ? [createElysiumTestnetContext({ webOrigin: serviceConfig.WEB_ORIGIN })]
+    ? [
+        await createElysiumTestnetContext({
+          databaseUrl: directDatabaseUrl,
+          rpcUrl:
+            serverConfig.ELYSIUM_PRIVATE_RPC_URL ??
+            "https://testnet-rpc.elysium.kinetiq.xyz",
+          webOrigin: serviceConfig.WEB_ORIGIN,
+        }),
+      ]
     : []),
 ];
 const app = createApp(

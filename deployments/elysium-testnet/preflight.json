@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-04T12:38:35.055Z",
+  "generatedAt": "2026-11-07T10:08:44.899Z",
   "mode": "deployment-input",
   "chain": {
     "chainId": 99801,
     "slug": "elysium-testnet",
     "name": "Elysium Testnet",
     "rpcSource": "public",
-    "blockNumber": 23204226,
-    "blockHash": "0x1b0c353fea4325c52fc36e63e99c7c39926db1bc6484eba3a64532c40fe4584b",
-    "l1BlockNumber": "0x418a46a",
-    "gasPriceWei": "100320000"
+    "blockNumber": 25564387,
+    "blockHash": "0xbf9d258bfd0315b50dfd92cf79c76816cd2a929d06b91ae802375a59c50a6cae",
+    "l1BlockNumber": "0x41c8262",
+    "gasPriceWei": "100080000"
   },
   "canonicalContracts": [
     {
@@ -23,7 +23,7 @@
       "tokenMetadata": {
         "symbol": "WHYPE",
         "decimals": 18,
-        "totalSupplyRaw": "195866532992807067485154"
+        "totalSupplyRaw": "111925864555904254472040"
       }
     },
     {
@@ -36,7 +36,7 @@
       "tokenMetadata": {
         "symbol": "USDC",
         "decimals": 6,
-        "totalSupplyRaw": "179934324335197"
+        "totalSupplyRaw": "160454463001970"
       }
     },
     {
@@ -71,7 +71,7 @@
   "deployer": {
     "address": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
     "pendingNonce": 0,
-    "balanceWei": "0"
+    "balanceWei": "205095800000000000"
   },
   "governancePlan": {
     "minimumDelaySeconds": "300",

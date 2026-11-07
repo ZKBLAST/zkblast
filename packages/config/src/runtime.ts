@@ -72,15 +72,26 @@ function assertEnvironmentBoundary(config: PublicConfig): void {
 
 function assertServerIntegrationBoundary(config: ServerConfig): void {
   const descriptor = getChainDescriptor(config.CHAIN_ID);
-  const integrations = [
-    config.EXECUTION_RESERVE_ASSET_ADDRESS,
+  const graduationIntegrations = [
     config.GRADUATION_POOL_FACTORY_ADDRESS,
     config.GRADUATION_SWAP_ROUTER_ADDRESS,
   ];
 
-  if (!descriptor.capabilities.launchpad && integrations.some(Boolean)) {
+  if (
+    !descriptor.capabilities.launchpad &&
+    config.EXECUTION_RESERVE_ASSET_ADDRESS
+  ) {
     throw new Error(
-      `${descriptor.slug} integration addresses are disabled until its launchpad capability is approved`,
+      `${descriptor.slug} execution reserve is disabled until its launchpad capability is approved`,
+    );
+  }
+  if (
+    !descriptor.capabilities.dammGraduation &&
+    !descriptor.capabilities.dlmmGraduation &&
+    graduationIntegrations.some(Boolean)
+  ) {
+    throw new Error(
+      `${descriptor.slug} graduation integrations are disabled until a graduation capability is approved`,
     );
   }
 

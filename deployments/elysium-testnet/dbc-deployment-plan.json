@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "chainId": 99801,
   "kind": "offline-elysium-dbc-deployment-plan",
-  "generatedAt": "2026-11-04T12:41:43.270Z",
-  "referenceBlock": 23204226,
-  "referenceBlockHash": "0x1b0c353fea4325c52fc36e63e99c7c39926db1bc6484eba3a64532c40fe4584b",
+  "generatedAt": "2026-11-07T10:09:09.707Z",
+  "referenceBlock": 25564387,
+  "referenceBlockHash": "0xbf9d258bfd0315b50dfd92cf79c76816cd2a929d06b91ae802375a59c50a6cae",
   "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
@@ -237,7 +237,7 @@
     "status": "pending-adapter",
     "adapter": null
   },
-  "planSha256": "03cdf38cb40754e76e7d5618abde12d0ed967177390fe91d4fbc02e5867d382d",
+  "planSha256": "443c1903519214afdf3015b5955295fe8d3cf97ddb7137854aa68ce740d8cc1e",
   "gates": {
     "privateKeysRead": false,
     "broadcastAllowed": false,

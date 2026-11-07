@@ -4,7 +4,6 @@ import request from "supertest";
 import { createApp } from "../src/app.js";
 import type { ExternalMarketService } from "../src/external-market-service.js";
 import type { SwapService } from "../src/swap-service.js";
-import { createElysiumTestnetContext } from "../src/elysium-testnet-context.js";
 
 const app = createApp({
   environment: "testnet",
@@ -90,7 +89,11 @@ test("chain catalog exposes capabilities without RPC or private configuration", 
   assert.equal(elysium.environment, "testnet");
   assert.equal(elysium.nativeCurrency.symbol, "HYPE");
   assert.equal(elysium.configured, false);
-  assert.equal(Object.values(elysium.capabilities).every((value) => !value), true);
+  assert.equal(elysium.capabilities.dbc, true);
+  assert.equal(elysium.capabilities.launchpad, true);
+  assert.equal(elysium.capabilities.protectedLaunch, true);
+  assert.equal(elysium.capabilities.dammGraduation, false);
+  assert.equal(elysium.capabilities.dlmmGraduation, false);
   assert.equal("publicRpcUrls" in elysium, false);
   const hyperEvm = response.body.chains.find(
     (chain: { chainId: number }) => chain.chainId === 999,
@@ -165,10 +168,17 @@ test("one API process exposes isolated config for multiple configured chains", a
   assert.equal(unavailableFeature.body.error.code, "FEATURE_NOT_CONFIGURED");
 });
 
-test("Elysium context is discoverable but all execution fails closed before deployment", async () => {
-  const elysiumContext = createElysiumTestnetContext({
-    webOrigin: "https://zkblast.tech",
-  });
+test("Elysium context advertises deployed capabilities without unsupported protocol routes", async () => {
+  const elysiumContext = {
+    config: {
+      environment: "testnet" as const,
+      chainId: 99_801,
+      chainName: "Elysium Testnet",
+      explorerUrl: "https://elysium.kinetiq.xyz/testnet-explorer",
+      webOrigin: "https://zkblast.tech",
+    },
+    dependencies: {},
+  };
   const multichain = createApp(
     {
       environment: "mainnet",
@@ -188,10 +198,10 @@ test("Elysium context is discoverable but all execution fails closed before depl
   assert.equal(configResponse.status, 200);
   assert.equal(configResponse.body.chainId, 99_801);
   assert.equal(configResponse.body.chainName, "Elysium Testnet");
-  assert.equal(
-    Object.values(configResponse.body.capabilities).every((value) => !value),
-    true,
-  );
+  assert.equal(configResponse.body.capabilities.dbc, true);
+  assert.equal(configResponse.body.capabilities.launchpad, true);
+  assert.equal(configResponse.body.capabilities.protectedLaunch, true);
+  assert.equal(configResponse.body.capabilities.dammGraduation, false);
   assert.equal("contracts" in configResponse.body, false);
 
   const readiness = await request(multichain).get(

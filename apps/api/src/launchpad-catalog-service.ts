@@ -39,12 +39,18 @@ export interface LaunchpadPresetReader {
   launchpads(ids: readonly bigint[]): Promise<readonly LaunchpadRecord[]>;
 }
 
+type PublicGraduationCapabilities = Readonly<{
+  dammGraduation: boolean;
+  dlmmGraduation: boolean;
+}>;
+
 export class LaunchpadCatalogService {
   constructor(
     private readonly environment: "testnet" | "mainnet",
     private readonly chainId: number,
     private readonly addresses: LaunchpadAddresses,
     private readonly reader: LaunchpadPresetReader,
+    private readonly publicGraduationCapabilities?: PublicGraduationCapabilities,
   ) {}
 
   configuration() {
@@ -79,7 +85,7 @@ export class LaunchpadCatalogService {
       throw new Error("LAUNCHPAD_PRESET_RESPONSE_INVALID");
     return {
       globalFeeCapBps,
-      capabilities: {
+      capabilities: this.publicGraduationCapabilities ?? {
         dammGraduation: dammSupported,
         dlmmGraduation: dlmmSupported,
       },

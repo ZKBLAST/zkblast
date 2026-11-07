@@ -72,6 +72,20 @@ const phaseTwoDisabledCapabilities: ChainCapabilities = {
   optionalZkModules: false,
 };
 
+const elysiumTestnetCapabilities: ChainCapabilities = {
+  launchpad: true,
+  dbc: true,
+  dammGraduation: false,
+  dlmmGraduation: false,
+  zkClaimAuthorization: false,
+  customDomains: false,
+  metadataUpload: true,
+  protectedLaunch: true,
+  xAttestation: false,
+  bridgeUx: true,
+  optionalZkModules: false,
+};
+
 const hyperEvmMainnetCapabilities: ChainCapabilities = {
   launchpad: true,
   dbc: true,
@@ -162,7 +176,7 @@ const descriptors = [
     },
     databaseSchema: "zkblast_elysium_testnet",
     deploymentManifestPath: "deployments/elysium-testnet/manifest.json",
-    capabilities: phaseTwoDisabledCapabilities,
+    capabilities: elysiumTestnetCapabilities,
   },
   {
     chainId: 998,

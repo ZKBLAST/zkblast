@@ -109,8 +109,15 @@ test("rejects Elysium schema, manifest, provider, and integration crossover", ()
     /approved public fallback/u,
   );
   assert.throws(
-    () => loadServerConfig({ ...elysium, EXECUTION_RESERVE_ASSET_ADDRESS: "0x5555555555555555555555555555555555555555" }),
-    /disabled until its launchpad capability/u,
+    () => loadServerConfig({ ...elysium, GRADUATION_POOL_FACTORY_ADDRESS: "0x5555555555555555555555555555555555555555" }),
+    /graduation integrations are disabled/u,
+  );
+  assert.doesNotThrow(() =>
+    loadServerConfig({
+      ...elysium,
+      EXECUTION_RESERVE_ASSET_ADDRESS:
+        "0x7D29d8047B905000459c0E80c34a26CeedcB47b2",
+    }),
   );
 });
 

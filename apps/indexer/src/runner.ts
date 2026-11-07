@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { getChainDescriptor, loadServerConfig } from "@zkblast/config";
 import { loadDeploymentManifestFile } from "@zkblast/config/node";
 import { redact } from "@zkblast/observability";
-import { createPublicClient, getAddress, type Log } from "viem";
+import { createPublicClient, getAddress, zeroAddress, type Log } from "viem";
 import { z } from "zod";
 import { IndexerService } from "./indexer-service.js";
 import { PostgresIndexerRepository } from "./postgres-indexer-repository.js";
@@ -126,6 +126,10 @@ const configuredStockQuoteAddresses = manifest.stockQuoteAssets
       manifest.stockQuoteAssets.destinationRegistry,
     ]
   : [];
+const protocolIntegrationEnabled =
+  getAddress(manifest.integration.poolRegistry) !== zeroAddress &&
+  getAddress(manifest.integration.poolFactory) !== zeroAddress &&
+  getAddress(manifest.integration.positionManager) !== zeroAddress;
 const addresses = [
   ...Object.values(manifest.integration),
   ...Object.values(manifest.contracts).map(
@@ -143,6 +147,7 @@ const addresses = [
   ...configuredStockQuoteAddresses,
 ]
   .map(getAddress)
+  .filter((address) => address !== zeroAddress)
   .filter((address, index, all) => all.indexOf(address) === index);
 const client = createPublicClient({
   cacheTime: 0,
@@ -321,7 +326,9 @@ async function synchronize(): Promise<void> {
         client,
         repository,
         chainId: config.CHAIN_ID,
-        registry: getAddress(manifest.integration.poolRegistry),
+        ...(protocolIntegrationEnabled
+          ? { registry: getAddress(manifest.integration.poolRegistry) }
+          : {}),
         addresses,
         fromBlock: startBlock,
         confirmations,
@@ -346,7 +353,7 @@ async function synchronize(): Promise<void> {
       await reconcileRecentDbcEvents();
       lastDbcSync = Date.now();
     }
-    if (Date.now() - lastActivitySync >= 30000) {
+    if (protocolIntegrationEnabled && Date.now() - lastActivitySync >= 30000) {
       await repository.reconcilePools(
         client,
         config.CHAIN_ID,
@@ -394,14 +401,16 @@ async function synchronize(): Promise<void> {
 }
 
 await synchronize();
-const charts = marketChartSynchronizer(
-  config,
-  getAddress(manifest.integration.poolRegistry),
-);
+const charts = protocolIntegrationEnabled
+  ? marketChartSynchronizer(
+      config,
+      getAddress(manifest.integration.poolRegistry),
+    )
+  : undefined;
 void charts
-  .synchronize()
+  ?.synchronize()
   .catch(() => console.error("Chart source sync unavailable"));
-setInterval(() => {
+if (charts) setInterval(() => {
   void charts
     .synchronize()
     .catch(() => console.error("Chart source sync unavailable"));

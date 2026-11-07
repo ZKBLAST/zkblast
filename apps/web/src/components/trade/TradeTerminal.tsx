@@ -239,6 +239,33 @@ function Terminal() {
     );
   }
 
+  const launchOnlyNetwork =
+    config?.capabilities.dbc === true &&
+    config.capabilities.dammGraduation === false &&
+    config.capabilities.dlmmGraduation === false;
+
+  if (mode !== "perps" && launchOnlyNetwork) {
+    return (
+      <div className="mx-auto grid min-h-[calc(100dvh-var(--header-h))] max-w-[1600px] place-items-center px-4 pt-[var(--header-h)]">
+        <section className="panel ticks max-w-xl p-8 text-center">
+          <p className="label">Pools unavailable</p>
+          <h1 className="mt-3 text-2xl">Launch markets are active on {config.chainName}</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            This deployment supports DBC launches and protected launchpads. DAMM,
+            DLMM, swaps, liquidity, Shielded execution, and Perps are not deployed
+            on this network.
+          </p>
+          <a
+            href="/launch"
+            className="mt-6 inline-flex border border-line-strong bg-lime px-5 py-3 font-mono text-xs uppercase text-lime-ink"
+          >
+            Open Launch
+          </a>
+        </section>
+      </div>
+    );
+  }
+
   if (mode === "perps") {
     return (
       <div className="mx-auto max-w-[1600px] px-3 pb-8 pt-[calc(var(--header-h)+1rem)] sm:px-4">

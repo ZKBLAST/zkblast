@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "chainId": 99801,
+  "environment": "testnet",
+  "generatedAt": "2026-11-07T11:00:18.017Z",
+  "referenceBlock": "25591644",
+  "referenceBlockHash": "0x4fbfb8326b32c5fabcf44a4a026749a4e157b6d2770ea215aa186d8a3fa91e75",
+  "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
+  "configManager": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+  "configRegistry": "0xB07Add5366E4689898dD55F3043b845283dfD3fE",
+  "quoteToken": "0xCD57F65c2B0e5881CFC2E609F7CD53b746E1F234",
+  "proposedPresetId": "1",
+  "preset": {
+    "familyId": "0xa309c5c4a2ac02ba2a0dc9eda5d1d36a4cb6e83ca9f47273312996bc01a0e9b4",
+    "dbcTemplateId": "1",
+    "quoteToken": "0xCD57F65c2B0e5881CFC2E609F7CD53b746E1F234",
+    "maximumTotalTradeFeeBps": 300,
+    "graduationDestination": 1,
+    "creatorAccess": 0,
+    "maximumLaunches": 1000
+  },
+  "startingNonce": 63,
+  "nextNonce": 65,
+  "actions": [
+    {
+      "name": "allow-whype-quote-token",
+      "data": "0x19d72a35000000000000000000000000cd57f65c2b0e5881cfc2e609f7cd53b746e1f2340000000000000000000000000000000000000000000000000000000000000001",
+      "target": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+      "nonce": 63,
+      "calldataHash": "0x35214f58af59ef18598a60e660abf1cef11652c87a30e0b38734402d62adb01a",
+      "gasEstimate": "56085",
+      "guardedGas": "84127"
+    },
+    {
+      "name": "create-whype-pending-graduation-preset-v1",
+      "data": "0x57aa8363a309c5c4a2ac02ba2a0dc9eda5d1d36a4cb6e83ca9f47273312996bc01a0e9b40000000000000000000000000000000000000000000000000000000000000001000000000000000000000000cd57f65c2b0e5881cfc2e609f7cd53b746e1f234000000000000000000000000000000000000000000000000000000000000012c0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e8",
+      "target": "0xb8617d056139546286c80F257fb15F1f0c4dBD33",
+      "nonce": 64,
+      "calldataHash": "0x7436eec7fa22f617be8618daba1d2bd0192b2346d0c6815515c0cd232cd7be70",
+      "gasEstimate": "200477",
+      "guardedGas": "300715"
+    }
+  ],
+  "gasPriceWei": "100000000",
+  "maximumFeeWei": "38484200000000",
+  "maximumFeeHype": "0.0000384842",
+  "balanceHype": "0.199458773902618",
+  "safety": {
+    "assetMovement": false,
+    "graduationExecutionEnabled": false,
+    "graduationBehavior": "pending_until_reviewed_adapter",
+    "broadcastAllowed": false,
+    "explicitApprovalRequired": true
+  }
+}

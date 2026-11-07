@@ -37,10 +37,13 @@ export function Header() {
   const [acct, setAcct] = useState(false);
   const { scrollY } = useScroll();
   const visibleNav = nav;
+  const activeChain = chains.find((chain) => chain.chainId === config?.chainId);
   const unavailable = (item: (typeof nav)[number]) =>
-    item.mode === "perps" && Boolean(config) && !config?.perps;
-  const mainnetChains = chains.filter(
-    (chain) => chain.environment === "mainnet",
+    Boolean(config) &&
+    ((item.mode === "perps" && !config?.perps) ||
+      (item.href === "/trade" && activeChain?.family === "elysium"));
+  const visibleChains = chains.filter(
+    (chain) => chain.environment === "mainnet" || chain.family === "elysium",
   );
   const isNavActive = (item: (typeof nav)[number]) => {
     const navPath = item.href.split("?")[0] ?? item.href;
@@ -104,13 +107,19 @@ export function Header() {
                     className="flex border-r border-line first:border-l"
                   >
                     <Link
-                      href={n.href}
-                      aria-current={on ? "page" : undefined}
+                      href={unavailable(n) ? "#" : n.href}
+                      aria-current={on && !unavailable(n) ? "page" : undefined}
+                      aria-disabled={unavailable(n)}
+                      onClick={(event) => {
+                        if (unavailable(n)) event.preventDefault();
+                      }}
                       className={cx(
                         "relative flex items-center px-5 font-mono text-[12.5px] uppercase tracking-[0.06em] transition-colors duration-150 xl:px-7",
-                        on
+                        on && !unavailable(n)
                           ? "text-fg"
-                          : "text-muted hover:bg-white/[0.02] hover:text-fg",
+                          : unavailable(n)
+                            ? "cursor-not-allowed text-faint"
+                            : "text-muted hover:bg-white/[0.02] hover:text-fg",
                       )}
                     >
                       <span className="flex items-center gap-2">
@@ -121,7 +130,7 @@ export function Header() {
                           </span>
                         )}
                       </span>
-                      {on && (
+                      {on && !unavailable(n) && (
                         <motion.span
                           layoutId="nav-active"
                           className="absolute inset-x-0 bottom-0 h-px bg-lime shadow-[0_0_12px_rgba(223,227,238,0.8)]"
@@ -284,10 +293,18 @@ export function Header() {
                     className="border-b border-line"
                   >
                     <Link
-                      href={n.href}
+                      href={unavailable(n) ? "#" : n.href}
+                      aria-disabled={unavailable(n)}
+                      onClick={(event) => {
+                        if (unavailable(n)) event.preventDefault();
+                      }}
                       className={cx(
                         "flex h-16 items-center justify-between font-mono text-[20px] uppercase tracking-[0.04em]",
-                        isNavActive(n) ? "text-lime" : "text-fg",
+                        unavailable(n)
+                          ? "cursor-not-allowed text-faint"
+                          : isNavActive(n)
+                            ? "text-lime"
+                            : "text-fg",
                       )}
                     >
                       <span>{n.label}</span>
@@ -326,7 +343,7 @@ export function Header() {
                 <p className="px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
                   Networks
                 </p>
-                {mainnetChains.map((chain) => {
+                {visibleChains.map((chain) => {
                   const active = chain.chainId === config?.chainId;
                   return (
                     <button
@@ -353,8 +370,8 @@ export function Header() {
                         {active
                           ? "Current"
                           : chain.configured
-                            ? "mainnet · open"
-                            : "mainnet · soon"}
+                            ? `${chain.environment} · open`
+                            : `${chain.environment} · unavailable`}
                       </span>
                     </button>
                   );

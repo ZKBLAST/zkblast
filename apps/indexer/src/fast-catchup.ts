@@ -50,7 +50,8 @@ export async function fastCatchup(input: {
   client: PublicClient;
   repository: IndexerRepository;
   chainId: number;
-  registry: Address;
+  /** Required only when PoolCreated events may be discovered. */
+  registry?: Address;
   addresses: Address[];
   fromBlock: bigint;
   confirmations?: bigint;
@@ -178,10 +179,12 @@ export async function fastCatchup(input: {
       }
     }
     for (const pool of discovered) {
+      const registry = input.registry;
+      if (!registry) throw new Error("CATCHUP_POOL_REGISTRY_REQUIRED");
       if (
         !(await withRpcRetry(() =>
           client.readContract({
-            address: input.registry,
+            address: registry,
             abi: registryAbi,
             functionName: "isRegisteredPool",
             args: [pool],

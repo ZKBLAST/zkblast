@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "chainId": 99801,
   "kind": "offline-launchpad-deployment-plan",
-  "generatedAt": "2026-11-04T12:48:44.340Z",
+  "generatedAt": "2026-11-07T10:09:10.166Z",
   "deployer": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "governance": "0xB5C0eD0252d1906Fca50664Eb2198Aea0679920B",
   "upgrader": "0x54Ad8502759C61596c428054660674E0ec919F10",
@@ -213,7 +213,7 @@
     "graduation": false,
     "zkProofClaims": false
   },
-  "planSha256": "588263a5c25c95e8e33f9f56e7238d63aed0cae0905693f28f445b8ccb9608ad",
+  "planSha256": "aade64b81fefddd9872a9f83e73d7ef33e58f7ff15564eebfda84545f99fbf1a",
   "gates": {
     "privateKeysRead": false,
     "broadcastAllowed": false,
